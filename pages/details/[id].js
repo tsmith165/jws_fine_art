@@ -104,7 +104,7 @@ const DetailsPage = ({id, pieces}) => {
                                                         onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}}  />
                     </div>
                     <div className={styles.detailsDescriptionContainer}>
-                        <h3 className={styles.detailsDescription}>{piece['description'].replaceAll("<br>", "\n")}</h3>
+                        <h3 className={styles.detailsDescription}>{piece['description'].replace("<br>", "\n")}</h3>
                     </div>
                     <div className={styles.detailsNavigationContainer}>
                         <button className={styles.editButton} onClick={editClicked(piece)}>Edit Piece</button>
