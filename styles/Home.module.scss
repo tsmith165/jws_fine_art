@@ -1,0 +1,28 @@
+@import "../theme/theme";
+
+.mainImage {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+}
+
+.snowTable {
+  margin: 10px;
+  background-color: $light;
+}
+
+.snowTable > tr > th, .snowTable > tr > td {
+  padding: 4px 8px;
+  color: $dark;
+}
+.snowTable > tr:nth-child(even) {
+  background-color: $primary;
+}
+.snowTable > tr:nth-child(even) > td {
+  color: $light;
+}
+.snowTable, .snowTable > tr {
+  border: 1px inset $dark;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
