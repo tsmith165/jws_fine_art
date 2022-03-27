@@ -152,7 +152,7 @@ const DetailsPage = ({id, pieces}) => {
                                                         onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}} />
                         </Link>
                         <b className={styles.detailsTitle}>{piece['title']}</b>
-                        <Link href={`/details/${last_oid}`} passHref={true}>
+                        <Link href={`/details/${next_oid}`} passHref={true}>
                             <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}
                                                         onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
                                                         onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}}  />
