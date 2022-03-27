@@ -74,7 +74,11 @@ function buttonHover(e, mouse_in, color_1, color_2, stroke=false ) {
 
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`)
-    const pieces = await prisma.piece.findMany()
+    const pieces = await prisma.piece.findMany({
+        orderBy: {
+            o_id: 'desc',
+        },
+    })
 
     return pieces
 }
