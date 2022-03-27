@@ -6,6 +6,7 @@ import { prisma } from '../../lib/prisma'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 import { useQuery, useMutation, queryCache } from 'react-query';
 
@@ -17,10 +18,10 @@ const { URL } = process.env;
 //const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com";
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
-function getPiece(PathOID, pieces) {
+function getPieceId(PathOID, pieces) {
     for (var i=0; i < pieces.length; i++) {
         if (pieces[i]['o_id'].toString() == PathOID.toString()) {
-            return pieces[i]
+            return i
         }
     }
 }
@@ -108,7 +109,14 @@ export const getStaticPaths = async () => {
 
 const DetailsPage = ({id, pieces}) => {
     var PathOID = id;
-    var piece = getPiece(PathOID, pieces);
+    var pieceID = getPieceId(PathOID, pieces);
+    console.log(`Piece ID: ${pieceID}`)
+    var piece = pieces[pieceID];
+
+    const pieces_length = pieces.length;
+    var next_oid = (pieceID + 1 > pieces_length) ? 0                   : pieces[pieceID + 1]['o_id'];
+    var last_oid = (pieceID - 1 < 0)             ? (pieces_length - 1) : pieces[pieceID - 1]['o_id'];
+    
     const router = useRouter()
 
     var sold_html = null;
@@ -138,15 +146,17 @@ const DetailsPage = ({id, pieces}) => {
                 </div>
                 <div className={styles.detailsContainerRight}>
                     <div className={styles.detailsTitleContainer}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`}
-                                                            onClick={() => nextClicked(false, piece['o_id'], pieces, router)}
-                                                            onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
-                                                            onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}} />
+                        <Link href={`/details/${last_oid}`}>
+                            <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`}
+                                                        onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
+                                                        onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}} />
+                        </Link>
                         <b className={styles.detailsTitle}>{piece['title']}</b>
-                        <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}
-                                                        onClick={() => nextClicked(true, piece['o_id'], pieces, router)}
+                        <Link href={`/details/${next_oid}`}>
+                            <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}
                                                         onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
                                                         onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}}  />
+                        </Link>
                     </div>
                     <div className={styles.detailsDescriptionContainer}>
                         <h3 className={styles.detailsDescription}>{piece['description'].replace("<br>", "\n")}</h3>
