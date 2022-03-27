@@ -89,21 +89,28 @@ export const getStaticProps = async (context) => {
     const pieces = await fetchPieces()
 
     //console.log(context)
-    return { props: {"id": context.params.id, "pieces": pieces} }
-    //return { props: {"id": context.params.id} }
+    return { 
+        props: {
+            "id": context.params.id, 
+            "pieces": pieces
+        },
+        revalidate: 60
+    }
 }
 
 export const getStaticPaths = async () => {
     console.log("Getting Static Paths")
     const pieces = await fetchPieces()
+
+    const offset_for_testing = 20;
     
     var paths = [];
-    for (var i=0; i < pieces.length - 1; i++) {
+    for (var i=0; i < pieces.length - 1 - offset_for_testing; i++) {
         paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
     }
     return {
         paths: paths,
-        fallback:false
+        fallback: 'blocking'
     }
 }
 
