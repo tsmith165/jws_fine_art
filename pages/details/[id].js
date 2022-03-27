@@ -130,6 +130,8 @@ const DetailsPage = ({id, pieces}) => {
                         width={piece['width']}
                         height={piece['height']}
                         priority={true}
+                        layout='fill'
+                        objectFit='contain'
                     />
                 </div>
                 <div className={styles.detailsContainerRight}>
