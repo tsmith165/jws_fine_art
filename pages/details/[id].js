@@ -13,8 +13,6 @@ import { useQuery, useMutation, queryCache } from 'react-query';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
 
-const { URL } = process.env;
-
 //const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com";
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
