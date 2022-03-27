@@ -6,8 +6,12 @@ import styles from '../../styles/Details.module.scss'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 
+import { useQuery, useMutation, queryCache } from 'react-query';
+
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
+
+const { URL } = process.env;
 
 const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com"
 
@@ -65,6 +69,37 @@ function buttonHover(e, mouse_in, color_1, color_2, stroke=false ) {
     }
 }
 
+
+async function fetchPieces() {
+    const response = await fetch(`${URL}/api/pieces`);
+    const data = await response.json()
+    const pieces = data["pieces"];
+    return pieces;
+}
+
+export const getStaticProps = async (context) => {
+    console.log("Getting Static Props")
+    const pieces = await fetchPieces()
+
+    //console.log(context)
+    return { props: {"id": context.params.id, "pieces": pieces} }
+    //return { props: {"id": context.params.id} }
+}
+
+export const getStaticPaths = async () => {
+    console.log("Getting Static Paths")
+    const pieces = await fetchPieces()
+    
+    var paths = [];
+    for (var i=0; i < pieces.length; i++) {
+        paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
+    }
+    return {
+        paths: paths,
+        fallback:false
+    }
+}
+
 const DetailsPage = ({id, pieces}) => {
     var PathOID = id;
     var piece = getPiece(PathOID, pieces);
@@ -115,30 +150,6 @@ const DetailsPage = ({id, pieces}) => {
             </div>
         </PageLayout>
     )
-}
-
-export const getStaticProps = async (context) => {
-    const res = await fetch ('https://www.jwsfineart.com/api/pieces');
-    const data = await res.json()
-    const pieces = data["pieces"]
-
-    //console.log(context)
-    return { props: {"id": context.params.id, "pieces": pieces} }
-}
-
-export const getStaticPaths = async () => {
-    const res = await fetch ('https://www.jwsfineart.com/api/pieces');
-    const data = await res.json()
-    const pieces = data["pieces"]
-    
-    var paths = [];
-    for (var i=0; i < pieces.length; i++) {
-        paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
-    }
-    return {
-        paths: paths,
-        fallback:false
-    }
 }
 
 export default DetailsPage

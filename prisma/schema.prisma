@@ -8,10 +8,22 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model Book {
-  id Int @id @default(autoincrement())
-  title String
-  author String
+model Piece {
+  id          Int    @id @default(autoincrement())
+  o_id        Int
+  class_name  String
+  title       String
+  image_path  String
+  width       Int
+  height      Int
+  description String @db.VarChar(500)
+  type        String
+  sold        Boolean @default(false)
+  price       Int
+  real_width  Float
+  real_height Float
+  active      Boolean @default(true)
 }
