@@ -1,28 +1,23 @@
 @import "../theme/theme";
 
-.mainImage {
-  position: relative;
-  width: 100%;
-  height: 60vh;
-}
+.gallery_container { height: calc(100vh - 100px); width: 100vw; position: absolute; overflow-y: scroll; overflow-x: hidden; background-color: $secondary }
+.gallery_body { min-height: calc(100vh - 100px); width: 100vw; }
+   
+    .piece_container { position: absolute; padding: 5px; border-radius: 3px; 
+                       background-color: $dark }
 
-.snowTable {
-  margin: 10px;
-  background-color: $light;
-}
+    .piece_container > div > span > .piece_image { position: absolute !important; padding: 5px !important; border-radius: 3px !important;  }
 
-.snowTable > tr > th, .snowTable > tr > td {
-  padding: 4px 8px;
-  color: $dark;
-}
-.snowTable > tr:nth-child(even) {
-  background-color: $primary;
-}
-.snowTable > tr:nth-child(even) > td {
-  color: $light;
-}
-.snowTable, .snowTable > tr {
-  border: 1px inset $dark;
-  border-collapse: collapse;
-  border-spacing: 0;
-}
+    .piece_container > div > span > .piece_sold { position: absolute !important; bottom: 10px !important; right: 10px !important;  }
+      .piece_secondary_container {  }
+        .piece_image_container { position: relative; }
+            .piece_image {  }
+
+
+        .piece_description-container { height: 25px; line-height: 25px; }
+            .piece_title { display: inline-block; vertical-align: middle; line-height: normal; color: $light }
+
+          .piece_sold_container { position: absolute; bottom: 10px !important; right: 10px }
+            .piece_sold { position: absolute !important; bottom: 0px !important; right: 0px !important; top: auto !important; left: auto !important; }
+
+#management-button { position: fixed; top: 50px; right: 0; width: 30px; height: 30px; padding: 10px; border-bottom-left-radius: 5px; }
