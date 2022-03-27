@@ -102,7 +102,7 @@ export const getStaticPaths = async () => {
     console.log("Getting Static Paths")
     const pieces = await fetchPieces()
 
-    const offset_for_testing = 20;
+    const offset_for_testing = 0;
     
     var paths = [];
     for (var i=0; i < pieces.length - 1 - offset_for_testing; i++) {
