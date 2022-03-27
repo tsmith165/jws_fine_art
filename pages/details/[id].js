@@ -15,7 +15,7 @@ import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
 const { URL } = process.env;
 
 //const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com";
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com/";
+const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
 function getPiece(PathOID, pieces) {
     for (var i=0; i < pieces.length; i++) {
