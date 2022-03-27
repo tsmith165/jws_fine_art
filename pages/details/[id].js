@@ -76,7 +76,7 @@ async function fetchPieces() {
     console.log(`Fetching pieces with prisma`)
     const pieces = await prisma.piece.findMany({
         orderBy: {
-            o_id: 'desc',
+            o_id: 'asc',
         },
     })
 
