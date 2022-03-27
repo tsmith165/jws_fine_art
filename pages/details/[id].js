@@ -59,17 +59,6 @@ function buyClicked() {
     //console.log("Buying...")
 }
 
-function buttonHover(e, mouse_in, color_1, color_2, stroke=false ) {
-    if (mouse_in) {
-        if (stroke == false) e.currentTarget.style = `fill: ${color_2} !important; background-color: ${color_1};`
-        else                 e.currentTarget.style = `fill: ${color_2} !important; stroke: ${color_1};`
-    }
-    else {
-        if (stroke == false) e.currentTarget.style = `fill: ${color_2} !important; background-color: ${color_1} ;`
-        else                 e.currentTarget.style = `fill: ${color_2} !important; stroke: ${color_1};`
-    }
-}
-
 
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`)
@@ -152,15 +141,11 @@ const DetailsPage = ({id, pieces}) => {
                 <div className={styles.detailsContainerRight}>
                     <div className={styles.detailsTitleContainer}>
                         <Link href={`/details/${last_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`}
-                                                        onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
-                                                        onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}} />
+                            <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`} />
                         </Link>
                         <b className={styles.detailsTitle}>{piece['title']}</b>
                         <Link href={`/details/${next_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}
-                                                        onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
-                                                        onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}}  />
+                            <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}  />
                         </Link>
                     </div>
                     <div className={styles.detailsDescriptionContainer}>
