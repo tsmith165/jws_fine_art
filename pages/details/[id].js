@@ -123,16 +123,18 @@ const DetailsPage = ({id, pieces}) => {
         <PageLayout>
             <div className={styles.detailsContainer}>
                 <div className={styles.detailsContainerLeft}>
-                    <Image
-                        className={styles.detailsImage}
-                        src={`${baseURL}${piece['image_path']}`}
-                        alt={piece['title']}
-                        width={piece['width']}
-                        height={piece['height']}
-                        priority={true}
-                        layout='fill'
-                        objectFit='contain'
-                    />
+                    <div className={styles.detailsImageContainter}>
+                        <Image
+                            className={styles.detailsImage}
+                            src={`${baseURL}${piece['image_path']}`}
+                            alt={piece['title']}
+                            width={piece['width']}
+                            height={piece['height']}
+                            priority={true}
+                            layout='fill'
+                            objectFit='contain'
+                        />
+                    </div>
                 </div>
                 <div className={styles.detailsContainerRight}>
                     <div className={styles.detailsTitleContainer}>
