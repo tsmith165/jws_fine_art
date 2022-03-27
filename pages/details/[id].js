@@ -2,19 +2,26 @@ import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
 
 import styles from '../../styles/Details.module.scss'
+import { prisma } from '../../lib/prisma'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
+
+import { useQuery, useMutation, queryCache } from 'react-query';
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
 
-const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com"
+const { URL } = process.env;
 
-function getPiece(PathOID, pieces) {
+//const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com";
+const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+
+function getPieceId(PathOID, pieces) {
     for (var i=0; i < pieces.length; i++) {
         if (pieces[i]['o_id'].toString() == PathOID.toString()) {
-            return pieces[i]
+            return i
         }
     }
 }
@@ -65,9 +72,51 @@ function buttonHover(e, mouse_in, color_1, color_2, stroke=false ) {
     }
 }
 
+
+async function fetchPieces() {
+    console.log(`Fetching pieces with prisma`)
+    const pieces = await prisma.piece.findMany({
+        orderBy: {
+            o_id: 'asc',
+        },
+    })
+
+    return pieces
+}
+
+export const getStaticProps = async (context) => {
+    console.log("Getting Static Props")
+    const pieces = await fetchPieces()
+
+    //console.log(context)
+    return { props: {"id": context.params.id, "pieces": pieces} }
+    //return { props: {"id": context.params.id} }
+}
+
+export const getStaticPaths = async () => {
+    console.log("Getting Static Paths")
+    const pieces = await fetchPieces()
+    
+    var paths = [];
+    for (var i=0; i < pieces.length - 1; i++) {
+        paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
+    }
+    return {
+        paths: paths,
+        fallback:false
+    }
+}
+
 const DetailsPage = ({id, pieces}) => {
     var PathOID = id;
-    var piece = getPiece(PathOID, pieces);
+    var pieceID = getPieceId(PathOID, pieces);
+    console.log(`Piece ID: ${pieceID}`)
+    var piece = pieces[pieceID];
+
+    const pieces_length = pieces.length;
+    var next_oid = (pieceID + 1 > pieces_length - 1) ?                   0 : pieces[pieceID + 1]['o_id'];
+    var last_oid = (pieceID - 1 < 0)                 ? (pieces_length - 1) : pieces[pieceID - 1]['o_id'];
+    
     const router = useRouter()
 
     var sold_html = null;
@@ -82,26 +131,32 @@ const DetailsPage = ({id, pieces}) => {
         <PageLayout>
             <div className={styles.detailsContainer}>
                 <div className={styles.detailsContainerLeft}>
-                    <Image
-                        className={styles.detailsImage}
-                        src={`${baseURL}${piece['image_path']}`}
-                        alt={piece['title']}
-                        width={piece['width']}
-                        height={piece['height']}
-                        priority={true}
-                    />
+                    <div className={styles.detailsImageContainter}>
+                        <Image
+                            className={styles.detailsImage}
+                            src={`${baseURL}${piece['image_path']}`}
+                            alt={piece['title']}
+                            width={piece['width']}
+                            height={piece['height']}
+                            priority={true}
+                            layout='fill'
+                            objectFit='contain'
+                        />
+                    </div>
                 </div>
                 <div className={styles.detailsContainerRight}>
                     <div className={styles.detailsTitleContainer}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`}
-                                                            onClick={() => nextClicked(false, piece['o_id'], pieces, router)}
-                                                            onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
-                                                            onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}} />
+                        <Link href={`/details/${last_oid}`} passHref={true}>
+                            <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`}
+                                                        onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
+                                                        onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}} />
+                        </Link>
                         <b className={styles.detailsTitle}>{piece['title']}</b>
-                        <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}
-                                                        onClick={() => nextClicked(true, piece['o_id'], pieces, router)}
+                        <Link href={`/details/${last_oid}`} passHref={true}>
+                            <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}
                                                         onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
                                                         onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}}  />
+                        </Link>
                     </div>
                     <div className={styles.detailsDescriptionContainer}>
                         <h3 className={styles.detailsDescription}>{piece['description'].replace("<br>", "\n")}</h3>
@@ -115,30 +170,6 @@ const DetailsPage = ({id, pieces}) => {
             </div>
         </PageLayout>
     )
-}
-
-export const getStaticProps = async (context) => {
-    const res = await fetch ('https://www.jwsfineart.com/api/pieces');
-    const data = await res.json()
-    const pieces = data["pieces"]
-
-    //console.log(context)
-    return { props: {"id": context.params.id, "pieces": pieces} }
-}
-
-export const getStaticPaths = async () => {
-    const res = await fetch ('https://www.jwsfineart.com/api/pieces');
-    const data = await res.json()
-    const pieces = data["pieces"]
-    
-    var paths = [];
-    for (var i=0; i < pieces.length; i++) {
-        paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
-    }
-    return {
-        paths: paths,
-        fallback:false
-    }
 }
 
 export default DetailsPage

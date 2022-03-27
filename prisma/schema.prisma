@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Piece {
+  id          Int    @id @default(autoincrement())
+  o_id        Int
+  class_name  String
+  title       String
+  image_path  String
+  width       Int
+  height      Int
+  description String @db.VarChar(500)
+  type        String
+  sold        Boolean @default(false)
+  price       Int
+  real_width  Float
+  real_height Float
+  active      Boolean @default(true)
+}

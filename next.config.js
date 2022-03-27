@@ -4,7 +4,7 @@ require("dotenv-safe").config()
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["jwsfineart.sfo2.digitaloceanspaces.com"]
+    domains: ["jwsfineart.s3.us-west-1.amazonaws.com"]
   },
 }
 
