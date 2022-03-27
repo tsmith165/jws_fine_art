@@ -66,6 +66,7 @@ export default function Home({piece_list}) {
       while (i < piece_list_length) {
           var current_piece_json =  piece_list[i];
 
+          var o_id            = current_piece_json['o_id'];
           var class_name      = current_piece_json['class_name'];
           var image_path      = current_piece_json['image_path'];
           var title           = current_piece_json['title'];
@@ -127,7 +128,7 @@ export default function Home({piece_list}) {
 
               var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
 
-              pieces.push(<Piece key={i} id={`piece-${i}`}
+              pieces.push(<Piece key={i} id={`piece-${i}`} o_id={o_id}
                                 myClick={piece_clicked}
                                 className={class_name} 
                                 image_path={image_path}
