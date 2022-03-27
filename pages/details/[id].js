@@ -123,7 +123,12 @@ export const getStaticProps = async (context) => {
     const pieces = data["pieces"]
 
     //console.log(context)
-    return { props: {"id": context.params.id, "pieces": pieces} }
+    return { props: {
+            "id": context.params.id, 
+            "pieces": pieces
+        },
+        revalidate: 60
+    }
 }
 
 export const getStaticPaths = async () => {
@@ -132,12 +137,12 @@ export const getStaticPaths = async () => {
     const pieces = data["pieces"]
     
     var paths = [];
-    for (var i=0; i < pieces.length; i++) {
+    for (var i=0; i < pieces.length - 10; i++) {
         paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
     }
     return {
         paths: paths,
-        fallback:false
+        fallback: 'blocking'
     }
 }
 
