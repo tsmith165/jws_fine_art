@@ -121,8 +121,8 @@ const DetailsPage = ({id, pieces}) => {
     var piece = pieces[pieceID];
 
     const pieces_length = pieces.length;
-    var next_oid = (pieceID + 1 > pieces_length - 1) ?                   0 : pieces[pieceID + 1]['o_id'];
-    var last_oid = (pieceID - 1 < 0)                 ? (pieces_length - 1) : pieces[pieceID - 1]['o_id'];
+    var next_oid = (pieceID + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[pieceID + 1]['o_id'];
+    var last_oid = (pieceID - 1 < 1)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
     
     const router = useRouter()
 
