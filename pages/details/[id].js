@@ -2,6 +2,7 @@ import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
 
 import styles from '../../styles/Details.module.scss'
+import { prisma } from '../../lib/prisma'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
@@ -71,10 +72,10 @@ function buttonHover(e, mouse_in, color_1, color_2, stroke=false ) {
 
 
 async function fetchPieces() {
-    const response = await fetch(`${URL}/api/pieces`);
-    const data = await response.json()
-    const pieces = data["pieces"];
-    return pieces;
+    console.log(`Fetching pieces with prisma`)
+    const pieces = await prisma.piece.findMany()
+
+    return pieces
 }
 
 export const getStaticProps = async (context) => {
