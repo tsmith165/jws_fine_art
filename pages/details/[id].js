@@ -98,7 +98,7 @@ export const getStaticPaths = async () => {
     const pieces = await fetchPieces()
     
     var paths = [];
-    for (var i=0; i < pieces.length; i++) {
+    for (var i=0; i < pieces.length - 1; i++) {
         paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
     }
     return {
@@ -114,8 +114,8 @@ const DetailsPage = ({id, pieces}) => {
     var piece = pieces[pieceID];
 
     const pieces_length = pieces.length;
-    var next_oid = (pieceID + 1 > pieces_length) ? 0                   : pieces[pieceID + 1]['o_id'];
-    var last_oid = (pieceID - 1 < 0)             ? (pieces_length - 1) : pieces[pieceID - 1]['o_id'];
+    var next_oid = (pieceID + 1 > pieces_length - 1) ?                   0 : pieces[pieceID + 1]['o_id'];
+    var last_oid = (pieceID - 1 < 0)                 ? (pieces_length - 1) : pieces[pieceID - 1]['o_id'];
     
     const router = useRouter()
 
@@ -146,13 +146,13 @@ const DetailsPage = ({id, pieces}) => {
                 </div>
                 <div className={styles.detailsContainerRight}>
                     <div className={styles.detailsTitleContainer}>
-                        <Link href={`/details/${last_oid}`}>
+                        <Link href={`/details/${last_oid}`} passHref={true}>
                             <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`}
                                                         onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
                                                         onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}} />
                         </Link>
                         <b className={styles.detailsTitle}>{piece['title']}</b>
-                        <Link href={`/details/${next_oid}`}>
+                        <Link href={`/details/${last_oid}`} passHref={true}>
                             <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}
                                                         onMouseOver={ e => {buttonHover(e, true, "#425D76", "#30332E")}}
                                                         onMouseOut={ e => {buttonHover(e, false, "#30332E", "#597D9F")}}  />
