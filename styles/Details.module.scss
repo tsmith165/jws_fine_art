@@ -5,6 +5,8 @@
 
 .detailsContainerLeft { width: 60vw; height: calc(100vh - 50px); display: flex; justify-content: center; align-items: center; }
 
+    .detailsImageContainter { width: 100%; height: 100%; position: relative; }
+
     .detailsImage { width: 100%; height: 100%; }
 
 .detailsContainerRight { width: 40vw; background-color: $secondary; }
