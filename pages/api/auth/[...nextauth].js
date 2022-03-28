@@ -12,8 +12,8 @@ export default NextAuth({
     }),
   ],
   adapter: PrismaAdapter(prisma),
-  jwt: {
-    encryption: true
+  session: {
+    jwt: true
   },
-  secret: "secret token",
+  secret: process.env.SECRET,
 });
