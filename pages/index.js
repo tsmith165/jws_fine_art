@@ -1,4 +1,4 @@
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signIn, signOut, useSession } from "next-auth/client"
 
 import { prisma } from '../lib/prisma'
 
@@ -26,14 +26,14 @@ export default function Home({piece_list}) {
             </div>
             </PageLayout>
         )
-    } else if (session == false) {
+    } else {
         console.log("Session returned false")
 
         return (
-            <>
+            <PageLayout>
                 <h1>Sign In</h1>
                 <button onClick={() => signIn()}>Sign In</button>
-            </>
+            </PageLayout>
         )
     }
 }
