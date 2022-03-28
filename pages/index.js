@@ -28,6 +28,13 @@ export default function Home({piece_list}) {
         )
     } else if (session == false) {
         console.log("Session returned false")
+
+        return (
+            <>
+                <h1>Sign In</h1>
+                <button onClick={() => signIn()}>Sign In</button>
+            </>
+        )
     }
 }
 
