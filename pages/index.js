@@ -1,5 +1,4 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import { signIn, signOut, useSession } from "next-auth/client"
 
 import { prisma } from '../lib/prisma'
 
@@ -10,175 +9,185 @@ import styles from '../styles/Home.module.scss'
 import useWindowSize from '../lib/useWindowSize'
 
 export default function Home({piece_list}) {
-  console.log("CURRENT PIECE LIST (NEXT LINE):")
-  console.log(piece_list);
+    const [session, loading] = useSession()
 
-  const debug = true;
-  const stop_where_debugged_at = true;
+    var window_size = useWindowSize()
 
-  var pieces = [];
-  var piece_width = 250;
+    if (session == true) {
+        console.log("Session returned true")
+        var pieces = get_pieces(pieces, window_size);
+    
+        return (
+            <PageLayout>
+            <div className={styles.gallery_container}>
+                <div className={styles.gallery_body} style={{height: lowest_height}}>
+                {pieces}
+                </div>
+            </div>
+            </PageLayout>
+        )
+    } else if (session == false) {
+        console.log("Session returned false")
+    }
+}
 
-  var window_size = useWindowSize()
-  console.log(window_size)
+function get_pieces(piece_list, window_size) {
+    console.log("CURRENT PIECE LIST (NEXT LINE):")
+    console.log(piece_list);
 
-  var [window_width, window_height] = [window_size['width'], window_size['height']];
+    const debug = true;
+    const stop_where_debugged_at = true;
 
-  if (debug) console.log(`WINDOW WIDTH: ${window_width} | HEIGHT: ${window_height}`);
+    var pieces = [];
+    var piece_width = 250;
 
-  var inner_margin = 30;
-  var border_margin = 10;
+    var [window_width, window_height] = [window_size['width'], window_size['height']];
 
-  if (window_width < 500 + 40 + 60 + 30) {
-      piece_width = (window_width - 40 - 60 - 20) / 2;
-      if (debug) console.log(`PIECE WIDTH: ${piece_width}`)
-  }
+    if (debug) console.log(`WINDOW WIDTH: ${window_width} | HEIGHT: ${window_height}`);
 
-  var max_columns = Math.trunc(window_width / (piece_width + (border_margin * 2) + inner_margin));
-  if (debug) console.log(`COLUMNS: ${max_columns}`);
+    var inner_margin = 30;
+    var border_margin = 10;
 
-  var gallery_width = ((piece_width + (border_margin * 2)) * max_columns) + (10 * max_columns);
-  if (max_columns < 3) gallery_width -= 20;
-  
-  var leftover_width = window_width - gallery_width;
-  if (debug) console.log(`GALLERY WIDTH: ${gallery_width} | LEFTOVER: ${leftover_width}`);
+    if (window_width < 500 + 40 + 60 + 30) {
+        piece_width = (window_width - 40 - 60 - 20) / 2;
+        if (debug) console.log(`PIECE WIDTH: ${piece_width}`)
+    }
 
-  //var leftover_width = window_width % (piece_width + (border_margin * 2) + 30);
-  var margin = leftover_width / 2;
+    var max_columns = Math.trunc(window_width / (piece_width + (border_margin * 2) + inner_margin));
+    if (debug) console.log(`COLUMNS: ${max_columns}`);
 
-  if (debug) console.log(`LEFT MARGIN: ${margin} | MAIN: ${gallery_width} | RIGHT MARGIN: ${window_width - gallery_width -margin}`)
-  
-  var [cur_x, cur_y] = [margin, inner_margin];
-  var [row, col] = [0, 0];
+    var gallery_width = ((piece_width + (border_margin * 2)) * max_columns) + (10 * max_columns);
+    if (max_columns < 3) gallery_width -= 20;
+    
+    var leftover_width = window_width - gallery_width;
+    if (debug) console.log(`GALLERY WIDTH: ${gallery_width} | LEFTOVER: ${leftover_width}`);
 
-  var row_starting_height = inner_margin;
-  var skip_col = false;
+    //var leftover_width = window_width % (piece_width + (border_margin * 2) + 30);
+    var margin = leftover_width / 2;
 
-  var column_bottom_list = [];
+    if (debug) console.log(`LEFT MARGIN: ${margin} | MAIN: ${gallery_width} | RIGHT MARGIN: ${window_width - gallery_width -margin}`)
+    
+    var [cur_x, cur_y] = [margin, inner_margin];
+    var [row, col] = [0, 0];
 
-  if (piece_list != null && piece_list.length > 0) {
-      var piece_list_length = piece_list.length;
+    var row_starting_height = inner_margin;
+    var skip_col = false;
 
-      if (debug) console.log(`PIECE LIST LENGTH: ${piece_list_length}`)
+    var column_bottom_list = [];
 
-      var i = 0; var real_i = 0;
-      var current_piece = 0;
-      while (i < piece_list_length) {
-          var current_piece_json =  piece_list[i];
+    if (piece_list != null && piece_list.length > 0) {
+        var piece_list_length = piece_list.length;
 
-          var o_id            = current_piece_json['o_id'];
-          var class_name      = current_piece_json['class_name'];
-          var image_path      = current_piece_json['image_path'];
-          var title           = current_piece_json['title'];
-          var description     = current_piece_json['description'];
-          var sold            = current_piece_json['sold'];
-          var [width, height] = [current_piece_json['width'], current_piece_json['height']];
+        if (debug) console.log(`PIECE LIST LENGTH: ${piece_list_length}`)
 
-          if (debug) console.log(`Width: ${width} | Height: ${height}`);
-          
-          var [scaled_width, scaled_height] = [piece_width, height];
-          scaled_height = (piece_width / width) * height;
+        var i = 0; var real_i = 0;
+        var current_piece = 0;
+        while (i < piece_list_length) {
+            var current_piece_json =  piece_list[i];
 
-          if (debug) console.log(`Scaled Width: ${scaled_width} | Scaled Height: ${scaled_height}`);
+            var o_id            = current_piece_json['o_id'];
+            var class_name      = current_piece_json['class_name'];
+            var image_path      = current_piece_json['image_path'];
+            var title           = current_piece_json['title'];
+            var description     = current_piece_json['description'];
+            var sold            = current_piece_json['sold'];
+            var [width, height] = [current_piece_json['width'], current_piece_json['height']];
 
-          real_i = (row * max_columns) + col;
-          var index = real_i % max_columns;
-          if (debug) console.log(`CURRENT INDEX: ${index} | COL: ${col} | ROW: ${row}`);
-          
-          if (debug) console.log(column_bottom_list);
-          if (debug) console.log(`LAST COLUMN BOTTOM: ${column_bottom_list[index]}`);
+            if (debug) console.log(`Width: ${width} | Height: ${height}`);
+            
+            var [scaled_width, scaled_height] = [piece_width, height];
+            scaled_height = (piece_width / width) * height;
 
-          if (row > 0) cur_y = column_bottom_list[index];
-          else         column_bottom_list.push(inner_margin);
+            if (debug) console.log(`Scaled Width: ${scaled_width} | Scaled Height: ${scaled_height}`);
 
-          if (col == 0) {
-              row_starting_height = column_bottom_list[index] + inner_margin;
+            real_i = (row * max_columns) + col;
+            var index = real_i % max_columns;
+            if (debug) console.log(`CURRENT INDEX: ${index} | COL: ${col} | ROW: ${row}`);
+            
+            if (debug) console.log(column_bottom_list);
+            if (debug) console.log(`LAST COLUMN BOTTOM: ${column_bottom_list[index]}`);
 
-              if (row_starting_height > column_bottom_list[index + 1] + inner_margin) {
-                  skip_col = true;
-              }
-              else {
-                  skip_col = false;
-              }
-          }
-          else {
-              if (cur_y > row_starting_height) {
-                  if (debug) console.log("Y from last row intercepts current row.  Skipping column...");
-                  skip_col = true;
+            if (row > 0) cur_y = column_bottom_list[index];
+            else         column_bottom_list.push(inner_margin);
 
-              }
-              else skip_col = false;
-          }
+            if (col == 0) {
+                row_starting_height = column_bottom_list[index] + inner_margin;
 
-          if (skip_col == true) {
-              if (col < max_columns - 1) {
-                  col += 1;
-                  cur_x += piece_width + inner_margin;
-              }
-              else {
-                  [row, col] = [(row + 1), 0];
-                  [cur_x, cur_y] = [margin, 0];
-              }
-          }
-          else if (skip_col == false) {
-              if (debug) console.log(`Current X: ${cur_x} | Current Y: ${cur_y}`);
+                if (row_starting_height > column_bottom_list[index + 1] + inner_margin) {
+                    skip_col = true;
+                }
+                else {
+                    skip_col = false;
+                }
+            }
+            else {
+                if (cur_y > row_starting_height) {
+                    if (debug) console.log("Y from last row intercepts current row.  Skipping column...");
+                    skip_col = true;
 
-              column_bottom_list[index] = column_bottom_list[index] + scaled_height + inner_margin;
-              if (debug) console.log(`CURRENT BOTTOM (${index}): ${column_bottom_list[index]}` );
+                }
+                else skip_col = false;
+            }
 
-              var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
+            if (skip_col == true) {
+                if (col < max_columns - 1) {
+                    col += 1;
+                    cur_x += piece_width + inner_margin;
+                }
+                else {
+                    [row, col] = [(row + 1), 0];
+                    [cur_x, cur_y] = [margin, 0];
+                }
+            }
+            else if (skip_col == false) {
+                if (debug) console.log(`Current X: ${cur_x} | Current Y: ${cur_y}`);
 
-              pieces.push(<Piece key={i} id={`piece-${i}`} o_id={o_id}
-                                myClick={piece_clicked}
-                                className={class_name} 
-                                image_path={image_path}
-                                dimensions={dimensions}
-                                title={title} 
-                                description={description}
-                                sold={sold}/>);
-              
-              if (debug) console.log(`CUR COL: ${col} | MAX COL: ${max_columns}`)
-              if ( col < max_columns - 1 ) {
-                  cur_x += scaled_width + inner_margin;
-                  col += 1;
-              }
-              else {
-                  [row, col] = [(row + 1), 0];
-                  [cur_x, cur_y] = [margin, 0];
+                column_bottom_list[index] = column_bottom_list[index] + scaled_height + inner_margin;
+                if (debug) console.log(`CURRENT BOTTOM (${index}): ${column_bottom_list[index]}` );
 
-                  if (debug) console.log('####################################################################');
-                  if (debug) console.log("GOING TO NEXT ROW");
-              }
+                var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
 
-              i += 1;
-              current_piece += 1;
-          } 
-          if (debug) console.log('--------------------------------------------------------------------');
-      }
-  }
-  else {
-      console.log("Screenshot list length = 0");
-  }
+                pieces.push(<Piece key={i} id={`piece-${i}`} o_id={o_id}
+                                    myClick={piece_clicked}
+                                    className={class_name} 
+                                    image_path={image_path}
+                                    dimensions={dimensions}
+                                    title={title} 
+                                    description={description}
+                                    sold={sold}/>);
+                
+                if (debug) console.log(`CUR COL: ${col} | MAX COL: ${max_columns}`)
+                if ( col < max_columns - 1 ) {
+                    cur_x += scaled_width + inner_margin;
+                    col += 1;
+                }
+                else {
+                    [row, col] = [(row + 1), 0];
+                    [cur_x, cur_y] = [margin, 0];
 
-  var lowest_height = 0;
-  for (i = 0; i < column_bottom_list.length; i++) {
-      if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
-  }
-  if (debug) console.log("Lowest: " + lowest_height);
+                    if (debug) console.log('####################################################################');
+                    if (debug) console.log("GOING TO NEXT ROW");
+                }
 
-  //pieces.push(<div id="space_" style={{position: 'absolute', height: '10px', width: '100%', top: lowest_height, left: 0}}></div>)
+                i += 1;
+                current_piece += 1;
+            } 
+            if (debug) console.log('--------------------------------------------------------------------');
+        }
+    }
+    else {
+        console.log("Screenshot list length = 0");
+    }
 
-  if (window_width < 600) lowest_height = lowest_height + 60;
+    var lowest_height = 0;
+    for (i = 0; i < column_bottom_list.length; i++) {
+        if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
+    }
+    if (debug) console.log("Lowest: " + lowest_height);
 
-  return (
-    <PageLayout>
-      <div className={styles.gallery_container}>
-        <div className={styles.gallery_body} style={{height: lowest_height}}>
-          {pieces}
-        </div>
-      </div>
-    </PageLayout>
-  )
+    //pieces.push(<div id="space_" style={{position: 'absolute', height: '10px', width: '100%', top: lowest_height, left: 0}}></div>)
+
+    if (window_width < 600) lowest_height = lowest_height + 60;
 }
 
 function piece_clicked(e) {
