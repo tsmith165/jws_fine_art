@@ -1,28 +1,26 @@
 @import "../theme/theme";
 
-.topnav {
-    background-color: $primary;
-    overflow: hidden;
-}
+.navbar { padding: 0 !important; overflow: hidden; background-color: $secondary;  }
+.navbar_container { height: 100px; width: 100%; overflow: hidden;  }
 
-/* Style the links inside the navigation bar */
-.topnav a {
-    float: left;
-    color: $light;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
-}
+    .navbar_logo { padding: 0; width: 250px; height: 100% !important; position: relative; }
+        .navbar_logo_img { min-height: 80px; padding: 10px !important; }
 
-/* Change the color of links on hover */
-.topnav a:hover {
-    background-color: $light;
-    color: $dark;
-}
+    .navbar_menu_container { position: fixed; top: 0px; left: 150px; width: calc(100vw - 150px) !important; height: 100px; padding: 0; }
+        .navbar_menu { height: 50px; display: flex; flex-direction: row; }
+            .navbar_button { max-height: 49px; width: 100px; line-height: 48px; color: var(--turquoise-3); 
+                                background-color: transparent; border: none; font-weight: bold; }
+            .navbar_button:focus {   outline: none; box-shadow: none; }
+            .navbar_button:hover { background-color: $secondary; color: var(--blue-6); }
 
-/* Add a color to the active/current link */
-.topnav a.active {
-    background-color: $highlight;
-    color: $light;
-}
+            .navbar_button-selected { background-color: $secondary; color: var(--blue-6); }
+                .navbar_button-top { margin-bottom: 1px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
+                .navbar_button-bottom { margin-top: 1px; border-top-left-radius: 5px; border-top-right-radius: 5px; }
+                    .menu_item { display: inline-block; }
+    
+    .menu_button_container { }
+        .hamburger_button { position: fixed; top: 50px; right: 0; width: 50px !important; height: 50px !important; padding: 10px; border-top-left-radius: 5px; 
+                            background-color: $secondary !important; fill: $light !important; }
+        
+        .hamburger_button:hover { background-color: $dark !important; fill: $secondary !important; }
+
