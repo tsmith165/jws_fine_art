@@ -9,11 +9,14 @@ import styles from '../styles/Home.module.scss'
 import useWindowSize from '../lib/useWindowSize'
 
 export default function Home({piece_list}) {
-    const [session, loading] = useSession()
+    const { data: session, status } = useSession()
 
     var window_size = useWindowSize()
 
-    if (session == true) {
+    if (status === 'loading') {
+        return <h1>Loading...</h1>;
+    }
+    if (status == true) {
         console.log("Session returned true")
         var pieces = get_pieces(pieces, window_size);
     
