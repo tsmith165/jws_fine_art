@@ -1,11 +1,10 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../../../lib/prisma'
 import NextAuth from "next-auth";
-import Providers from "next-auth/providers";
-const prisma = new PrismaClient();
+import GoogleProvider from "next-auth/providers/google";
+
 export default NextAuth({
   providers: [
-    Providers.Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
