@@ -11,6 +11,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     res.status(500);
     res.json({ error: "Unable to fetch pieces" })
   } finally {
-    await prisma.$disconnect();
+    //await prisma.$disconnect();
+    console.log("End Pieces API Call");
+    res.end();
   }
 }
