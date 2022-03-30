@@ -5,22 +5,31 @@
 
     .navbar_logo { padding: 0; width: 250px; height: 100% !important; position: relative; }
         .navbar_logo_img { min-height: 80px; padding: 10px !important; }
-
-    .navbar_menu_container { position: fixed; top: 0px; left: 150px; width: calc(100vw - 150px) !important; height: 100px; padding: 0; }
-        .navbar_menu { height: 50px; display: flex; flex-direction: row; }
-            .navbar_button { max-height: 49px; width: 100px; line-height: 48px; color: var(--turquoise-3); 
-                                background-color: transparent; border: none; font-weight: bold; }
-            .navbar_button:focus {   outline: none; box-shadow: none; }
-            .navbar_button:hover { background-color: $secondary; color: var(--blue-6); }
-
-            .navbar_button-selected { background-color: $secondary; color: var(--blue-6); }
-                .navbar_button-top { margin-bottom: 1px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
-                .navbar_button-bottom { margin-top: 1px; border-top-left-radius: 5px; border-top-right-radius: 5px; }
-                    .menu_item { display: inline-block; }
     
     .menu_button_container { }
         .hamburger_button { position: fixed; top: 50px; right: 0; width: 50px !important; height: 50px !important; padding: 10px; border-top-left-radius: 5px; 
                             background-color: $secondary !important; fill: $light !important; }
         
-        .hamburger_button:hover { background-color: $dark !important; fill: $secondary !important; }
+        .hamburger_button:hover { background-color: $light !important; fill: $secondary !important; }
 
+        .account_button { position: fixed; top: 50px; right: 50px; width: 50px !important; height: 50px !important; padding: 10px; 
+            background-color: $secondary !important; fill: $light !important; border-top-left-radius: 5px; border-top-right-radius: 5px;  }
+
+        .account_button:hover { background-color: $light !important; fill: $secondary !important; }
+
+
+    .account_container:hover > .account_menu_container { display: block; }
+    
+    .account_menu_container { display: none; position: absolute; z-index: 100; top: 100px; right: 0px; background-color: $secondary; width: 300px; height: 200px; border-bottom-left-radius: 10px;  }
+
+    .account_menu_body { padding: 0 !important; }
+
+        .account_menu_header { background-color: $primary; height: 50px; border-left: 2px solid $secondary; padding: 10px; color: $light; font-weight: bold; line-height: 25px; }
+            .account_name {   }
+
+            .account_auth_button { background-color: $primary; border: 2px solid $light; color: $light; padding: 5px 5px; border-radius: 3px; position: absolute; right: 10px; top: 10px; font-weight: bold;  }
+            .account_auth_button:hover { background-color: $light; color: $primary; }
+            
+        .account_menu_body { height: calc(100% - 50px); padding: 10px;  }
+            
+            .role_container { padding: 5px; color: $light; }
