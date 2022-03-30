@@ -4,7 +4,9 @@ import PageLayout from '../src/components/layout/PageLayout'
 import styles from '../styles/Menu.module.scss'
 import MenuButton from '../src/components/MenuButton';
 
-import { menu_list } from "../lib/menu_list";
+import { admin_menu_list, menu_list } from "../lib/menu_list";
+
+import { useSession } from '../lib/next-auth-react-query';
 
 function generate_menu(menu_list) {
     var menu_items = [];
@@ -29,10 +31,39 @@ function generate_menu(menu_list) {
 }
 
 const Menu = ({}) => {
+    const [session, loading] = useSession({
+        required: false,
+        queryConfig: {
+          staleTime: 60 * 1000 * 60 * 3, // 3 hours
+          refetchInterval: 60 * 1000 * 5, // 5 minutes
+        },
+    });
+
+    var using_menu = [];
+    if (loading) {
+        using_menu = menu_list;
+    } else {
+      if (session) {
+        console.log("Session (Next Line):");
+        console.log(session)
+  
+        console.log(`User Role: ${session.token?.role}`)
+  
+        if ( session.token?.role && session.token?.role == 'ADMIN' ) {
+            using_menu = admin_menu_list;
+        } else {
+            using_menu = menu_list;
+        }
+      } else {
+        using_menu = menu_list;
+      }
+    }
+
+
     console.log("Menu List (Next Line):");
-    console.log(menu_list);
+    console.log(using_menu);
         
-    var menu_items = generate_menu(menu_list);
+    var menu_items = generate_menu(using_menu);
 
     return (
         <PageLayout>
