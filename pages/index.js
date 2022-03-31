@@ -14,7 +14,6 @@ export default function Home({piece_list}) {
   console.log(piece_list);
 
   const debug = true;
-  const stop_where_debugged_at = true;
 
   var pieces = [];
   var piece_width = 250;
