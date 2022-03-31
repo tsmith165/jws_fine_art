@@ -131,6 +131,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
                 </div>
 
                 <div className={styles.submit_container}>
+                    <button type="button" className={styles.upload_button}>Upload</button>
                     <button type="submit" className={styles.submit_button}>Submit</button>
                     <div className={styles.loader_container}>
                         {loading == false ? ( 
