@@ -1,59 +1,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import Menu from './Menu'
+import Profile from './Profile'
 import styles from "../../../styles/Navbar.module.scss"
 
-import { signIn, signOut } from 'next-auth/react';
 import { useSession } from '../../../lib/next-auth-react-query';
 
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
-function generate_good_session(session) {
-    var account_menu_jsx = (
-        <div className={styles.account_menu}>
-            <div className={styles.account_menu_header}>
-                <div className={styles.account_name}>
-                    {session.token?.email}
-                </div>
-                <button type="button" className={styles.account_auth_button} onClick={() => signOut()}>
-                    Sign out
-                </button>
-            </div>
-            <div className={styles.account_menu_body}>
-                <div className={styles.role_container}>
-                    {
-                        session.token?.role ? 
-                        <b>Role: {session.token?.role}</b> :
-                        <b>Role: Default</b>
-                    }
-                    
-                </div>
-            </div>
-        </div>
-    );
-    return account_menu_jsx
-}
-
-function generate_bad_session() {
-    var account_menu_jsx = (
-        <div className={styles.account_menu}>
-            <div className={styles.account_menu_header}>
-                <div className={styles.account_name}>
-                    Not signed in <br />
-                </div>
-                <Link href={'/signin'} passHref={true}> 
-                <button type="button" className={styles.account_auth_button}>
-                    Sign in
-                </button>
-                </Link>
-            </div>
-            <div className={styles.account_menu_body}>
-
-            </div>
-        </div>
-    );
-    return account_menu_jsx
-}
 
 const Navbar = ({}) => {
     const [session, loading] = useSession({
@@ -65,18 +19,30 @@ const Navbar = ({}) => {
     });
 
     var account_menu_jsx = null;
+    var page_menu_jsx = null;
+
     if (loading) {
         console.log("Generating bad session menu...")
-        account_menu_jsx = generate_bad_session();
+        page_menu_jsx = <Menu sesssion={null}/>
 
-        console.log(account_menu_jsx)
+        console.log("Generating good session profile...")
+        //account_menu_jsx = generate_bad_session();
+        account_menu_jsx = <Profile session={null}/>
     } else {
         if (session) {
             console.log("Generating good session menu...")
-            account_menu_jsx = generate_good_session(session)
+            page_menu_jsx = <Menu sesssion={session}/>
+
+            console.log("Generating good session profile...")
+            //account_menu_jsx = generate_good_session(session)
+            account_menu_jsx = <Profile session={session}/>
         } else {
             console.log("Generating bad session menu...")
-            account_menu_jsx = generate_bad_session()
+            page_menu_jsx = <Menu sesssion={null}/>
+
+            console.log("Generating bad session profile...")
+            //account_menu_jsx = generate_bad_session()
+            account_menu_jsx = <Profile session={null}/>
         }
     }
 
@@ -92,7 +58,7 @@ const Navbar = ({}) => {
                 </Link>
 
 
-                <div className={styles.account_container}>
+                <div className={styles.account_menu_full_container}>
                     { use_account_icon_as_link === true ? (
                             <Link href="/signin" passHref={true}>
                                 <div className={styles.menu_button_container}>
@@ -112,13 +78,18 @@ const Navbar = ({}) => {
                         </div>
                     </div>
                 </div>
-
-                <Link href="/menu" passHref={true}>
+                
+                <div className={styles.page_menu_full_container}>
                     <div className={styles.menu_button_container}>
                         <MenuRoundedIcon className={styles.hamburger_button} />
                     </div>
-                </Link>
-            
+
+                    <div className={styles.page_menu_container}>
+                        <div className={styles.page_menu_body}>
+                            {page_menu_jsx}
+                        </div>
+                    </div>
+                </div>
             </div>
         </nav>
     )
