@@ -18,7 +18,7 @@
         .account_button:hover { background-color: $light !important; fill: $secondary !important; }
 
 
-    .account_container:hover > .account_menu_container { display: block; }
+    .account_menu_full_container:hover > .account_menu_container { display: block; }
     
     .account_menu_container { display: none; position: absolute; z-index: 100; top: 100px; right: 0px; background-color: $secondary; width: 300px; height: 200px; border-bottom-left-radius: 10px;  }
 
@@ -33,3 +33,9 @@
         .account_menu_body { height: calc(100% - 50px); padding: 10px;  }
             
             .role_container { padding: 5px; color: $light; }
+
+    // Page Menu Overlay
+    .page_menu_full_container:hover > .page_menu_container { display: block; }
+    .page_menu_container { display: none; position: absolute; z-index: 100; top: 100px; right: 0px; background-color: $light; width: 200px; height: fit-content; 
+        border-bottom-left-radius: 10px; }
+    .page_menu_body { padding: 0 !important; }
