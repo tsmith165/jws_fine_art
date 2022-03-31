@@ -1,0 +1,27 @@
+@import "../theme/theme";
+
+.full_sign_in_container { width: 100vw; min-height: calc(100% - 100px); height: calc(100% - 100px); 
+                  position: absolute; top: 100px; left: 0px; background-color: $light; }
+
+.sign_in_container { background-color: $primary; width: 400px; height: fit-content; position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto; border-radius: 5px; }
+
+.sign_in_header { background-color: $secondary; height: 50px; border-radius: 5px 5px 0px 0px; }
+    .sign_in_header_title { color: $light; font-size: 24px; line-height: 50px; text-align: center; font-weight: bold; }
+
+.sign_in_body { border-radius: 0px 0px 5px 5px; }
+
+.email_form_container { padding: 10px; }
+
+.email_input_container { width: 100%; display: flex; flex-direction: row; margin-bottom: 10px; }
+.email_label { color: $light; font-size: 18px; font-weight: bold; margin-right: 10px; }
+.email_input { padding: 5px 10px; box-sizing: border-box; border-radius: 5px; flex: 2; background-color: $light !important; color: $secondary; }
+
+.submit_container { height: 40px; display: flex; flex-direction: row; }
+
+.sign_in_button { padding: 10px 20px; background-color: $light; border: 2px solid $secondary; color: $secondary; border-radius: 5px; font-weight: bold; margin-right: 10px;  }
+.sign_in_button:hover { background-color: $secondary; border: 2px solid $light; color: $light; }
+
+.loader_container { height: 100%; display: flex; justify-content: center; align-items: center; }
+.loader { height: 25px !important; width: 25px !important;  }
+
+.sent_label { font-size: 16px; font-weight: 500; color: $light; }
