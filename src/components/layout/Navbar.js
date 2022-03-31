@@ -4,48 +4,10 @@ import Menu from './Menu'
 import Profile from './Profile'
 import styles from "../../../styles/Navbar.module.scss"
 
-import { useSession } from '../../../lib/next-auth-react-query';
-
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 const Navbar = ({}) => {
-    const [session, loading] = useSession({
-        required: false,
-        queryConfig: {
-          staleTime: 60 * 1000 * 60 * 3, // 3 hours
-          refetchInterval: 60 * 1000 * 5, // 5 minutes
-        },
-    });
-
-    var account_menu_jsx = null;
-    var page_menu_jsx = null;
-
-    if (loading) {
-        console.log("Generating bad session menu...")
-        page_menu_jsx = <Menu sesssion={null}/>
-
-        console.log("Generating good session profile...")
-        //account_menu_jsx = generate_bad_session();
-        account_menu_jsx = <Profile session={null}/>
-    } else {
-        if (session) {
-            console.log("Generating good session menu...")
-            page_menu_jsx = <Menu sesssion={session}/>
-
-            console.log("Generating good session profile...")
-            //account_menu_jsx = generate_good_session(session)
-            account_menu_jsx = <Profile session={session}/>
-        } else {
-            console.log("Generating bad session menu...")
-            page_menu_jsx = <Menu sesssion={null}/>
-
-            console.log("Generating bad session profile...")
-            //account_menu_jsx = generate_bad_session()
-            account_menu_jsx = <Profile session={null}/>
-        }
-    }
-
     const use_account_icon_as_link = true;
 
     return (
@@ -74,7 +36,7 @@ const Navbar = ({}) => {
 
                     <div className={styles.account_menu_container}>
                         <div className={styles.account_menu_body}>
-                            {account_menu_jsx}
+                            <Profile />
                         </div>
                     </div>
                 </div>
@@ -86,7 +48,7 @@ const Navbar = ({}) => {
 
                     <div className={styles.page_menu_container}>
                         <div className={styles.page_menu_body}>
-                            {page_menu_jsx}
+                            <Menu />
                         </div>
                     </div>
                 </div>

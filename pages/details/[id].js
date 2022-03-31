@@ -4,10 +4,7 @@ import Image from 'next/image'
 import styles from '../../styles/Details.module.scss'
 import { prisma } from '../../lib/prisma'
 
-import { useEffect } from 'react'
 import Link from 'next/link'
-
-import { useQuery, useMutation, queryCache } from 'react-query';
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
@@ -19,23 +16,6 @@ function getPieceId(PathOID, pieces) {
     for (var i=0; i < pieces.length; i++) {
         if (pieces[i]['o_id'].toString() == PathOID.toString()) {
             return i
-        }
-    }
-}
-
-function findNextPiece(dir, curOID, pieces) {
-    //console.log("Pieces:")
-    //console.log(pieces)
-    //console.log(`Cur OID: ${curOID}`)
-
-    for (var i=0; i < pieces.length; i++) {
-        if (pieces[i]['o_id'].toString() == curOID.toString()) {
-            console.log(`Cur INDEX: ${i}`)
-            var newID = (dir == true) ? (i - 1) : (i + 1)
-            if (newID >= pieces.length || newID < 0) {
-                newID = (dir == true) ? (pieces.length - 1) : 0 
-            }
-            return pieces[newID]
         }
     }
 }
