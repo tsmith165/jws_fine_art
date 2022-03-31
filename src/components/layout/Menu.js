@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { useSession } from '../../../lib/next-auth-react-query';
+
 import styles from "../../../styles/Navbar.module.scss"
 
 import MenuOverlayButton from '../MenuOverlayButton';
@@ -27,24 +29,35 @@ function generate_menu(menu_list) {
     return menu_items
 }
 
-const Menu = ({ session }) => {
+const Menu = ({ }) => {
+    const [session, loading] = useSession({
+        required: false,
+        queryConfig: {
+          staleTime: 60 * 1000 * 60 * 3, // 3 hours
+          refetchInterval: 60 * 1000 * 5, // 5 minutes
+        },
+    });
+
     var using_menu = [];
 
-    if (session) {
-        console.log("Session (Next Line):");
-        console.log(session)
-  
+    if (loading) {
+        console.log("Loading - Generating DEFAULT menu...")
+        using_menu = menu_list;
+
+    } else if (session) {
         console.log(`User Role: ${session.token?.role}`)
   
         if ( session.token?.role && session.token?.role == 'ADMIN' ) {
+            console.log("ADMIN Role Found - Generating ADMIN menu...")
             using_menu = admin_menu_list;
         } else {
+            console.log("Non-ADMIN Role Found - Generating DEFAULT menu...")
             using_menu = menu_list;
         }
     } else {
+        console.log("No Session - Generating DEFAULT menu...")
         using_menu = menu_list;
     }
-
 
     console.log("Menu List (Next Line):");
     console.log(using_menu);
