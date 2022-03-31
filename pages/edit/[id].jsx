@@ -1,19 +1,11 @@
 import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
-
-import styles from '../../styles/Details.module.scss'
 import { prisma } from '../../lib/prisma'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
+import styles from '../../styles/Details.module.scss'
 
-import { useQuery, useMutation, queryCache } from 'react-query';
+import EditDetailsForm from '../../src/components/EditDetailsForm'
 
-import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
-import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
-
-//const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com";
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
 function getPieceId(PathOID, pieces) {
@@ -23,42 +15,6 @@ function getPieceId(PathOID, pieces) {
         }
     }
 }
-
-function findNextPiece(dir, curOID, pieces) {
-    //console.log("Pieces:")
-    //console.log(pieces)
-    //console.log(`Cur OID: ${curOID}`)
-
-    for (var i=0; i < pieces.length; i++) {
-        if (pieces[i]['o_id'].toString() == curOID.toString()) {
-            console.log(`Cur INDEX: ${i}`)
-            var newID = (dir == true) ? (i - 1) : (i + 1)
-            if (newID >= pieces.length || newID < 0) {
-                newID = (dir == true) ? (pieces.length - 1) : 0 
-            }
-            return pieces[newID]
-        }
-    }
-}
-
-function nextClicked(dir, curOID, pieces, router) {
-    const nextPiece = findNextPiece(dir, curOID, pieces)
-    //console.log(`New Piece:`)
-    //console.log(nextPiece)
-    const newOID = nextPiece['o_id']
-
-    router.push(`/details/${newOID}`)
-}
-
-function editClicked(piece) {
-    //console.log("Editing Piece (Next Line):")
-    //console.log(piece)
-}
-
-function buyClicked() {
-    //console.log("Buying...")
-}
-
 
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`)
@@ -101,7 +57,7 @@ export const getStaticPaths = async () => {
     }
 }
 
-const DetailsPage = ({id, pieces}) => {
+const EditPage = ({id, pieces}) => {
     var PathOID = id;
     var pieceID = getPieceId(PathOID, pieces);
     console.log(`Piece ID: ${pieceID}`)
@@ -129,17 +85,8 @@ const DetailsPage = ({id, pieces}) => {
                     </div>
                 </div>
                 <div className={styles.detailsContainerRight}>
-                    <div className={styles.detailsTitleContainer}>
-                        <Link href={`/details/${last_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`} />
-                        </Link>
-                        <b className={styles.detailsTitle}>{piece['title']}</b>
-                        <Link href={`/details/${next_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}  />
-                        </Link>
-                    </div>
 
-                    {  /* Put the form shit here */  }
+                    <EditDetailsForm id={id} last_oid={last_oid} next_oid={next_oid} piece={piece}/>
 
                 </div>
             </div>
@@ -147,4 +94,4 @@ const DetailsPage = ({id, pieces}) => {
     )
 }
 
-export default DetailsPage
+export default EditPage
