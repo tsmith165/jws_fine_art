@@ -1,7 +1,9 @@
 import Link from 'next/link'
-import styles from "../../../styles/Navbar.module.scss"
 
+import { useSession } from '../../../lib/next-auth-react-query';
 import { signIn, signOut } from 'next-auth/react';
+
+import styles from "../../../styles/Navbar.module.scss"
 
 function generate_good_session(session) {
     var account_menu_jsx = (
@@ -50,14 +52,27 @@ function generate_bad_session() {
     return account_menu_jsx
 }
 
-const Profile = ({ session }) => {
+const Profile = ({ }) => {
+    const [session, loading] = useSession({
+        required: false,
+        queryConfig: {
+          staleTime: 60 * 1000 * 60 * 3, // 3 hours
+          refetchInterval: 60 * 1000 * 5, // 5 minutes
+        },
+    });
+
+    console.log("Creating Profile Overlay...")
+
+    console.log("Profile Session (Next Line):");
+    console.log(session)
+
     var account_menu_jsx = null;
-    if (session == null) {
-        account_menu_jsx = generate_bad_session();
+    if (session) {
+        account_menu_jsx = generate_good_session(session);
     } else {
         //console.log(`User Role: ${session.token?.role}`)
         //if ( session.token?.role && session.token?.role == 'ADMIN' ) {
-        account_menu_jsx = generate_good_session(session);
+        account_menu_jsx = generate_bad_session();
     }
 
     return ( account_menu_jsx )
