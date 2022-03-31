@@ -1,0 +1,40 @@
+@import "../theme/theme";
+
+// main user tree body
+.user_tree_body { width: 100%; height: 100%; position: relative; border: 2px solid $secondary; border-radius: 5px; }
+
+// tree list header
+.tree_list_header_container { }
+.tree_list_header { width: 100%; height: 40px; border-top-left-radius: 5px; border-top-right-radius: 5px; background-color: $secondary; }
+
+// tree list item
+.tree_list_item_container { }
+.tree_list_item { width: 100%; height: 45px; padding-top: 2.5px;  }
+.tree_list_item:first-of-type {   }
+.tree_list_item:last-of-type { border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;  } 
+.tree_list_item:hover { background-color: $light;  }
+.tree_list_item:hover > .user_grid { color: $secondary; }
+
+// Grid for user details strings on left side
+.user_grid { color: $light; padding: 7.5px 10px 0px 10px; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); width: fit-content; float: left; }
+    .email_container { width: 200px; display: inline-grid; font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
+
+    .role_container { width: fit-content; display: inline-grid; font-weight: bold; }
+
+// tree list item buttons - 
+.list_item_button { background-color: $primary; border: 2px solid $light; color: $light; border-radius: 5px; padding: 5px 10px; float: right; margin-top: 5px; margin-right: 10px;  }
+.list_item_button:hover { background-color: $light; border: 2px solid $primary;  color: $primary; border-radius: 5px; }
+
+.list_item_header { color: $light; padding: 7.5px 10px; float: right; margin-right: 10px; font-weight: bold; }
+
+    .promote_button { background-color: $success_1; border: 2px solid $success_3; color: $success_3; font-weight: bold; width: 80px; }
+    .promote_button:hover { background-color: $success_3; border: 2px solid $success_1; color: $success_1; }
+
+    .demote_button { background-color: $danger_1; border: 2px solid $danger_3; color: $danger_3; font-weight: bold; width: 80px;  }
+    .demote_button:hover { background-color: $danger_3; border: 2px solid $danger_1; color: $danger_1; }
+
+    .delete_button { background-color: $danger_1; border: 2px solid $danger_3; color: $danger_3; font-weight: bold;  }
+    .delete_button:hover { background-color: $danger_3; border: 2px solid $danger_1; color: $danger_1; }
+
+
+

@@ -5,9 +5,9 @@ const PageLayout = (props) => {
     return (
         <div className={styles.container}>
             <Head>
-                <title>Generic Auth</title>
-                <meta name="description" content="Generic Auth" />
-                <link rel="icon" href="/favicon.ico" />
+                <title>JWS Fine Art</title>
+                <meta name="description" content="JWS Fine Art" />
+                <link rel="icon" href="/JWS_ICON.png" />
             </Head>
 
             <main className={styles.main}>
