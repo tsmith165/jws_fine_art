@@ -5,6 +5,7 @@ import styles from '../../styles/Details.module.scss'
 import { prisma } from '../../lib/prisma'
 
 import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 import { useQuery, useMutation, queryCache } from 'react-query';
@@ -38,6 +39,15 @@ function findNextPiece(dir, curOID, pieces) {
             return pieces[newID]
         }
     }
+}
+
+function nextClicked(dir, curOID, pieces, router) {
+    const nextPiece = findNextPiece(dir, curOID, pieces)
+    //console.log(`New Piece:`)
+    //console.log(nextPiece)
+    const newOID = nextPiece['o_id']
+
+    router.push(`/details/${newOID}`)
 }
 
 function editClicked(piece) {
@@ -100,14 +110,6 @@ const DetailsPage = ({id, pieces}) => {
     const pieces_length = pieces.length;
     var next_oid = (pieceID + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[pieceID + 1]['o_id'];
     var last_oid = (pieceID - 1 < 1)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
-    
-    var sold_html = null;
-    if      (piece["sold"] == "True")  sold_html = <b className={styles.pieceSold}>Sold</b>;
-    else if (piece["sold"] == "False") sold_html = <button className={styles.buyButton} onClick={buyClicked()}>Buy Now</button>
-    else if (piece["sold"] == "NFS")   sold_html = <b className={styles.pieceNFS}>Not For Sale</b>;
-
-    var price_html = null;
-    if (piece["sold"] == "False") price_html = <b className={styles.priceText}>${piece['price']}</b>;
 
     return (
         <PageLayout>
@@ -136,14 +138,9 @@ const DetailsPage = ({id, pieces}) => {
                             <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}  />
                         </Link>
                     </div>
-                    <div className={styles.detailsDescriptionContainer}>
-                        <h3 className={styles.detailsDescription}>{piece['description'].replace("<br>", "\n")}</h3>
-                    </div>
-                    <div className={styles.detailsNavigationContainer}>
-                        <button className={styles.editButton} onClick={editClicked(piece)}>Edit Piece</button>
-                        {sold_html}
-                        {price_html}
-                    </div>
+
+                    {  /* Put the form shit here */  }
+
                 </div>
             </div>
         </PageLayout>
