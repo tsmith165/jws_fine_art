@@ -65,7 +65,7 @@
 
 .submit_container { padding: 10px 15px; display: flex; flex-direction: row; }
 
-.submit_button { padding: 5px 10px; background-color: $primary; border: 2px solid $secondary; color: $light; border-radius: 5px; font-weight: bold; margin-right: 10px;  }
+.submit_button { padding: 5px 10px; background-color: $primary; border: 2px solid $secondary; color: $light; border-radius: 5px; font-weight: bold; margin-right: 10px; }
 .submit_button:hover { background-color: $secondary; border: 2px solid $secondary; color: $light; }
 
 .loader_container { height: 100%; display: flex; justify-content: center; align-items: center; }
@@ -73,3 +73,6 @@
 
 .submit_label { color: $light; font-size: 16px; font-weight: bold; line-height: 25px; }
 .submit_label_failed { color: $error; font-size: 16px; font-weight: bold; line-height: 25px; }
+
+.upload_button { padding: 5px 10px; background-color: $primary; border: 2px solid $secondary; color: $light; border-radius: 5px; font-weight: bold; margin-right: 10px; }
+.upload_button:hover { background-color: $secondary; border: 2px solid $secondary; color: $light; }
