@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router'
 
 import { CircularProgress } from '@material-ui/core';
@@ -8,9 +8,11 @@ import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
 
 import styles from '../../styles/EditDetailsForm.module.scss'
 
-import { edit_details } from '../../lib/api_calls'
+import { edit_details, create_piece, upload_image, get_upload_url } from '../../lib/api_calls'
 
-const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
+const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url }) => {
+
+    const file_input_ref = useRef(null);
 
     const router = useRouter()
     const refresh_data = () => {
@@ -20,7 +22,23 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
     const [loading, setLoading] = useState(false)
     const [submitted, setSubmitted] = useState(false)
     const [error, setError] = useState(false)
-    const [description, setDescription] = useState(piece['description'].replace("<br>","\n"))
+    const [uploaded, setUploaded] = useState(false)
+
+    //set_image_url(piece['image_path'])
+
+    console.log("Current Piece Details:")
+    console.log(piece)
+
+    
+    const [description, set_description] = useState(piece['description'].replace("<br>","\n"));
+
+    useEffect(() => {
+        set_description(piece['description'].replace("<br>","\n"))
+    }, [piece['description'].replace("<br>","\n")]);
+
+    useEffect(() => {
+        setUploaded(false)
+    }, [false]);
 
     async function handleSubmit(event) {
         event.preventDefault()
@@ -34,9 +52,9 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
         const type        = event.target.elements.type.value;
         const sold        = event.target.elements.sold.value;
         const price       = event.target.elements.price.value;
-        const width       = event.target.elements.width.value;
-        const height      = event.target.elements.height.value;
-        console.log(`Title: ${title} | Type: ${type} | Sold: ${sold} | Price: ${price} | Width: ${width} | Height: ${height}`)
+        const real_width  = event.target.elements.width.value;
+        const real_height = event.target.elements.height.value;
+        console.log(`Title: ${title} | Type: ${type} | Sold: ${sold} | Price: ${price} | Real Width: ${width} | Height: ${height}`)
         console.log("Description (Next Line):")
         console.log(description)
 
@@ -44,15 +62,30 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
         
         if (title) {
             console.log("Attempting to Edit Piece Details...")
-            const response = await edit_details(id, title, description, type, sold, price, width, height)
+            if (!uploaded) {
+                const response = await edit_details(id, title, description, type, sold, price, real_width, real_height)
     
-            console.log(`Edit Piece Response: ${response}`)
-            
-            setDescription(description.replace("<br>","\n"))
-            refresh_data();
+                console.log(`Edit Piece Response: ${response}`)
+                
+                set_description(description.replace("<br>","\n"))
+                refresh_data();
+
+                if (response) { setError(false); setSubmitted(true); }
+                else { setError(true) }
+            }
+            else {
+                const width = piece["width"];
+                const height = piece["height"];
+                const response = await create_piece(title, description, type, sold, price, real_width, real_height, piece['image_path'], width, height)
     
-            if (response) { setError(false); setSubmitted(true); }
-            else { setError(true) }
+                console.log(`Edit Piece Response: ${response}`)
+                
+                set_description(description.replace("<br>","\n"))
+                refresh_data();
+
+                if (response) { setError(false); setSubmitted(true); }
+                else { setError(true) }
+            }
         }
         else {
             setError(true)
@@ -60,9 +93,56 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
         setLoading(false)
     }
 
+    async function onFileChange(event) {
+        event.preventDefault()
+        console.log("FILE INPUT CHANGED....")
+
+        var selected_file = event.target.files[0];
+        console.log(`Selected File: ${selected_file.name} | Size: ${selected_file.size}`);
+
+        const s3_upload_url = await get_upload_url(selected_file.name.toString().toLowerCase().replace(" ","_"))
+        console.log(`Got Upload URL: ${s3_upload_url}`)
+
+        const new_image_path = await upload_image(s3_upload_url, selected_file)
+        console.log(`Got Upload Reponse: ${new_image_path}`)
+
+        var image = new Image();
+
+        image.src = new_image_path;
+
+        //Validate the File Height and Width.
+        image.onload = function () {
+            console.log(`WIDTH: ${this.width} | HEIGHT: ${this.height}`)
+
+            const new_piece_details = {
+                title: 'Enter Title...',
+                description: 'Enter Description...',
+                sold: '',
+                price: '',
+                width: this.width,
+                height: this.height,
+                real_width: '',
+                real_height: '',
+                image_path: new_image_path
+            }
+    
+            set_piece(new_piece_details)
+            //set_description('')
+            //set_image_url(new_image_path)
+
+            setUploaded(true)
+        };
+
+    }
+
+    function showFileUpload(event) {
+        event.preventDefault();
+        file_input_ref.current.click()
+    }
+
     function updateDescription (event) {
         event.preventDefault();
-        setDescription(event.target.value);
+        set_description(event.target.value);
     }
 
     console.log(`Creating Piece (Next Line):`)
@@ -92,11 +172,11 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
                         <div className={styles.input_label}>Type</div>
                     </div>
                     <select id="type" className={styles.input_select}>
-                        <option defaultValue="Oil On Canvas" selected={ (piece['type'] == "Oil On Canvas") ? true : false }>Oil On Canvas</option>
-                        <option defaultValue="Oil On Cradled Panel" selected={ (piece['type'] == "Oil On Cradled Panel") ? true : false }>Oil On Cradled Panel</option>
-                        <option defaultValue="Intaglio On Paper" selected={ (piece['type'] == "Intaglio On Paper") ? true : false }>Intaglio On Paper</option>
-                        <option defaultValue="Linocut On Paper" selected={ (piece['type'] == "Linocut On Paper") ? true : false }>Linocut On Paper</option>
-                        <option defaultValue="Pastel On Paper" selected={ (piece['type'] == "Pastel On Paper") ? true : false }>Pastel On Paper</option>
+                        <option value="Oil On Canvas" defaultValue={ (piece['type'] == "Oil On Canvas") ? true : false }>Oil On Canvas</option>
+                        <option value="Oil On Cradled Panel" defaultValue={ (piece['type'] == "Oil On Cradled Panel") ? true : false }>Oil On Cradled Panel</option>
+                        <option value="Intaglio On Paper" defaultValue={ (piece['type'] == "Intaglio On Paper") ? true : false }>Intaglio On Paper</option>
+                        <option value="Linocut On Paper" defaultValue={ (piece['type'] == "Linocut On Paper") ? true : false }>Linocut On Paper</option>
+                        <option value="Pastel On Paper" defaultValue={ (piece['type'] == "Pastel On Paper") ? true : false }>Pastel On Paper</option>
                     </select>
                 </div>
                 <div className={styles.input_container}>
@@ -120,18 +200,20 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece }) => {
                         <div className={`${styles.input_label_container} ${styles.input_label_split}`}>
                             <div className={styles.input_label}>Width</div>
                         </div>
-                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="width" defaultValue={piece['width']}/>
+                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="width" defaultValue={piece['real_width']}/>
                     </div> 
                     <div className={`${styles.input_container_split} ${styles.split_right}`}>
                         <div className={`${styles.input_label_container} ${styles.input_label_split}`}>
                             <div className={styles.input_label}>Height</div>
                         </div>
-                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="height" defaultValue={piece['height']}/>
+                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="height" defaultValue={piece['real_height']}/>
                     </div> 
                 </div>
 
                 <div className={styles.submit_container}>
-                    <button type="button" className={styles.upload_button}>Upload</button>
+                    <button type="button" className={styles.upload_button} onClick={showFileUpload} >Upload</button>
+                    <input type="file" ref={file_input_ref} className={styles.upload_file_input} onChange={onFileChange} />
+
                     <button type="submit" className={styles.submit_button}>Submit</button>
                     <div className={styles.loader_container}>
                         {loading == false ? ( 
