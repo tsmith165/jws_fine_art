@@ -8,14 +8,14 @@
         .detailsTitleArrow { fill: $light !important; height: 100% !important; width: 48px !important; padding: 0px 5px !important; }
         .detailsTitleArrow:hover { background-color: $light !important; fill: $secondary !important; }
         
-        .detailsTitle { width: calc(100% - 80px); margin: auto; color: $light;
+        .detailsTitle { width: calc(100% - 80px); margin: auto; color: $light; 
             font-size: 1.4em; line-height: 1.2em; text-align: center; font-family: 'Alegreya Sans SC', sans-serif; }
 
-        .edit_details_title_input { width: calc(100% - 100px); margin: 10px 0px; font-size: 24px; text-align: center;
-            background-color: $light; color: $secondary; border: none; border-radius: 5px;
+        .edit_details_title_input { width: calc(100% - 100px); margin: 10px 10px; font-size: 24px; text-align: center;
+            background-color: $secondary; color: $light; border: none; border-radius: 5px;
             font-family: 'Alegreya Sans SC', sans-serif; font-weight: bold; }
 
-
+        .edit_details_title_input:focus { background-color: $light; color: $secondary; }
 
     .edit_details_description_container { width: 100%; padding: 15px 15px 0px 15px; font-family: 'Lato', sans-serif; }
 
@@ -52,7 +52,6 @@
         .input_select > option { font-weight: bold; font-family: 'Lato', sans-serif; }
     }
 
-
     .input_split { width: 60% !important; }
     .input_label_split { width: 40% !important; padding: 5px 10px; }
 
@@ -60,8 +59,6 @@
     .input_container_split { width: 50%; display: flex; flex-direction: row; margin: 0px; }
     .split_left { padding-right: 7.5px; }
     .split_right { padding-left: 7.5px; }
-
-
 
 .submit_container { padding: 10px 15px; display: flex; flex-direction: row; }
 
@@ -76,3 +73,11 @@
 
 .upload_button { padding: 5px 10px; background-color: $primary; border: 2px solid $secondary; color: $light; border-radius: 5px; font-weight: bold; margin-right: 10px; }
 .upload_button:hover { background-color: $secondary; border: 2px solid $secondary; color: $light; }
+
+.upload_file_input { display: none; }
+
+.imgHorVert {
+    -webkit-transform: scale(-1);
+    -ms-transform: scale(-1);
+        transform: scale(-1);
+}

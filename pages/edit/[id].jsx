@@ -1,6 +1,7 @@
 import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
 import { prisma } from '../../lib/prisma'
+import React, { useState, useEffect } from 'react';
 
 import styles from '../../styles/Details.module.scss'
 
@@ -61,20 +62,50 @@ const EditPage = ({id, pieces}) => {
     var PathOID = id;
     var pieceID = getPieceId(PathOID, pieces);
     console.log(`Piece ID: ${pieceID}`)
-    var piece = pieces[pieceID];
 
     const pieces_length = pieces.length;
     var next_oid = (pieceID + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[pieceID + 1]['o_id'];
     var last_oid = (pieceID - 1 < 1)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
+
+
+    var piece_details = {
+        title:       pieces[pieceID]['title'],
+        description: pieces[pieceID]['description'],
+        sold:        pieces[pieceID]['sold'],
+        price:       pieces[pieceID]['price'],
+        width:       pieces[pieceID]['width'],
+        height:      pieces[pieceID]['height'],
+        real_width:  pieces[pieceID]['real_width'],
+        real_height: pieces[pieceID]['real_height'],
+        image_path:  `${baseURL}${pieces[pieceID]['image_path']}`
+    }
+
+    console.log("CURRENT PIECE DETAILS:")
+    console.log(piece_details)
+
+    var [piece, set_piece] = useState(piece_details)
+
+    useEffect(() => {
+        set_piece(piece_details)
+    }, [id, pieces]);
+
+    var [image_url, set_image_url] = useState(piece['image_path'])
+    
+    useEffect(() => {
+        set_image_url(piece['image_path'])
+    }, [piece['image_path']]);
+
+    console.log(`IMAGE URL : ${image_url}`)
 
     return (
         <PageLayout>
             <div className={styles.detailsContainer}>
                 <div className={styles.detailsContainerLeft}>
                     <div className={styles.detailsImageContainter}>
+
                         <Image
                             className={styles.detailsImage}
-                            src={`${baseURL}${piece['image_path']}`}
+                            src={image_url}
                             alt={piece['title']}
                             width={piece['width']}
                             height={piece['height']}
@@ -82,11 +113,19 @@ const EditPage = ({id, pieces}) => {
                             layout='fill'
                             objectFit='contain'
                         />
+
                     </div>
                 </div>
                 <div className={styles.detailsContainerRight}>
 
-                    <EditDetailsForm id={id} last_oid={last_oid} next_oid={next_oid} piece={piece}/>
+                    <EditDetailsForm 
+                        id={id} 
+                        last_oid={last_oid} 
+                        next_oid={next_oid} 
+                        piece={piece} 
+                        set_piece={set_piece} 
+                        set_image_url={set_image_url}
+                    />
 
                 </div>
             </div>
