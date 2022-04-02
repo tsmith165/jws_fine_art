@@ -142,6 +142,7 @@ const EditPage = ({id, pieces}) => {
                                         priority={true}
                                         layout='fill'
                                         objectFit='contain'
+                                        quality={100}
                                     />
             
                                 </div>

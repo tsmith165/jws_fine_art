@@ -41,7 +41,7 @@ const PieceTree = ({piece_tree_data, refresh_data}) => {
         const list_item_jsx = (
             <div className={styles.tree_list_item}>
                 <div className={styles.list_item_image_container}>
-                    <Image className={styles.list_item_image} src={`${baseURL}${piece_data['image_path']}`} />
+                    <Image className={styles.list_item_image} src={`${baseURL}${piece_data['image_path']}`} layout="fill" object-fit="contain" />
                 </div>
 
                 <div className={styles.list_item_stacked_container}>
