@@ -21,6 +21,7 @@ const Navbar = ({}) => {
 
 
                 <div className={styles.account_menu_full_container}>
+                    {/*
                     { use_account_icon_as_link === true ? (
                             <Link href="/signin" passHref={true}>
                                 <div className={styles.menu_button_container}>
@@ -33,6 +34,10 @@ const Navbar = ({}) => {
                             </div>
                         )
                     }
+                    */}
+                    <div className={styles.menu_button_container}>
+                        <AccountCircleIcon className={styles.account_button} />
+                    </div>
 
                     <div className={styles.account_menu_container}>
                         <div className={styles.account_menu_body}>
