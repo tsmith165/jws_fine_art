@@ -26,14 +26,14 @@ export default async function handler(req:NextApiRequest, res: NextApiResponse) 
         console.log("Request.method != DELETE.  Status: 402")
         res.status(402)
       } else {
-        console.log(`Attempting to add role as "USER" for ${id}...`)
+        console.log(`Attempting to DELETE USER with id: ${id}...`)
         const delete_output = await prisma.user.delete({
             where: {
                 id: id
             }
         })
   
-        console.log(`Delete Output (Next Line):`);
+        console.log(`DELETE USER Output (Next Line):`);
         console.log(delete_output)
         res.json(delete_output)
       }
