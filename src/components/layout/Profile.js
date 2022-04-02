@@ -1,9 +1,11 @@
 import Link from 'next/link'
-
+import React, { useState } from 'react';
 import { useSession } from '../../../lib/next-auth-react-query';
 import { signIn, signOut } from 'next-auth/react';
 
 import styles from "../../../styles/Navbar.module.scss"
+
+import { CircularProgress } from '@material-ui/core';
 
 function generate_good_session(session) {
     var account_menu_jsx = (
@@ -16,7 +18,7 @@ function generate_good_session(session) {
                     Sign out
                 </button>
             </div>
-            <div className={styles.account_menu_body}>
+            <div className={styles.profile_menu_body}>
                 <div className={styles.role_container}>
                     {
                         session.token?.role ? 
@@ -31,21 +33,38 @@ function generate_good_session(session) {
     return account_menu_jsx
 }
 
-function generate_bad_session() {
+function generate_bad_session(handleSubmit, loading, sent) {
     var account_menu_jsx = (
         <div className={styles.account_menu}>
             <div className={styles.account_menu_header}>
                 <div className={styles.account_name}>
-                    Not signed in <br />
+                    Sign In With Email:
                 </div>
-                <Link href={'/signin'} passHref={true}> 
-                    <button type="button" className={styles.account_auth_button}>
-                        Sign in
-                    </button>
-                </Link>
             </div>
             <div className={styles.account_menu_body}>
-
+                <div className={styles.email_form_container}>
+                    <form method="post" onSubmit={handleSubmit} class={styles.sign_in_form} /*action="/api/auth/signin/email"*/>
+                        <div className={styles.email_input_container}>
+                            <input type="text" id="email" name="email" className={styles.email_input} autoComplete={"off"}/>
+                        </div>
+                        
+                        <div className={styles.submit_container}>
+                            <button type="submit" className={styles.sign_in_button}>Sign In</button>
+                            <div className={styles.loader_container}>
+                                {loading == false ? ( 
+                                    sent == false ? ( 
+                                        null
+                                    ) : (
+                                        <div className={styles.sent_label}>Login E-Mail Sent. Check your E-Mail...</div>
+                                    )
+                                ) : (
+                                        <CircularProgress color="inherit" className={styles.loader}/>
+                                    ) 
+                                }
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
@@ -53,13 +72,37 @@ function generate_bad_session() {
 }
 
 const Profile = ({ }) => {
-    const [session, loading] = useSession({
+    const [session, session_loading] = useSession({
         required: false,
         queryConfig: {
           staleTime: 60 * 1000 * 60 * 3, // 3 hours
           refetchInterval: 60 * 1000 * 5, // 5 minutes
         },
     });
+
+    const [loading, setLoading] = useState(false)
+    const [sent, setSent] = useState(false)
+
+    async function handleSubmit(event) {
+        event.preventDefault()
+
+        setLoading(true)
+        setSent(false)
+
+        const email = event.target.elements.email.value;
+        console.log(`Email: ${email}`)
+        
+        if (email) {
+            console.log("Attempting to Sign In...")
+            const response = await signIn("email", { email, redirect: false, callbackUrl: process.env.NEXTAUTH_URL })
+
+            console.log("Sign In Response (Next Line):")
+            console.log(response)
+
+            if (response.error == null) { setSent(true) }
+        }
+        setLoading(false)
+    }
 
     console.log("Creating Profile Overlay...")
 
@@ -72,7 +115,7 @@ const Profile = ({ }) => {
     } else {
         //console.log(`User Role: ${session.token?.role}`)
         //if ( session.token?.role && session.token?.role == 'ADMIN' ) {
-        account_menu_jsx = generate_bad_session();
+        account_menu_jsx = generate_bad_session(handleSubmit, loading, sent);
     }
 
     return ( account_menu_jsx )
