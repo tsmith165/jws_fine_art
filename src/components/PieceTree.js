@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image'
 
 import styles from '../../styles/PieceTree.module.scss'
 
@@ -40,7 +41,7 @@ const PieceTree = ({piece_tree_data, refresh_data}) => {
         const list_item_jsx = (
             <div className={styles.tree_list_item}>
                 <div className={styles.list_item_image_container}>
-                    <img className={styles.list_item_image} src={`${baseURL}${piece_data['image_path']}`}></img>
+                    <Image className={styles.list_item_image} src={`${baseURL}${piece_data['image_path']}`} />
                 </div>
 
                 <div className={styles.list_item_stacked_container}>
