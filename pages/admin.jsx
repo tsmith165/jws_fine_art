@@ -13,6 +13,7 @@ import styles from '../styles/Admin.module.scss'
 const Admin = ({ user_tree_data }) => {
   const router = useRouter()
   const refresh_data = () => {
+    console.log("Refreshing Data...")
     router.replace(router.asPath)
   }
 
@@ -74,7 +75,7 @@ const Admin = ({ user_tree_data }) => {
   )
 };
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const users = await prisma.user.findMany();
   console.log(`Retrieved users (Next Line):`)
   console.log(users);
