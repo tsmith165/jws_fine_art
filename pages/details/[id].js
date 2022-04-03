@@ -91,6 +91,10 @@ const DetailsPage = ({id, pieces}) => {
         );
     }
 
+    const description = piece['description'];
+    const description_text = description.split('<br>').join("\n")
+
+
     var price_html = null;
     if (piece["sold"] == false) price_html = <b className={styles.priceText}>${piece['price']}</b>;
 
@@ -123,7 +127,7 @@ const DetailsPage = ({id, pieces}) => {
                         </Link>
                     </div>
                     <div className={styles.detailsDescriptionContainer}>
-                        <h3 className={styles.detailsDescription}>{piece['description'].toString().replaceAll("<br>", "\n")}</h3>
+                        <h3 className={styles.detailsDescription}>{description_text}</h3>
                     </div>
                     <div className={styles.detailsNavigationContainer}>
                         {sold_html}
