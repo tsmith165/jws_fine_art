@@ -1,11 +1,13 @@
 import { buffer } from "micro";
 import Stripe from "stripe";
 
+/*
 export const config = {
     api: {
       bodyParser: false,
     },
 };
+*/
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2020-08-27",
