@@ -55,15 +55,20 @@ export const getStaticPaths = async () => {
 
 const CheckoutPage = ({id, pieces}) => {
     var PathOID = id;
+    console.log(`Path O_ID: ${PathOID}`)
     var pieceID = get_piece_id_from_path_o_id(PathOID, pieces);
     console.log(`Piece ID: ${pieceID}`)
 
     const pieces_length = pieces.length;
+    console.log(`Pieces Length: ${pieces.length}`)
+
     var next_oid = (pieceID + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[pieceID + 1]['o_id'];
     var last_oid = (pieceID - 1 < 1)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
 
 
     var piece_details = {
+        id:          pieces[pieceID]['id'],
+        o_id:        pieces[pieceID]['o_id'],
         title:       pieces[pieceID]['title'],
         description: pieces[pieceID]['description'],
         sold:        pieces[pieceID]['sold'],

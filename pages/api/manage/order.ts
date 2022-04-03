@@ -53,7 +53,7 @@ export default async function handler(req:NextApiRequest, res: NextApiResponse) 
           console.log(`Passed JSON (Next Line):`)
           console.log(passed_json);
           
-          if (passed_json.curr_id_list == undefined && passed_json.swap_id_list == undefined) {
+          if (passed_json.curr_id_list == undefined || passed_json.swap_id_list == undefined) {
             // NO REQ.BODY JSON PASSED IN
             console.log("Request.body not passed in.  Status: 406")
             res.status(406)
