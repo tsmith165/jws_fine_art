@@ -47,6 +47,7 @@ const handler = async (req, res) => {
 
         res.json({ received: true });
     } else {
+        console.log(`REQUEST.METHOD != POST | CURRENT: ${req.method}`)
         res.setHeader("Allow", "POST");
         res.status(405).end("Method Not Allowed");
     }
