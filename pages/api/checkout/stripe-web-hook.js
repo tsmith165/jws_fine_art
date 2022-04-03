@@ -9,9 +9,7 @@ export const config = {
 };
 */
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2020-08-27",
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const handler = async (req, res) => {
@@ -19,13 +17,16 @@ const handler = async (req, res) => {
     if (req.method === "POST") {
         console.log("REQUEST.METHOD == POST")
 
-        const buf = await buffer(req);
-        const sig = req.headers["stripe-signature"];
+        const sig = req.headers['stripe-signature'];
+        const body = req.body;
 
         let event;
 
         try {
-            event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
+            event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+
+            console.log('STRIPE EVENT (NEXT LINE):')
+            console.log(event);
 
             if (event.type === "payment_intent.payment_failed") {
                 const payment_data = event.data.object;
