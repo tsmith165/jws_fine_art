@@ -123,7 +123,7 @@ const DetailsPage = ({id, pieces}) => {
                         </Link>
                     </div>
                     <div className={styles.detailsDescriptionContainer}>
-                        <h3 className={styles.detailsDescription}>{piece['description'].replaceAll("<br>", "\n")}</h3>
+                        <h3 className={styles.detailsDescription}>{piece['description'].toString().replace("/<br>/g", "\n")}</h3>
                     </div>
                     <div className={styles.detailsNavigationContainer}>
                         {sold_html}
