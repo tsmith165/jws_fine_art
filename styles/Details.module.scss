@@ -34,10 +34,11 @@
 
             .editButton:hover {  background-color: $primary; color: $light; border: 1px solid $light; }
 
-        .buyButton { float: left; font-weight: bold; border-radius: 5px; height: 40px; margin-right: 10px;
-            background-color: $light; color: $primary; border: 1px solid $primary; font-family: 'Lato', sans-serif; }
+        .buy_now_button { float: left; font-weight: bold; border-radius: 5px; height: 40px; margin-right: 10px;
+            background-color: $secondary; color: $light; border: 1px solid $secondary; font-family: 'Lato', sans-serif; }
+            
 
-            .buyButton:hover {  background-color: $primary; color: $light; border: 1px solid $light; }
+            .buy_now_button:hover {  background-color: $light; color: $secondary; border: 1px solid $secondary; }
 
             .priceText { float: left; color: $dark; font-size: 20px; line-height: 40px; margin-right: 10px; }
             .pieceSold { float: left; color: $error; font-size: 20px; line-height: 40px; margin-right: 10px; }
