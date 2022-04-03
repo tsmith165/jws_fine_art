@@ -9,7 +9,6 @@ const PageLayout = (props) => {
                 <meta name="description" content="JWS Fine Art" />
                 <link rel="icon" href="/JWS_ICON.png" />
             </Head>
-
             <main className={styles.main}>
                 {props.children}
             </main>

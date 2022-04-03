@@ -76,3 +76,31 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+
+model Pending {
+  id            Int    @id @default(autoincrement())
+  piece_db_id   Int
+  piece_title   String
+  full_name     String
+  phone         String
+  email         String
+  address       String
+  international Boolean @default(false)
+}
+
+model Verified {
+  id            Int    @id @default(autoincrement())
+  piece_db_id   Int
+  piece_title   String
+  full_name     String
+  phone         String
+  email         String
+  address       String
+  international Boolean @default(false)
+  image_path    String
+  image_width   Int
+  image_height  Int
+  date          DateTime
+  stripe_id     String
+}

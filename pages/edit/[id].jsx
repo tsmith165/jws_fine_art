@@ -44,7 +44,7 @@ export const getStaticPaths = async () => {
     const offset_for_testing = 0;
     
     var paths = [];
-    for (var i=0; i < pieces.length - offset_for_testing; i++) {
+    for (var i=0; i < pieces.length - offset_for_testing - 1; i++) {
         paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
     }
     return {

@@ -11,6 +11,7 @@ const queryClient = new QueryClient();
 const App = ({ Component, pageProps }: AppProps) => (
   <QueryClientProvider client={queryClient}>
     <ReactQueryDevtools initialIsOpen={false} />
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvrLDFUzjxCnKIDSuPwBYEbfnWrrIUnu4&libraries=places"></script>
     <Layout>
       <Component {...pageProps} />
     </Layout>
