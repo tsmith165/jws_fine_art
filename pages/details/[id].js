@@ -82,12 +82,17 @@ const DetailsPage = ({id, pieces}) => {
     var last_oid = (pieceID - 1 < 1)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
     
     var sold_html = null;
-    if      (piece["sold"] == "True")  sold_html = <b className={styles.pieceSold}>Sold</b>;
-    else if (piece["sold"] == "False") sold_html = <button className={styles.buyButton} onClick={buyClicked()}>Buy Now</button>
-    else if (piece["sold"] == "NFS")   sold_html = <b className={styles.pieceNFS}>Not For Sale</b>;
+    if      (piece["sold"] == true) sold_html = <b className={styles.pieceSold}>Sold</b>;
+    else if (piece["sold"] == false) { 
+        sold_html = (
+            <Link href={`/checkout/${PathOID}`} passHref={true}>
+                <button className={styles.buy_now_button}>Buy Now</button>
+            </Link>
+        );
+    }
 
     var price_html = null;
-    if (piece["sold"] == "False") price_html = <b className={styles.priceText}>${piece['price']}</b>;
+    if (piece["sold"] == false) price_html = <b className={styles.priceText}>${piece['price']}</b>;
 
     return (
         <PageLayout>
@@ -118,10 +123,9 @@ const DetailsPage = ({id, pieces}) => {
                         </Link>
                     </div>
                     <div className={styles.detailsDescriptionContainer}>
-                        <h3 className={styles.detailsDescription}>{piece['description'].replace("<br>", "\n")}</h3>
+                        <h3 className={styles.detailsDescription}>{piece['description'].replaceAll("<br>", "\n")}</h3>
                     </div>
                     <div className={styles.detailsNavigationContainer}>
-                        <button className={styles.editButton} onClick={editClicked(piece)}>Edit Piece</button>
                         {sold_html}
                         {price_html}
                     </div>
