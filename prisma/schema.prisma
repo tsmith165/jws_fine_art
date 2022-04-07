@@ -77,7 +77,6 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-
 model Pending {
   id            Int    @id @default(autoincrement())
   piece_db_id   Int
@@ -103,4 +102,5 @@ model Verified {
   image_height  Int
   date          DateTime
   stripe_id     String
+  price         Int
 }
