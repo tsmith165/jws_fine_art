@@ -5,12 +5,12 @@ import { useSession } from '../lib/next-auth-react-query';
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import PieceTree from '../src/components/PieceTree'
+import OrderTree from '../src/components/OrderTree'
 
-import styles from '../styles/Manage.module.scss'
+import styles from '../styles/Admin.module.scss'
 
 // using client side session retrieval
-const Manage = ({ piece_list }) => {
+const Orders = ({ verified_list }) => {
   const router = useRouter()
   const refresh_data = () => {
     router.replace(router.asPath)
@@ -52,7 +52,7 @@ const Manage = ({ piece_list }) => {
         page_jsx =  (
           <div className={styles.manage_main_container}>
             <div className={styles.pieces_tree_container}>
-              <PieceTree piece_tree_data={piece_list}
+              <OrderTree verified_list={verified_list}
                          refresh_data={refresh_data}
               />
             </div>
@@ -66,7 +66,7 @@ const Manage = ({ piece_list }) => {
     <PageLayout>
       <div className={styles.main_container}>
         <div className={styles.main_body}>
-          <h2 className={styles.module_title}>Piece Management:</h2>
+          <h2 className={styles.module_title}>Order Management:</h2>
           {page_jsx}
         </div>
       </div>
@@ -74,28 +74,36 @@ const Manage = ({ piece_list }) => {
   )
 };
 
-async function fetchPieces() {
+async function fetchVerfiedPayments() {
   console.log(`Fetching pieces with prisma`)
-  const piece_list = await prisma.piece.findMany({
-      orderBy: {
-          o_id: 'desc',
-      },
-  })
+  var verified_list = await prisma.verified.findMany()
 
-  return piece_list
+  console.log("Verified Payments List (Next Line):")
+  console.log(verified_list)
+
+  for (var i = 0; i < verified_list.length; i++) {
+    const date_string = new Date(verified_list[i]['date']).toUTCString();
+    console.log(`Current Date: ${date_string}`)
+    verified_list[i]['date'] = date_string
+  }
+
+  console.log("Verified Payments List (Next Line):")
+  console.log(verified_list)
+
+  return verified_list
 }
 
 export const getStaticProps = async (context) => {
   console.log("Getting Static Props")
-  const piece_list = await fetchPieces()
+  const verified_list = await fetchVerfiedPayments()
 
   //console.log(context)
   return { 
       props: {
-          "piece_list": piece_list
+          "verified_list": verified_list
       },
       revalidate: 60
   }
 }
 
-export default Manage;
+export default Orders;
