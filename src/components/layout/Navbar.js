@@ -19,6 +19,11 @@ const Navbar = ({}) => {
                     </div>
                 </Link>
 
+                <Link href="https://www.instagram.com/jws_fineart/" passHref={true}>
+                    <div className={styles.instagram_link_container}>
+                        <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill" width={50} height={50}/>
+                    </div>
+                </Link>
 
                 <div className={styles.account_menu_full_container}>
                     {/*

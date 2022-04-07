@@ -6,16 +6,22 @@
     .navbar_logo { padding: 0; width: 250px; height: 100% !important; position: relative; }
         .navbar_logo_img { min-height: 80px; padding: 10px !important; }
     
-    .menu_button_container { }
-        .hamburger_button { position: fixed; top: 50px; right: 0; width: 50px !important; height: 50px !important; padding: 10px; border-top-left-radius: 5px; 
-                            background-color: $secondary !important; fill: $light !important; }
         
-        .hamburger_button:hover { background-color: $light !important; fill: $secondary !important; }
+    .hamburger_button { position: fixed; top: 50px; right: 0; width: 50px !important; height: 50px !important; padding: 10px; border-top-left-radius: 5px; 
+                        background-color: $secondary !important; fill: $light !important; }
+    
+    .hamburger_button:hover { background-color: $light !important; fill: $secondary !important; }
 
-        .account_button { position: fixed; top: 50px; right: 50px; width: 50px !important; height: 50px !important; padding: 10px; 
-            background-color: $secondary !important; fill: $light !important; border-top-left-radius: 5px; border-top-right-radius: 5px;  }
+    .account_button { position: fixed; top: 50px; right: 50px; width: 50px !important; height: 50px !important; padding: 10px; 
+        background-color: $secondary !important; fill: $light !important; border-top-left-radius: 5px; border-top-right-radius: 5px;  }
 
-        .account_button:hover { background-color: $light !important; fill: $secondary !important; }
+    .account_button:hover { background-color: $light !important; fill: $secondary !important; }
+    
+    .instagram_link_container { position: fixed; top: 50px; right: 100px; width: 50px !important; height: 50px !important; }
+    .instagram_link_image {  background-color: $secondary !important; padding: 10px !important; border-top-left-radius: 5px; border-top-right-radius: 5px; }
+
+    .instagram_link_image:hover { background-color: $light !important; }
+
 
 
     .account_menu_full_container:hover > .account_menu_container { display: block; }
@@ -33,6 +39,7 @@
         .profile_menu_body { padding: 10px;  }
             
             .role_container { padding: 5px; color: $light; }
+
 
     // Page Menu Overlay
     .page_menu_full_container:hover > .page_menu_container { display: block; }
