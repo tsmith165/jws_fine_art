@@ -7,7 +7,7 @@ import { prisma } from '../lib/prisma'
 import PageLayout from '../src/components/layout/PageLayout'
 import PieceTree from '../src/components/PieceTree'
 
-import styles from '../styles/Manage.module.scss'
+import styles from '../styles/Admin.module.scss'
 
 // using client side session retrieval
 const Manage = ({ piece_list }) => {
