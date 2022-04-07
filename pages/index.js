@@ -1,5 +1,4 @@
 import { prisma } from '../lib/prisma'
-import React, { useState, useEffect } from 'react';
 
 import PageLayout from '../src/components/layout/PageLayout'
 import Gallery from '../src/components/Gallery';

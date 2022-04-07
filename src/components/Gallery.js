@@ -2,15 +2,13 @@ import styles from '../../styles/Gallery.module.scss'
 
 import Piece from '../components/Piece'
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
-
 const Gallery = ({piece_list, window_size}) => {
-
-    console.log("Generating Gallery - Data Next Line")
-    console.log(piece_list)
-
     const debug = false;
-    if (debug) console.log(`WINDOW WIDTH: ${window_size.width} | HEIGHT: ${window_size.height}`);
+    if (debug) {
+        console.log(`WINDOW WIDTH: ${window_size.width} | HEIGHT: ${window_size.height}`);
+        console.log("Generating Gallery - Data Next Line")
+        console.log(piece_list)
+    }
 
     var pieces = [];
     var piece_width = 250;
