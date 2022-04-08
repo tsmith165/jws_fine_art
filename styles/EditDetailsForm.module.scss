@@ -1,14 +1,14 @@
 @import "../theme/theme";
 
-.edit_details_form_container { width: 40vw; background-color: $light; }
+.edit_details_form_container {  }
 
     .edit_details_title_container { width: 100%; height: 70px; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; padding: 0px;
         background-color: $primary; }
 
-        .detailsTitleArrow { fill: $light !important; height: 100% !important; width: 48px !important; padding: 0px 5px !important; }
-        .detailsTitleArrow:hover { background-color: $light !important; fill: $secondary !important; }
+        .details_title_arrow { fill: $light !important; height: 100% !important; width: 48px !important; padding: 0px 5px !important; }
+        .details_title_arrow:hover { background-color: $light !important; fill: $secondary !important; }
         
-        .detailsTitle { width: calc(100% - 80px); margin: auto; color: $light; 
+        .details_title { width: calc(100% - 80px); margin: auto; color: $light; 
             font-size: 1.4em; line-height: 1.2em; text-align: center; font-family: 'Alegreya Sans SC', sans-serif; }
 
         .edit_details_title_input { width: calc(100% - 100px); margin: 10px 10px; font-size: 24px; text-align: center;
@@ -33,20 +33,20 @@
     /* CSS specific to iOS devices */ 
     @supports (-webkit-touch-callout: none) {
         
-        .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px;
+        .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px; padding-left: 15px !important;
             background-color: $primary; color: $light; border: none; padding-left: 5px; font-weight: bold; font-family: 'Lato', sans-serif; }
 
-        .input_select { width: 70%; height: 100%; background-color: $primary; color: $secondary; padding: 5.5px 10px;
+        .input_select { width: 70%; height: 100%; background-color: $primary; color: $secondary; padding: 6.5px 10px;
             border-radius: 0px 5px 5px 0px; border: none; font-weight: bold; font-family: 'Lato', sans-serif; }
     }
 
     /* CSS for other than iOS devices */ 
     @supports not (-webkit-touch-callout: none) {
 
-        .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px;
+        .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px; padding-left: 15px !important;
             background-color: $primary; color:$light; border: none; padding-left: 5px; font-weight: bold; font-family: 'Lato', sans-serif; }
 
-        .input_select { width: 70%; height: 100%; background-color: $primary; color: $light; padding: 5.5px 10px;
+        .input_select { width: 70%; height: 100%; background-color: $primary; color: $light; padding: 6.5px 10px;
             border-radius: 0px 5px 5px 0px; border: none; font-weight: bold; font-family: 'Lato', sans-serif; }
 
         .input_select > option { font-weight: bold; font-family: 'Lato', sans-serif; }
@@ -76,7 +76,7 @@
 
 .upload_file_input { display: none; }
 
-.imgHorVert {
+.img_hor_vert {
     -webkit-transform: scale(-1);
     -ms-transform: scale(-1);
         transform: scale(-1);
