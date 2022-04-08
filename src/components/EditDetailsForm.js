@@ -155,11 +155,11 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
 
                 <div className={styles.edit_details_title_container}>
                     <Link href={`/edit/${last_oid}`} passHref={true}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`} />
+                        <ArrowForwardIosRoundedIcon className={`${styles.details_title_arrow} ${styles.img_hor_vert}`} />
                     </Link>
                     <input type="text" className={styles.edit_details_title_input} id="title" defaultValue={piece['title']}/>
                     <Link href={`/edit/${next_oid}`} passHref={true}>
-                        <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}  />
+                        <ArrowForwardIosRoundedIcon className={styles.details_title_arrow}  />
                     </Link>
                 </div>
                 

@@ -82,7 +82,7 @@ const DetailsPage = ({id, pieces}) => {
     var last_oid = (pieceID - 1 < 1)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
     
     var sold_html = null;
-    if      (piece["sold"] == true) sold_html = <b className={styles.pieceSold}>Sold</b>;
+    if      (piece["sold"] == true) sold_html = <b className={styles.piece_sold}>Sold</b>;
     else if (piece["sold"] == false) { 
         sold_html = (
             <Link href={`/checkout/${PathOID}`} passHref={true}>
@@ -96,15 +96,15 @@ const DetailsPage = ({id, pieces}) => {
 
 
     var price_html = null;
-    if (piece["sold"] == false) price_html = <b className={styles.priceText}>${piece['price']}</b>;
+    if (piece["sold"] == false) price_html = <b className={styles.price_text}>${piece['price']}</b>;
 
     return (
         <PageLayout>
-            <div className={styles.detailsContainer}>
-                <div className={styles.detailsContainerLeft}>
-                    <div className={styles.detailsImageContainter}>
+            <div className={styles.details_container}>
+                <div className={styles.details_container_left}>
+                    <div className={styles.details_image_containter}>
                         <Image
-                            className={styles.detailsImage}
+                            className={styles.details_image}
                             src={`${baseURL}${piece['image_path']}`}
                             alt={piece['title']}
                             width={piece['width']}
@@ -116,20 +116,20 @@ const DetailsPage = ({id, pieces}) => {
                         />
                     </div>
                 </div>
-                <div className={styles.detailsContainerRight}>
-                    <div className={styles.detailsTitleContainer}>
+                <div className={styles.details_container_right}>
+                    <div className={styles.details_title_container}>
                         <Link href={`/details/${last_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`} />
+                            <ArrowForwardIosRoundedIcon className={`${styles.details_title_arrow} ${styles.img_hor_vert}`} />
                         </Link>
-                        <b className={styles.detailsTitle}>{piece['title']}</b>
+                        <b className={styles.details_title}>{piece['title']}</b>
                         <Link href={`/details/${next_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}  />
+                            <ArrowForwardIosRoundedIcon className={styles.details_title_arrow}  />
                         </Link>
                     </div>
-                    <div className={styles.detailsDescriptionContainer}>
-                        <h3 className={styles.detailsDescription}>{description_text}</h3>
+                    <div className={styles.details_description_container}>
+                        <h3 className={styles.details_description}>{description_text}</h3>
                     </div>
-                    <div className={styles.detailsNavigationContainer}>
+                    <div className={styles.details_navigation_container}>
                         {sold_html}
                         {price_html}
                     </div>
