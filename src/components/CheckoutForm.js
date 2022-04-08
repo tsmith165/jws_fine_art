@@ -143,11 +143,11 @@ const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url 
 
                 <div className={styles.edit_details_title_container}>
                     <Link href={`/checkout/${last_oid}`} passHref={true}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.detailsTitleArrow} ${styles.imgHorVert}`} />
+                        <ArrowForwardIosRoundedIcon className={`${styles.details_title_arrow} ${styles.img_hor_vert}`} />
                     </Link>
                     <div className={styles.details_title}>{piece['title']}</div>
                     <Link href={`/checkout/${next_oid}`} passHref={true}>
-                        <ArrowForwardIosRoundedIcon className={styles.detailsTitleArrow}  />
+                        <ArrowForwardIosRoundedIcon className={styles.details_title_arrow}  />
                     </Link>
                 </div>
                 

@@ -1,6 +1,6 @@
 @import "../theme/theme";
 
-.details_container { height: calc(100vh - 100px); width: 100%; display: flex; flex-wrap: wrap;}
+.details_container { height: calc(100vh - 100px); width: 100%; display: flex; flex-wrap: wrap; }
 
 .details_container_left { flex: 1 1 60%; min-height: 200px; justify-content: center; align-items: center; }
 

@@ -134,12 +134,12 @@ const CheckoutPage = ({id, pieces}) => {
             
                 page_jsx =  (
                     <PageLayout>
-                        <div className={styles.detailsContainer}>
-                            <div className={styles.detailsContainerLeft}>
-                                <div className={styles.detailsImageContainter}>
+                        <div className={styles.details_container}>
+                            <div className={styles.details_container_left}>
+                                <div className={styles.details_image_containter}>
             
                                     <Image
-                                        className={styles.detailsImage}
+                                        className={styles.details_image}
                                         src={image_url}
                                         alt={piece['title']}
                                         width={piece['width']}
@@ -152,7 +152,7 @@ const CheckoutPage = ({id, pieces}) => {
             
                                 </div>
                             </div>
-                            <div className={styles.detailsContainerRight}>
+                            <div className={styles.details_container_right}>
             
                                 <CheckoutForm 
                                     id={id} 
