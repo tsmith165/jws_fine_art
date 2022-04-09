@@ -7,21 +7,24 @@ export const config = {
     },
 };
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
 const handler = async (req, res) => {
     console.log("Recieved Stripe Web Hook API Request")
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
     if (req.method === "POST") {
         console.log("REQUEST.METHOD == POST")
 
+        const buff = await buffer(req);
         const sig = req.headers['stripe-signature'];
-        const body = req.body;
+        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
         let event;
 
         try {
-            event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+            if (!sig || !webhookSecret) return;
+
+            console.log("Verifying Signature From Webhook...")
+            event = stripe.webhooks.constructEvent(buff, sig, webhookSecret);
 
             console.log('STRIPE EVENT (NEXT LINE):')
             console.log(event);
