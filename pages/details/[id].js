@@ -130,8 +130,34 @@ const DetailsPage = ({id, pieces}) => {
                         <h3 className={styles.details_description}>{description_text}</h3>
                     </div>
                     <div className={styles.details_navigation_container}>
-                        {sold_html}
                         {price_html}
+                        {sold_html}
+                        {
+                            (piece["sold"] == true) ? 
+                                (
+                                    null
+                                ) : (
+                                    <Link href='https://stripe.com' passHref={true}>
+                                        <Image src='/powered_by_stripe_blue_background.png' height="40px" width="180px" />
+                                    </Link>
+                                )
+                        }
+                    </div>
+                    <div className={styles.details_navigation_container}>
+                        {
+                            (piece['instagram'] != null && piece['instagram'] != '') ? (
+                                <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
+                                    <div className={styles.instagram_link_container}>
+                                        <div className={styles.instagram_image_container}>
+                                            <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fixed" width={50} height={50}/>
+                                        </div>
+                                        <div className={styles.instagram_link_label}>View On Instagram</div>
+                                    </div>
+                                </Link>
+                            ) : (
+                                null
+                            )
+                        }
                     </div>
                 </div>
             </div>
