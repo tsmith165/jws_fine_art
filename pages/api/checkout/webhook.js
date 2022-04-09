@@ -66,6 +66,7 @@ const handler = async (req, res) => {
                         piece_db_id: parseInt(metadata.product_id),
                         full_name: metadata.full_name,
                         piece_title: pending_transaction_data.piece_title,
+                        phone: pending_transaction_data.phone,
                         email: pending_transaction_data.email,
                         address: pending_transaction_data.address,
                         international: pending_transaction_data.international,
