@@ -17,10 +17,15 @@ const OrderTree = ({verified_list, refresh_data}) => {
         console.log(`Verified Payment Data (Next Line):`);
         console.log(verified_payment_data);
 
+        var image_url = `${baseURL}${verified_payment_data['image_path']}`
+        if (!verified_payment_data['image_path'].includes("https://jwsfineart.s3.us-west-1.amazonaws.com")) {
+            image_url = `${baseURL}/pieces/${verified_payment_data['image_path'].split('pieces/')[1]}`
+        }
+
         const list_item_jsx = (
             <div className={styles.list_item_container}>
                 <div className={styles.list_item_image_container}>
-                    <img className={styles.list_item_image} src={`${baseURL}${verified_payment_data['image_path']}`}/>
+                    <img className={styles.list_item_image} src={}/>
                 </div>
 
                 <div className={styles.list_item_title_container_order}>
