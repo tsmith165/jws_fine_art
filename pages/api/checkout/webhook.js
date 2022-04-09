@@ -1,13 +1,11 @@
 import { buffer } from "micro";
 import Stripe from "stripe";
 
-/*
 export const config = {
     api: {
       bodyParser: false,
     },
 };
-*/
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
