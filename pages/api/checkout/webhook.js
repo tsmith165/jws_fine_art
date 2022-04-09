@@ -1,7 +1,7 @@
 import { buffer } from "micro";
 import Stripe from "stripe";
 import { prisma } from "../../../lib/prisma";
-import { dateFormat } from "dateFormat";
+import moment from "moment";
 
 export const config = {
     api: {
@@ -47,7 +47,7 @@ const handler = async (req, res) => {
                 // Handle successful payment
                 console.log("Payment SUCCSESSFUL!  Creating Verified Transaction...")
 
-                const date = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+                const date = moment().format("yyyy-mm-dd HH:MM:ss");
  
                 const pending_transaction_data = await prisma.pending.query({
                     where: {
