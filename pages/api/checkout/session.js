@@ -86,6 +86,7 @@ export default async function handler(req, res) {
                     payment_intent_data: {
                         metadata: {
                             product_id: piece_db_id,
+                            full_name: full_name,
                             price_id: price,
                             image_path: full_image_url,
                             image_width: width,
