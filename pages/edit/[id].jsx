@@ -72,7 +72,8 @@ const EditPage = ({id, pieces}) => {
         height:      pieces[pieceID]['height'],
         real_width:  pieces[pieceID]['real_width'],
         real_height: pieces[pieceID]['real_height'],
-        image_path:  `${baseURL}${pieces[pieceID]['image_path']}`
+        image_path:  `${baseURL}${pieces[pieceID]['image_path']}`,
+        instagram:   pieces[pieceID]['instagram']
     }
 
     console.log("CURRENT PIECE DETAILS:")

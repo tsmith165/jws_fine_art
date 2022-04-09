@@ -52,9 +52,13 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
         const type        = event.target.elements.type.value;
         const sold        = event.target.elements.sold.value;
         const price       = event.target.elements.price.value;
+        const instagram   = event.target.elements.instagram.value;
         const real_width  = event.target.elements.width.value;
         const real_height = event.target.elements.height.value;
-        console.log(`Title: ${title} | Type: ${type} | Sold: ${sold} | Price: ${price} | Real Width: ${width} | Height: ${height}`)
+
+        console.log(`Title: ${title} | Real Width: ${real_width} | Height: ${real_height}`)
+        console.log(`Type: ${type} | Sold: ${sold} | Price: ${price} | Instagram Path: ${instagram}`)
+        console.log(`Image Path: ${piece['image_path']} | Px Width: ${piece['width']} | Px Height: ${piece['height']}`)
         console.log("Description (Next Line):")
         console.log(description)
 
@@ -63,7 +67,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
         if (title) {
             console.log("Attempting to Edit Piece Details...")
             if (!uploaded) {
-                const response = await edit_details(id, title, description, type, sold, price, piece['width'], piece['height'], real_width, real_height)
+                const response = await edit_details(id, title, description, type, sold, price, instagram, piece['width'], piece['height'], real_width, real_height)
     
                 console.log(`Edit Piece Response: ${response}`)
                 
@@ -74,9 +78,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                 else { setError(true) }
             }
             else {
-                const width = piece["width"];
-                const height = piece["height"];
-                const response = await create_piece(title, description, type, sold, price, real_width, real_height, piece['image_path'], width, height)
+                const response = await create_piece(title, description, type, sold, price, instagram, piece["width"], piece["height"], real_width, real_height, piece['image_path']);
     
                 console.log(`Edit Piece Response: ${response}`)
                 
@@ -123,7 +125,8 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                 height: this.height,
                 real_width: '',
                 real_height: '',
-                image_path: new_image_path
+                image_path: new_image_path,
+                instagram: ''
             }
     
             set_piece(new_piece_details)
@@ -167,6 +170,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <textarea className={styles.edit_details_description_textarea} id="description" value={description} onChange={updateDescription}/>
                 </div>
 
+                {/* Piece Type Select */}
                 <div className={styles.input_container}>
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Type</div>
@@ -179,6 +183,8 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                         <option value="Pastel On Paper" defaultValue={ (piece['type'] == "Pastel On Paper") ? true : false }>Pastel On Paper</option>
                     </select>
                 </div>
+
+                {/* Sold Select */}
                 <div className={styles.input_container}>
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Sold</div>
@@ -189,12 +195,24 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                         {/*<option defaultValue="NFS">Not For Sale</option>*/}
                     </select>
                 </div>
+
+                {/* Price Textbox */}
                 <div className={styles.input_container}>
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Price</div>
                     </div>
                     <input id="price" className={styles.input_textbox} defaultValue={piece['price']}/>
                 </div>
+
+                {/* Instagram Link Textbox */}
+                <div className={styles.input_container}>
+                    <div className={styles.input_label_container}>
+                        <div className={styles.input_label}>Instagram Link</div>
+                    </div>
+                    <input id="instagram" className={styles.input_textbox} defaultValue={piece['instagram']}/>
+                </div>
+
+                {/* Split Container For real_width / real_height */}
                 <div className={styles.input_container_split_container}>         
                     <div className={`${styles.input_container_split} ${styles.split_left}`}>
                         <div className={`${styles.input_label_container} ${styles.input_label_split}`}>
