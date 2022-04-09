@@ -48,7 +48,7 @@ const handler = async (req, res) => {
                 console.log("Payment SUCCSESSFUL!  Creating Verified Transaction...")
     
                 console.log(`Querying pending transactions for Piece DB ID: ${metadata.product_id} | Full Name: ${metadata.full_name}`)
-                const pending_transaction_data = await prisma.pending.query({
+                const pending_transaction_data = await prisma.pending.findFirst({
                     where: {
                       piece_db_id: parseInt(metadata.product_id),
                       full_name: metadata.full_name
