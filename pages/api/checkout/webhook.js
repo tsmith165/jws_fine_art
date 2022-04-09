@@ -57,6 +57,8 @@ const handler = async (req, res) => {
 
                 console.log("Pending Transaction Data (Next Line):")
                 console.log(pending_transaction_data)
+
+                const date = moment().format("yyyy-mm-dd HH:MM:ss");
                 
                 console.log("Creating Verified Transaction...")
                 const create_output = await prisma.verified.create({
