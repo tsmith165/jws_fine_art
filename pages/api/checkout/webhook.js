@@ -1,9 +1,10 @@
 import { buffer } from "micro";
 import Stripe from "stripe";
+import { prisma } from "../../../lib/prisma";
 
 export const config = {
     api: {
-      bodyParser: false,
+        bodyParser: false,
     },
 };
 
@@ -28,18 +29,68 @@ const handler = async (req, res) => {
 
             console.log('STRIPE EVENT (NEXT LINE):')
             console.log(event);
+    
+            const stripe_id = event["data"]["object"]["charges"]["data"][0]["id"];
+            const metadata = event["data"]["object"]["charges"]["data"][0]["metadata"];
+    
+            console.log(`ID: ${stripe_id}`);
+            console.log(`METADATA: ${JSON.stringify(metadata)}`);
 
             if (event.type === "payment_intent.payment_failed") {
                 const payment_data = event.data.object;
                 // Handle unsuccessful payment
-                console.log("Payment UNSUCCSESSFUL. Stripe Response (Next Line):")
-                console.log(payment_data)
+                console.log("Payment UNSUCCSESSFUL. Handle unverified transaction (no current handling)...")
 
             } else if (event.type === "payment_intent.succeeded") {
                 const payment_data = event.data.object;
                 // Handle successful payment
-                console.log("Payment SUCCSESSFUL. Stripe Response (Next Line):")
-                console.log(payment_data)
+                console.log("Payment SUCCSESSFUL!  Creating Verified Transaction...")
+
+                const date = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+ 
+                const pending_transaction_data = await prisma.pending.query({
+                    where: {
+                      id: parseInt(id)
+                    }
+                });
+
+                console.log("Pending Transaction Data (Next Line):")
+                console.log(pending_transaction_data)
+                
+                console.log("Creating Verified Transaction...")
+                const create_output = await prisma.pending.create({
+                    data: JSON.stringify({
+                        piece_db_id: metadata.product_id, 
+                        piece_title: pending_transaction_data.piece_title,
+                        full_name: pending_transaction_data.full_name,
+                        email: pending_transaction_data.email,
+                        address: pending_transaction_data.address,
+                        international: pending_transaction_data.international,
+                        image_path: metadata.image_path, 
+                        image_width: metadata.image_width, 
+                        image_height: metadata.image_height, 
+                        date: date, 
+                        stripe_id: stripe_id, 
+                        price: metadata.price_id
+                    })
+                });
+
+                console.log("Pending Transaction Create Output (Next Line):")
+                console.log(create_output)
+
+
+                console.log("Setting Piece As Sold...")
+                const update_output = await prisma.piece.update({
+                    where: {
+                        id: piece_db_id
+                    },
+                    data: JSON.stringify({
+                        sold: true
+                    })
+                });
+
+                console.log("Set Sold Update Output (Next Line):")
+                console.log(update_output)
 
             } else {
                 console.warn(`Unhandled Stripe event type: ${event.type} |  Data (Next Line):`);
