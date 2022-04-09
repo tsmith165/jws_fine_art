@@ -50,7 +50,7 @@ const handler = async (req, res) => {
                 console.log(`Querying pending transactions for Piece DB ID: ${piece_db_id} | Full Name: ${metadata.full_name}`)
                 const pending_transaction_data = await prisma.pending.query({
                     where: {
-                      piece_db_id: parseInt(piece_db_id),
+                      piece_db_id: parseInt(metadata.product_id),
                       full_name: metadata.full_name
                     }
                 });
