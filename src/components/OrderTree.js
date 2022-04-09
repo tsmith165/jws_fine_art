@@ -25,7 +25,7 @@ const OrderTree = ({verified_list, refresh_data}) => {
         const list_item_jsx = (
             <div className={styles.list_item_container}>
                 <div className={styles.list_item_image_container}>
-                    <img className={styles.list_item_image} src={}/>
+                    <img className={styles.list_item_image} src={image_url}/>
                 </div>
 
                 <div className={styles.list_item_title_container_order}>
