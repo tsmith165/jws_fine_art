@@ -47,7 +47,7 @@ const handler = async (req, res) => {
                 // Handle successful payment
                 console.log("Payment SUCCSESSFUL!  Creating Verified Transaction...")
     
-                console.log(`Querying pending transactions for Piece DB ID: ${piece_db_id} | Full Name: ${metadata.full_name}`)
+                console.log(`Querying pending transactions for Piece DB ID: ${metadata.product_id} | Full Name: ${metadata.full_name}`)
                 const pending_transaction_data = await prisma.pending.query({
                     where: {
                       piece_db_id: parseInt(metadata.product_id),
@@ -100,6 +100,7 @@ const handler = async (req, res) => {
             }
 
         } catch (err) {
+            console.error(`Webhook Error: ${err.message}`)
             res.status(400).send(`Webhook Error: ${err.message}`);
             return;
         }
