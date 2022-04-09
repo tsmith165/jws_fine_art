@@ -63,7 +63,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
         if (title) {
             console.log("Attempting to Edit Piece Details...")
             if (!uploaded) {
-                const response = await edit_details(id, title, description, type, sold, price, real_width, real_height)
+                const response = await edit_details(id, title, description, type, sold, price, piece['width'], piece['height'], real_width, real_height)
     
                 console.log(`Edit Piece Response: ${response}`)
                 
