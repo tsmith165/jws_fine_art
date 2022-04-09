@@ -24,6 +24,7 @@ model Piece {
   type        String
   sold        Boolean @default(false)
   price       Int
+  instagram   String?
   real_width  Float
   real_height Float
   active      Boolean @default(true)
