@@ -62,7 +62,7 @@ const handler = async (req, res) => {
                 
                 console.log("Creating Verified Transaction...")
                 const create_output = await prisma.verified.create({
-                    data: JSON.stringify({
+                    data: {
                         piece_db_id: parseInt(metadata.product_id),
                         full_name: metadata.full_name,
                         piece_title: pending_transaction_data.piece_title,
@@ -75,7 +75,7 @@ const handler = async (req, res) => {
                         date: date, 
                         stripe_id: stripe_id, 
                         price: parseInt(metadata.price_id)
-                    })
+                    }
                 });
 
                 console.log("Pending Transaction Create Output (Next Line):")
@@ -87,9 +87,9 @@ const handler = async (req, res) => {
                     where: {
                         id: parseInt(metadata.product_id)
                     },
-                    data: JSON.stringify({
+                    data: {
                         sold: true
-                    })
+                    }
                 });
 
                 console.log("Set Sold Update Output (Next Line):")
