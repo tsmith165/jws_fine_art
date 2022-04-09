@@ -1,6 +1,3 @@
-import Link from 'next/link';
-import Image from 'next/image'
-
 import styles from '../../styles/OrderTree.module.scss'
 
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
@@ -28,7 +25,7 @@ const OrderTree = ({verified_list, refresh_data}) => {
                     <img className={styles.list_item_image} src={image_url}/>
                 </div>
 
-                <div className={styles.list_item_title_container_order}>
+                <div className={styles.list_item_title_container}>
                     <b className={styles.list_item_title}>{verified_payment_data['piece_title']}</b>
                 </div>
             

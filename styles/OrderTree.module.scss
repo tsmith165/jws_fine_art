@@ -1,45 +1,21 @@
 @import "../theme/theme";
 
 // main user tree body
-.order_tree_body { width: 100%; height: 100%; position: relative; background-color: $light; color: $secondary;  border: 2px solid $secondary; border-radius: 5px; font-size: 1rem; }
-.order_tree_body:hover { background-color: $secondary; color: $light; }
+.order_tree_body { width: 100%; height: 100%; position: relative; background-color: $primary; color: $light;  border: 2px solid $secondary; border-radius: 5px; font-size: 1rem; }
 
-// tree list header
-.tree_list_header_container { }
-.tree_list_header { width: 100%; height: 40px; border-top-left-radius: 5px; border-top-right-radius: 5px; background-color: $secondary; }
+// list item
+.list_item_container { display: flex; flex-direction: row; }
+.list_item_container:hover { background-color: $secondary; color: $light; }
 
-// tree list item
-.tree_list_item_container { }
-.tree_list_item { width: 100%; height: 99px; display: flex; flex-direction: row; border-bottom: 2px solid $secondary; }
-.tree_list_item:first-of-type {   }
-.tree_list_item:last-of-type { border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;  border-bottom: none; } 
+    .list_item { width: 100%; height: 99px; display: flex; flex-direction: row; border-bottom: 2px solid $secondary; }
+    
+    .list_item:first-of-type {   }
+    .list_item:last-of-type { border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;  border-bottom: none; } 
 
+    .list_item_image_container { background-color: $secondary; }
+    .list_item_image { width: 150px; height: 150px; object-fit: contain; }
 
-
-.management_container { height: calc(100vh - 100px); width: 100vw; 
-    overflow-y: scroll; overflow-x: hidden; background-color: $light; }
-
-@media (max-width: 800px) {
-.management_list { height: 100%; position: relative; padding-bottom: 100px; }
-}
-@media (min-width: 799px) {
-.management_list { height: 100%; position: relative; }
-}
-
-@media (max-width: 800px) {
-.list_item_container { width: 100vw; height: 98px; display: flex; flex-direction: row; }
-.list_item_image_container { width: 100px; height: 100px; background-color: $dark; }
-.list_item_image { width: 100px; height: 100px; object-fit: contain; }
-.list_item_title_container_order {  }
-}
-@media (min-width: 799px) {
-.list_item_container { width: 100vw; height: 148px; display: flex; flex-direction: row; }
-.list_item_image_container { width: 150px; height: 150px; background-color: $dark; }
-.list_item_image { width: 150px; height: 150px; object-fit: contain; }
-.list_item_title_container_order { }
-}
-
-.list_item_title_container_order { min-width: 30%; max-width: 30%; padding: 10px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;  margin-top: auto; margin-bottom: auto; font-size: 2rem !important; }
+    .list_item_title_container { min-width: 30%; max-width: 30%; padding: 10px; padding-left: 20px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;  margin-top: auto; margin-bottom: auto; font-size: 2rem !important; }
 
 .order_description_container_mobile { width: calc( 100% - (100px) ); padding: 10px 5px; display: flex; flex-direction: column; }
 .order_description_container { width: calc( 100% - ((30% + 20px) + 150px + 37px) ); padding: 10px 5px; display: flex; flex-direction: column; }
@@ -49,10 +25,6 @@
 
 .list_item_text_container { padding-right: 15px; margin-top: auto; margin-bottom: auto; }
 .list_item_desc_container { width: 100px !important; display: inline-block;  }
-.list_item_desc_container_mobile { width: 10vw !important;  display: inline-block; }
-.list_item_text_mobile { }
-
-
 
 .img_hor_vert {
 -moz-transform: scale(-1);
