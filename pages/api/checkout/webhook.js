@@ -46,12 +46,12 @@ const handler = async (req, res) => {
                 const payment_data = event.data.object;
                 // Handle successful payment
                 console.log("Payment SUCCSESSFUL!  Creating Verified Transaction...")
-
-                const date = moment().format("yyyy-mm-dd HH:MM:ss");
- 
+    
+                console.log(`Querying pending transactions for Piece DB ID: ${piece_db_id} | Full Name: ${metadata.full_name}`)
                 const pending_transaction_data = await prisma.pending.query({
                     where: {
-                      id: parseInt(id)
+                      piece_db_id: parseInt(piece_db_id),
+                      full_name: metadata.full_name
                     }
                 });
 
@@ -59,11 +59,11 @@ const handler = async (req, res) => {
                 console.log(pending_transaction_data)
                 
                 console.log("Creating Verified Transaction...")
-                const create_output = await prisma.pending.create({
+                const create_output = await prisma.verified.create({
                     data: JSON.stringify({
-                        piece_db_id: metadata.product_id, 
+                        piece_db_id: metadata.product_id,
+                        full_name: metadata.full_name,
                         piece_title: pending_transaction_data.piece_title,
-                        full_name: pending_transaction_data.full_name,
                         email: pending_transaction_data.email,
                         address: pending_transaction_data.address,
                         international: pending_transaction_data.international,
