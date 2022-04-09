@@ -63,18 +63,18 @@ const handler = async (req, res) => {
                 console.log("Creating Verified Transaction...")
                 const create_output = await prisma.verified.create({
                     data: JSON.stringify({
-                        piece_db_id: metadata.product_id,
+                        piece_db_id: parseInt(metadata.product_id),
                         full_name: metadata.full_name,
                         piece_title: pending_transaction_data.piece_title,
                         email: pending_transaction_data.email,
                         address: pending_transaction_data.address,
                         international: pending_transaction_data.international,
                         image_path: metadata.image_path, 
-                        image_width: metadata.image_width, 
-                        image_height: metadata.image_height, 
+                        image_width: parseInt(metadata.image_width), 
+                        image_height: parseInt(metadata.image_height), 
                         date: date, 
                         stripe_id: stripe_id, 
-                        price: metadata.price_id
+                        price: parseInt(metadata.price_id)
                     })
                 });
 
@@ -85,7 +85,7 @@ const handler = async (req, res) => {
                 console.log("Setting Piece As Sold...")
                 const update_output = await prisma.piece.update({
                     where: {
-                        id: piece_db_id
+                        id: parseInt(metadata.product_id)
                     },
                     data: JSON.stringify({
                         sold: true
