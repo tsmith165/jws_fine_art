@@ -66,7 +66,7 @@ const CancelPage = ({id, pieces}) => {
         <PageLayout>
             <div className={styles.details_container}>
                 <div className={styles.details_container_left}>
-                    <div className={styles.details_image_containter}>
+                    <div className={styles.details_image_container}>
                         <Image
                             className={styles.details_image}
                             src={`${baseURL}${piece['image_path']}`}
