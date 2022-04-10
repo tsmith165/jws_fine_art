@@ -20,16 +20,6 @@ function getPieceId(PathOID, pieces) {
     }
 }
 
-function editClicked(piece) {
-    //console.log("Editing Piece (Next Line):")
-    //console.log(piece)
-}
-
-function buyClicked() {
-    //console.log("Buying...")
-}
-
-
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`)
     const pieces = await prisma.piece.findMany({
@@ -149,7 +139,7 @@ const DetailsPage = ({id, pieces}) => {
                                 <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
                                     <div className={styles.instagram_link_container}>
                                         <div className={styles.instagram_image_container}>
-                                            <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fixed" width={50} height={50}/>
+                                            <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill"/>
                                         </div>
                                         <div className={styles.instagram_link_label}>View On Instagram</div>
                                     </div>
