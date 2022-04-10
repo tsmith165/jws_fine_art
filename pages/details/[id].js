@@ -92,7 +92,7 @@ const DetailsPage = ({id, pieces}) => {
         <PageLayout>
             <div className={styles.details_container}>
                 <div className={styles.details_container_left}>
-                    <div className={styles.details_image_containter}>
+                    <div className={styles.details_image_container}>
                         <Image
                             className={styles.details_image}
                             src={`${baseURL}${piece['image_path']}`}
@@ -119,9 +119,6 @@ const DetailsPage = ({id, pieces}) => {
                         </div>
                     </div>
                     <div className={styles.details_form_container}>
-                        <div className={styles.details_description_container}>
-                            <h3 className={styles.details_description}>{description_text}</h3>
-                        </div>
                         <div className={styles.details_navigation_container}>
                             <div className={styles.details_navigation_inner_container}>
                                 {price_html}
@@ -157,6 +154,9 @@ const DetailsPage = ({id, pieces}) => {
                                     )
                                 }
                             </div>
+                        </div>
+                        <div className={styles.details_description_container}>
+                            <h3 className={styles.details_description}>{description_text}</h3>
                         </div>
                     </div>
                 </div>
