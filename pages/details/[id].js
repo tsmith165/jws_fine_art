@@ -20,16 +20,6 @@ function getPieceId(PathOID, pieces) {
     }
 }
 
-function editClicked(piece) {
-    //console.log("Editing Piece (Next Line):")
-    //console.log(piece)
-}
-
-function buyClicked() {
-    //console.log("Buying...")
-}
-
-
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`)
     const pieces = await prisma.piece.findMany({
