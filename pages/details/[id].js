@@ -107,49 +107,51 @@ const DetailsPage = ({id, pieces}) => {
                     </div>
                 </div>
                 <div className={styles.details_container_right}>
-                    <div className={styles.details_title_container}>
-                        <Link href={`/details/${last_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={`${styles.details_title_arrow} ${styles.img_hor_vert}`} />
-                        </Link>
-                        <b className={styles.details_title}>{piece['title']}</b>
-                        <Link href={`/details/${next_oid}`} passHref={true}>
-                            <ArrowForwardIosRoundedIcon className={styles.details_title_arrow}  />
-                        </Link>
-                    </div>
-                    <div className={styles.details_description_container}>
-                        <h3 className={styles.details_description}>{description_text}</h3>
-                    </div>
-                    <div className={styles.details_navigation_container}>
-                        {price_html}
-                        {sold_html}
-                        {
-                            (piece["sold"] == true) ? 
-                                (
-                                    null
-                                ) : (
-                                    <Link href='https://stripe.com' passHref={true}>
-                                        <div className={styles.powered_by_stripe_container}>
-                                            <Image src='/powered_by_stripe_blue_background_small.png' layout="fill" objectFit='contain'/>
+                    <div className={styles.details_form_container}>
+                        <div className={styles.details_title_container}>
+                            <Link href={`/details/${last_oid}`} passHref={true}>
+                                <ArrowForwardIosRoundedIcon className={`${styles.details_title_arrow} ${styles.img_hor_vert}`} />
+                            </Link>
+                            <b className={styles.details_title}>{piece['title']}</b>
+                            <Link href={`/details/${next_oid}`} passHref={true}>
+                                <ArrowForwardIosRoundedIcon className={styles.details_title_arrow}  />
+                            </Link>
+                        </div>
+                        <div className={styles.details_description_container}>
+                            <h3 className={styles.details_description}>{description_text}</h3>
+                        </div>
+                        <div className={styles.details_navigation_container}>
+                            {price_html}
+                            {sold_html}
+                            {
+                                (piece["sold"] == true) ? 
+                                    (
+                                        null
+                                    ) : (
+                                        <Link href='https://stripe.com' passHref={true}>
+                                            <div className={styles.powered_by_stripe_container}>
+                                                <Image src='/powered_by_stripe_blue_background_small.png' layout="fill" objectFit='contain'/>
+                                                </div>
+                                        </Link>
+                                    )
+                            }
+                        </div>
+                        <div className={styles.details_navigation_container}>
+                            {
+                                (piece['instagram'] != null && piece['instagram'] != '') ? (
+                                    <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
+                                        <div className={styles.instagram_link_container}>
+                                            <div className={styles.instagram_image_container}>
+                                                <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill"/>
                                             </div>
-                                    </Link>
-                                )
-                        }
-                    </div>
-                    <div className={styles.details_navigation_container}>
-                        {
-                            (piece['instagram'] != null && piece['instagram'] != '') ? (
-                                <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
-                                    <div className={styles.instagram_link_container}>
-                                        <div className={styles.instagram_image_container}>
-                                            <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill"/>
+                                            <div className={styles.instagram_link_label}>View On Instagram</div>
                                         </div>
-                                        <div className={styles.instagram_link_label}>View On Instagram</div>
-                                    </div>
-                                </Link>
-                            ) : (
-                                null
-                            )
-                        }
+                                    </Link>
+                                ) : (
+                                    null
+                                )
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
