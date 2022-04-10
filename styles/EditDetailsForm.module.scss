@@ -1,80 +1,192 @@
 @import "../theme/theme";
 
-.edit_details_form_container {  }
+.edit_details_form_container { 
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+    height: max-content !important; 
+    margin-bottom: 100px;  
+}
 
-    .edit_details_title_container { width: 100%; height: 70px; display: flex; flex-direction: row; justify-content: center; padding: 0px; background-color: $primary; 
-        display: -webkit-box; display: -ms-flexbox;  -webkit-box-pack: center; -ms-flex-pack: center; }
-
-        .details_title_arrow { fill: $light !important; height: 100% !important; width: 48px !important; padding: 0px 5px !important; }
-        .details_title_arrow:hover { background-color: $light !important; fill: $secondary !important; }
-        
-        .details_title { width: calc(100% - 80px); margin: auto; color: $light; 
-            font-size: 1.4em; line-height: 1.2em; text-align: center; font-family: 'Alegreya Sans SC', sans-serif; }
-
-        .edit_details_title_input { width: calc(100% - 100px); margin: 10px 10px; font-size: 24px; text-align: center;
-            background-color: $secondary; color: $light; border: none; border-radius: 5px;
-            font-family: 'Alegreya Sans SC', sans-serif; font-weight: bold; }
-
-        .edit_details_title_input:focus { background-color: $light; color: $secondary; }
-
-    .edit_details_description_container { width: 100%; padding: 15px 15px 0px 15px; font-family: 'Lato', sans-serif; }
-
-        .edit_details_description_textarea { width: 100%; min-width: 100%; max-width: 100%; font-size: 16px; border-radius: 5px; padding: 10px;
-                                        background-color: $primary; color: $light; border: none; 
-                                        font-family: 'Alegreya Sans SC', sans-serif; font-weight: bold; }
-
-
-    .input_container { width: 100%; padding: 10px 15px; display: flex; }
-    .input_label_container { width: 30%; height: 100%; padding: 5px 10px; background-color: $secondary; border-radius: 5px 0px 0px 5px; 
-                                display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: 'Lato', sans-serif; }
-                                
-    .input_label { color: $light; }
-
-    /* CSS specific to iOS devices */ 
-    @supports (-webkit-touch-callout: none) {
-        
-        .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px; padding-left: 15px !important;
-            background-color: $primary; color: $light; border: none; padding-left: 5px; font-weight: bold; font-family: 'Lato', sans-serif; }
-
-        .input_select { width: 70%; height: 100%; background-color: $primary; color: $secondary; padding: 6.5px 10px;
-            border-radius: 0px 5px 5px 0px; border: none; font-weight: bold; font-family: 'Lato', sans-serif; }
+    .title_container { 
+        width: 100%; 
+        height: 70px; 
+        display: flex; 
+        flex-direction: row; 
+        justify-content: center; 
+        padding: 0px; 
+        background-color: $primary; 
     }
+        .title_arrow { 
+            fill: $light !important; 
+            height: 100% !important; 
+            width: 48px !important; 
+            padding: 0px 5px !important; 
+        }
+        .title_arrow:hover { 
+            background-color: $light !important; 
+            fill: $secondary !important; 
+        }
+        .title_input { 
+            width: calc(100% - 100px);
+            margin: 10px 10px;
+            background-color: $secondary;
+            color: $light;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Alegreya Sans SC', sans-serif;
+            font-weight: bold;
+            font-size: 24px;
+            text-align: center;
+        }
 
-    /* CSS for other than iOS devices */ 
-    @supports not (-webkit-touch-callout: none) {
+        .title_input:focus { 
+            background-color: $light; 
+            color: $secondary; 
+        }
 
-        .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px; padding-left: 15px !important;
-            background-color: $primary; color:$light; border: none; padding-left: 5px; font-weight: bold; font-family: 'Lato', sans-serif; }
+        .edit_details_description_container { 
+            width: 100%; 
+            padding: 15px 15px 0px 15px; 
+            font-family: 'Lato', sans-serif; 
+        }
+            .edit_details_description_textarea { 
+                width: 100%; 
+                min-width: 100%; 
+                max-width: 100%; 
+                font-size: 16px; 
+                border-radius: 5px; 
+                padding: 10px;                     
+                background-color: $primary; 
+                color: $light; 
+                border: none;                      
+                font-family: 'Alegreya Sans SC', sans-serif; 
+                font-weight: bold; 
+            }
+        .input_container { 
+            width: 100%; 
+            padding: 10px 15px; 
+            display: flex; 
+        }
+        .input_label_container { 
+            width: 30%; 
+            height: 100%; 
+            padding: 5px 10px; 
+            background-color: $secondary; 
+            border-radius: 5px 0px 0px 5px;                     
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            font-family: 'Lato', sans-serif; 
+        }                     
+        .input_label { color: $light; }
 
-        .input_select { width: 70%; height: 100%; background-color: $primary; color: $light; padding: 6.5px 10px;
-            border-radius: 0px 5px 5px 0px; border: none; font-weight: bold; font-family: 'Lato', sans-serif; }
+        /* CSS specific to iOS devices */ 
+        @supports (-webkit-touch-callout: none) {
+            
+            .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px; padding-left: 15px !important;
+                background-color: $primary; color: $light; border: none; padding-left: 5px; font-weight: bold; font-family: 'Lato', sans-serif; }
 
-        .input_select > option { font-weight: bold; font-family: 'Lato', sans-serif; }
-    }
+            .input_select { width: 70%; height: 100%; background-color: $primary; color: $secondary; padding: 6.5px 10px;
+                border-radius: 0px 5px 5px 0px; border: none; font-weight: bold; font-family: 'Lato', sans-serif; }
+        }
 
-    .input_split { width: 60% !important; }
-    .input_label_split { width: 40% !important; padding: 5px 10px; }
+        /* CSS for other than iOS devices */ 
+        @supports not (-webkit-touch-callout: none) {
 
-    .input_container_split_container { width: 100%; padding: 10px 15px; display: flex; }
-    .input_container_split { width: 50%; display: flex; flex-direction: row; margin: 0px; }
-    .split_left { padding-right: 7.5px; }
-    .split_right { padding-left: 7.5px; }
+            .input_textbox { width: 70%; height: 100%; border-radius: 0px 5px 5px 0px; padding: 6.5px 10px; padding-left: 15px !important;
+                background-color: $primary; color:$light; border: none; padding-left: 5px; font-weight: bold; font-family: 'Lato', sans-serif; }
 
-.submit_container { padding: 10px 15px; display: flex; flex-direction: row; }
+            .input_select { width: 70%; height: 100%; background-color: $primary; color: $light; padding: 6.5px 10px;
+                border-radius: 0px 5px 5px 0px; border: none; font-weight: bold; font-family: 'Lato', sans-serif; }
 
-.submit_button { padding: 5px 10px; background-color: $primary; border: 2px solid $secondary; color: $light; border-radius: 5px; font-weight: bold; margin-right: 10px; }
-.submit_button:hover { background-color: $secondary; border: 2px solid $secondary; color: $light; }
+            .input_select > option { font-weight: bold; font-family: 'Lato', sans-serif; }
+        }
+        .input_split { 
+            width: 60% !important; 
+        }
+        .input_label_split { 
+            width: 40% !important; 
+            padding: 5px 10px; 
+        }
+        .input_container_split_container { 
+            display: flex; 
+            width: 100%; 
+            padding: 10px 15px; 
+        }
+        .input_container_split { 
+            display: flex; 
+            flex-direction: row; 
+            width: 50%; 
+            margin: 0px; 
+        }
+        .split_left { 
+            padding-right: 7.5px; 
+        }
+        .split_right { 
+            padding-left: 7.5px; 
+        }
+        .submit_container {
+            display: flex; 
+            flex-direction: row;
+            padding: 10px 15px;  
+        }
+            .submit_button { 
+                padding: 5px 10px; 
+                color: $light;
+                background-color: $primary; 
+                border: 2px solid $secondary; 
+                border-radius: 5px; 
+                font-weight: bold; 
+                margin-right: 10px; 
+            }
+            .submit_button:hover { 
+                color: $light;
+                background-color: $secondary; 
+                border: 2px solid $secondary;  
+            }
+            .loader_container {
+                display: flex;
+                height: 100%; 
+                justify-content: center; 
+                align-items: center; 
+            }
+            .loader { 
+                height: 25px !important; 
+                width: 25px !important; 
+            }
 
-.loader_container { height: 100%; display: flex; justify-content: center; align-items: center; }
-.loader { height: 25px !important; width: 25px !important;  }
+            .submit_label { 
+                color: $secondary; 
+                font-size: 16px; 
+                font-weight: bold; 
+                line-height: 25px; 
+            }
+            .submit_label_failed { 
+                color: $error; 
+                font-size: 16px; 
+                font-weight: bold; 
+                line-height: 25px; 
+            }
+            .upload_button { 
+                padding: 5px 10px; 
+                color: $light; 
+                background-color: $primary; 
+                border: 2px solid $secondary; 
+                border-radius: 5px; 
+                font-weight: bold; 
+                margin-right: 10px; 
+            }
+            .upload_button:hover { 
+                color: $light;
+                background-color: $secondary; 
+                border: 2px solid $secondary; 
+            }
 
-.submit_label { color: $secondary; font-size: 16px; font-weight: bold; line-height: 25px; }
-.submit_label_failed { color: $error; font-size: 16px; font-weight: bold; line-height: 25px; }
-
-.upload_button { padding: 5px 10px; background-color: $primary; border: 2px solid $secondary; color: $light; border-radius: 5px; font-weight: bold; margin-right: 10px; }
-.upload_button:hover { background-color: $secondary; border: 2px solid $secondary; color: $light; }
-
-.upload_file_input { display: none; }
+            .upload_file_input { 
+                display: none; 
+            }
 
 .img_hor_vert {
     -webkit-transform: scale(-1);
