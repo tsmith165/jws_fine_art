@@ -1,63 +1,161 @@
 @import "../theme/theme";
 
-.details_container { min-height: calc(100vh - 100px); width: 100%; display: flex; flex-wrap: wrap; overflow-y: scroll; }
-
-.details_container_left { flex: 1 1 60%; justify-content: center; align-items: center; }
-@media (max-width: 800px) {
-    .details_container_left { height: 40vh; }
+.details_container { 
+    min-height: calc(100vh - 100px); 
+    width: 100%; display: flex; 
+    flex-wrap: wrap; 
+    overflow-y: scroll; 
 }
+    @media (max-width: 800px) {
+        .details_container_left { height: 40vh; }
+        .details_container_right { height: 60vh !important; overflow-y: scroll; }
+    }
+    .details_container_left { 
+        flex: 1 1 60%; 
+        justify-content: center; 
+        align-items: center; 
+    }
+        .details_image_container { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+        }
+            .details_image { 
+                width: 100%; 
+                height: 100%; 
+                position: relative; 
+            }
+    .details_container_right { 
+        flex: 1 1 40%; 
+        min-width: 30ch; 
+        background-color: $light; 
+        font-family: 'Lato', sans-serif; 
+    }
+        .details_title_container { 
+            display: inline-block; 
+            width: 100%; 
+            height: 70px;
+            background-color: $primary;  
+        }
+            .details_title_inner_container { 
+                display: flex; 
+                height: 100%;
+                flex-direction: row; 
+                justify-content: center; 
+                padding: 0px; 
+            }
+                .details_title_arrow { 
+                    fill: $light !important;
+                    height: 100% !important;
+                    width: 48px !important;
+                    padding: 0px 5px !important;
+                }
+                .details_title_arrow:hover { 
+                    background-color: $light !important;
+                    fill: $secondary !important;
+                }
+                .details_title { 
+                    width: calc(100% - 80px); 
+                    margin: auto; 
+                    color: $light;
+                    font-size: 1.5em; 
+                    line-height: 1.5em; 
+                    text-align: center; 
+                    font-family: 'Alegreya Sans SC', sans-serif; 
+                }
+        .details_form_container { 
+            display: flex;
+            flex-direction: column;
+            width: 100%; 
+            height: max-content !important; 
+            margin-bottom: 100px;  
+        }
+            .details_description_container { 
+                padding: 15px 20px 0px 20px; 
+                width: 100%;
+                margin-bottom: 20px;
+            }
+                .details_description { 
+                    width: 100%; 
+                    height: max-content;
+                    margin: 0; 
+                    justify-content: left; 
+                    white-space: pre-wrap; 
+                    color: $secondary; 
+                    font-size: 1.2em; 
+                    line-height: 1.4em; 
+                }
+        .details_navigation_container { 
+            width: 100%; 
+            height: fit-content; 
+            line-height: 3rem; 
+            font-size: 1.25rem; 
+            padding-top: 15px; 
+            padding-left: 15px; 
+        }
+            .details_navigation_inner_container { 
+                display: flex; 
+                flex-direction: row; 
+            }
+                .buy_now_button {
+                    height: 3rem;
+                    border-radius: 5px; 
+                    margin-right: 10px;
+                    background-color: $primary; 
+                    border: 1px solid $secondary; 
+                    color: $light; 
+                    font-family: 'Lato', sans-serif;
+                    font-weight: bold; 
+                }  
+                .buy_now_button:hover { 
+                    background-color: $secondary; 
+                    border: 1px solid $secondary; 
+                    color: $light; 
+                }
+                .price_text { 
+                    margin-right: 10px; 
+                    color: $secondary; 
+                }
+                .piece_sold { 
+                    margin-right: 10px; 
+                    color: $error; 
+                }
+                .piece_nfs  { 
+                    margin-right: 10px; 
+                    color: $error; 
+                }
+                .powered_by_stripe_container { 
+                    position: relative; 
+                    width: 174px; 
+                    height: 3rem; 
+                }
+                .instagram_link_container { 
+                    display: flex; 
+                    flex-direction: row; 
+                    width: fit-content;                
+                    color: $light; 
+                    background-color: $primary; 
+                    border-radius: 5px; 
+                }
+                .instagram_link_container:hover { 
+                    background-color: $secondary; 
+                    color: $light; 
+                }
+                    .instagram_image_container { 
+                        height: 3rem; 
+                        width: 3rem; 
+                        position: relative; 
+                    }
+                        .instagram_link_image { 
+                            padding: 10px !important; 
+                        }
+                    .instagram_link_label { 
+                        font-size: 1.5rem; 
+                        line-height: 3rem; 
+                        font-weight: bold; 
+                        margin-right: 10px; 
+                    }
 
-    .details_image_containter { width: 100%; height: 100%; position: relative; }
-
-    .details_image { width: 100%; height: 100%; position: relative; }
-
-.details_container_right {  flex: 1 1 40%; min-width: 30ch; background-color: $light; font-family: 'Lato', sans-serif; }
-@media (max-width: 800px) {
-    .details_container_right { height: 60vh !important; overflow-y: scroll; }
-}
-
-    .details_title_container { display: inline-block; background-color: $primary; width: 100%; height: 70px; }
-
-    .details_title_inner_container {  display: flex; flex-direction: row; justify-content: center; height: 100%; padding: 0px;
-        display: -webkit-box; display: -ms-flexbox; -webkit-box-pack: center; -ms-flex-pack: center; }
-
-        .details_title_arrow { fill: $light !important; height: 100% !important; width: 48px !important; padding: 0px 5px !important; }
-        .details_title_arrow:hover { background-color: $light !important; fill: $secondary !important; }
-
-        
-        .details_title { width: calc(100% - 80px); margin: auto; color: $light;
-            font-size: 1.4em; line-height: 1.2em; text-align: center; font-family: 'Alegreya Sans SC', sans-serif; }
-
-    .details_form_container { display: flex; flex-direction: column; width: 100%; height: max-content !important; margin-bottom: 100px;  }
-
-        .details_description_container { padding: 15px 20px 0px 20px; display: inline-block; width: 100%; }
-
-            .details_description { width: 100%; -webkit-box-pack: left; -ms-flex-pack: left; justify-content: left; margin: 0; white-space: pre-wrap; height: max-content;
-                color: $secondary; font-size: 1.2em; line-height: 1.4em; }
-        
-        .details_navigation_container { display: inline-block; width: 100%; height: fit-content; line-height: 3rem; font-size: 1.25rem; padding-top: 15px; padding-left: 15px;  }
-        .details_navigation_container:last-of-type { margin-bottom: 20px; }
-
-        .details_navigation_inner_container { display: flex; flex-direction: row; }
-
-            .buy_now_button {font-weight: bold; border-radius: 5px; margin-right: 10px; height: 3rem;
-                background-color: $primary; color: $light; border: 1px solid $secondary; font-family: 'Lato', sans-serif;  }
-                
-                .buy_now_button:hover {  background-color: $secondary; color: $light; border: 1px solid $secondary; }
-
-            .price_text { color: $secondary; margin-right: 10px; }
-            .piece_sold { color: $error;  margin-right: 10px; }
-            .piece_nfs { color: $error; margin-right: 10px; }
-            
-            .powered_by_stripe_container { position: relative; width: 174px; height: 3rem; }
-
-            .instagram_link_container { display: flex; flex-direction: row; width: fit-content;
-                                        color: $light; background-color: $primary; border-radius: 5px; }
-            .instagram_link_container:hover { background-color: $secondary; color: $light; }
-
-                .instagram_image_container { height: 3rem; width: 3rem; position: relative; }
-                    .instagram_link_image { padding: 10px !important; }
-                .instagram_link_label { font-size: 1.5rem; line-height: 3rem; font-weight: bold; margin-right: 10px; }
 
 .img_hor_vert {
     -webkit-transform: scale(-1);
