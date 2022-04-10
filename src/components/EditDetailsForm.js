@@ -30,15 +30,18 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
     console.log(piece)
 
     
-    const [description, set_description] = useState(piece['description'].replace("<br>","\n"));
+    const [description, set_description] = useState(piece['description'].split('\n').join("<br>"));
 
     useEffect(() => {
-        set_description(piece['description'].replace("<br>","\n"))
-    }, [piece['description'].replace("<br>","\n")]);
+        set_description(piece['description'].split('\n').join("<br>"))
+    }, [piece['description'].split('\n').join("<br>")]);
 
     useEffect(() => {
+        setLoading(false)
+        setSubmitted(false)
+        setError(false)
         setUploaded(false)
-    }, [false]);
+    }, [false, false, false, false]);
 
     async function handleSubmit(event) {
         event.preventDefault()
@@ -69,20 +72,25 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
             if (!uploaded) {
                 const response = await edit_details(id, title, description, type, sold, price, instagram, piece['width'], piece['height'], real_width, real_height)
     
-                console.log(`Edit Piece Response: ${response}`)
+                console.log(`Edit Piece Response (Next Line):`)
+                console.log(response)
                 
-                set_description(description.replace("<br>","\n"))
+                set_description(description.split('\n').join("<br>"))
                 refresh_data();
 
                 if (response) { setError(false); setSubmitted(true); }
-                else { setError(true) }
+                else { 
+                    console.log('Edit Piece - No Response - Setting error = true')
+                    setError(true) 
+                }
             }
             else {
                 const response = await create_piece(title, description, type, sold, price, instagram, piece["width"], piece["height"], real_width, real_height, piece['image_path']);
     
-                console.log(`Edit Piece Response: ${response}`)
+                console.log(`Edit Piece Response (Next Line):`)
+                console.log(response)
                 
-                set_description(description.replace("<br>","\n"))
+                set_description(description.split('\n').join("<br>"))
                 refresh_data();
 
                 if (response) { setError(false); setSubmitted(true); }
@@ -160,7 +168,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <Link href={`/edit/${last_oid}`} passHref={true}>
                         <ArrowForwardIosRoundedIcon className={`${styles.details_title_arrow} ${styles.img_hor_vert}`} />
                     </Link>
-                    <input type="text" className={styles.edit_details_title_input} id="title" defaultValue={piece['title']}/>
+                    <input type="text" className={styles.edit_details_title_input} id="title" defaultValue={piece['title']} key={piece['title']}/>
                     <Link href={`/edit/${next_oid}`} passHref={true}>
                         <ArrowForwardIosRoundedIcon className={styles.details_title_arrow}  />
                     </Link>
@@ -201,7 +209,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Price</div>
                     </div>
-                    <input id="price" className={styles.input_textbox} defaultValue={piece['price']}/>
+                    <input id="price" className={styles.input_textbox} defaultValue={piece['price']} key={piece['price']}/>
                 </div>
 
                 {/* Instagram Link Textbox */}
@@ -209,7 +217,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Instagram Link</div>
                     </div>
-                    <input id="instagram" className={styles.input_textbox} defaultValue={piece['instagram']}/>
+                    <input id="instagram" className={styles.input_textbox} defaultValue={piece['instagram']} key={piece['instagram']}/>
                 </div>
 
                 {/* Split Container For real_width / real_height */}
@@ -218,13 +226,13 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                         <div className={`${styles.input_label_container} ${styles.input_label_split}`}>
                             <div className={styles.input_label}>Width</div>
                         </div>
-                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="width" defaultValue={piece['real_width']}/>
+                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="width" defaultValue={piece['real_width']} key={piece['real_width']}/>
                     </div> 
                     <div className={`${styles.input_container_split} ${styles.split_right}`}>
                         <div className={`${styles.input_label_container} ${styles.input_label_split}`}>
                             <div className={styles.input_label}>Height</div>
                         </div>
-                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="height" defaultValue={piece['real_height']}/>
+                        <input className={`${styles.input_textbox} ${styles.input_split}`} id="height" defaultValue={piece['real_height']} key={piece['real_height']}/>
                     </div> 
                 </div>
 
