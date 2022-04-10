@@ -4,9 +4,6 @@ import { prisma } from '../../../lib/prisma'
 import PageLayout from '../../../src/components/layout/PageLayout'
 import styles from '../../../styles/CheckoutReturn.module.scss'
 
-
-
-//const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com";
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
 function getPieceId(PathOID, pieces) {
@@ -83,8 +80,8 @@ const SuccessPage = ({id, pieces}) => {
                     </div>
                 </div>
                 <div className={styles.details_container_right}>
-                    <div className={styles.details_title_container}>
-                        <b className={styles.details_title}>{piece['title']}</b>
+                    <div className={styles.title_container}>
+                        <b className={styles.title}>{piece['title']}</b>
                     </div>
                     <div className={styles.checkout_return_message_container}>
                         <div className={styles.checkout_return_message}>

@@ -7,9 +7,7 @@ import { prisma } from '../../lib/prisma'
 import Link from 'next/link'
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
-import ArrowBackRoundedIcon from '@material-ui/icons/ArrowBackRounded';
 
-//const baseURL = "https://jwsfineart.sfo2.digitaloceanspaces.com";
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
 function getPieceId(PathOID, pieces) {
@@ -107,14 +105,14 @@ const DetailsPage = ({id, pieces}) => {
                     </div>
                 </div>
                 <div className={styles.details_container_right}>
-                    <div className={styles.details_title_container}>
-                        <div className={styles.details_title_inner_container}>
+                    <div className={styles.title_container}>
+                        <div className={styles.title_inner_container}>
                             <Link href={`/details/${last_oid}`} passHref={true}>
-                                <ArrowForwardIosRoundedIcon className={`${styles.details_title_arrow} ${styles.img_hor_vert}`} />
+                                <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
                             </Link>
-                            <b className={styles.details_title}>{piece['title']}</b>
+                            <b className={styles.title}>{piece['title']}</b>
                             <Link href={`/details/${next_oid}`} passHref={true}>
-                                <ArrowForwardIosRoundedIcon className={styles.details_title_arrow}  />
+                                <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
                             </Link>
                         </div>
                     </div>
