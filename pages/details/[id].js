@@ -139,7 +139,7 @@ const DetailsPage = ({id, pieces}) => {
                                 <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
                                     <div className={styles.instagram_link_container}>
                                         <div className={styles.instagram_image_container}>
-                                            <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fixed" width={50} height={50}/>
+                                            <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill"/>
                                         </div>
                                         <div className={styles.instagram_link_label}>View On Instagram</div>
                                     </div>
