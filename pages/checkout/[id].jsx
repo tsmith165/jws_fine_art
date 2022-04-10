@@ -2,7 +2,6 @@ import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
 import { prisma } from '../../lib/prisma'
 import React, { useState, useEffect } from 'react';
-import { useSession } from '../../lib/next-auth-react-query';
 
 import styles from '../../styles/Details.module.scss'
 
@@ -94,83 +93,42 @@ const CheckoutPage = ({id, pieces}) => {
     useEffect(() => {
         set_image_url(piece['image_path'])
     }, [piece['image_path']]);
+            
+    const page_jsx = (
+        <PageLayout>
+            <div className={styles.details_container}>
+                <div className={styles.details_container_left}>
+                    <div className={styles.details_image_container}>
 
-    const [session, loading] = useSession({
-        required: true,
-        queryConfig: {
-          staleTime: 60 * 1000 * 60 * 3, // 3 hours
-          refetchInterval: 60 * 1000 * 5, // 5 minutes
-        },
-    });
+                        <Image
+                            className={styles.details_image}
+                            src={image_url}
+                            alt={piece['title']}
+                            width={piece['width']}
+                            height={piece['height']}
+                            priority={true}
+                            layout='fill'
+                            objectFit='contain'
+                            quality={100}
+                        />
 
-    var page_jsx = null;
-    if (loading) {
-        page_jsx = (
-            <h1>Loading...</h1>
-        );
-    } else {
-        if (!session) {
-            // Session Does Not exist
-            page_jsx =  (
-                <h1>Not signed in</h1>
-            );
-        } else {
-            // Session Exists
-            console.log("Session (Next Line):");
-            console.log(session)
-    
-            console.log(`User Role: ${session.token?.role}`)
-    
-            if ( !session.token?.role && session.token?.role != 'ADMIN' ) {
-                // User Role Token does not exist or User role is not ADMIN
-                page_jsx = urn (
-                    <h1>Not signed in</h1>
-                );
-            } else {
-                // User Role is Admin
-                console.log("LOAD ADMIN PAGE")
-            
-                console.log(`IMAGE URL : ${image_url}`)
-            
-                page_jsx =  (
-                    <PageLayout>
-                        <div className={styles.details_container}>
-                            <div className={styles.details_container_left}>
-                                <div className={styles.details_image_containter}>
-            
-                                    <Image
-                                        className={styles.details_image}
-                                        src={image_url}
-                                        alt={piece['title']}
-                                        width={piece['width']}
-                                        height={piece['height']}
-                                        priority={true}
-                                        layout='fill'
-                                        objectFit='contain'
-                                        quality={100}
-                                    />
-            
-                                </div>
-                            </div>
-                            <div className={styles.details_container_right}>
-            
-                                <CheckoutForm 
-                                    id={id} 
-                                    last_oid={last_oid} 
-                                    next_oid={next_oid} 
-                                    piece={piece} 
-                                    set_piece={set_piece} 
-                                    set_image_url={set_image_url}
-                                />
-            
-                            </div>
-                        </div>
-                    </PageLayout>
-                )
-            }
-        }
-    }
+                    </div>
+                </div>
+                <div className={styles.details_container_right}>
 
+                    <CheckoutForm 
+                        id={id} 
+                        last_oid={last_oid} 
+                        next_oid={next_oid} 
+                        piece={piece} 
+                        set_piece={set_piece} 
+                        set_image_url={set_image_url}
+                    />
+
+                </div>
+            </div>
+        </PageLayout>
+    )
     return page_jsx
 }
 
