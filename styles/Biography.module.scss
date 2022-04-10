@@ -1,28 +1,84 @@
 @import "../theme/theme";
 
-.bio_container { height: calc(100vh - 100px); width: 100vw; padding: 0px 10px; overflow-y: scroll; overflow-x: hidden; background-color: $light }
+.bio_container { 
+  height: calc(100vh - 100px); 
+  width: 100vw; 
+  padding: 0px 10px; 
+  overflow-y: scroll; 
+  overflow-x: hidden; 
+  background-color: $light 
+}
+  .bio_image_container { 
+    display: flex; 
+    justify-content: center; 
+    width: 100%; 
+    margin-top: 15px; 
+  }
+    .bio_image_border {
+      position: relative; 
+      width: 130px !important; 
+      height: 170px !important; 
+      border-radius: 5px; 
+      background-color: $secondary; 
+    }
+      .bio_image { 
+        padding: 5px !important; 
+      }
+  .bio_title_container { 
+    width: 100%; 
+    margin-top: 15px; 
+  }
+    .bio_title { 
+      display: block; 
+      text-align: center; 
+      color: $secondary; 
+      font-size: 28px; 
+      font-weight: bold; 
+      font-family: 'Alegreya Sans SC', sans-serif; 
+    }
+  .bio_text_container { 
+    width: 100%; 
+  }
 
-.bio_image_container { width: 100%; margin-top: 15px; display: flex; justify-content: center; }
-.bio_image_border { position: relative; width: 130px !important; height: 170px !important; border-radius: 5px; background-color: $dark; }
-.bio_image {  padding: 5px !important; }
-
-.bio_title_container { width: 100%; margin-top: 15px; }
-
-.bio_title { display: block; text-align: center; color: $secondary; font-size: 28px; font-weight: bold; margin: auto; 
-  font-family: 'Alegreya Sans SC', sans-serif; }
-
-.bio_text_container { width: 100%; }
-
-.bio_text { text-align: center; margin: 0; color: $secondary; font-size: 20px; padding: 15px; margin-bottom: 100px; 
- font-family: 'Lato', sans-serif; }
+  .bio_text { 
+    color: $secondary; 
+    font-size: 20px; 
+    padding: 15px; 
+    margin-bottom: 20px; 
+    font-family: 'Lato', sans-serif; 
+    text-align: center;
+  }
 
 
-.contact_container { position: absolute; bottom: 0px; padding-bottom: 10px; }
-.contact_text_container { width: 100vw; display: flex; justify-content: center; }
-    .contact_text  { padding: 5px; text-align: center; color: $secondary;  }
-
-        .title { font-size: 24px; font-family: 'Lato', sans-serif; }
-        .description { font-size: 20px; line-height: 32px; }
-
-    .contact_link  { padding: 5px; text-align: center; color: blue; text-decoration: underline; }
-        .link { font-size: 20px; line-height: 20px; font-family: 'Lato', sans-serif; }
+  .contact_container { 
+    margin-bottom: 15px;
+  }
+  .contact_text_container { 
+    width: 100vw; 
+    display: flex; 
+    justify-content: center;
+  }
+    .contact_text  { 
+      padding: 5px; 
+      text-align: center; 
+      color: $secondary;
+    }
+      .title { 
+        font-size: 24px; 
+        font-family: 'Lato', sans-serif;
+      }
+      .description { 
+        font-size: 20px; 
+        line-height: 32px;
+      }
+      .contact_link { 
+        padding: 5px; 
+        color: blue; 
+        text-align: center; 
+        text-decoration: underline;
+      }
+      .link { 
+        font-size: 20px; 
+        line-height: 20px; 
+        font-family: 'Lato', sans-serif; 
+      }
