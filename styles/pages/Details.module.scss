@@ -1,10 +1,10 @@
 @import "../../theme/theme";
 
 .details_container { 
-    min-height: calc(100vh - 100px); 
-    width: 100%; 
     display: flex; 
     flex-wrap: wrap; 
+    min-height: calc(100vh - 100px); 
+    width: 100%; 
 }
     @media (max-width: 800px) {
         .details_container_left { height: 40vh; }
@@ -39,9 +39,9 @@
         }
             .title_inner_container { 
                 display: flex; 
-                height: 100%;
                 flex-direction: row; 
                 justify-content: center; 
+                height: 100%;
                 padding: 0px; 
             }
                 .title_arrow { 

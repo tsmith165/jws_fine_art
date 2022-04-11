@@ -26,10 +26,10 @@
         padding: 0px;
     }
         .tree_list_item { 
-            width: 100%; 
-            height: 99px; 
             display: flex; 
             flex-direction: row; 
+            width: 100%; 
+            height: 99px; 
             color: $secondary;
             background-color: $light; 
             border-bottom: 2px solid $secondary; 

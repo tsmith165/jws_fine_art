@@ -21,10 +21,10 @@
         color: $light; 
     }
         .list_item { 
-            width: 100%; 
-            height: 99px; 
             display: flex; 
             flex-direction: row; 
+            width: 100%; 
+            height: 99px; 
             border-bottom: 2px solid $secondary; 
         }
         .list_item:last-of-type { 
@@ -53,10 +53,10 @@
                 font-size: 2rem !important; 
             }
             .order_description_container { 
-                width: calc( 100% - ((30% + 20px) + 150px + 37px) ); 
-                padding: 10px 5px; 
                 display: flex; 
                 flex-direction: column; 
+                width: calc( 100% - ((30% + 20px) + 150px + 37px) ); 
+                padding: 10px 5px; 
             }
             .list_item_text_container { 
                 padding-right: 15px; 
@@ -64,8 +64,8 @@
                 margin-bottom: auto; 
             }
             .list_item_desc_container { 
-                width: 100px !important; 
                 display: inline-block;  
+                width: 100px !important; 
             }
 
 .img_hor_vert {

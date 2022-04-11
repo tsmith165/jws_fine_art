@@ -11,12 +11,12 @@
 }
     .menu_items_container { padding: 0; }
         .menu_item { 
-            width: 100vw; 
-            height: 50px; 
-            padding: 5px; 
             display: flex; 
             justify-content: center; 
             align-items: center;
+            width: 100vw; 
+            height: 50px; 
+            padding: 5px; 
             color: $secondary;
             background-color: $light;  
             border-bottom: 2px solid $secondary; 
@@ -44,9 +44,9 @@
         padding-bottom: 10px; 
     }
         .menu_details_text_container { 
-            width: 100vw; 
             display: flex; 
             justify-content: center; 
+            width: 100vw; 
         }
             .menu_details_text  { 
                 padding: 5px; 
