@@ -7,7 +7,7 @@ import MenuOverlayButton from '../MenuOverlayButton';
 
 import { admin_menu_list, menu_list } from "../../../lib/menu_list"
 
-function generate_menu(menu_list) {
+function generate_menu(menu_list, set_menu_open) {
     var menu_items = [];
     for (var i=0; i < menu_list.length; i++) {
 
@@ -21,6 +21,7 @@ function generate_menu(menu_list) {
                             id = {i}
                             menu_name = {menu_item_string}
                             url_endpoint = {url_endpoint}
+                            set_menu_open = {set_menu_open}
                           />;
 
         menu_items.push(menu_item);
@@ -29,7 +30,7 @@ function generate_menu(menu_list) {
     return menu_items
 }
 
-const Menu = ({ }) => {
+const Menu = ({ set_menu_open }) => {
     const [session, loading] = useSession({
         required: false,
         queryConfig: {
@@ -62,7 +63,7 @@ const Menu = ({ }) => {
     console.log("Menu List (Next Line):");
     console.log(using_menu);
         
-    var menu_items = generate_menu(using_menu);
+    var menu_items = generate_menu(using_menu, set_menu_open);
 
     return (
         <div className={styles.menu_overlay_items_container}>
