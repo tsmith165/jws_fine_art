@@ -4,9 +4,9 @@ import { prisma } from '../../lib/prisma'
 import React, { useState, useEffect } from 'react';
 import { useSession } from '../../lib/next-auth-react-query';
 
-import styles from '../../styles/Details.module.scss'
+import styles from '../../styles/pages/Details.module.scss'
 
-import EditDetailsForm from '../../src/components/EditDetailsForm'
+import EditDetailsForm from '../../src/components/forms/EditDetailsForm'
 
 import { get_piece_id_from_path_o_id } from '../../lib/helpers'
 

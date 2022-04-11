@@ -3,7 +3,7 @@ import { prisma } from '../lib/prisma'
 import PageLayout from '../src/components/layout/PageLayout'
 import Gallery from '../src/components/Gallery';
 
-import styles from '../styles/Home.module.scss'
+import styles from '../styles/components/Gallery.module.scss'
 import useWindowSize from '../lib/useWindowSize'
 
 export default function Home({piece_list}) {

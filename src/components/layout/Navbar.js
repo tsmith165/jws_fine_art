@@ -2,10 +2,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import React, { useState } from 'react';
 
-import Menu from './Menu'
+import MenuOverlay from './MenuOverlay'
 import Profile from './Profile'
 
-import styles from "../../../styles/Navbar.module.scss"
+import styles from "../../../styles/layout/Navbar.module.scss"
 
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -78,7 +78,7 @@ const Navbar = ({}) => {
                         menu_open == true ? (
                             <div className={styles.page_menu_container}>
                                 <div className={styles.page_menu_body}>
-                                    <Menu set_menu_open={set_menu_open}/>
+                                    <MenuOverlay set_menu_open={set_menu_open}/>
                                 </div>
                             </div>
                         ) : (

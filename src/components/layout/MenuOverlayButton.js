@@ -1,4 +1,4 @@
-import styles from '../../styles/MenuOverlay.module.scss'
+import styles from '../../../styles/layout/MenuOverlay.module.scss'
 import Link from 'next/link'
 
 const MenuOverlayButton = ({id, menu_name, url_endpoint, set_menu_open}) => {

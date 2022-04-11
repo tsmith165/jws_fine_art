@@ -9,9 +9,9 @@ import { loadStripe } from "@stripe/stripe-js";
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 
-import styles from '../../styles/CheckoutForm.module.scss'
+import styles from '../../../styles/forms/CheckoutForm.module.scss'
 
-import { create_pending_transaction, create_stripe_checkout_session } from '../../lib/api_calls'
+import { create_pending_transaction, create_stripe_checkout_session } from '../../../lib/api_calls'
 
 
 const stripePromise = loadStripe("pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj");

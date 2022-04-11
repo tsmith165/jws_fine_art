@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSession } from '../../../lib/next-auth-react-query';
 import { signIn, signOut } from 'next-auth/react';
 
-import styles from "../../../styles/Navbar.module.scss"
+import styles from "../../../styles/layout/Navbar.module.scss"
 
 import { CircularProgress } from '@material-ui/core';
 
@@ -43,7 +43,7 @@ function generate_bad_session(handleSubmit, loading, sent) {
             </div>
             <div className={styles.account_menu_body}>
                 <div className={styles.email_form_container}>
-                    <form method="post" onSubmit={handleSubmit} class={styles.sign_in_form} /*action="/api/auth/signin/email"*/>
+                    <form method="post" onSubmit={handleSubmit} className={styles.sign_in_form} /*action="/api/auth/signin/email"*/>
                         <div className={styles.email_input_container}>
                             <input type="text" id="email" name="email" className={styles.email_input} autoComplete={"off"}/>
                         </div>

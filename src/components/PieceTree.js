@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image'
 
-import styles from '../../styles/PieceTree.module.scss'
+import styles from '../../styles/components/PieceTree.module.scss'
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';

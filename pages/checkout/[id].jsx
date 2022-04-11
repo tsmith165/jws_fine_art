@@ -3,9 +3,9 @@ import Image from 'next/image'
 import { prisma } from '../../lib/prisma'
 import React, { useState, useEffect } from 'react';
 
-import styles from '../../styles/Details.module.scss'
+import styles from '../../styles/pages/Details.module.scss'
 
-import CheckoutForm from '../../src/components/CheckoutForm'
+import CheckoutForm from '../../src/components/forms/CheckoutForm'
 
 import { get_piece_id_from_path_o_id } from '../../lib/helpers'
 

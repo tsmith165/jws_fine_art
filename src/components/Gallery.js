@@ -1,4 +1,4 @@
-import styles from '../../styles/Gallery.module.scss'
+import styles from '../../styles/components/Gallery.module.scss'
 
 import Piece from '../components/Piece'
 

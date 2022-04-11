@@ -3,7 +3,7 @@ import { AppProps } from 'next/app';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
-import '../styles/globals.scss'
+import '../styles/globals/globals.scss'
 import Layout from '../src/components/layout/Layout'
 
 const queryClient = new QueryClient();

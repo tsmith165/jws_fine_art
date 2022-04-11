@@ -1,9 +1,8 @@
-import Link from 'next/link'
 import { useSession } from '../../../lib/next-auth-react-query';
 
-import styles from "../../../styles/Navbar.module.scss"
+import styles from "../../../styles/layout/Navbar.module.scss"
 
-import MenuOverlayButton from '../MenuOverlayButton';
+import MenuOverlayButton from './MenuOverlayButton';
 
 import { admin_menu_list, menu_list } from "../../../lib/menu_list"
 
@@ -30,7 +29,7 @@ function generate_menu(menu_list, set_menu_open) {
     return menu_items
 }
 
-const Menu = ({ set_menu_open }) => {
+const MenuOverlay = ({ set_menu_open }) => {
     const [session, loading] = useSession({
         required: false,
         queryConfig: {
@@ -72,4 +71,4 @@ const Menu = ({ set_menu_open }) => {
     )
 }
 
-export default Menu;
+export default MenuOverlay;
