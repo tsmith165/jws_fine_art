@@ -40,9 +40,9 @@
                 padding: 10px; 
             }
                 .email_input_container { 
-                    width: 100%; 
                     display: flex; 
                     flex-direction: row; 
+                    width: 100%; 
                     margin-bottom: 10px; 
                 }
                 .email_label { 
@@ -60,9 +60,9 @@
                     border-radius: 5px; 
                 }
                 .submit_container { 
-                    height: 40px; 
                     display: flex; 
                     flex-direction: row; 
+                    height: 40px; 
                 }
                 .sign_in_button { 
                     padding: 10px 20px; 
@@ -80,10 +80,10 @@
                 }
 
                 .loader_container { 
-                    height: 100%; 
                     display: flex; 
                     justify-content: center; 
                     align-items: center; 
+                    height: 100%; 
                 }
                 .loader { 
                     width: 25px !important; 

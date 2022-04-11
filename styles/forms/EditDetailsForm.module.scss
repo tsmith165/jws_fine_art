@@ -9,11 +9,11 @@
 }
 
     .title_container { 
-        width: 100%; 
-        height: 70px; 
         display: flex; 
         flex-direction: row; 
         justify-content: center; 
+        width: 100%; 
+        height: 70px; 
         padding: 0px; 
         background-color: $primary; 
     }
@@ -64,19 +64,19 @@
                 font-weight: bold; 
             }
         .input_container { 
+            display: flex; 
             width: 100%; 
             padding: 10px 15px; 
-            display: flex; 
         }
         .input_label_container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
             width: 30%; 
             height: 100%; 
             padding: 5px 10px; 
             background-color: $secondary; 
             border-radius: 5px 0px 0px 5px;                     
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
             font-weight: bold; 
             font-family: 'Lato', sans-serif; 
         }                     
@@ -183,9 +183,9 @@
             }
             .loader_container {
                 display: flex;
-                height: 100%; 
                 justify-content: center; 
                 align-items: center; 
+                height: 100%; 
             }
             .loader { 
                 height: 25px !important; 

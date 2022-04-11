@@ -1,11 +1,11 @@
 @import "../../theme/theme";
 
 .menu_overlay_item { 
-    height: 50px; 
-    padding: 5px; 
     display: flex; 
     justify-content: center; 
     align-items: center; 
+    height: 50px; 
+    padding: 5px; 
     color: $light; 
     background-color: $primary; 
     border-bottom: 2px solid $secondary; 

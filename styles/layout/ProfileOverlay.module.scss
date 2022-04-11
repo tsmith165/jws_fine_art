@@ -39,9 +39,9 @@
         }
 
     .email_input_container { 
-        width: 100%; 
         display: flex; 
         flex-direction: row; 
+        width: 100%; 
         margin-bottom: 10px; 
     }
         .email_label { 
@@ -71,8 +71,8 @@
             background-color: $light; 
             border: 2px solid $secondary; 
             border-radius: 5px; 
-            font-weight: bold;
             margin-right: 10px; 
+            font-weight: bold;
             text-align: center; 
             white-space: nowrap; 
         }
@@ -82,10 +82,10 @@
             border: 2px solid $light; 
         }
         .loader_container { 
-            height: 100%;
             display: flex; 
             justify-content: center; 
             align-items: center; 
+            height: 100%;
         }
             .loader { 
                 height: 25px !important; 

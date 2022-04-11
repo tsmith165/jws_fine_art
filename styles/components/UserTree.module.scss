@@ -51,24 +51,24 @@
 
             // Grid for user details strings on left side
             .user_grid { 
+                display: grid; 
                 color: $light; 
                 padding: 7.5px 10px 0px 10px; 
                 margin: 0; 
-                display: grid; 
                 grid-template-columns: repeat(2, 1fr); 
                 width: fit-content; 
                 float: left; 
             }
                 .email_container { 
-                    width: 200px; 
                     display: inline-grid; 
+                    width: 200px; 
                     font-weight: bold; 
                     overflow: hidden; 
                     text-overflow: ellipsis; 
                 }
                 .role_container { 
-                    width: fit-content; 
                     display: inline-grid; 
+                    width: fit-content; 
                     font-weight: bold; 
                 }
 
