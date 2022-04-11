@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { prisma } from '../../../lib/prisma'
 
 import PageLayout from '../../../src/components/layout/PageLayout'
-import styles from '../../../styles/CheckoutReturn.module.scss'
+import styles from '../../../styles/pages/CheckoutReturn.module.scss'
 
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 

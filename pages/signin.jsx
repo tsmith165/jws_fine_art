@@ -5,7 +5,7 @@ import { useSession } from '../lib/next-auth-react-query';
 import Router from 'next/router'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import styles from '../styles/SignIn.module.scss'
+import styles from '../styles/pages/SignIn.module.scss'
 
 import { CircularProgress } from '@material-ui/core';
 

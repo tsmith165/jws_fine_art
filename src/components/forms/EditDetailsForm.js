@@ -5,9 +5,9 @@ import { useRouter } from 'next/router'
 import { CircularProgress } from '@material-ui/core';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 
-import styles from '../../styles/EditDetailsForm.module.scss'
+import styles from '../../../styles/forms/EditDetailsForm.module.scss'
 
-import { edit_details, create_piece, upload_image, get_upload_url } from '../../lib/api_calls'
+import { edit_details, create_piece, upload_image, get_upload_url } from '../../../lib/api_calls'
 
 const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url }) => {
 

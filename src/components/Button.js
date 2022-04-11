@@ -1,4 +1,4 @@
-import styles from '../../styles/Button.module.scss'
+import styles from '../../styles/components/Button.module.scss'
 
 const Button = ({link=false, content=""}) => {
     if (link) {

@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import styles from "../../../styles/PageLayout.module.scss"
+import styles from "../../../styles/layout/PageLayout.module.scss"
 
 const PageLayout = (props) => {
     return (

@@ -1,4 +1,4 @@
-import styles from '../../styles/UserTree.module.scss'
+import styles from '../../styles/components/UserTree.module.scss'
 
 import { demote_user, promote_user, delete_user } from '../../lib/api_calls'
 

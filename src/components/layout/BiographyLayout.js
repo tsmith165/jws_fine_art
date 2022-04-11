@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import styles from '../../styles/Biography.module.scss'
+import styles from '../../../styles/pages/Biography.module.scss'
 
 const BiographyLayout = ({}) => {
     return (

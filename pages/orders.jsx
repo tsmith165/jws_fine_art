@@ -7,7 +7,7 @@ import { prisma } from '../lib/prisma'
 import PageLayout from '../src/components/layout/PageLayout'
 import OrderTree from '../src/components/OrderTree'
 
-import styles from '../styles/Admin.module.scss'
+import styles from '../styles/pages/Orders.module.scss'
 
 // using client side session retrieval
 const Orders = ({ verified_list }) => {

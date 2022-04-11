@@ -1,7 +1,7 @@
 import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
 
-import styles from '../../styles/Details.module.scss'
+import styles from '../../styles/pages/Details.module.scss'
 import { prisma } from '../../lib/prisma'
 
 import Link from 'next/link'

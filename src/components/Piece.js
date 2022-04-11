@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from '../../styles/Home.module.scss'
+import styles from '../../styles/components/Gallery.module.scss'
 
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 

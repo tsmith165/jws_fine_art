@@ -1,4 +1,4 @@
-@import "../theme/theme";
+@import "../../theme/theme";
 
 .menu_overlay_item { height: 50px; display: flex; justify-content: center; align-items: center; padding: 5px; font-weight: bold;
     background-color: $primary; color: $light; border-bottom: 2px solid $secondary; }
