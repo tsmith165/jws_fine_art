@@ -1,8 +1,24 @@
 @import "../../theme/theme";
 
-.main_container { height: calc(100vh - 100px); width: 100vw; position: absolute; overflow-y: scroll; overflow-x: hidden; background-color: $light }
-.main_body { padding: 15px 15px; }
+.main_container { 
+  height: calc(100vh - 100px); 
+  width: 100vw; 
+  position: absolute; 
+  overflow-y: scroll; 
+  overflow-x: hidden; 
+  background-color: $light;
+}
+  .main_body { 
+    padding: 15px 15px; 
+  }
 
-  .module_title { color: $secondary; margin-top: 5px;  }
+    .module_title { 
+      color: $secondary; 
+      margin-top: 5px;  
+    }
 
-  .user_tree_container { width: 100%; border-radius: 5px; background-color: $primary; }
+    .user_tree_container { 
+      width: 100%; 
+      border-radius: 5px; 
+      background-color: $primary; 
+    }
