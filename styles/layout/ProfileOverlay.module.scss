@@ -1,0 +1,28 @@
+@import "../../theme/theme";
+
+.account_menu_header { background-color: $primary; height: 50px; border-left: 2px solid $secondary; padding: 10px; color: $light; font-weight: bold; line-height: 25px; }
+    .account_name {   }
+
+    .account_auth_button { background-color: $primary; border: 2px solid $light; color: $light; padding: 5px 5px; border-radius: 3px; position: absolute; right: 10px; top: 10px; font-weight: bold;  }
+    .account_auth_button:hover { background-color: $light; color: $primary; }
+
+.profile_menu_body { padding: 10px;  }
+    
+    .role_container { padding: 5px; color: $light; }
+
+
+    .email_form_container { padding: 10px; }
+
+.email_input_container { width: 100%; display: flex; flex-direction: row; margin-bottom: 10px; }
+.email_label { color: $light; font-size: 18px; font-weight: bold; margin-right: 10px; }
+.email_input { padding: 5px 10px; box-sizing: border-box; border-radius: 5px; flex: 2; background-color: $light !important; color: $secondary; }
+
+.submit_container { height: fit-content; display: flex; flex-direction: row; }
+
+.sign_in_button { height: 40px !important; width: max-content; padding: 10px 20px; background-color: $light; border: 2px solid $secondary; color: $secondary; border-radius: 5px; font-weight: bold; margin-right: 10px; text-align: center; white-space: nowrap; }
+.sign_in_button:hover { background-color: $secondary; border: 2px solid $light; color: $light; }
+
+.loader_container { height: 100%; display: flex; justify-content: center; align-items: center; }
+.loader { height: 25px !important; width: 25px !important;  }
+
+.sent_label { width: fit-content; font-size: 16px; font-weight: 500; color: $light; }

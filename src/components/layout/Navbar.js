@@ -3,7 +3,7 @@ import Image from 'next/image'
 import React, { useState } from 'react';
 
 import MenuOverlay from './MenuOverlay'
-import Profile from './Profile'
+import ProfileOverlay from './ProfileOverlay'
 
 import styles from "../../../styles/layout/Navbar.module.scss"
 
@@ -64,7 +64,7 @@ const Navbar = ({}) => {
 
                     <div className={styles.account_menu_container}>
                         <div className={styles.account_menu_body}>
-                            <Profile />
+                            <ProfileOverlay />
                         </div>
                     </div>
                 </div>
