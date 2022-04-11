@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSession } from '../../../lib/next-auth-react-query';
 import { signIn, signOut } from 'next-auth/react';
 
-import styles from "../../../styles/layout/Navbar.module.scss"
+import styles from "../../../styles/layout/ProfileOverlay.module.scss"
 
 import { CircularProgress } from '@material-ui/core';
 
@@ -71,7 +71,7 @@ function generate_bad_session(handleSubmit, loading, sent) {
     return account_menu_jsx
 }
 
-const Profile = ({ }) => {
+const ProfileOverlay = ({ }) => {
     const [session, session_loading] = useSession({
         required: false,
         queryConfig: {
@@ -121,4 +121,4 @@ const Profile = ({ }) => {
     return ( account_menu_jsx )
 }
 
-export default Profile;
+export default ProfileOverlay;

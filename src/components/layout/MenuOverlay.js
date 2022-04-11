@@ -1,6 +1,6 @@
 import { useSession } from '../../../lib/next-auth-react-query';
 
-import styles from "../../../styles/layout/Navbar.module.scss"
+import styles from "../../../styles/layout/MenuOverlay.module.scss"
 
 import MenuOverlayButton from './MenuOverlayButton';
 
