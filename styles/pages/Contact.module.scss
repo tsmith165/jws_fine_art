@@ -1,55 +1,42 @@
 @import "../../theme/theme";
 
-.bio_container { 
+.contact_container { 
   height: calc(100vh - 100px); 
-  width: 100%; 
+  width: 100vw; 
   padding: 0px 10px; 
-  overflow-y: scroll; 
+  overflow-y: hidden; 
   overflow-x: hidden; 
   background-color: $light 
 }
-  .bio_image_container { 
+  .contact_image_container { 
     display: flex; 
     justify-content: center; 
     width: 100%; 
     margin-top: 15px; 
   }
-    .bio_image_border {
+    .contact_image_border {
       position: relative; 
       width: 130px !important; 
       height: 170px !important; 
       border-radius: 5px; 
       background-color: $secondary; 
     }
-      .bio_image { 
+      .contact_image { 
         padding: 5px !important; 
       }
-  .bio_title_container { 
+  .contact_title_container { 
     width: 100%; 
     margin-top: 15px; 
   }
-    .bio_title { 
+    .contact_title { 
       display: block; 
       text-align: center; 
       color: $secondary; 
-      font-size: 28px; 
-      font-weight: bold; 
+      font-size: 2rem; 
+      font-weight: 900; 
       font-family: 'Alegreya Sans SC', sans-serif; 
     }
-  .bio_text_container { 
-    width: 100%; 
-  }
-
-  .bio_text { 
-    color: $secondary; 
-    font-size: 20px; 
-    padding: 15px; 
-    margin-bottom: 20px; 
-    font-family: 'Lato', sans-serif; 
-    text-align: center;
-  }
-
-
+  
   .contact_container { 
     margin-bottom: 15px;
   }
