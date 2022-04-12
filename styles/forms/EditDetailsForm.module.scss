@@ -185,16 +185,17 @@
                 background-color: $secondary; 
                 border: 2px solid $secondary;  
             }
+
             .loader_container {
                 display: flex;
                 justify-content: center; 
                 align-items: center; 
                 height: 100%; 
             }
-            .loader { 
-                height: 25px !important; 
-                width: 25px !important; 
-            }
+                .loader { 
+                    height: 25px !important; 
+                    width: 25px !important; 
+                }
 
             .submit_label { 
                 color: $secondary; 
@@ -208,6 +209,7 @@
                 font-weight: bold; 
                 line-height: 25px; 
             }
+            
             .upload_button { 
                 padding: 5px 10px; 
                 color: $light; 
