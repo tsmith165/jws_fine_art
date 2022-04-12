@@ -50,7 +50,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
         
         // capture data from form
         const title       = event.target.elements.title.value;
-        const description = event.target.elements.description.value;
+        const description = description.split('\n').join("<br>");
         const type        = event.target.elements.type.value;
         const sold        = event.target.elements.sold.value;
         const price       = event.target.elements.price.value;
@@ -172,7 +172,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
 
             <form method="post" onSubmit={handleSubmit}>
                 <div className={styles.edit_details_description_container}>
-                    <textarea className={styles.edit_details_description_textarea} id="description" value={description} onChange={updateDescription}/>
+                    <textarea className={styles.edit_details_description_textarea} id="description" value={description.split('\n').join("<br>")} onChange={updateDescription}/>
                 </div>
 
                 {/* Piece Type Select */}
