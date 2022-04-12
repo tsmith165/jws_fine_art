@@ -152,6 +152,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
 
     function updateDescription (event) {
         event.preventDefault();
+        //console.log(event.target.value)
         set_description(event.target.value);
     }
 
@@ -160,17 +161,17 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
 
     return (
         <div className={styles.edit_details_form_container}>
-            <div className={styles.title_container}>
-                <Link href={`/edit/${last_oid}`} passHref={true}>
-                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
-                </Link>
-                <input type="text" className={styles.title_input} id="title" defaultValue={piece['title']} key={piece['title']}/>
-                <Link href={`/edit/${next_oid}`} passHref={true}>
-                    <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
-                </Link>
-            </div>
-
             <form method="post" onSubmit={handleSubmit}>
+                <div className={styles.title_container}>
+                    <Link href={`/edit/${last_oid}`} passHref={true}>
+                        <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
+                    </Link>
+                    <input type="text" className={styles.title_input} id="title" defaultValue={piece['title']} key={piece['title']}/>
+                    <Link href={`/edit/${next_oid}`} passHref={true}>
+                        <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
+                    </Link>
+                </div>
+
                 <div className={styles.edit_details_description_container}>
                     <textarea className={styles.edit_details_description_textarea} id="description" value={description.split('\n').join("<br>")} onChange={updateDescription}/>
                 </div>
