@@ -65,6 +65,7 @@ const EditPage = ({id, pieces}) => {
 
     var piece_details = {
         title:       pieces[pieceID]['title'],
+        type:        pieces[pieceID]['type'],
         description: pieces[pieceID]['description'],
         sold:        pieces[pieceID]['sold'],
         price:       pieces[pieceID]['price'],
