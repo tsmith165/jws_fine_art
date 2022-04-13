@@ -18,24 +18,6 @@ const stripePromise = loadStripe("pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlIC
 const libraries = ["places"];
 
 const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url }) => {
-
-    const router = useRouter()
-    const refresh_data = () => {
-      router.replace(router.asPath)
-    }
-
-    const [loading, setLoading] = useState(false)
-    const [submitted, setSubmitted] = useState(false)
-    const [error, setError] = useState(false)
-    const [address, setAddress] = useState('')
-    const [international, setInternational] = useState(false)
-
-    //set_image_url(piece['image_path'])
-
-    console.log("Current Piece Details:")
-    console.log(piece)
-
-
     function handle_change(updated_address) {
         console.log(updated_address);
         console.log(typeof updated_address)
@@ -67,25 +49,29 @@ const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url 
         console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `)
         console.log(`Address: ${address} | International: ${international}`)
 
-        if (address.length < 10) {
-            console.log("Address requirement not met.  Please enter address...")
-            //this.setState({address: "", error: 'Address invalid.  Please enter valid address.'})
+        if (full_name.length < 3) {
             setError(true)
-        }
-        else if (full_name.length < 3) {
-            console.log("Name requirement not met.  Please enter name...")
-            //this.setState({name: "", error: 'Name invalid.  Please enter valid name.'})
-            setError(true)
+            const error_message = "Name requirement not met.  Please enter name..."
+            console.log(error_message)
+            set_error_reason(error_message)
         }
         else if (email.length < 8) {
-            console.log("Email requirement not met.  Please enter email...")
-            //this.setState({email: "", error: 'Email invalid.  Please enter valid email.'})
             setError(true)
+            const error_message = "Email requirement not met.  Please enter email..."
+            console.log(error_message)
+            set_error_reason(error_message)
         }
         else if (phone.length < 8) {
-            console.log("Phone requirement not met.  Please enter phone number...")
-            //this.setState({phone: "", error: 'Phone Number invalid.  Please enter valid phone number.'})
             setError(true)
+            const error_message = "Phone requirement not met.  Please enter phone number..."
+            console.log(error_message)
+            set_error_reason(error_message)
+        }
+        else if (address.length < 10) {
+            setError(true)
+            const error_message = "Address requirement not met.  Please enter address..."
+            console.log(error_message)
+            set_error_reason(error_message)
         }
         else {
             console.log("Attempting to Check Out...")
@@ -101,11 +87,11 @@ const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url 
             } else { 
                 // Create Stripe Checkout Session
                 console.log("Creating a Stripe Checkout Session...")
-                const response = await create_stripe_checkout_session(piece['id'], piece['title'], piece['image_path'], piece['width'], piece['height'], piece['price'], full_name, phone, email, address, international)    
+                const response = await create_stripe_checkout_session(piece['id'], piece['title'], piece['image_path'], piece['width'], piece['height'], piece['price'], full_name, phone, email, address, international)
                 const json = await response.json();
 
-                console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`)
-                console.log(json)
+                console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);
+                console.log(json);
 
                 const session = json;
     
@@ -133,8 +119,39 @@ const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url 
         setLoading(false)
     }
 
-    console.log(`Creating Piece (Next Line):`)
+    
+    const router = useRouter()
+    const refresh_data = () => {
+      router.replace(router.asPath)
+    }
+
+    const [loading, setLoading] = useState(false)
+    const [submitted, setSubmitted] = useState(false)
+    const [error, setError] = useState(false)
+    const [error_reason, set_error_reason] = useState('')
+    const [address, setAddress] = useState('')
+    const [international, setInternational] = useState(false)
+
+    //set_image_url(piece['image_path'])
+
+    console.log("Current Piece Details:")
     console.log(piece)
+
+
+    const loader_jsx = null;
+    if (loading == true) {
+        loader_jsx = ( 
+            <CircularProgress color="inherit" className={styles.loader}/> 
+        );
+    } else if (submitted == true) {
+        loader_jsx = ( 
+            <div className={styles.submit_label}>Checkout was successful...</div>
+        );
+    } else if (error == true) {
+        loader_jsx = ( 
+            <div className={styles.submit_label_failed}>{error_reason}</div>
+        );
+    }
 
     return (
         <div className={styles.checkout_form_container}>
@@ -222,6 +239,11 @@ const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url 
 
                     <button type="submit" className={styles.submit_button}>Checkout</button>
 
+                    <div className={styles.loader_container}>
+                        {loader_jsx}
+                    </div>
+                </div>
+                <div className={styles.submit_container}>
                     <Link href='https://stripe.com' passHref={true}>
                         <Image src='/powered_by_stripe_blue_background.png' height="70px" width="160px" />
                     </Link>
