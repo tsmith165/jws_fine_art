@@ -173,11 +173,7 @@
             height: 100%; 
         }
 
-    .full_screen_container:hover > .full_screen_close_container {
-        display: block;
-    }
     .full_screen_close_container {
-        display: none;
         flex-direction: row; 
         position: absolute;
         top: calc(100px + 1rem);
