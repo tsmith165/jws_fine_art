@@ -23,7 +23,7 @@
     
         // Menu Hamburger Button
         .hamburger_button { 
-            position: fixed; 
+            position: absolute; 
             top: 50px; 
             right: 0; 
             width: 50px !important; 
@@ -40,7 +40,7 @@
 
         // Profile Account Button
         .account_button { 
-            position: fixed; 
+            position: absolute; 
             top: 50px; 
             right: 50px; 
             width: 50px !important; 
@@ -57,7 +57,7 @@
         }
         
         .instagram_link_container { 
-            position: fixed; 
+            position: absolute; 
             top: 50px; 
             right: 100px; 
             width: 50px !important; 
