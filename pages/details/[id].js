@@ -1,5 +1,6 @@
 import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
+import React, { useState, useEffect, useRef } from 'react';
 
 import styles from '../../styles/pages/Details.module.scss'
 import { prisma } from '../../lib/prisma'
@@ -7,6 +8,7 @@ import { prisma } from '../../lib/prisma'
 import Link from 'next/link'
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
+import CloseIcon from '@material-ui/icons//Close';
 
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
@@ -65,6 +67,8 @@ const DetailsPage = ({id, pieces}) => {
     console.log(`Piece ID: ${pieceID}`)
     var piece = pieces[pieceID];
 
+    const [full_screen, set_full_screen] = useState(false)
+
     const pieces_length = pieces.length;
     var next_oid = (pieceID + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[pieceID + 1]['o_id'];
     var last_oid = (pieceID - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
@@ -87,12 +91,12 @@ const DetailsPage = ({id, pieces}) => {
     if (piece["sold"] == false) price_html = <b className={styles.price_text}>${piece['price']}</b>;
 
     return (
-        <PageLayout>
-            <div className={styles.details_container}>
-                <div className={styles.details_container_left}>
-                    <div className={styles.details_image_container}>
+        full_screen == true ? (
+            <PageLayout>
+                <div className={styles.full_screen_container}>
+                    <div className={styles.full_screen_image_container}>
                         <Image
-                            className={styles.details_image}
+                            className={styles.full_screen_image}
                             src={`${baseURL}${piece['image_path']}`}
                             alt={piece['title']}
                             width={piece['width']}
@@ -101,65 +105,90 @@ const DetailsPage = ({id, pieces}) => {
                             layout='fill'
                             objectFit='contain'
                             quality={100}
+                            onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
                         />
                     </div>
+                    <div className={styles.full_screen_close_container} onClick={(e) => {e.preventDefault(); set_full_screen(false)}}>
+                        <CloseIcon className={`${styles.full_screen_close_icon}`} />
+                    </div>
                 </div>
-                <div className={styles.details_container_right}>
-                    <div className={styles.title_container}>
-                        <div className={styles.title_inner_container}>
-                            <Link href={`/details/${last_oid}`} passHref={false}>
-                                <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
-                            </Link>
-                            <b className={styles.title}>{piece['title']}</b>
-                            <Link href={`/details/${next_oid}`} passHref={false}>
-                                <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
-                            </Link>
+            </PageLayout>
+        ) : (
+            <PageLayout>
+                <div className={styles.details_container}>
+                    <div className={styles.details_container_left}>
+                        <div className={styles.details_image_container}>
+                            <Image
+                                className={styles.details_image}
+                                src={`${baseURL}${piece['image_path']}`}
+                                alt={piece['title']}
+                                width={piece['width']}
+                                height={piece['height']}
+                                priority={true}
+                                layout='fill'
+                                objectFit='contain'
+                                quality={100}
+                                onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
+                            />
                         </div>
                     </div>
-                    <div className={styles.details_form_container}>
-                        <div className={styles.details_navigation_container}>
-                            <div className={styles.details_navigation_inner_container}>
-                                {price_html}
-                                {sold_html}
-                                {
-                                    (piece["sold"] == true) ? 
-                                        (
-                                            null
-                                        ) : (
-                                            <Link href='https://stripe.com' passHref={true}>
-                                                <div className={styles.powered_by_stripe_container}>
-                                                    <Image src='/powered_by_stripe_blue_background_small.png' layout="fill" objectFit='contain'/>
+                    <div className={styles.details_container_right}>
+                        <div className={styles.title_container}>
+                            <div className={styles.title_inner_container}>
+                                <Link href={`/details/${last_oid}`} passHref={false}>
+                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
+                                </Link>
+                                <b className={styles.title}>{piece['title']}</b>
+                                <Link href={`/details/${next_oid}`} passHref={false}>
+                                    <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
+                                </Link>
+                            </div>
+                        </div>
+                        <div className={styles.details_form_container}>
+                            <div className={styles.details_navigation_container}>
+                                <div className={styles.details_navigation_inner_container}>
+                                    {price_html}
+                                    {sold_html}
+                                    {
+                                        (piece["sold"] == true) ? 
+                                            (
+                                                null
+                                            ) : (
+                                                <Link href='https://stripe.com' passHref={true}>
+                                                    <div className={styles.powered_by_stripe_container}>
+                                                        <Image src='/powered_by_stripe_blue_background_small.png' layout="fill" objectFit='contain'/>
+                                                        </div>
+                                                </Link>
+                                            )
+                                    }
+                                </div>
+                            </div>
+                            <div className={styles.details_navigation_container}>
+                                <div className={styles.details_navigation_inner_container}>
+                                    {
+                                        (piece['instagram'] != null && piece['instagram'] != '') ? (
+                                            <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
+                                                <div className={styles.instagram_link_container}>
+                                                    <div className={styles.instagram_image_container}>
+                                                        <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill"/>
                                                     </div>
-                                            </Link>
-                                        )
-                                }
-                            </div>
-                        </div>
-                        <div className={styles.details_navigation_container}>
-                            <div className={styles.details_navigation_inner_container}>
-                                {
-                                    (piece['instagram'] != null && piece['instagram'] != '') ? (
-                                        <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
-                                            <div className={styles.instagram_link_container}>
-                                                <div className={styles.instagram_image_container}>
-                                                    <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill"/>
+                                                    <div className={styles.instagram_link_label}>View On Instagram</div>
                                                 </div>
-                                                <div className={styles.instagram_link_label}>View On Instagram</div>
-                                            </div>
-                                        </Link>
-                                    ) : (
-                                        null
-                                    )
-                                }
+                                            </Link>
+                                        ) : (
+                                            null
+                                        )
+                                    }
+                                </div>
                             </div>
-                        </div>
-                        <div className={styles.details_description_container}>
-                            <h3 className={styles.details_description}>{description_text}</h3>
+                            <div className={styles.details_description_container}>
+                                <h3 className={styles.details_description}>{description_text}</h3>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </PageLayout>
+            </PageLayout>
+        )
     )
 }
 
