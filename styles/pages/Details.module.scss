@@ -71,7 +71,7 @@
             margin-bottom: 100px;  
         }
             .details_description_container { 
-                padding: 15px 20px 0px 20px; 
+                padding: 15px 20px 0px 15px; 
                 width: 100%;
                 margin-bottom: 20px;
             }
@@ -90,7 +90,7 @@
             height: fit-content; 
             line-height: 3rem; 
             font-size: 1.25rem; 
-            padding-top: 15px; 
+            padding-top: 5px; 
             padding-left: 15px; 
         }
             .details_navigation_inner_container { 
@@ -113,14 +113,17 @@
                     color: $light; 
                 }
                 .price_text { 
+                    font-size: 24px;
                     margin-right: 10px; 
                     color: $secondary; 
                 }
-                .piece_sold { 
+                .piece_sold {
+                    font-size: 24px;
                     margin-right: 10px; 
                     color: $error; 
                 }
                 .piece_nfs  { 
+                    font-size: 24px;
                     margin-right: 10px; 
                     color: $error; 
                 }
