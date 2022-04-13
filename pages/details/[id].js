@@ -161,10 +161,6 @@ const DetailsPage = ({id, pieces}) => {
                                                 </Link>
                                             )
                                     }
-                                </div>
-                            </div>
-                            <div className={styles.details_navigation_container}>
-                                <div className={styles.details_navigation_inner_container}>
                                     {
                                         (piece['instagram'] != null && piece['instagram'] != '') ? (
                                             <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
