@@ -107,11 +107,11 @@ const DetailsPage = ({id, pieces}) => {
                 <div className={styles.details_container_right}>
                     <div className={styles.title_container}>
                         <div className={styles.title_inner_container}>
-                            <Link href={`/details/${last_oid}`} passHref={true}>
+                            <Link href={`/details/${last_oid}`} passHref={false}>
                                 <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
                             </Link>
                             <b className={styles.title}>{piece['title']}</b>
-                            <Link href={`/details/${next_oid}`} passHref={true}>
+                            <Link href={`/details/${next_oid}`} passHref={false}>
                                 <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
                             </Link>
                         </div>
