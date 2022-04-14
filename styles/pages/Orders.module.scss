@@ -1,9 +1,9 @@
 @import "../../theme/theme";
 
 .main_container { 
-  height: calc(100% - 100px); 
-  width: 100vw; 
   position: absolute; 
+  width: 100vw; 
+  height: calc(100% - 100px); 
   overflow-y: auto; 
   overflow-x: hidden; 
   background-color: $light;

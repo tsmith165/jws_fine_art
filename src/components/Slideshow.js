@@ -8,6 +8,7 @@ import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Pause from '@material-ui/icons/Pause';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
+import SpeedIcon from '@material-ui/icons/Speed';
 
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
@@ -24,9 +25,14 @@ const SlideshowComponent = ({piece_list}) => {
 
     const [cur_piece_id, set_cur_piece_id] = useState(0)
     const [running, set_running] = useState(false)
+    const [speed_open, set_speed_open] = useState(false)
+    const [speed, set_speed] = useState(50)
 
     console.log(`Running: ${running}`)
     console.log(`cur_piece_id: ${cur_piece_id}`)
+
+    console.log(`Speed Open: ${speed_open}`)
+    console.log(`Current Speed: ${speed}`)
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -38,7 +44,7 @@ const SlideshowComponent = ({piece_list}) => {
                     set_cur_piece_id(0)
                 }
             }
-        }, 2000)
+        }, (speed * 40))
         return () => clearTimeout(timer)
     })
     
@@ -59,9 +65,19 @@ const SlideshowComponent = ({piece_list}) => {
         }
     }
 
+    function speed_icon_clicked() {
+        set_speed_open(!speed_open)
+    }
+
     return (
         <div className={styles.slideshow_body}>
-            <div className={styles.slideshow_image_container}>
+            <div className={styles.slideshow_image_container} onClick={(e) => { 
+                e.preventDefault(); 
+                if (running == false) {
+                    (cur_piece_id + 1 < piece_list.length) ? set_cur_piece_id(cur_piece_id + 1) : set_cur_piece_id(0);
+                }
+                set_running(!running) 
+                }}>
                 <Image                                         
                     className={styles.slideshow_image}
                     src={`${baseURL}${piece_list[cur_piece_id]['image_path']}`}
@@ -87,6 +103,8 @@ const SlideshowComponent = ({piece_list}) => {
                     <ArrowForwardIosRoundedIcon className={`${styles.slideshow_icon} ${styles.img_hor_vert}`} onClick={(e) => {handle_arrow_click(e, false)}}/>
 
                     <ArrowForwardIosRoundedIcon className={`${styles.slideshow_icon}`} onClick={(e) => {e.preventDefault(); handle_arrow_click(e, true)}}/>
+
+                    <SpeedIcon className={`${styles.slideshow_icon}`} onClick={(e) => {e.preventDefault(); speed_icon_clicked()}}/>
                 </div>
                 <div className={styles.slideshow_menu_title_container}>
                     <div className={styles.slideshow_menu_title}>
@@ -94,6 +112,15 @@ const SlideshowComponent = ({piece_list}) => {
                     </div>
                 </div>
             </div>
+
+            {speed_open == true ? (
+                <div className={styles.speed_menu}>
+                    <input type="range" min="1" max="100" defaultValue={speed} class={styles.speed_slider} id="speed_slider" onChange={(e) => {e.preventDefault(); set_speed(e.target.value) }}/>
+                </div>
+                
+            ) : (
+                null
+            )}
         </div>
     )
 }
