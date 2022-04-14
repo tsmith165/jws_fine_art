@@ -78,7 +78,7 @@ const DetailsPage = ({id, pieces}) => {
     else if (piece["sold"] == false) { 
         sold_html = (
             <Link href={`/checkout/${PathOID}`} passHref={true}>
-                <button className={styles.buy_now_button}>Buy Now</button>
+                <button className={styles.buy_now_button}>Buy</button>
             </Link>
         );
     }
