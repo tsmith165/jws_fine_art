@@ -164,6 +164,7 @@
 
 
 .full_screen_container {
+    position: absolute;
     width: 100%;
     height: calc(100% - 100px);
     background-color: $dark;
@@ -182,7 +183,7 @@
     .full_screen_close_container {
         flex-direction: row; 
         position: absolute;
-        top: calc(100px + 1rem);
+        top: 1rem;
         right: 1rem;
         height: 50px;
         width: 50px;
