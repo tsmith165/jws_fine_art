@@ -74,19 +74,19 @@ const SlideshowComponent = ({piece_list}) => {
             </div>
             <div className={styles.slideshow_menu_container}>
                 <div className={styles.slideshow_menu_left_container}>
-                    <div className={styles.icon_container}>
-                        {running == true ? (
-                            <Pause className={`${styles.slideshow_icon}`} onClick={(e) => {e.preventDefault(); set_running(false)}}/>
-                        ) : (
-                            <PlayArrow className={`${styles.slideshow_icon}`}  onClick={(e) => {e.preventDefault(); set_running(true)}}/>
-                        )}
-                    </div>
-                    <div className={styles.icon_container}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.slideshow_icon} ${styles.img_hor_vert}`} onClick={(e) => {handle_arrow_click(e, false)}}/>
-                    </div>
-                    <div className={styles.icon_container}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.slideshow_icon}`} onClick={(e) => {e.preventDefault(); handle_arrow_click(e, true)}}/>
-                    </div>
+                    {running == true ? (
+                        <Pause className={`${styles.slideshow_icon}`} onClick={(e) => { e.preventDefault(); set_running(false) }}/>
+                    ) : (
+                        <PlayArrow className={`${styles.slideshow_icon}`}  onClick={(e) => {
+                            e.preventDefault();
+                            (cur_piece_id + 1 < piece_list.length) ? set_cur_piece_id(cur_piece_id + 1) : set_cur_piece_id(0);  
+                            set_running(true)
+                        }}/>
+                    )}
+
+                    <ArrowForwardIosRoundedIcon className={`${styles.slideshow_icon} ${styles.img_hor_vert}`} onClick={(e) => {handle_arrow_click(e, false)}}/>
+
+                    <ArrowForwardIosRoundedIcon className={`${styles.slideshow_icon}`} onClick={(e) => {e.preventDefault(); handle_arrow_click(e, true)}}/>
                 </div>
                 <div className={styles.slideshow_menu_title_container}>
                     <div className={styles.slideshow_menu_title}>
