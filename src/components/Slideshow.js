@@ -24,7 +24,7 @@ const SlideshowComponent = ({piece_list}) => {
     console.log(piece_list)
 
     const [cur_piece_id, set_cur_piece_id] = useState(0)
-    const [running, set_running] = useState(false)
+    const [running, set_running] = useState(true)
     const [speed_open, set_speed_open] = useState(false)
     const [speed, set_speed] = useState(50)
 
