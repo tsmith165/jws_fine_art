@@ -69,6 +69,16 @@ const SlideshowComponent = ({piece_list}) => {
         set_speed_open(!speed_open)
     }
 
+    function change_speed(value) {
+        const old_min = 1; const old_max = 100;
+        const new_min = 20; const new_max = 85;
+
+        var ratioed_value = ( (value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
+
+        console.log(`Ratioed Speed: ${ratioed_value}`)
+        set_speed(ratioed_value)
+    }
+
     return (
         <div className={styles.slideshow_body}>
             <div className={styles.slideshow_image_container} onClick={(e) => { 
@@ -115,7 +125,7 @@ const SlideshowComponent = ({piece_list}) => {
 
             {speed_open == true ? (
                 <div className={styles.speed_menu}>
-                    <input type="range" min="1" max="100" defaultValue={speed} class={styles.speed_slider} id="speed_slider" onChange={(e) => {e.preventDefault(); set_speed(e.target.value) }}/>
+                    <input type="range" min="1" max="100" defaultValue={speed} class={styles.speed_slider} id="speed_slider" onChange={(e) => {e.preventDefault(); change_speed(e.target.value) }}/>
                 </div>
                 
             ) : (
