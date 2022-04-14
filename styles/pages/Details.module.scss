@@ -3,12 +3,12 @@
 .details_container { 
     display: flex; 
     flex-wrap: wrap; 
-    min-height: calc(100vh - 100px); 
+    min-height: calc(100% - 100px); 
     width: 100%; 
 }
     @media (max-width: 800px) {
-        .details_container_left { height: 40vh; }
-        .details_container_right { height: 60vh !important; overflow-y: scroll; }
+        .details_container_left { height: 40%; }
+        .details_container_right { height: 60% !important; overflow-y: scroll; }
     }
     .details_container_left { 
         flex: 1 1 60%; 
@@ -164,7 +164,7 @@
 
 .full_screen_container {
     width: 100%;
-    height: calc(100vh - 100px);
+    height: calc(100% - 100px);
     background-color: $dark;
 }
     .full_screen_image_container {

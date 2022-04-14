@@ -3,7 +3,7 @@
 .details_container { 
     display: flex;
     flex-wrap: wrap; 
-    height: calc(100vh - 100px); 
+    height: calc(100% - 100px); 
     width: 100%; 
 }
     .details_container_left { 
