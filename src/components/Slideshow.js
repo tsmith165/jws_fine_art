@@ -44,7 +44,7 @@ const SlideshowComponent = ({piece_list}) => {
                     set_cur_piece_id(0)
                 }
             }
-        }, (speed * 40))
+        }, ((100 - speed) * 40))
         return () => clearTimeout(timer)
     })
     
