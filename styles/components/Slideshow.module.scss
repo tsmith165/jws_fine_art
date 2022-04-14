@@ -70,7 +70,7 @@
 @media (max-width: 800px) {
   .slideshow_container { 
     position: absolute;
-    height: calc(100vh - 100px); 
+    height: calc(100% - 100px); 
     width: 100vw; 
     overflow-y: hidden; 
     overflow-x: hidden; 
