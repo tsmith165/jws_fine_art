@@ -1,9 +1,10 @@
 @import "../../theme/theme";
 
-.details_container { 
+.details_container {
+    position: absolute;
+    height: calc(100% - 100px); 
     display: flex; 
     flex-wrap: wrap; 
-    min-height: calc(100% - 100px); 
     width: 100%; 
 }
     @media (max-width: 800px) {
