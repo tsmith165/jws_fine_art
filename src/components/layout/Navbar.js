@@ -33,7 +33,7 @@ const Navbar = ({}) => {
             <div className={styles.navbar_container}>
                 <Link href="/" passHref={true} styles={{}}>
                     <div className={styles.navbar_logo}>
-                        <Image className={styles.navbar_logo_img} src='/jws_logo.png' alt='JWS Fine Art Logo' priority={true} layout="fill" objectFit='contain' width={1920} height={561}/>
+                        <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' priority={true} layout="fill" objectFit='contain' width={274} height={80}/>
                     </div>
                 </Link>
 
