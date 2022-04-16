@@ -4,7 +4,7 @@ import styles from '../../styles/components/Gallery.module.scss'
 
 const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
 
-const Piece = ({key, id, o_id, myClick, className, image_path, dimensions, title, description, sold}) => {
+const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, description, sold}) => {
     var [x, y, img_width, img_height] = dimensions;
 
     return (

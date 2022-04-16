@@ -63,15 +63,21 @@
             width: 50px !important; 
             height: 50px !important; 
         }
-            .instagram_link_image {  
-                background-color: $secondary !important; 
-                padding: 10px !important; 
-                border-top-left-radius: 5px; 
-                border-top-right-radius: 5px; 
+            .instagram_logo_link_container {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                padding: 0px;
             }
-            .instagram_link_image:hover { 
-                background-color: $light !important; 
-            }
+                .instagram_logo_link {  
+                    background-color: $secondary !important; 
+                    border-top-left-radius: 5px; 
+                    border-top-right-radius: 5px; 
+                    padding: 10px !important; 
+                }
+                .instagram_logo_link:hover { 
+                    background-color: $light !important; 
+                }
 
         // Account Menu Container
         .account_menu_container {

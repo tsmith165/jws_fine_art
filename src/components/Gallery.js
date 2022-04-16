@@ -114,6 +114,7 @@ const Gallery = ({piece_list, window_size}) => {
                 if (debug) console.log(`CURRENT BOTTOM (${index}): ${column_bottom_list[index]}` );
   
                 var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
+                //console.log(`Dimensions: ${dimensions}`)
   
                 pieces.push(<Piece key={i} id={`piece-${i}`} o_id={o_id}
                                   className={class_name} 

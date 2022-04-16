@@ -34,7 +34,7 @@
             color: $light;
             border: none;
             border-radius: 5px;
-            font-family: 'Alegreya Sans SC', sans-serif;
+            font-family: $aleg_300;
             font-weight: bold;
             font-size: 24px;
             text-align: center;
@@ -48,7 +48,6 @@
         .edit_details_description_container { 
             width: 100%; 
             padding: 15px 15px 0px 15px; 
-            font-family: 'Lato', sans-serif; 
         }
             .edit_details_description_textarea { 
                 width: 100%;
@@ -62,7 +61,7 @@
                 background-color: $primary; 
                 color: $light; 
                 border: none;                      
-                font-family: 'Alegreya Sans SC', sans-serif; 
+                font-family: $aleg_300; 
                 font-weight: bold; 
             }
         .input_container { 
@@ -80,7 +79,6 @@
             background-color: $secondary; 
             border-radius: 5px 0px 0px 5px;                     
             font-weight: bold; 
-            font-family: 'Lato', sans-serif; 
         }                     
         .input_label { color: $light; }
 
@@ -95,7 +93,6 @@
                 border-radius: 0px 5px 5px 0px; 
                 font-size: 14px; 
                 font-weight: bold; 
-                font-family: 'Lato', sans-serif; 
             }
             .input_select { 
                 width: 70%; 
@@ -107,7 +104,6 @@
                 border: none; 
                 font-size: 14px; 
                 font-weight: bold; 
-                font-family: 'Lato', sans-serif; 
             }
         }
 
@@ -123,7 +119,6 @@
                 border: none; 
                 font-size: 14px; 
                 font-weight: bold; 
-                font-family: 'Lato', sans-serif; 
             }
             .input_select { 
                 width: 70%; 
@@ -135,11 +130,9 @@
                 border: none; 
                 font-size: 14px; 
                 font-weight: bold; 
-                font-family: 'Lato', sans-serif; 
             }
             .input_select > option { 
                 font-weight: bold; 
-                font-family: 'Lato', sans-serif; 
             }
         }
         .input_split { 

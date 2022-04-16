@@ -30,8 +30,7 @@
     .details_container_right { 
         flex: 1 1 40%; 
         min-width: 30ch; 
-        background-color: $light; 
-        font-family: 'Lato', sans-serif; 
+        background-color: $light;
     }
         .title_container { 
             display: inline-block; 
@@ -63,7 +62,7 @@
                     font-size: 1.5em; 
                     line-height: 1.5em; 
                     text-align: center; 
-                    font-family: 'Alegreya Sans SC', sans-serif; 
+                    font-family: $aleg_300; 
                 }
         .details_form_container { 
             display: flex;
@@ -109,8 +108,7 @@
                     padding: 0px 10px;
                     background-color: $primary; 
                     border: 1px solid $secondary; 
-                    color: $light; 
-                    font-family: 'Lato', sans-serif;
+                    color: $light;
                     font-weight: bold; 
                 }  
                 .buy_now_button:hover { 
