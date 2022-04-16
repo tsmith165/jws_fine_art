@@ -156,7 +156,7 @@ const DetailsPage = ({id, pieces}) => {
                                             ) : (
                                                 <Link href='https://stripe.com' passHref={true}>
                                                     <div className={styles.powered_by_stripe_container}>
-                                                        <Image src='/powered_by_stripe_blue_background_small.png' priority={true} layout="fill" objectFit='contain'/>
+                                                        <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
                                                         </div>
                                                 </Link>
                                             )
