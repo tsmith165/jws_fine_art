@@ -156,7 +156,7 @@ const DetailsPage = ({id, pieces}) => {
                                             ) : (
                                                 <Link href='https://stripe.com' passHref={true}>
                                                     <div className={styles.powered_by_stripe_container}>
-                                                        <Image src='/powered_by_stripe_blue_background_small.png' layout="fill" objectFit='contain'/>
+                                                        <Image src='/powered_by_stripe_blue_background_small.png' priority={true} layout="fill" objectFit='contain'/>
                                                         </div>
                                                 </Link>
                                             )
@@ -166,7 +166,7 @@ const DetailsPage = ({id, pieces}) => {
                                             <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
                                                 <div className={styles.instagram_link_container}>
                                                     <div className={styles.instagram_image_container}>
-                                                        <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' layout="fill"/>
+                                                        <Image className={styles.instagram_link_image} src='/instagram.png' alt='Instagram Link' priority={true} layout="fill"/>
                                                     </div>
                                                     <div className={styles.instagram_link_label}>View On Instagram</div>
                                                 </div>
