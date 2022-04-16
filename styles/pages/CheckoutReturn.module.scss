@@ -27,7 +27,6 @@
         flex: 1 1 40%; 
         min-width: 40ch; 
         background-color: $light; 
-        font-family: 'Lato', sans-serif; 
     }
         .title_container { 
             display: flex; 
@@ -55,7 +54,7 @@
                 font-size: 1.4em; 
                 line-height: 1.2em; 
                 text-align: center; 
-                font-family: 'Alegreya Sans SC', sans-serif; 
+                font-family: $aleg_300; 
             }
             .checkout_return_message_container { 
                 padding: 20px; 

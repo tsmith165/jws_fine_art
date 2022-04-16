@@ -33,13 +33,15 @@ const Navbar = ({}) => {
             <div className={styles.navbar_container}>
                 <Link href="/" passHref={true} styles={{}}>
                     <div className={styles.navbar_logo}>
-                        <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' priority={true} layout="fill" objectFit='contain' width={274} height={80}/>
+                        <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' priority={false} layout="fill" objectFit='contain' width={274} height={80}/>
                     </div>
                 </Link>
 
                 <Link href="https://www.instagram.com/jws_fineart/" passHref={true}>
                     <div className={styles.instagram_link_container}>
-                        <Image className={styles.instagram_link_image} src='/instagram_icon_50.png' alt='Instagram Link' priority={true} layout="fill" objectFit='contain' width={50} height={50}/>
+                        <div className={styles.instagram_logo_link_container}>
+                            <Image className={styles.instagram_logo_link} src='/instagram_icon_50.png' alt='Instagram Link' priority={false} layout="fill" objectFit='contain' width={50} height={50}/>
+                        </div>
                     </div>
                 </Link>
 
