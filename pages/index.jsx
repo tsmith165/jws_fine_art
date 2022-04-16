@@ -41,6 +41,6 @@ export const getStaticProps = async (context) => {
       props: {
           "piece_list": piece_list
       },
-      revalidate: 60
+      revalidate: 60 * 60 * 24 * 7
   }
 }
