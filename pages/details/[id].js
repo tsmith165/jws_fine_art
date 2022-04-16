@@ -125,7 +125,7 @@ const DetailsPage = ({id, pieces}) => {
                                 width={piece['width']}
                                 height={piece['height']}
                                 priority={true}
-                                layout='fixed'
+                                layout='fill'
                                 objectFit='contain'
                                 quality={100}
                                 onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
