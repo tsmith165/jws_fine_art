@@ -130,7 +130,7 @@ const EditPage = ({id, pieces}) => {
                 console.log(`IMAGE URL : ${image_url}`)
             
                 page_jsx =  (
-                    <PageLayout>
+                    <PageLayout page_title={`Edit Details - ${piece['title']}`}>
                         <div className={styles.details_container}>
                             <div className={styles.details_container_left}>
                                 <div className={styles.details_image_container}>

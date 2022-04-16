@@ -3,7 +3,7 @@ import ContactLayout from '../src/components/layout/ContactLayout';
 
 export default function Biography({}) {
   return (
-    <PageLayout>
+    <PageLayout page_title={"Contact"}>
       <ContactLayout/>
     </PageLayout>
   )

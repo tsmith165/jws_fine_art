@@ -48,7 +48,7 @@ export default function SignIn({  }) {
     }
 
     return (
-        <PageLayout>
+        <PageLayout page_title={"Sign In"}>
             <div className={styles.full_sign_in_container}>
                 <div className={styles.sign_in_container}>
                     <div className={styles.sign_in_header}>

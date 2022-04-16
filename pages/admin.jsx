@@ -64,7 +64,7 @@ const Admin = ({ user_tree_data }) => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout page_title={"Admin"}>
       <div className={styles.main_container}>
         <div className={styles.main_body}>
           <h2 className={styles.module_title}>User Management:</h2>

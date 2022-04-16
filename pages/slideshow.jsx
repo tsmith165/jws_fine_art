@@ -10,7 +10,7 @@ export default function Slideshow({piece_list}) {
   console.log(piece_list);
 
   return (
-    <PageLayout>
+    <PageLayout page_title={"Slideshow"}>
       <div className={styles.slideshow_container}>
         <SlideshowComponent piece_list={piece_list}/>
       </div>

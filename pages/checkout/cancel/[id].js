@@ -62,7 +62,7 @@ const CancelPage = ({id, pieces}) => {
     var piece = pieces[pieceID];
 
     return (
-        <PageLayout>
+        <PageLayout page_title={`Checkout Cancel - ${piece['title']}`}>
             <div className={styles.details_container}>
                 <div className={styles.details_container_left}>
                     <div className={styles.details_image_container}>
