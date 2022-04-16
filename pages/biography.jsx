@@ -3,7 +3,7 @@ import BiographyLayout from '../src/components/layout/BiographyLayout';
 
 export default function Biography({}) {
   return (
-    <PageLayout>
+    <PageLayout page_title={"Biography"}>
       <BiographyLayout/>
     </PageLayout>
   )

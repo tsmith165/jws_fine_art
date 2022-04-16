@@ -92,7 +92,7 @@ const DetailsPage = ({id, pieces}) => {
 
     return (
         full_screen == true ? (
-            <PageLayout>
+            <PageLayout page_title={`Piece Details - ${piece['title']}`}>
                 <div className={styles.full_screen_container}>
                     <div className={styles.full_screen_image_container}>
                         <Image
@@ -114,7 +114,7 @@ const DetailsPage = ({id, pieces}) => {
                 </div>
             </PageLayout>
         ) : (
-            <PageLayout>
+            <PageLayout page_title={`Piece Details - ${piece['title']}`}>
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>

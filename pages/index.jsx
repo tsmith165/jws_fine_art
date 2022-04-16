@@ -13,7 +13,7 @@ export default function Home({piece_list}) {
   var window_size = useWindowSize()
 
   return (
-    <PageLayout>
+    <PageLayout page_title={"JWS Fine Art"}>
       <div className={styles.gallery_container}>
         <Gallery piece_list={piece_list} window_size={window_size}/>
       </div>

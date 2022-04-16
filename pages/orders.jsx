@@ -63,7 +63,7 @@ const Orders = ({ verified_list }) => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout page_title={"Orders"}>
       <div className={styles.main_container}>
         <div className={styles.main_body}>
           <h2 className={styles.module_title}>Order Management:</h2>

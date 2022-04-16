@@ -63,7 +63,7 @@ const Manage = ({ piece_list }) => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout page_title={"Management"}>
       <div className={styles.main_container}>
         <div className={styles.main_body}>
           <h2 className={styles.module_title}>Piece Management:</h2>

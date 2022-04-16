@@ -95,7 +95,7 @@ const CheckoutPage = ({id, pieces}) => {
     }, [piece['image_path']]);
             
     const page_jsx = (
-        <PageLayout>
+        <PageLayout page_title={`Checkout - ${piece['title']}`}>
             <div className={styles.details_container}>
                 <div className={styles.details_container_left}>
                     <div className={styles.details_image_container}>
