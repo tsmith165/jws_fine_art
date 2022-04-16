@@ -1,5 +1,6 @@
 import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
+import Script from 'next/script';
 import { prisma } from '../../lib/prisma'
 import React, { useState, useEffect } from 'react';
 
@@ -95,7 +96,7 @@ const CheckoutPage = ({id, pieces}) => {
     }, [piece['image_path']]);
             
     const page_jsx = (
-        <PageLayout page_title={`Checkout - ${piece['title']}`}>
+        <PageLayout page_title={`Checkout - ${piece['title']}`} use_maps_api={true}>
             <div className={styles.details_container}>
                 <div className={styles.details_container_left}>
                     <div className={styles.details_image_container}>
