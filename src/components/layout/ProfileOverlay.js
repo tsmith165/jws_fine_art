@@ -105,8 +105,8 @@ const ProfileOverlay = ({ }) => {
     }
 
     console.log("Creating Profile Overlay...")
-
-    console.log("Profile Session (Next Line):");
+    
+    console.log(`Profile Session Loading: ${session_loading} | Data (Next Line):`);
     console.log(session)
 
     var account_menu_jsx = null;
