@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import React, { useState } from 'react';
-import { useSession } from '../../../lib/next-auth-react-query';
+import { useSession } from "next-auth/react"
 import { signIn, signOut } from 'next-auth/react';
 
 import styles from "../../../styles/layout/ProfileOverlay.module.scss"
@@ -72,13 +72,7 @@ function generate_bad_session(handleSubmit, loading, sent) {
 }
 
 const ProfileOverlay = ({ }) => {
-    const [session, session_loading] = useSession({
-        required: false,
-        queryConfig: {
-          staleTime: 60 * 1000 * 60 * 3, // 3 hours
-          refetchInterval: 60 * 1000 * 5, // 5 minutes
-        },
-    });
+    const { data: session, status } = useSession()
 
     const [loading, setLoading] = useState(false)
     const [sent, setSent] = useState(false)
@@ -106,11 +100,11 @@ const ProfileOverlay = ({ }) => {
 
     console.log("Creating Profile Overlay...")
     
-    console.log(`Profile Session Loading: ${session_loading} | Data (Next Line):`);
+    console.log(`Profile Session Status: ${status} | Session Data (Next Line):`);
     console.log(session)
 
     var account_menu_jsx = null;
-    if (session) {
+    if (status === "authenticated") {
         account_menu_jsx = generate_good_session(session);
     } else {
         //console.log(`User Role: ${session.token?.role}`)
