@@ -16,7 +16,7 @@ const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, des
                     </div>
                     { sold == false ? null :
                     <div className={styles.piece_sold_container}>
-                        <Image className={styles.piece_sold} src="/redDot.png" alt="Piece Sold" layout='fixed' width={30} height={30}/> 
+                        <Image className={styles.piece_sold} src="/redDot.png" alt="Piece Sold" layout='fixed' width={30} height={30} prefetch={false}/> 
                     </div>
                     }
                 </div>
