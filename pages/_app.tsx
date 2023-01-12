@@ -4,13 +4,10 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import * as gtag from '../lib/gtag'
 import { AppProps } from 'next/app';
-import { QueryClientProvider, QueryClient } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { SessionProvider } from "next-auth/react"
 
 import '../styles/globals/globals.scss'
 import Layout from '../src/components/layout/Layout'
-
-const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
@@ -28,8 +25,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   }, [router.events])
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+    <SessionProvider session={pageProps.session}>
       <Script
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
@@ -51,7 +47,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       <Layout>
         <Component {...pageProps} />
       </Layout>
-    </QueryClientProvider>
+    </SessionProvider>
   );
 }
 

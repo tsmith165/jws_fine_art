@@ -2,7 +2,7 @@ import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
 import { prisma } from '../../lib/prisma'
 import React, { useState, useEffect } from 'react';
-import { useSession } from '../../lib/next-auth-react-query';
+import { useSession } from "next-auth/react"
 
 import styles from '../../styles/pages/Details.module.scss'
 
@@ -92,21 +92,15 @@ const EditPage = ({id, pieces}) => {
         set_image_url(piece['image_path'])
     }, [piece['image_path']]);
 
-    const [session, loading] = useSession({
-        required: true,
-        queryConfig: {
-          staleTime: 60 * 1000 * 60 * 3, // 3 hours
-          refetchInterval: 60 * 1000 * 5, // 5 minutes
-        },
-    });
+    const { data: session, status } = useSession()
 
     var page_jsx = null;
-    if (loading) {
+    if (status === "loading") {
         page_jsx = (
             <h1>Loading...</h1>
         );
     } else {
-        if (!session) {
+        if (status !== "authenticated") {
             // Session Does Not exist
             page_jsx =  (
                 <h1>Not signed in</h1>

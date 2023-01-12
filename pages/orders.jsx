@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router'
 
-import { useSession } from '../lib/next-auth-react-query';
+import { useSession } from "next-auth/react"
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
@@ -16,19 +16,13 @@ const Orders = ({ verified_list }) => {
     router.replace(router.asPath)
   }
 
-  const [session, loading] = useSession({
-    required: true,
-    queryConfig: {
-      staleTime: 60 * 1000 * 60 * 3, // 3 hours
-      refetchInterval: 60 * 1000 * 5, // 5 minutes
-    },
-  });
+  const { data: session, status } = useSession()
 
   var page_jsx = null;
-  if (loading) {
+  if (status === "loading") {
     page_jsx = <h1>Loading...</h1>;
   } else {
-    if (!session) {
+    if (status !== "authenticated") {
       // Session Does Not exist
       page_jsx =  (
         <h1>Not signed in</h1>
