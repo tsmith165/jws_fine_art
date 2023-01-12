@@ -78,12 +78,21 @@ export default NextAuth({
     // async redirect(url, baseUrl) { return baseUrl },
     async session(session, token) { 
       console.log("----- Recieved Session Callback -----")
-      
-      console.log(`Session:`);
-      console.log(session); 
 
       console.log(`Token:`);
       console.log(token); 
+
+      if (token) {
+        session.user.roles = token.roles;
+        session.user.email = token.email;
+        session.user.name = token.name;
+        session.user.usercode = token.usercode;
+        session.user.accessToken = token.accessToken;
+      }
+
+      console.log(`Session:`);
+      console.log(session); 
+
       return session  
     },
     async jwt(args) {
