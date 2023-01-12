@@ -130,7 +130,6 @@ export default NextAuth({
   // Events are useful for logging
   // https://next-auth.js.org/configuration/events
   events: {
-    /*
     signIn: ({ user, account, profile, isNewUser }) => {
       console.log(`User Sign In successful.`)
       console.log(`User:`);
@@ -144,7 +143,6 @@ export default NextAuth({
       console.log(`Profile:`);
       console.log(profile);
     },
-    */
     // updateUser({ user })
   },
 
