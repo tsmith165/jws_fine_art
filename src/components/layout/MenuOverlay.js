@@ -1,4 +1,4 @@
-import { useSession } from '../../../lib/next-auth-react-query';
+import { useSession } from "next-auth/react"
 
 import styles from "../../../styles/layout/MenuOverlay.module.scss"
 
@@ -30,21 +30,15 @@ function generate_menu(menu_list, set_menu_open) {
 }
 
 const MenuOverlay = ({ set_menu_open }) => {
-    const [session, loading] = useSession({
-        required: false,
-        queryConfig: {
-          staleTime: 60 * 1000 * 60 * 3, // 3 hours
-          refetchInterval: 60 * 1000 * 5, // 5 minutes
-        },
-    });
+    const { data: session, status } = useSession()
 
     var using_menu = [];
 
-    if (loading) {
+    if (status === "loading") {
         console.log("Loading - Generating DEFAULT menu...")
         using_menu = menu_list;
 
-    } else if (session) {
+    } else if (status === "authenticated") {
         console.log(`User Role: ${session.token?.role}`)
   
         if ( session.token?.role && session.token?.role == 'ADMIN' ) {

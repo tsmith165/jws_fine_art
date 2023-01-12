@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { signIn } from "next-auth/react";
-import { useSession } from '../lib/next-auth-react-query';
+import { useSession } from "next-auth/react"
 
 import Router from 'next/router'
 
@@ -35,15 +35,9 @@ export default function SignIn({  }) {
         setLoading(false)
     }
 
-    const [session, loading_session] = useSession({
-        required: false,
-        queryConfig: {
-          staleTime: 60 * 1000 * 60 * 3, // 3 hours
-          refetchInterval: 60 * 1000 * 5, // 5 minutes
-        },
-    });
+    const { data: session, status } = useSession()
 
-    if (session) {
+    if (status === "authenticated") {
         Router.push('/')
     }
 
