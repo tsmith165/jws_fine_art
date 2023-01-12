@@ -148,7 +148,7 @@ const Gallery = ({piece_list, window_size}) => {
     }
   
     var lowest_height = 0;
-    for (i = 0; i < column_bottom_list.length; i++) {
+    for (var i = 0; i < column_bottom_list.length; i++) {
         if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
     }
     if (debug) console.log("Lowest: " + lowest_height);
