@@ -76,7 +76,16 @@ export default NextAuth({
   callbacks: {
     // async signIn(user, account, profile) { return true },
     // async redirect(url, baseUrl) { return baseUrl },
-    async session(session, token) {  return session  },
+    async session(session, token) { 
+      console.log("----- Recieved Session Callback -----")
+      
+      console.log(`Session:`);
+      console.log(session); 
+
+      console.log(`Token:`);
+      console.log(token); 
+      return session  
+    },
     async jwt(args) {
       // args = { token, user, account, profile, isNewUser }
 
