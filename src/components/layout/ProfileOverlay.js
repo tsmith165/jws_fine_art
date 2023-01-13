@@ -45,7 +45,7 @@ function generate_bad_session(handleSubmit, loading, sent) {
                 <div className={styles.email_form_container}>
                     <form method="post" onSubmit={handleSubmit} className={styles.sign_in_form} /*action="/api/auth/signin/email"*/>
                         <div className={styles.email_input_container}>
-                            <input type="text" id="email" name="email" className={styles.email_input} autoComplete={"off"}/>
+                            <input type="text" id="email" name="email" className={styles.email_input} autoComplete={"on"}/>
                         </div>
                         
                         <div className={styles.submit_container}>
