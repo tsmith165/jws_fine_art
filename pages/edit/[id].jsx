@@ -2,7 +2,7 @@ import PageLayout from '../../src/components/layout/PageLayout'
 import Image from 'next/image'
 import { prisma } from '../../lib/prisma'
 import React, { useState, useEffect } from 'react';
-import { useSession } from "next-auth/react"
+import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 
 import styles from '../../styles/pages/Details.module.scss'
 
@@ -54,6 +54,23 @@ export const getStaticPaths = async () => {
 }
 
 const EditPage = ({id, pieces}) => {
+    const { isLoaded, isSignedIn, user } = useUser();
+
+    if  (!isLoaded) {
+      return(<></>)
+    }
+    if (!isSignedIn) {
+      router.push('/')
+    }
+    if (user == null) {
+      router.push('/')
+    }
+    const role = user.publicMetadata.role;
+    console.log(`USER ROLE: ${role}`)
+    if (user.publicMetadata.role !== "ADMIN") {
+      router.push('/')
+    }
+
     var PathOID = id;
     var pieceID = get_piece_id_from_path_o_id(PathOID, pieces);
     console.log(`Piece ID: ${pieceID}`)
@@ -61,7 +78,6 @@ const EditPage = ({id, pieces}) => {
     const pieces_length = pieces.length;
     var next_oid = (pieceID + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[pieceID + 1]['o_id'];
     var last_oid = (pieceID - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[pieceID - 1]['o_id'];
-
 
     var piece_details = {
         title:       pieces[pieceID]['title'],
@@ -91,76 +107,44 @@ const EditPage = ({id, pieces}) => {
     useEffect(() => {
         set_image_url(piece['image_path'])
     }, [piece['image_path']]);
+            
+    console.log(`IMAGE URL : ${image_url}`)
 
-    const { data: session, status } = useSession()
+    const page_jsx =  (
+        <PageLayout page_title={`Edit Details - ${piece['title']}`}>
+            <div className={styles.details_container}>
+                <div className={styles.details_container_left}>
+                    <div className={styles.details_image_container}>
 
-    var page_jsx = null;
-    if (status === "loading") {
-        page_jsx = (
-            <h1>Loading...</h1>
-        );
-    } else {
-        if (status !== "authenticated") {
-            // Session Does Not exist
-            page_jsx =  (
-                <h1>Not signed in</h1>
-            );
-        } else {
-            // Session Exists
-            console.log("Session (Next Line):");
-            console.log(session)
-    
-            console.log(`User Role: ${session.token?.role}`)
-    
-            if ( !session.token?.role && session.token?.role != 'ADMIN' ) {
-                // User Role Token does not exist or User role is not ADMIN
-                page_jsx = urn (
-                    <h1>Not signed in</h1>
-                );
-            } else {
-                // User Role is Admin
-                console.log("LOAD ADMIN PAGE")
-            
-                console.log(`IMAGE URL : ${image_url}`)
-            
-                page_jsx =  (
-                    <PageLayout page_title={`Edit Details - ${piece['title']}`}>
-                        <div className={styles.details_container}>
-                            <div className={styles.details_container_left}>
-                                <div className={styles.details_image_container}>
-            
-                                    <Image
-                                        className={styles.details_image}
-                                        src={image_url}
-                                        alt={piece['title']}
-                                        width={piece['width']}
-                                        height={piece['height']}
-                                        priority={true}
-                                        layout='fill'
-                                        objectFit='contain'
-                                        quality={100}
-                                    />
-            
-                                </div>
-                            </div>
-                            <div className={styles.details_container_right}>
-            
-                                <EditDetailsForm 
-                                    id={id} 
-                                    last_oid={last_oid} 
-                                    next_oid={next_oid} 
-                                    piece={piece} 
-                                    set_piece={set_piece} 
-                                    set_image_url={set_image_url}
-                                />
-            
-                            </div>
-                        </div>
-                    </PageLayout>
-                )
-            }
-        }
-    }
+                        <Image
+                            className={styles.details_image}
+                            src={image_url}
+                            alt={piece['title']}
+                            width={piece['width']}
+                            height={piece['height']}
+                            priority={true}
+                            layout='fill'
+                            objectFit='contain'
+                            quality={100}
+                        />
+
+                    </div>
+                </div>
+                <div className={styles.details_container_right}>
+
+                    <EditDetailsForm 
+                        id={id} 
+                        last_oid={last_oid} 
+                        next_oid={next_oid} 
+                        piece={piece} 
+                        set_piece={set_piece} 
+                        set_image_url={set_image_url}
+                    />
+
+                </div>
+            </div>
+        </PageLayout>
+    )
 
     return page_jsx
 }

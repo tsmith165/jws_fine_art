@@ -77,7 +77,7 @@ const DetailsPage = ({id, pieces}) => {
     if      (piece["sold"] == true) sold_html = <b className={styles.piece_sold}>Sold</b>;
     else if (piece["sold"] == false) { 
         sold_html = (
-            <Link href={`/checkout/${PathOID}`} passHref={true}>
+            <Link href={`/checkout/${PathOID}`}>
                 <button className={styles.buy_now_button}>Buy</button>
             </Link>
         );
@@ -135,11 +135,11 @@ const DetailsPage = ({id, pieces}) => {
                     <div className={styles.details_container_right}>
                         <div className={styles.title_container}>
                             <div className={styles.title_inner_container}>
-                                <Link href={`/details/${last_oid}`} passHref={false}>
+                                <Link href={`/details/${last_oid}`}>
                                     <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
                                 </Link>
                                 <b className={styles.title}>{piece['title']}</b>
-                                <Link href={`/details/${next_oid}`} passHref={false}>
+                                <Link href={`/details/${next_oid}`}>
                                     <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
                                 </Link>
                             </div>
@@ -154,7 +154,7 @@ const DetailsPage = ({id, pieces}) => {
                                             (
                                                 null
                                             ) : (
-                                                <Link href='https://stripe.com' passHref={true}>
+                                                <Link href='https://stripe.com'>
                                                     <div className={styles.powered_by_stripe_container}>
                                                         <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
                                                         </div>
@@ -163,7 +163,7 @@ const DetailsPage = ({id, pieces}) => {
                                     }
                                     {
                                         (piece['instagram'] != null && piece['instagram'] != '') ? (
-                                            <Link href={`https://www.instagram.com/${piece['instagram']}`} passHref={true}>
+                                            <Link href={`https://www.instagram.com/${piece['instagram']}`}>
                                                 <div className={styles.instagram_link_container}>
                                                     <div className={styles.instagram_image_container}>
                                                         <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} layout="fill" objectFit='contain'/>
