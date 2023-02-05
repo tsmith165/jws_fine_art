@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router'
+import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 
-import { useSession } from "next-auth/react"
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
@@ -17,45 +17,32 @@ const Admin = ({ user_tree_data }) => {
     router.replace(router.asPath)
   }
 
-  const { data: session, status } = useSession()
+  const { isLoaded, isSignedIn, user } = useUser();
 
-  var page_jsx = null;
-  if (status === "loading") {
-    page_jsx = <h1>Loading...</h1>;
-  } else {
-    if (status !== "authenticated") {
-      // Session Does Not exist
-      page_jsx =  (
-        <h1>Not signed in</h1>
-      );
-    } else {
-      // Session Exists
-      console.log("Session (Next Line):");
-      console.log(session)
-
-      console.log(`User Role: ${session.token?.role}`)
-
-      if ( !session.token?.role && session.token?.role != 'ADMIN' ) {
-        // User Role Token does not exist or User role is not ADMIN
-        page_jsx =  (
-          <h1>Not signed in</h1>
-        );
-      } else {
-        // User Role is Admin
-        console.log("LOAD ADMIN PAGE")
-
-        page_jsx =  (
-          <div className={styles.admin_main_container}>
-            <div className={styles.user_tree_container}>
-              <UserTree user_tree_data={user_tree_data}
-                        refresh_data={refresh_data}
-              />
-            </div>
-          </div>
-        );
-      }
-    }
+  if  (!isLoaded) {
+    return(<></>)
   }
+  if (!isSignedIn) {
+    router.push('/')
+  }
+  if (user == null) {
+    router.push('/')
+  }
+  const role = user.publicMetadata.role;
+  console.log(`USER ROLE: ${role}`)
+  if (user.publicMetadata.role !== "ADMIN") {
+    router.push('/')
+  }
+
+  const page_jsx =  (
+    <div className={styles.admin_main_container}>
+      <div className={styles.user_tree_container}>
+        <UserTree user_tree_data={user_tree_data}
+                  refresh_data={refresh_data}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <PageLayout page_title={"Admin"}>
