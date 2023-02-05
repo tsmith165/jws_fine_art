@@ -91,12 +91,42 @@
             background-color: $secondary;
             border-bottom-left-radius: 10px;  
         }
+        .account_menu_full_container {            
+            position: absolute; 
+            z-index: 100; 
+            top: 100px; 
+            right: 0px;  
+        }
         .account_menu_full_container:hover > .account_menu_container { 
             display: block; 
         }
             .account_menu_body { 
                 padding: 0 !important; 
             }
+        
+        .clerk_user_button_container {
+            background-color: $secondary;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            position: absolute; 
+            top: 50px; 
+            right: 50px;
+            width: 50px;
+            height: 50px;
+            padding: 9px;
+        }
+        .clerk_user_button_container:hover {
+            background-color: $light;
+        }
+
+        .sign_in_button {
+            width: 32px !important;
+            height: 32px !important;
+            fill: $light !important;
+        }
+        .sign_in_button:hover {
+            fill: $secondary !important;
+        }
 
         // Page Menu Overlay
         .page_menu_container { 

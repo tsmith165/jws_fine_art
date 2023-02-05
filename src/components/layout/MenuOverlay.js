@@ -1,10 +1,11 @@
-import { useSession } from "next-auth/react"
-
 import styles from "../../../styles/layout/MenuOverlay.module.scss"
 
 import MenuOverlayButton from './MenuOverlayButton';
 
-import { admin_menu_list, menu_list } from "../../../lib/menu_list"
+import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
+
+import { admin_menu_list, signed_out_menu_list, signed_in_menu_list } from "../../../lib/menu_list"
+import { useEffect } from "react";
 
 function generate_menu(menu_list, set_menu_open) {
     var menu_items = [];
@@ -16,7 +17,8 @@ function generate_menu(menu_list, set_menu_open) {
 
         console.log(`Creating Menu Item for: ${menu_item_string}`);
 
-        const menu_item = <MenuOverlayButton 
+        const menu_item = <MenuOverlayButton
+                            key={i}
                             id = {i}
                             menu_name = {menu_item_string}
                             url_endpoint = {url_endpoint}
@@ -29,29 +31,41 @@ function generate_menu(menu_list, set_menu_open) {
     return menu_items
 }
 
-const MenuOverlay = ({ set_menu_open }) => {
-    const { data: session, status } = useSession()
-
-    var using_menu = [];
-
-    if (status === "loading") {
-        console.log("Loading - Generating DEFAULT menu...")
-        using_menu = menu_list;
-
-    } else if (status === "authenticated") {
-        console.log(`User Role: ${session.token?.role}`)
-  
-        if ( session.token?.role && session.token?.role == 'ADMIN' ) {
-            console.log("ADMIN Role Found - Generating ADMIN menu...")
-            using_menu = admin_menu_list;
-        } else {
-            console.log("Non-ADMIN Role Found - Generating DEFAULT menu...")
-            using_menu = menu_list;
-        }
-    } else {
-        console.log("No Session - Generating DEFAULT menu...")
-        using_menu = menu_list;
+function select_menu(isLoaded, isSignedIn, user) {
+    if (!isLoaded) {
+        console.log('User not loaded - returning signed out menu...')
+        return signed_out_menu_list
     }
+    if (!isSignedIn) {
+        console.log('User not signed in - returning signed out menu...')
+        return signed_out_menu_list
+    }
+    if (user == null) {
+        console.log('User equals null - returning signed out menu...')
+        return signed_out_menu_list
+    }
+    if (!'publicMetadata' in user) {
+        console.log('User does not contain publicMetadata - returning signed out menu...')
+        return signed_out_menu_list
+    }
+    if (!'role' in user.publicMetadata) {
+        console.log('User does not contain role - returning signed out menu...')
+        return signed_out_menu_list
+    }
+    if (user.publicMetadata.role === 'ADMIN') {
+        console.log('User has role Admin - returning signed in admin menu...')
+        return admin_menu_list
+    }
+    console.log('User does not have role Admin - returning signed in non-admin menu...')
+    return signed_in_menu_list
+}
+
+const MenuOverlay = ({ set_menu_open }) => {
+
+    const { isLoaded, isSignedIn, user } = useUser();
+    console.log(`Generating menu list - Loaded?: ${isLoaded} | Signed In: ${isSignedIn} | User (Next Line): `)
+    console.log(user)
+    const using_menu = select_menu(isLoaded, isSignedIn, user);
 
     console.log("Menu List (Next Line):");
     console.log(using_menu);

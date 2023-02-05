@@ -51,7 +51,7 @@ const PieceTree = ({piece_tree_data, refresh_data}) => {
                     </div>
                 </div>
 
-                <Link href={`/edit/${curr_id}`} passHref={true}>
+                <Link href={`/edit/${curr_id}`}>
                     <div className={styles.list_item_icon_container}>
                         <EditIcon className={`${styles.list_item_icon} ${styles.edit_button}`} />
                     </div>
