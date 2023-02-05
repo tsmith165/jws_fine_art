@@ -1,7 +1,5 @@
 import Link from 'next/link'
 import React, { useState } from 'react';
-import { useSession } from "next-auth/react"
-import { signIn, signOut } from 'next-auth/react';
 
 import styles from "../../../styles/layout/ProfileOverlay.module.scss"
 
@@ -72,8 +70,6 @@ function generate_bad_session(handleSubmit, loading, sent) {
 }
 
 const ProfileOverlay = ({ }) => {
-    const { data: session, status } = useSession()
-
     const [loading, setLoading] = useState(false)
     const [sent, setSent] = useState(false)
 
