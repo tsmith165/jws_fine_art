@@ -159,11 +159,11 @@ const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url 
                 
 
                 <div className={styles.checkout_title_container}>
-                    <Link href={`/checkout/${last_oid}`} passHref={true}>
+                    <Link href={`/checkout/${last_oid}`}>
                         <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
                     </Link>
                     <div className={styles.title}>{piece['title']}</div>
-                    <Link href={`/checkout/${next_oid}`} passHref={true}>
+                    <Link href={`/checkout/${next_oid}`}>
                         <ArrowForwardIosRoundedIcon className={styles.title_arrow}  />
                     </Link>
                 </div>
@@ -244,7 +244,7 @@ const CheckoutForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url 
                     </div>
                 </div>
                 <div className={styles.submit_container}>
-                    <Link href='https://stripe.com' passHref={true}>
+                    <Link href='https://stripe.com'>
                         <Image src='/powered_by_stripe_blue_background.png' height="70px" width="160px" />
                     </Link>
                 </div>

@@ -198,11 +198,11 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
         <div className={styles.edit_details_form_container}>
             <form method="post" onSubmit={handleSubmit}>
                 <div className={styles.title_container}>
-                    <Link href={`/edit/${last_oid}`} passHref={true} prefetch={true}>
+                    <Link href={`/edit/${last_oid}`} prefetch={true}>
                         <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
                     </Link>
                     <input type="text" className={styles.title_input} id="title" defaultValue={piece['title']} key={piece['title']}/>
-                    <Link href={`/edit/${next_oid}`} passHref={true} prefetch={true}>
+                    <Link href={`/edit/${next_oid}`} prefetch={true}>
                         <ArrowForwardIosRoundedIcon className={styles.title_arrow}/>
                     </Link>
                 </div>

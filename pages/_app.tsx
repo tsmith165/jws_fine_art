@@ -4,13 +4,20 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import * as gtag from '../lib/gtag'
 import { AppProps } from 'next/app';
-import { SessionProvider } from "next-auth/react"
+import { dark } from '@clerk/themes';
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 
 import '../styles/globals/globals.scss'
 import Layout from '../src/components/layout/Layout'
 
+const ADMIN_PAGES = new Set(['/edit/[id]', '/manage', '/admin', '/orders'])
+
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
+  const { pathname } = useRouter();
+  const isPrivatePath = ADMIN_PAGES.has(pathname)
+  console.log(`Pathname ${pathname} is private?: ${isPrivatePath}`)
+
   useEffect(() => {
     const handleRouteChange = (url) => {
       console.log(`Sending analytics call with url: ${url}`)
@@ -25,7 +32,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   }, [router.events])
 
   return (
-    <SessionProvider session={pageProps.session}>
+    <ClerkProvider appearance={{baseTheme: dark}}>
       <Script
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
@@ -44,10 +51,25 @@ const App = ({ Component, pageProps }: AppProps) => {
           `,
         }}
       />
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </SessionProvider>
+      {!isPrivatePath && (
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      )}
+      {isPrivatePath && (
+        <>
+          <SignedIn>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </SignedIn>
+          <SignedOut>
+            <RedirectToSignIn/>
+          </SignedOut>
+        </>
+      )}
+
+    </ClerkProvider>
   );
 }
 

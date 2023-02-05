@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router'
+import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 
-import { useSession } from "next-auth/react"
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
@@ -16,45 +16,34 @@ const Orders = ({ verified_list }) => {
     router.replace(router.asPath)
   }
 
-  const { data: session, status } = useSession()
+  const { isLoaded, isSignedIn, user } = useUser();
 
-  var page_jsx = null;
-  if (status === "loading") {
-    page_jsx = <h1>Loading...</h1>;
-  } else {
-    if (status !== "authenticated") {
-      // Session Does Not exist
-      page_jsx =  (
-        <h1>Not signed in</h1>
-      );
-    } else {
-      // Session Exists
-      console.log("Session (Next Line):");
-      console.log(session)
-
-      console.log(`User Role: ${session.token?.role}`)
-
-      if ( !session.token?.role && session.token?.role != 'ADMIN' ) {
-        // User Role Token does not exist or User role is not ADMIN
-        page_jsx =  (
-          <h1>Not signed in</h1>
-        );
-      } else {
-        // User Role is Admin
-        console.log("LOAD PIECE MANAGEMENT PAGE")
-
-        page_jsx =  (
-          <div className={styles.manage_main_container}>
-            <div className={styles.pieces_tree_container}>
-              <OrderTree verified_list={verified_list}
-                         refresh_data={refresh_data}
-              />
-            </div>
-          </div>
-        );
-      }
-    }
+  if  (!isLoaded) {
+    return(<></>)
   }
+  if (!isSignedIn) {
+    router.push('/')
+  }
+  if (user == null) {
+    router.push('/')
+  }
+  console.log(`USER: ${user}`)
+  if (!'publicMetadata' in user) {
+    router.push('/')
+  }
+  if (user.publicMetadata.role !== "ADMIN") {
+    router.push('/')
+  }
+
+  const page_jsx =  (
+    <div className={styles.manage_main_container}>
+      <div className={styles.pieces_tree_container}>
+        <OrderTree verified_list={verified_list}
+                    refresh_data={refresh_data}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <PageLayout page_title={"Orders"}>
