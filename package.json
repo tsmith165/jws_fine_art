@@ -22,7 +22,6 @@
     "@stripe/stripe-js": "^1.26.0",
     "@vercel/analytics": "^0.1.7",
     "aws-sdk": "^2.1105.0",
-    "clerk": "^0.8.3",
     "cross-env": "^7.0.3",
     "fs": "^0.0.1-security",
     "global": "^4.4.0",
