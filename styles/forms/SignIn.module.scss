@@ -4,15 +4,13 @@
     width: 100%;
     height: calc(100vh - 100px);
     background-color: $light;
-    position:relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sign_in_inner_container {
     width: fit-content;
     height: fit-content;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    margin: auto;
 }

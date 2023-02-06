@@ -1,10 +1,10 @@
-import { SignUp  } from "@clerk/nextjs";
+import { SignUp } from "@clerk/nextjs";
 
-import styles from "../../styles/forms/SignUp.module.scss"
+import styles from "../../styles/forms/SignIn.module.scss"
 
 const SignUpPage = () => (
-    <div className={styles.sign_up_container}>
-        <div className={styles.sign_up_inner_container}>
+    <div className={styles.sign_in_container}>
+        <div className={styles.sign_in_inner_container}>
             <SignUp/>
         </div>
     </div>
