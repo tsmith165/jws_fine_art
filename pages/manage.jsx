@@ -57,9 +57,9 @@ const Manage = ({ piece_list }) => {
 async function fetchPieces() {
   console.log(`Fetching pieces with prisma`)
   const piece_list = await prisma.piece.findMany({
-      orderBy: {
-          o_id: 'desc',
-      },
+    orderBy: {
+      o_id: 'desc',
+    },
   })
 
   return piece_list
@@ -71,10 +71,9 @@ export const getServerSideProps = async (context) => {
 
   //console.log(context)
   return { 
-      props: {
-          "piece_list": piece_list
-      },
-      revalidate: 60
+    props: {
+      "piece_list": piece_list
+    }
   }
 }
 

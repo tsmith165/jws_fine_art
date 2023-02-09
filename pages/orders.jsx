@@ -82,10 +82,9 @@ export const getServerSideProps = async (context) => {
 
   //console.log(context)
   return { 
-      props: {
-          "verified_list": verified_list
-      },
-      revalidate: 60
+    props: {
+      "verified_list": verified_list
+    }
   }
 }
 

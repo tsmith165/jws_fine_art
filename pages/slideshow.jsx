@@ -35,9 +35,8 @@ export const getServerSideProps = async (context) => {
 
   //console.log(context)
   return { 
-      props: {
-          "piece_list": piece_list
-      },
-      revalidate: 60
+    props: {
+      "piece_list": piece_list
+    }
   }
 }
