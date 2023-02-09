@@ -1,6 +1,6 @@
 import styles from '../../styles/components/OrderTree.module.scss'
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const OrderTree = ({verified_list, refresh_data}) => {
 
@@ -15,7 +15,7 @@ const OrderTree = ({verified_list, refresh_data}) => {
         console.log(verified_payment_data);
 
         var image_url = verified_payment_data['image_path']
-        if (!verified_payment_data['image_path'].includes("https://jwsfineart.s3.us-west-1.amazonaws.com")) {
+        if (!verified_payment_data['image_path'].includes("https://jwsfineartpieces.s3.us-west-1.amazonaws.com")) {
             image_url = `${baseURL}/pieces/${verified_payment_data['image_path'].split('pieces/')[1]}`
         }
 

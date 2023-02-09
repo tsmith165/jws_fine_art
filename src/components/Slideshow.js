@@ -10,7 +10,7 @@ import Pause from '@material-ui/icons/Pause';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import SpeedIcon from '@material-ui/icons/Speed';
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const SlideshowComponent = ({piece_list}) => {
     const debug = false;

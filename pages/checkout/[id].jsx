@@ -10,7 +10,7 @@ import CheckoutForm from '../../src/components/forms/CheckoutForm'
 
 import { get_piece_id_from_path_o_id } from '../../lib/helpers'
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`)

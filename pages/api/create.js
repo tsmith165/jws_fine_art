@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma";
+import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
 const secret = process.env.SECRET;
 
@@ -7,6 +8,11 @@ export default async function handler(req, res) {
     console.log("Request.method != POST.  Status: 402")
     res.status(402)
   }
+
+  const passed_json = req.body
+
+  console.log(`Passed JSON (Next Line):`)
+  console.log(passed_json);
 
   const { userId } = getAuth(req);
   const user = userId ? await clerkClient.users.getUser(userId) : null;
@@ -31,11 +37,6 @@ export default async function handler(req, res) {
   }
 
   console.log(`Auth Successful.  Attempting to CREATE NEW PIECE...`)
-
-  const passed_json = req.body
-
-  console.log(`Passed JSON (Next Line):`)
-  console.log(passed_json);
 
   const last_oid_json = (await prisma.$queryRaw`select max(o_id) from "Piece"`)
   console.log(`LAST OID (Next Line):`)

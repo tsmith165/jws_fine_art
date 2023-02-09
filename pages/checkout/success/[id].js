@@ -4,7 +4,7 @@ import { prisma } from '../../../lib/prisma'
 import PageLayout from '../../../src/components/layout/PageLayout'
 import styles from '../../../styles/pages/CheckoutReturn.module.scss'
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 function getPieceId(PathOID, pieces) {
     for (var i=0; i < pieces.length; i++) {
