@@ -7,6 +7,10 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, description, sold}) => {
     var [x, y, img_width, img_height] = dimensions;
 
+    if (x == null || x < 0) {
+        x = 0;
+    }
+ 
     return (
         <div id={id} className={`${styles.piece_container} ${className}`} style={{width: img_width + 10, height: img_height + 10, top: y, left: x}} /*onClick={myClick}*/>
             <Link href={`/details/${o_id}`}>
