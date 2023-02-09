@@ -23,8 +23,8 @@ async function fetchPieces() {
     return pieces
 }
 
-export const getServerSideProps = async (context) => {
-    console.log("Getting Server Side Props")
+export const getStaticProps = async (context) => {
+    console.log("Getting Static Props")
     const pieces = await fetchPieces()
 
     //console.log(context)
@@ -34,6 +34,22 @@ export const getServerSideProps = async (context) => {
             "pieces": pieces
         },
         revalidate: 60
+    }
+}
+
+export const getStaticPaths = async () => {
+    console.log("Getting Static Paths")
+    const pieces = await fetchPieces()
+
+    const offset_for_testing = 0;
+    
+    var paths = [];
+    for (var i=0; i < pieces.length - offset_for_testing - 1; i++) {
+        paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
+    }
+    return {
+        paths: paths,
+        fallback: 'blocking'
     }
 }
 
