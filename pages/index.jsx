@@ -38,8 +38,8 @@ export const getServerSideProps = async (context) => {
 
   //console.log(context)
   return { 
-      props: {
-          "piece_list": piece_list
-      }
+    props: {
+      "piece_list": piece_list
+    }
   }
 }
