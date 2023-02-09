@@ -37,22 +37,6 @@ export const getServerSideProps = async (context) => {
     }
 }
 
-export const getStaticPaths = async () => {
-    console.log("Getting Static Paths")
-    const pieces = await fetchPieces()
-
-    const offset_for_testing = 0;
-    
-    var paths = [];
-    for (var i=0; i < pieces.length - offset_for_testing - 1; i++) {
-        paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
-    }
-    return {
-        paths: paths,
-        fallback: 'blocking'
-    }
-}
-
 const EditPage = ({id, pieces}) => {
     const { isLoaded, isSignedIn, user } = useUser();
 
