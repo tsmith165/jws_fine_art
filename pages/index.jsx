@@ -7,8 +7,8 @@ import styles from '../styles/components/Gallery.module.scss'
 import useWindowSize from '../lib/useWindowSize'
 
 export default function Home({piece_list}) {
-  console.log("CURRENT PIECE LIST (NEXT LINE):")
-  console.log(piece_list);
+  //console.log("CURRENT PIECE LIST (NEXT LINE):")
+  //console.log(piece_list);
 
   var window_size = useWindowSize()
 

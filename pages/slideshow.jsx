@@ -6,8 +6,8 @@ import SlideshowComponent from '../src/components/Slideshow';
 import styles from '../styles/components/Slideshow.module.scss'
 
 export default function Slideshow({piece_list}) {
-  console.log("CURRENT PIECE LIST (NEXT LINE):")
-  console.log(piece_list);
+  //console.log("CURRENT PIECE LIST (NEXT LINE):")
+  //console.log(piece_list);
 
   return (
     <PageLayout page_title={"Slideshow"}>
