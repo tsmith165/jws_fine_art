@@ -9,7 +9,7 @@ import EditIcon from '@material-ui/icons/Edit';
 
 import { change_order, delete_piece } from '../../lib/api_calls'
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const PieceTree = ({piece_tree_data, refresh_data}) => {
 

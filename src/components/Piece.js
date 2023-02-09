@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from '../../styles/components/Gallery.module.scss'
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, description, sold}) => {
     var [x, y, img_width, img_height] = dimensions;

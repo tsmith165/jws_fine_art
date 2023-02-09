@@ -1,7 +1,7 @@
 //import { NextApiRequest, NextApiResponse } from "next";
 //import { prisma } from "../../../lib/prisma";
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const YOUR_DOMAIN = `https://jwsfineart.com`;
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);

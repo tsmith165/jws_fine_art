@@ -10,7 +10,7 @@ import Link from 'next/link'
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import CloseIcon from '@material-ui/icons//Close';
 
-const baseURL = "https://jwsfineart.s3.us-west-1.amazonaws.com";
+const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 function getPieceId(PathOID, pieces) {
     for (var i=0; i < pieces.length; i++) {
