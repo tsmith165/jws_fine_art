@@ -76,8 +76,8 @@ async function fetchVerfiedPayments() {
   return verified_list
 }
 
-export const getStaticProps = async (context) => {
-  console.log("Getting Static Props")
+export const getServerSideProps = async (context) => {
+  console.log("Getting Server Side Props")
   const verified_list = await fetchVerfiedPayments()
 
   //console.log(context)

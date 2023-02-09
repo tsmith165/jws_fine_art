@@ -65,8 +65,8 @@ async function fetchPieces() {
   return piece_list
 }
 
-export const getStaticProps = async (context) => {
-  console.log("Getting Static Props")
+export const getServerSideProps = async (context) => {
+  console.log("Getting Server Side Props")
   const piece_list = await fetchPieces()
 
   //console.log(context)
