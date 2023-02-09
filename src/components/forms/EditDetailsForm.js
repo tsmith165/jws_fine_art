@@ -216,7 +216,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Type</div>
                     </div>
-                    <select id="type" className={styles.input_select} defaultValue={ piece['type'] }>
+                    <select id="type" className={styles.input_select} value={ piece['type'] }>
                         <option value="Oil On Canvas">Oil On Canvas</option>
                         <option value="Oil On Cradled Panel">Oil On Cradled Panel</option>
                         <option value="Intaglio On Paper">Intaglio On Paper</option>
@@ -230,7 +230,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Sold</div>
                     </div>
-                    <select id="sold" className={styles.input_select} defaultValue={ (piece['sold'] == true) ? "True" : "False" }>
+                    <select id="sold" className={styles.input_select} value={ (piece['sold'] == true) ? "True" : "False" }>
                         <option value="True">Sold</option>
                         <option value="False">Not Sold</option>
                         {/*<option defaultValue="NFS">Not For Sale</option>*/}
