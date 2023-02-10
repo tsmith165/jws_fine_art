@@ -2,10 +2,11 @@ import React from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 
-import styles from '../../../../styles/pages/Details.module.scss'
+import { fetch_pieces } from '../../../../lib/api_calls';
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
-import { fetch_pieces } from '../../../../lib/api_calls';
+
+import styles from '../../../../styles/pages/Details.module.scss'
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 
