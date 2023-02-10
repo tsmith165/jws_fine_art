@@ -16,3 +16,16 @@ a {
 * {
   box-sizing: border-box;
 }
+
+select {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  padding: 3px 6px;
+  width: 250px;
+  background-color: #BD2786;
+  color: white;
+  letter-spacing: -.04em;
+  font-weight: bold;
+  border: 0;
+}
