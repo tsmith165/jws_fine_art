@@ -5,7 +5,6 @@ import Link from 'next/link'
 import styles from '../../../../styles/pages/Details.module.scss'
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
-import EditDetailsForm from '../../../../src/components/forms/EditDetailsForm'
 import { fetch_pieces } from '../../../../lib/api_calls';
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
@@ -18,10 +17,12 @@ class DetailsPage extends React.Component {
 
         this.router = props.router
 
+        console.log(`ID PROP: ${props.id}`)
+
         // Don't call this.setState() here!
         this.state = {
             debug: false,
-            path_id: props.id,
+            url_o_id: props.id,
             pieces: null,
             piece_id: null,
             current_piece: null,
@@ -31,13 +32,14 @@ class DetailsPage extends React.Component {
                 description: '',
                 sold:        '',
                 price:       '',
-                width:       '',
-                height:      '',
+                width:       0,
+                height:      0,
                 real_width:  '',
                 real_height: '',
                 image_path:  '',
                 instagram:   '',
             },
+            image_url: '',
             next_oid: null,
             last_oid: null,
             full_screen: false,
@@ -48,34 +50,32 @@ class DetailsPage extends React.Component {
             description: ''
         }; 
 
-        this.fetch_pieces = this.fetch_pieces.bind(this);
+        this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
         this.get_piece_id_from_path_o_id = this.get_piece_id_from_path_o_id.bind(this);
     }
 
-    async fetch_pieces() {
+    async componentDidMount() {
+        await this.fetch_pieces_from_api()
+    }
+
+    async fetch_pieces_from_api() {
         console.log(`-------------- Fetching Initial Server List --------------`)
         const pieces = await fetch_pieces();
 
         console.log('Pieces output (Next Line):')
         console.log(pieces)
 
-        this.update_current_piece(this.state.path_id, pieces)
-    }
-
-    async get_piece_id_from_path_o_id(PathOID, pieces) {
-        for (var i=0; i < pieces.length; i++) {
-            if (pieces[i]['o_id'].toString() == PathOID.toString()) {
-                return i
-            }
-        }
+        await this.update_current_piece(this.state.url_o_id, pieces)
     }
 
     async update_current_piece(o_id, pieces) {
+        console.log(`Searching for URL_O_ID: ${o_id}`)
         const piece_id = await this.get_piece_id_from_path_o_id(o_id, pieces);
-        //console.log(`Current Selected Piece ID: ${piece_id}`)
 
         const current_piece = pieces[piece_id]
+        console.log(`CURRENT PIECE ID ${piece_id} DATA (NEXT LINE):`)
+        console.log(current_piece)
 
         const pieces_length = pieces.length;
         const next_oid = (piece_id + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[piece_id + 1]['o_id'];
@@ -110,53 +110,37 @@ class DetailsPage extends React.Component {
         const price = current_piece['price']
         const price_html = (current_piece["sold"] == false) ? ( <b className={styles.price_text}>{current_piece['price']}</b> ) : ( null )
 
+        const image_url = piece_details.image_path
+        console.log(`Setting Details Image Path: ${image_url}`)
+
         const description = current_piece['description'].split('<br>').join("\n");
-
-        console.log("CURRENT PIECE DETAILS (Next Line):")
-        console.log(piece_details)
-
-        this.setState({pieces: pieces, piece_id: piece_id, piece: current_piece, next_oid: next_oid, last_oid: last_oid, sold: sold, sold_html: sold_html, price: price, price_html: price_html, description: description})
-
+        this.setState({pieces: pieces, piece_id: piece_id, piece: current_piece, image_url: image_url, next_oid: next_oid, last_oid: last_oid, sold: sold, sold_html: sold_html, price: price, price_html: price_html, piece_details: piece_details, description: description})
+        
         this.router.push(`/details/${o_id}`)
     }
 
-    async componentDidMount() {
-        await this.fetch_pieces()
+    async get_piece_id_from_path_o_id(URL_O_ID, pieces) {
+        for (var i=0; i < pieces.length; i++) {
+            if (pieces[i]['o_id'].toString() == URL_O_ID.toString()) {
+                return i
+            }
+        }
     }
 
     render() {
+        console.log("CURRENT PIECE DETAILS (Next Line):")
+        console.log(this.state.piece_details)
+
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
         if (this.state.full_screen == true) {
-            <PageLayout page_title={`Piece Details - ${title}`}>
-                <div className={styles.full_screen_container}>
-                    <div className={styles.full_screen_image_container}>
-                        <Image
-                            className={styles.full_screen_image}
-                            src={`${baseURL}${this.state.piece_details['image_path']}`}
-                            alt={this.state.piece_details['title']}
-                            width={this.state.piece_details['width']}
-                            height={this.state.piece_details['height']}
-                            priority={true}
-                            layout='fill'
-                            objectFit='contain'
-                            quality={100}
-                            onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
-                        />
-                    </div>
-                    <div className={styles.full_screen_close_container} onClick={(e) => {e.preventDefault(); set_full_screen(false)}}>
-                        <CloseIcon className={`${styles.full_screen_close_icon}`} />
-                    </div>
-                </div>
-            </PageLayout>
-         } else {
-            <PageLayout page_title={`Piece Details - ${title}}`}>
-                <div className={styles.details_container}>
-                    <div className={styles.details_container_left}>
-                        <div className={styles.details_image_container}>
+            page_layout = (
+                <PageLayout page_title={`Piece Details - ${title}`}>
+                    <div className={styles.full_screen_container}>
+                        <div className={styles.full_screen_image_container}>
                             <Image
-                                className={styles.details_image}
-                                src={`${baseURL}${this.state.piece_details['image_path']}`}
+                                className={styles.full_screen_image}
+                                src={this.state.image_url}
                                 alt={this.state.piece_details['title']}
                                 width={this.state.piece_details['width']}
                                 height={this.state.piece_details['height']}
@@ -164,58 +148,84 @@ class DetailsPage extends React.Component {
                                 layout='fill'
                                 objectFit='contain'
                                 quality={100}
-                                onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
+                                onClick={(e) => {e.preventDefault(); this.setState({full_screen: true})}}
                             />
                         </div>
+                        <div className={styles.full_screen_close_container} onClick={(e) => {e.preventDefault(); this.setState({full_screen: false})}}>
+                            <CloseIcon className={`${styles.full_screen_close_icon}`} />
+                        </div>
                     </div>
-                    <div className={styles.details_container_right}>
-                        <div className={styles.title_container}>
-                            <div className={styles.title_inner_container}>
-                                <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); update_current_piece(last_oid, pieces)}} />
-                                <b className={styles.title}>{this.state.piece_details['title']}</b>
-                                <ArrowForwardIosRoundedIcon className={`${styles.title_arrow}`} onClick={(e) => { e.preventDefault(); update_current_piece(next_oid, pieces)}} />
+                </PageLayout>
+            )
+         } else {
+            page_layout = (
+                <PageLayout page_title={`Piece Details - ${title}}`}>
+                    <div className={styles.details_container}>
+                        <div className={styles.details_container_left}>
+                            <div className={styles.details_image_container}>
+                                <Image
+                                    className={styles.details_image}
+                                    src={this.state.image_url}
+                                    alt={this.state.piece_details['title']}
+                                    width={this.state.piece_details['width']}
+                                    height={this.state.piece_details['height']}
+                                    priority={true}
+                                    layout='fill'
+                                    objectFit='contain'
+                                    quality={100}
+                                    onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
+                                />
                             </div>
                         </div>
-                        <div className={styles.details_form_container}>
-                            <div className={styles.details_navigation_container}>
-                                <div className={styles.details_navigation_inner_container}>
-                                    {this.state.price_html}
-                                    {this.state.sold_html}
-                                    {
-                                        (this.state.sold == true) ? 
-                                            (
-                                                null
-                                            ) : (
-                                                <Link href='https://stripe.com'>
-                                                    <div className={styles.powered_by_stripe_container}>
-                                                        <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
-                                                        </div>
-                                                </Link>
-                                            )
-                                    }
-                                    {
-                                        (this.state.piece_details['instagram'] != null && this.state.piece_details['instagram'] != '') ? (
-                                            <Link href={`https://www.instagram.com/${piece['instagram']}`}>
-                                                <div className={styles.instagram_link_container}>
-                                                    <div className={styles.instagram_image_container}>
-                                                        <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} layout="fill" objectFit='contain'/>
-                                                    </div>
-                                                    <div className={styles.instagram_link_label}>View On Instagram</div>
-                                                </div>
-                                            </Link>
-                                        ) : (
-                                            null
-                                        )
-                                    }
+                        <div className={styles.details_container_right}>
+                            <div className={styles.title_container}>
+                                <div className={styles.title_inner_container}>
+                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.last_oid, this.state.pieces)}} />
+                                    <b className={styles.title}>{this.state.piece_details['title']}</b>
+                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.next_oid, this.state.pieces)}} />
                                 </div>
                             </div>
-                            <div className={styles.details_description_container}>
-                                <h3 className={styles.details_description}>{this.state.description}</h3>
+                            <div className={styles.details_form_container}>
+                                <div className={styles.details_navigation_container}>
+                                    <div className={styles.details_navigation_inner_container}>
+                                        {this.state.price_html}
+                                        {this.state.sold_html}
+                                        {
+                                            (this.state.sold == true) ? 
+                                                (
+                                                    null
+                                                ) : (
+                                                    <Link href='https://stripe.com'>
+                                                        <div className={styles.powered_by_stripe_container}>
+                                                            <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
+                                                            </div>
+                                                    </Link>
+                                                )
+                                        }
+                                        {
+                                            (this.state.piece_details['instagram'] != null && this.state.piece_details['instagram'] != '') ? (
+                                                <Link href={`https://www.instagram.com/${this.state.piece_details['instagram']}`}>
+                                                    <div className={styles.instagram_link_container}>
+                                                        <div className={styles.instagram_image_container}>
+                                                            <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} layout="fill" objectFit='contain'/>
+                                                        </div>
+                                                        <div className={styles.instagram_link_label}>View On Instagram</div>
+                                                    </div>
+                                                </Link>
+                                            ) : (
+                                                null
+                                            )
+                                        }
+                                    </div>
+                                </div>
+                                <div className={styles.details_description_container}>
+                                    <h3 className={styles.details_description}>{this.state.description}</h3>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </PageLayout>
+                </PageLayout>
+            )
         }
         return page_layout
     }

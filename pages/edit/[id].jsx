@@ -8,6 +8,10 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const Edit = ({}) => {
     const { isLoaded, isSignedIn, user } = useUser();
 
+    const router = useRouter();
+    const id = router.query.id;
+    console.log(`Page ID: ${id}`);
+
     if  (!isLoaded) {
       return(<></>)
     }
@@ -23,15 +27,12 @@ const Edit = ({}) => {
       router.push('/')
     }
 
-    const router = useRouter();
-    const id = router.query.id;
-    console.log(`Page ID: ${id}`);
-
-    const page_jsx =  (
+    const page_jsx = (
         <EditPage id={id} router={router}/>
     )
 
-    return page_jsx
+    if (!router.isReady) return null
+    return ( <EditPage id={id} router={router}/> )
 }
 
 export default Edit
