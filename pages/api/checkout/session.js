@@ -98,6 +98,8 @@ export default async function handler(req, res) {
                 cancel_url: `${YOUR_DOMAIN}/cancel/${piece_db_id}`,
             }
 
+            console.log("Attempting to create checkout session with following params (Next Line):")
+            console.log(params)
             const checkout_session = await stripe.checkout.sessions.create(params);
 
             console.log(`Session ID: ${checkout_session.id}`)
