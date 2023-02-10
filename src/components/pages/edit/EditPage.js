@@ -126,7 +126,7 @@ class EditPage extends React.Component {
                     <div className={styles.details_container_right}>
 
                         <EditDetailsForm 
-                            id={this.state.piece_id} 
+                            id={this.state.path_id} 
                             last_oid={this.state.last_oid} 
                             next_oid={this.state.next_oid} 
                             piece={this.state.piece_details} 
