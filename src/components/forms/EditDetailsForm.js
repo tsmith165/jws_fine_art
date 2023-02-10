@@ -9,7 +9,7 @@ import styles from '../../../styles/forms/EditDetailsForm.module.scss'
 
 import { edit_details, create_piece, upload_image, get_upload_url } from '../../../lib/api_calls'
 
-const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_url }) => {
+const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, update_current_piece }) => {
 
     async function handleSubmit(event) {
         event.preventDefault()
@@ -103,9 +103,9 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     instagram: ''
                 }
         
-                set_piece(new_piece_details)
+                set_state({piece: new_piece_details})
                 //set_description('')
-                //set_image_url(new_image_path)
+                //set_state({image_url: new_image_path})
         
                 setUploaded(true)
                 setUploadError(false)
@@ -198,13 +198,9 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
         <div className={styles.edit_details_form_container}>
             <form method="post" onSubmit={handleSubmit}>
                 <div className={styles.title_container}>
-                    <Link href={`/edit/${last_oid}`}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} />
-                    </Link>
+                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); update_current_piece(last_oid, pieces)}} />
                     <input type="text" className={styles.title_input} id="title" defaultValue={piece['title']} key={piece['title']}/>
-                    <Link href={`/edit/${next_oid}`}>
-                        <ArrowForwardIosRoundedIcon className={styles.title_arrow}/>
-                    </Link>
+                    <ArrowForwardIosRoundedIcon className={styles.title_arrow} onClick={(e) => { e.preventDefault(); update_current_piece(next_oid, pieces)}}/>
                 </div>
 
                 <div className={styles.edit_details_description_container}>
@@ -216,7 +212,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Type</div>
                     </div>
-                    <select id="type" className={styles.input_select} value={ piece['type'] }>
+                    <select id="type" className={styles.input_select} defaultValue={ piece['type'] }>
                         <option value="Oil On Canvas">Oil On Canvas</option>
                         <option value="Oil On Cradled Panel">Oil On Cradled Panel</option>
                         <option value="Intaglio On Paper">Intaglio On Paper</option>
@@ -230,7 +226,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, set_piece, set_image_u
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Sold</div>
                     </div>
-                    <select id="sold" className={styles.input_select} value={ (piece['sold'] == true) ? "True" : "False" }>
+                    <select id="sold" className={styles.input_select} defaultValue={ (piece['sold'] == true) ? "True" : "False" }>
                         <option value="True">Sold</option>
                         <option value="False">Not Sold</option>
                         {/*<option defaultValue="NFS">Not For Sale</option>*/}
