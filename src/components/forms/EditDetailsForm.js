@@ -9,7 +9,7 @@ import styles from '../../../styles/forms/EditDetailsForm.module.scss'
 
 import { edit_details, create_piece, upload_image, get_upload_url } from '../../../lib/api_calls'
 
-const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, update_current_piece }) => {
+const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_piece_details, update_current_piece }) => {
 
     async function handleSubmit(event) {
         event.preventDefault()
@@ -102,8 +102,10 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
                     image_path: new_image_path,
                     instagram: ''
                 }
+                console.log("Updating state with uploaded piece details (Next Line):")
+                console.log(new_piece_details)
         
-                set_state({piece: new_piece_details})
+                set_piece_details(new_piece_details)
                 //set_description('')
                 //set_state({image_url: new_image_path})
         
