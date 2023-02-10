@@ -200,7 +200,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
 
     var [type, set_type] = useState(piece['type'])
     useEffect(() => {
-        set_sold(piece['type'])
+        set_type(piece['type'])
     }, [piece['type']]);
     
     console.log(`TYPE STATE: ${sold}`)
