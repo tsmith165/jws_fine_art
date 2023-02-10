@@ -162,13 +162,6 @@ class EditPage extends React.Component {
         const real_width  = event.target.elements.width.value;
         const real_height = event.target.elements.height.value;
     
-        //console.log(`Title: ${title} | Real Width: ${real_width} | Height: ${real_height}`)
-        //console.log(`Type: ${type} | Sold: ${sold} | Price: ${price} | Instagram Path: ${instagram}`)
-        //console.log(`Image Path: ${this.state.piece_details['image_path']} | Px Width: ${this.state.piece_details['width']} | Px Height: ${this.state.piece_details['height']}`)
-        //console.log("Description (Next Line):")
-        //console.log(this.state.description)
-    
-        // perform checks on inputted data
         if (title) {
             console.log("--------------- Attempting To Edit Piece Details ---------------")
             console.log(`Editing Piece DB ID: ${this.state.piece_db_id} | Title: ${title} | Sold: ${sold}`)

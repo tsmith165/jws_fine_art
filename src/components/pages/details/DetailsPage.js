@@ -24,7 +24,8 @@ class DetailsPage extends React.Component {
             debug: false,
             url_o_id: props.id,
             pieces: null,
-            piece_id: null,
+            piece_position: null,
+            piece_db_id: null,
             current_piece: null,
             piece_details: {
                 title:       '',
@@ -52,7 +53,7 @@ class DetailsPage extends React.Component {
 
         this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
-        this.get_piece_id_from_path_o_id = this.get_piece_id_from_path_o_id.bind(this);
+        this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
     }
 
     async componentDidMount() {
@@ -66,22 +67,23 @@ class DetailsPage extends React.Component {
         console.log('Pieces output (Next Line):')
         console.log(pieces)
 
-        await this.update_current_piece(this.state.url_o_id, pieces)
+        this.setState({pieces: pieces}, async () => {await this.update_current_piece(this.state.url_o_id)})
     }
 
-    async update_current_piece(o_id, pieces) {
-        console.log(`Searching for URL_O_ID: ${o_id}`)
-        const piece_id = await this.get_piece_id_from_path_o_id(o_id, pieces);
+    async update_current_piece(o_id) {
+        const pieces_length = this.state.pieces.length;
 
-        const current_piece = pieces[piece_id]
-        console.log(`CURRENT PIECE ID ${piece_id} DATA (NEXT LINE):`)
+        console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
+        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(o_id);
+        const piece_db_id = current_piece['id']
+
+        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
         console.log(current_piece)
 
-        const pieces_length = pieces.length;
-        const next_oid = (piece_id + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[piece_id + 1]['o_id'];
-        const last_oid = (piece_id - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[piece_id - 1]['o_id'];
+        const next_oid = (piece_position + 1 > pieces_length - 1) ? this.state.pieces[0]['o_id']                 : this.state.pieces[piece_position + 1]['o_id'];
+        const last_oid = (piece_position - 1 < 0)                 ? this.state.pieces[pieces_length - 1]['o_id'] : this.state.pieces[piece_position - 1]['o_id'];
         
-        console.log(`Updating to new selected piece with ID: ${piece_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
+        console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
         const piece_details = {
             title:       current_piece['title'],
@@ -114,15 +116,34 @@ class DetailsPage extends React.Component {
         console.log(`Setting Details Image Path: ${image_url}`)
 
         const description = current_piece['description'].split('<br>').join("\n");
-        this.setState({pieces: pieces, piece_id: piece_id, piece: current_piece, image_url: image_url, next_oid: next_oid, last_oid: last_oid, sold: sold, sold_html: sold_html, price: price, price_html: price_html, piece_details: piece_details, description: description})
-        
-        this.router.push(`/details/${o_id}`)
+
+        console.log("CURRENT PIECE DETAILS (Next Line):")
+        console.log(piece_details)
+
+        console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
+
+        this.setState({
+            piece_position: piece_position,
+            piece_db_id: piece_db_id, 
+            piece: current_piece, 
+            piece_details: piece_details, 
+            image_url: image_url,
+            next_oid: next_oid, 
+            last_oid: last_oid, 
+            sold: sold, 
+            sold_html: sold_html, 
+            price: price, 
+            price_html: price_html, 
+            description: description
+        }, async () => {
+            this.router.push(`/details/${o_id}`) 
+        })
     }
 
-    async get_piece_id_from_path_o_id(URL_O_ID, pieces) {
-        for (var i=0; i < pieces.length; i++) {
-            if (pieces[i]['o_id'].toString() == URL_O_ID.toString()) {
-                return i
+    async get_piece_from_path_o_id(o_id) {
+        for (var i=0; i < this.state.pieces.length; i++) {
+            if (this.state.pieces[i]['o_id'].toString() == o_id.toString()) {
+                return [i, this.state.pieces[i]]
             }
         }
     }
@@ -180,9 +201,9 @@ class DetailsPage extends React.Component {
                         <div className={styles.details_container_right}>
                             <div className={styles.title_container}>
                                 <div className={styles.title_inner_container}>
-                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.last_oid, this.state.pieces)}} />
-                                    <b className={styles.title}>{this.state.piece_details['title']}</b>
-                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.next_oid, this.state.pieces)}} />
+                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.last_oid)}} />
+                                    <b className={styles.title}>{`"${this.state.piece_details['title']}"`}</b>
+                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.next_oid)}} />
                                 </div>
                             </div>
                             <div className={styles.details_form_container}>
