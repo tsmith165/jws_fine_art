@@ -7,6 +7,7 @@ import { AppProps } from 'next/app';
 import { dark } from '@clerk/themes';
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 
+const MAPS_JAVASCRIPT_API_KEY = process.env.MAPS_JAVASCRIPT_API_KEY
 import '../styles/globals/globals.scss'
 import Layout from '../src/components/layout/Layout'
 
@@ -31,8 +32,14 @@ const App = ({ Component, pageProps }: AppProps) => {
     }
   }, [router.events])
 
+  console.log(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
+
   return (
     <ClerkProvider appearance={{baseTheme: dark}}>
+      <Script 
+        strategy="afterInteractive" 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvrLDFUzjxCnKIDSuPwBYEbfnWrrIUnu4&libraries=places"
+      />
       <Script
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}

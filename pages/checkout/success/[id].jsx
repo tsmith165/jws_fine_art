@@ -1,103 +1,16 @@
-import Image from 'next/image'
-import { prisma } from '../../../lib/prisma'
+import { useRouter } from 'next/router'
 
-import PageLayout from '../../../src/components/layout/PageLayout'
-import styles from '../../../styles/pages/CheckoutReturn.module.scss'
+import SuccessPage from '../../../src/components/pages/success/SuccessPage';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
-function getPieceId(PathOID, pieces) {
-    for (var i=0; i < pieces.length; i++) {
-        if (pieces[i]['o_id'].toString() == PathOID.toString()) {
-            return i
-        }
-    }
+const Success = ({}) => {
+    const router = useRouter();
+    const id = router.query.id;
+    console.log(`Page ID: ${id}`);
+
+    if (!router.isReady) return null
+    return ( <SuccessPage id={id} router={router}/> )
 }
 
-async function fetchPieces() {
-    console.log(`Fetching pieces with prisma`)
-    const pieces = await prisma.piece.findMany({
-        orderBy: {
-            o_id: 'asc',
-        },
-    })
-
-    return pieces
-}
-
-export const getStaticProps = async (context) => {
-    console.log("Getting Static Props")
-    const pieces = await fetchPieces()
-
-    //console.log(context)
-    return { 
-        props: {
-            "id": context.params.id, 
-            "pieces": pieces
-        },
-        revalidate: 60
-    }
-}
-
-export const getStaticPaths = async () => {
-    console.log("Getting Static Paths")
-    const pieces = await fetchPieces()
-
-    const offset_for_testing = 0;
-    
-    var paths = [];
-    for (var i=0; i < pieces.length - offset_for_testing; i++) {
-        paths.push({params: {id: pieces[i]['o_id'].toString()}}); 
-    }
-    return {
-        paths: paths,
-        fallback: 'blocking'
-    }
-}
-
-const SuccessPage = ({id, pieces}) => {
-    var PathOID = id;
-    var pieceID = getPieceId(PathOID, pieces);
-    console.log(`Piece ID: ${pieceID}`)
-    var piece = pieces[pieceID];
-
-    return (
-        <PageLayout page_title={`Checkout Success - ${piece['title']}`}>
-            <div className={styles.details_container}>
-                <div className={styles.details_container_left}>
-                    <div className={styles.details_image_container}>
-                        <Image
-                            className={styles.details_image}
-                            src={`${baseURL}${piece['image_path']}`}
-                            alt={piece['title']}
-                            width={piece['width']}
-                            height={piece['height']}
-                            priority={true}
-                            layout='fill'
-                            objectFit='contain'
-                            quality={100}
-                        />
-                    </div>
-                </div>
-                <div className={styles.details_container_right}>
-                    <div className={styles.title_container}>
-                        <b className={styles.title}>{piece['title']}</b>
-                    </div>
-                    <div className={styles.checkout_return_message_container}>
-                        <div className={styles.checkout_return_message}>
-                            {`Successfully purhcased ${piece['title']}!` }
-                        </div>
-                        <div className={styles.checkout_return_message}>
-                            {`Check your email for your reciept from Stripe.` }
-                        </div>
-                        <div className={styles.checkout_return_message}>
-                            {`Please E Mail at jwsfineart@gmail.com with any questions.` }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </PageLayout>
-    )
-}
-
-export default SuccessPage
+export default Success
