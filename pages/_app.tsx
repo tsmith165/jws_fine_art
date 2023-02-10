@@ -38,7 +38,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     <ClerkProvider appearance={{baseTheme: dark}}>
       <Script 
         strategy="afterInteractive" 
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvrLDFUzjxCnKIDSuPwBYEbfnWrrIUnu4&libraries=places"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvrLDFUzjxCnKIDSuPwBYEbfnWrrIUnu4&libraries=places&callback=Function.prototype"
       />
       <Script
           strategy="afterInteractive"
