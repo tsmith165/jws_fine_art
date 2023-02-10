@@ -8,8 +8,6 @@ import styles from '../../styles/pages/Details.module.scss'
 
 import CheckoutForm from '../../src/components/forms/CheckoutForm'
 
-import { get_piece_id_from_path_o_id } from '../../lib/helpers'
-
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 async function fetchPieces() {
@@ -21,6 +19,14 @@ async function fetchPieces() {
     })
 
     return pieces
+}
+
+async function get_piece_id_from_path_o_id(PathOID, pieces) {
+    for (var i=0; i < pieces.length; i++) {
+        if (pieces[i]['o_id'].toString() == PathOID.toString()) {
+            return i
+        }
+    }
 }
 
 export const getStaticProps = async (context) => {
