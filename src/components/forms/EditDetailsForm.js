@@ -193,7 +193,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
 
     var [sold, set_sold] = useState((piece['sold'] == true) ? "True" : "False")
     useEffect(() => {
-        set_sold(piece['sold'])
+        set_sold((piece['sold'] == true) ? "True" : "False")
     }, [piece['sold']]);
     
     console.log(`SOLD STATE: ${sold}`)
