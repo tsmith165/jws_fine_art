@@ -191,6 +191,21 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
         );
     }
 
+    var [sold, set_sold] = useState((piece['sold'] == true) ? "True" : "False")
+    useEffect(() => {
+        set_sold(piece['sold'])
+    }, [piece['sold']]);
+    
+    console.log(`SOLD STATE: ${sold}`)
+
+    var [type, set_type] = useState(piece['type'])
+    useEffect(() => {
+        set_sold(piece['type'])
+    }, [piece['type']]);
+    
+    console.log(`TYPE STATE: ${sold}`)
+    
+
     return (
         <div className={styles.edit_details_form_container}>
             <form method="post" onSubmit={handleSubmit}>
@@ -209,7 +224,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Type</div>
                     </div>
-                    <select id="type" className={styles.input_select} defaultValue={ piece['type'] }>
+                    <select id="type" className={styles.input_select} value={ type } onChange={ (e) => set_type(e.target.value) }>
                         <option value="Oil On Canvas">Oil On Canvas</option>
                         <option value="Oil On Cradled Panel">Oil On Cradled Panel</option>
                         <option value="Intaglio On Paper">Intaglio On Paper</option>
@@ -223,7 +238,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
                     <div className={styles.input_label_container}>
                         <div className={styles.input_label}>Sold</div>
                     </div>
-                    <select id="sold" className={styles.input_select} defaultValue={ (piece['sold'] == true) ? "True" : "False" }>
+                    <select id="sold" className={styles.input_select} value={ sold } onChange={ (e) => set_sold(e.target.value) }>
                         <option value="True">Sold</option>
                         <option value="False">Not Sold</option>
                         {/*<option defaultValue="NFS">Not For Sale</option>*/}
