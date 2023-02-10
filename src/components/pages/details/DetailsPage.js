@@ -108,7 +108,7 @@ class DetailsPage extends React.Component {
             )
     
         const price = current_piece['price']
-        const price_html = (current_piece["sold"] == false) ? ( <b className={styles.price_text}>{`$current_piece['price']`}</b> ) : ( null )
+        const price_html = (current_piece["sold"] == false) ? ( <b className={styles.price_text}>{`$${current_piece['price']}`}</b> ) : ( null )
 
         const image_url = piece_details.image_path
         console.log(`Setting Details Image Path: ${image_url}`)
