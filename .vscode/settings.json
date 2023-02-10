@@ -2,5 +2,6 @@
     "window.title": "JWS Fine Art - MAIN",
     "terminal.integrated.env.windows": {
         "node_options": "--max_old_space_size=4096"
-    }
+    },
+    "workbench.editor.labelFormat": "medium"
 }

@@ -126,11 +126,8 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
         event.preventDefault();
         var content = event.target.value;
         set_description(content);
-        console.log(`Current Description: ${description}`)
+        // console.log(`Current Description: ${description}`)
     }
-
-    console.log(`Creating Piece (Next Line):`)
-    console.log(piece)
 
     const file_input_ref = useRef(null);
 
@@ -151,8 +148,8 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
         text_area_ref.current.style.height = scrollHeight + "px";
     }, [description]);
 
-    console.log("Current Description (Next Line):");
-    console.log(description);
+    //console.log("Current Description (Next Line):");
+    //console.log(description);
 
 
     const [loading, setLoading] = useState(false)
@@ -169,7 +166,7 @@ const EditDetailsForm = ({ id, last_oid, next_oid, piece, pieces, set_state, upd
         setUploadError(false)
     }, [false, false, false, false, false]);
 
-    console.log(`Current Status - Loading: ${loading} | Submitted: ${submitted} | Error: ${error} | Uploaded: ${uploaded}`)
+    console.log(`Loading: ${loading} | Submitted: ${submitted} | Error: ${error} | Uploaded: ${uploaded}`)
 
     const loader_jsx = null;
     if (loading == true) {
