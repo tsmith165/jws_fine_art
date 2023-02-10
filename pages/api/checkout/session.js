@@ -25,86 +25,84 @@ export default async function handler(req, res) {
             console.log(`Passed JSON (Next Line):`)
             console.log(passed_json);
 
-            if ( passed_json.piece_db_id == undefined || 
-                 passed_json.piece_title == undefined ||
-                 passed_json.image_path == undefined ||
-                 passed_json.width == undefined ||
-                 passed_json.height == undefined ||
-                 passed_json.price == undefined ||
-                 passed_json.full_name == undefined ||
-                 passed_json.phone == undefined ||
-                 passed_json.email == undefined ||
-                 passed_json.address == undefined ||
-                 passed_json.international == undefined
-            ) {
-                // NO REQ.BODY JSON PASSED IN
-                console.log("Request.body not fully passed in.  Status: 406")
+            const attrs_to_check = ['piece_db_id', 'piece_title', 'image_path', 'width', 'height', 'price', 'full_name', 'phone', 'email', 'address', 'international' ]
+            var attr_errors_found = false
+            for (var i = 0; i < attrs_to_check.length; i++) {
+                attr = attrs_to_check[i]
+                if (passed_json[attr] == undefined) {
+                    console.error(`Failed to pass in attribute: ${attr}`)
+                    attr_errors_found = true
+                }
+            }
+
+            if (attr_errors_found) {
+                console.error("Request.body not fully passed in.  Exit status: 406")
                 res.status(406)
+                res.end()
             }
-            else {
-                // Create Stripe Session
 
-                const piece_db_id   = passed_json.piece_db_id;
-                const piece_title   = passed_json.piece_title;
-                const image_path    = passed_json.image_path;
-                const width         = passed_json.width;
-                const height        = passed_json.height;
-                const price         = passed_json.price;
-                const full_name     = passed_json.full_name;
-                const phone         = passed_json.phone;
-                const email         = passed_json.email;
-                const address       = passed_json.address;
-                const international = passed_json.international;
+            // Create Stripe Session
 
-                var price_int = parseInt(price.toString().replace("$",""))
-                const converted_price = `${price_int}00`;
+            const piece_db_id   = passed_json.piece_db_id;
+            const piece_title   = passed_json.piece_title;
+            const image_path    = passed_json.image_path;
+            const width         = passed_json.width;
+            const height        = passed_json.height;
+            const price         = passed_json.price;
+            const full_name     = passed_json.full_name;
+            const phone         = passed_json.phone;
+            const email         = passed_json.email;
+            const address       = passed_json.address;
+            const international = passed_json.international;
 
-                if (international == true || international == 'true') {
-                    console.log(`Adding $30 to current price of ${price_int}`)
-                    price_int = price_int + 30;
-                    console.log(`Price after adding international shipping: ${price_int}`)
-                }
+            var price_int = parseInt(price.toString().replace("$",""))
+            const converted_price = `${price_int}00`;
 
-                var full_image_url = `${image_path}`
-                console.log(`Piece Title: ${piece_title} | Price: ${converted_price} | Image Path: ${full_image_url}`)
+            if (international == true || international == 'true') {
+                console.log(`Adding $30 to current price of ${price_int}`)
+                price_int = price_int + 30;
+                console.log(`Price after adding international shipping: ${price_int}`)
+            }
 
-                const params = {
-                    payment_method_types: ['card'],
-                    line_items: [
-                        {
-                            quantity: 1,
-                            price_data: {
-                                currency: 'usd',
-                                product_data: {
-                                    name: piece_title,
-                                    images: [full_image_url],
-                                },
-                                unit_amount: converted_price,
+            var full_image_url = `${image_path}`
+            console.log(`Piece Title: ${piece_title} | Price: ${converted_price} | Image Path: ${full_image_url}`)
+
+            const params = {
+                payment_method_types: ['card'],
+                line_items: [
+                    {
+                        quantity: 1,
+                        price_data: {
+                            currency: 'usd',
+                            product_data: {
+                                name: piece_title,
+                                images: [full_image_url],
                             },
-                        }
-                    ],
-                    payment_intent_data: {
-                        metadata: {
-                            product_id: piece_db_id,
-                            full_name: full_name,
-                            price_id: price,
-                            image_path: full_image_url,
-                            image_width: width,
-                            image_height: height
-            
-                        }
-                    },
-                    mode: 'payment',
-                    success_url: `${YOUR_DOMAIN}/success/${piece_db_id}`,
-                    cancel_url: `${YOUR_DOMAIN}/cancel/${piece_db_id}`,
-                }
-
-                const checkout_session = await stripe.checkout.sessions.create(params);
-
-                console.log(`Session ID: ${checkout_session.id}`)
-            
-                res.status(200).json({ id: checkout_session.id });
+                            unit_amount: converted_price,
+                        },
+                    }
+                ],
+                payment_intent_data: {
+                    metadata: {
+                        product_id: piece_db_id,
+                        full_name: full_name,
+                        price_id: price,
+                        image_path: full_image_url,
+                        image_width: width,
+                        image_height: height
+        
+                    }
+                },
+                mode: 'payment',
+                success_url: `${YOUR_DOMAIN}/success/${piece_db_id}`,
+                cancel_url: `${YOUR_DOMAIN}/cancel/${piece_db_id}`,
             }
+
+            const checkout_session = await stripe.checkout.sessions.create(params);
+
+            console.log(`Session ID: ${checkout_session.id}`)
+        
+            res.status(200).json({ id: checkout_session.id });
         }
     }
   res.end()
