@@ -95,7 +95,7 @@ class EditPage extends React.Component {
 
         this.setState({pieces: pieces, piece_id: piece_id, piece: current_piece, next_oid: next_oid, last_oid: last_oid, piece_details: piece_details, image_url: image_url})
 
-        this.router.push(`/edit/${o_id}`)
+        this.router.push(`/edit/${piece_id}`)
     }
 
     async componentDidMount() {
