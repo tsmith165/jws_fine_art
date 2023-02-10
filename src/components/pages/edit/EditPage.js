@@ -27,6 +27,7 @@ class EditPage extends React.Component {
             debug: false,
             url_o_id: this.props.id,
             pieces: null,
+            piece_position: null,
             piece_db_id: null,
             current_piece: null,
             piece_details: {
@@ -60,7 +61,6 @@ class EditPage extends React.Component {
 
         // File Upload
         this.showFileUpload = this.showFileUpload.bind(this);
-        this.updateDescription = this.updateDescription.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.onFileChange = this.onFileChange.bind(this);
         this.refresh_data = this.refresh_data.bind(this);
@@ -125,6 +125,7 @@ class EditPage extends React.Component {
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
 
         this.setState({
+            piece_position: piece_position,
             piece_db_id: piece_db_id, 
             piece: current_piece, 
             piece_details: piece_details, 
@@ -177,7 +178,7 @@ class EditPage extends React.Component {
                 console.log(`Edit Piece Response (Next Line):`)
                 console.log(response)
                 
-                this.refresh_data();
+                this.fetch_pieces_from_api();
     
                 if (response) { this.setState({loading: false, error: false, submitted: true}); }
                 else { 
@@ -193,7 +194,7 @@ class EditPage extends React.Component {
                 console.log(`Create Piece Response (Next Line):`)
                 console.log(response)
                 
-                this.refresh_data();
+                this.fetch_pieces_from_api();
     
                 if (response) { this.setState({loading: false, error: false, submitted: true}); }
                 else { this.setState({loading: false, error: true}); }
@@ -255,13 +256,6 @@ class EditPage extends React.Component {
         this.file_input_ref.current.click()
     }
 
-    updateDescription(event) {
-        event.preventDefault();
-        var content = event.target.value;
-        this.setState({description: content});
-        // console.log(`Current Description: ${this.state.description}`)
-    }
-
     refresh_data() {
         this.router.replace(this.router.asPath)
     }
@@ -313,7 +307,13 @@ class EditPage extends React.Component {
                                 </div>
 
                                 <div className={form_styles.edit_details_description_container}>
-                                    <textarea className={form_styles.edit_details_description_textarea} ref={this.text_area_ref} id="description" defaultValue={this.state.description.split('<br>').join("\n") } onChange={this.updateDescription}/>
+                                    <textarea 
+                                        className={form_styles.edit_details_description_textarea} 
+                                        ref={this.text_area_ref} 
+                                        id="description" 
+                                        value={this.state.description.split('<br>').join("\n") } 
+                                        onChange={(e) => { e.preventDefault(); this.setState({ description: e.target.value }) }}
+                                    />
                                 </div>
 
                                 {/* Piece Type Select */}
