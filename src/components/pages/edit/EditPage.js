@@ -15,10 +15,12 @@ class EditPage extends React.Component {
 
         this.router = props.router
 
+        console.log(`ID PROP: ${props.id}`)
+
         // Don't call this.setState() here!
         this.state = {
             debug: false,
-            path_id: props.id,
+            url_o_id: props.id,
             pieces: null,
             piece_id: null,
             current_piece: null,
@@ -40,32 +42,28 @@ class EditPage extends React.Component {
             image_url: '',
         }; 
 
-        this.fetch_pieces = this.fetch_pieces.bind(this);
+        this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
         this.get_piece_id_from_path_o_id = this.get_piece_id_from_path_o_id.bind(this);
     }
 
-    async fetch_pieces() {
+    async componentDidMount() {
+        await this.fetch_pieces_from_api()
+    }
+
+    async fetch_pieces_from_api() {
         console.log(`-------------- Fetching Initial Server List --------------`)
         const pieces = await fetch_pieces();
 
         console.log('Pieces output (Next Line):')
         console.log(pieces)
 
-        this.update_current_piece(this.state.path_id, pieces)
-    }
-
-    async get_piece_id_from_path_o_id(PathOID, pieces) {
-        for (var i=0; i < pieces.length; i++) {
-            if (pieces[i]['o_id'].toString() == PathOID.toString()) {
-                return i
-            }
-        }
+        await this.update_current_piece(this.state.url_o_id, pieces)
     }
 
     async update_current_piece(o_id, pieces) {
+        console.log(`Searching for URL_O_ID: ${o_id}`)
         const piece_id = await this.get_piece_id_from_path_o_id(o_id, pieces);
-        //console.log(`Current Selected Piece ID: ${piece_id}`)
 
         const current_piece = pieces[piece_id]
 
@@ -99,8 +97,12 @@ class EditPage extends React.Component {
         this.router.push(`/edit/${o_id}`)
     }
 
-    async componentDidMount() {
-        await this.fetch_pieces()
+    async get_piece_id_from_path_o_id(URL_O_ID, pieces) {
+        for (var i=0; i < pieces.length; i++) {
+            if (pieces[i]['o_id'].toString() == URL_O_ID.toString()) {
+                return i
+            }
+        }
     }
 
     render() {
@@ -127,7 +129,7 @@ class EditPage extends React.Component {
                     <div className={styles.details_container_right}>
 
                         <EditDetailsForm 
-                            id={this.state.path_id} 
+                            id={this.state.url_o_id} 
                             last_oid={this.state.last_oid} 
                             next_oid={this.state.next_oid} 
                             piece={this.state.piece_details} 
