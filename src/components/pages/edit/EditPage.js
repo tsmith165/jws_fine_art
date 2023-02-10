@@ -45,6 +45,7 @@ class EditPage extends React.Component {
         this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
         this.get_piece_id_from_path_o_id = this.get_piece_id_from_path_o_id.bind(this);
+        this.set_piece_details = this.set_piece_details.bind(this);
     }
 
     async componentDidMount() {
@@ -105,6 +106,10 @@ class EditPage extends React.Component {
         }
     }
 
+    async set_piece_details(piece_details) {
+        this.setState({piece_details: piece_details, image_url: piece_details['image_path']})
+    }
+
     render() {
         return (
             <PageLayout page_title={`Edit Details - ${this.state.piece_details['title']}`}>
@@ -134,7 +139,7 @@ class EditPage extends React.Component {
                             next_oid={this.state.next_oid} 
                             piece={this.state.piece_details} 
                             pieces={this.state.pieces}
-                            set_state={this.setState}
+                            set_piece_details={this.set_piece_details}
                             update_current_piece={this.update_current_piece}
                         />
 
