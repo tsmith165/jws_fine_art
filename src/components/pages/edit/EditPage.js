@@ -22,8 +22,6 @@ class EditPage extends React.Component {
             pieces: null,
             piece_id: null,
             current_piece: null,
-            next_oid: null,
-            last_oid: null,
             piece_details: {
                 title:       '',
                 type:        '',
@@ -37,6 +35,8 @@ class EditPage extends React.Component {
                 image_path:  '',
                 instagram:   '',
             },
+            next_oid: null,
+            last_oid: null,
             image_url: '',
         }; 
 
@@ -47,8 +47,7 @@ class EditPage extends React.Component {
 
     async fetch_pieces() {
         console.log(`-------------- Fetching Initial Server List --------------`)
-        const response = await fetch_pieces();
-        const pieces = response['pieces']
+        const pieces = await fetch_pieces();
 
         console.log('Pieces output (Next Line):')
         console.log(pieces)
@@ -66,13 +65,15 @@ class EditPage extends React.Component {
 
     async update_current_piece(o_id, pieces) {
         const piece_id = await this.get_piece_id_from_path_o_id(o_id, pieces);
-        console.log(`Current Selected Piece ID: ${piece_id}`)
+        //console.log(`Current Selected Piece ID: ${piece_id}`)
 
         const current_piece = pieces[piece_id]
 
         const pieces_length = pieces.length;
         const next_oid = (piece_id + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[piece_id + 1]['o_id'];
         const last_oid = (piece_id - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[piece_id - 1]['o_id'];
+
+        console.log(`Updating to new selected piece with ID: ${piece_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
         const piece_details = {
             title:       current_piece['title'],
@@ -99,7 +100,7 @@ class EditPage extends React.Component {
     }
 
     async componentDidMount() {
-        this.fetch_pieces()
+        await this.fetch_pieces()
     }
 
     render() {
