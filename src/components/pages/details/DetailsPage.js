@@ -10,6 +10,7 @@ import styles from '../../../../styles/pages/Details.module.scss'
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import { CircularProgress } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
@@ -269,7 +270,7 @@ class DetailsPage extends React.Component {
                                         layout='fill'
                                         objectFit='contain'
                                         quality={100}
-                                        onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
+                                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: true})}}
                                     />
                                 )}
                             </div>
