@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 
-import { fetch_pieces } from '../../../lib/api_calls';
+import { prisma } from '../../lib/prisma'
 
 import SuccessPage from '../../../src/components/pages/success/SuccessPage';
 
@@ -19,7 +19,8 @@ export default Success
 
 export const getServerSideProps = async (context) => {
     console.log(`-------------- Fetching Initial Server List --------------`)
-    const pieces = await fetch_pieces();
+    var pieces = await prisma.piece.findMany()
+    pieces.sort((a, b) => a['o_id'] - b['o_id']);
   
     return {
       props: {pieces: pieces}, // will be passed to the page component as props
