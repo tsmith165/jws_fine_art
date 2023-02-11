@@ -43,10 +43,12 @@ class CancelPage extends React.Component {
         this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
+
+        this.fetch_pieces_from_api()
     }
 
     async componentDidMount() {
-        await this.fetch_pieces_from_api()
+        // await this.fetch_pieces_from_api()
     }
 
     async fetch_pieces_from_api() {
