@@ -28,7 +28,7 @@ export default async function handler(req, res) {
             const attrs_to_check = ['piece_db_id', 'piece_title', 'image_path', 'width', 'height', 'price', 'full_name', 'phone', 'email', 'address', 'international' ]
             var attr_errors_found = false
             for (var i = 0; i < attrs_to_check.length; i++) {
-                attr = attrs_to_check[i]
+                let attr = attrs_to_check[i]
                 if (passed_json[attr] == undefined) {
                     console.error(`Failed to pass in attribute: ${attr}`)
                     attr_errors_found = true
