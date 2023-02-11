@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from 'next/image'
+import NextImage from 'next/image'
 
 import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url } from '../../../../lib/api_calls';
 
@@ -58,6 +58,7 @@ class EditPage extends React.Component {
 
         this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.set_page_piece_details = this.set_page_piece_details.bind(this);
+        this.delay = this.delay.bind(this);
 
         // File Upload
         this.showFileUpload = this.showFileUpload.bind(this);
@@ -202,6 +203,7 @@ class EditPage extends React.Component {
         event.preventDefault()
         console.log("FILE INPUT CHANGED....")
 
+        var uploaded_image_path = ''
         try {
             var selected_file = event.target.files[0];
             console.log(`Selected File: ${selected_file.name} | Size: ${selected_file.size}`);
@@ -209,18 +211,29 @@ class EditPage extends React.Component {
             const s3_upload_url = await get_upload_url(selected_file.name.toString().toLowerCase().replace(" ","_"))
             console.log(`Got Upload URL: ${s3_upload_url}`)
         
-            const new_image_path = await upload_image(s3_upload_url, selected_file)
-            console.log(`Got Upload Reponse: ${new_image_path}`)
+            uploaded_image_path = await upload_image(s3_upload_url, selected_file)
+            console.log(`Got Upload Reponse: ${uploaded_image_path}`)
+            
+        }  catch (err) {
+            this.setState({uploaded: false, upload_error: true});
+            console.error(`S3 Image Upload Error: ${err.message}`)
+            return;
+        }
         
+        if (uploaded_image_path == '') {
+            console.error(`Failed to upload image.  Cannot load file...`)
+            return;
+        }
+
+        try {
             var image = new Image();
-        
-            image.src = new_image_path;
+            image.src = uploaded_image_path;
         
             //Validate the File Height and Width.
-            image.onload = function () {
+            image.onload = () => {
                 console.log(`WIDTH: ${this.width} | HEIGHT: ${this.height}`)
         
-                const new_piece_details = {
+                const uploaded_piece_details = {
                     title: 'Enter Title...',
                     description: 'Enter Description...',
                     sold: '',
@@ -229,19 +242,23 @@ class EditPage extends React.Component {
                     height: this.height,
                     real_width: '',
                     real_height: '',
-                    image_path: new_image_path,
+                    image_path: uploaded_image_path,
                     instagram: ''
                 }
                 console.log("Updating state with uploaded piece details (Next Line):")
-                console.log(new_piece_details)
+                console.log(uploaded_piece_details)
                 
-                this.setState({uploaded: true, upload_error: false});
-                this.set_piece_details(new_piece_details)
-
+                this.setState({uploaded: true, upload_error: false, piece_details: uploaded_piece_details, image_url: uploaded_image_path});
             }
-        } catch {
-             this.setState({uploaded: false, upload_error: true});
+        }  catch (err) {
+            this.setState({uploaded: false, upload_error: true});
+            console.error(`Image Load Error: ${err.message}`)
+            return;
         }
+    }
+
+    delay(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
     }
 
     showFileUpload(event) {
@@ -276,7 +293,7 @@ class EditPage extends React.Component {
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
 
-                            <Image
+                            <NextImage
                                 className={styles.details_image}
                                 src={this.state.image_url}
                                 alt={this.state.piece_details['title']}
