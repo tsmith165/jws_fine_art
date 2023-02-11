@@ -302,7 +302,7 @@ class EditPage extends React.Component {
                             
                             { (this.state.image_url == '') ? ( 
                                 <div className={styles.loader_container}>
-                                    <div>Fetching Pieces From API...</div>
+                                    <div>Loading Gallery</div>
                                     <CircularProgress color="inherit" className={styles.loader}/>
                                 </div>
                             ) : (
