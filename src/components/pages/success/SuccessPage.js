@@ -118,42 +118,45 @@ class SuccessPage extends React.Component {
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(this.state.piece_details)
 
+        const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
         return (
-            <PageLayout page_title={`Checkout Success - ${piece['title']}`}>
-            <div className={styles.details_container}>
-                <div className={styles.details_container_left}>
-                    <div className={styles.details_image_container}>
-                        <Image
-                            className={styles.details_image}
-                            src={this.state.image_url}
-                            alt={this.state.piece_details['title']}
-                            width={this.state.piece_details['width']}
-                            height={this.state.piece_details['height']}
-                            priority={true}
-                            layout='fill'
-                            objectFit='contain'
-                            quality={100}
-                        />
+            <PageLayout page_title={ (title == '') ? (``) : (`Checkout Success - ${title}`) }>
+                <div className={styles.details_container}>
+                    <div className={styles.details_container_left}>
+                        <div className={styles.details_image_container}>
+                            { (this.state.image_url == '') ? (null) : (
+                                <Image
+                                    className={styles.details_image}
+                                    src={this.state.image_url}
+                                    alt={this.state.piece_details['title']}
+                                    // width={this.state.piece_details['width']}
+                                    // height={this.state.piece_details['height']}
+                                    priority={true}
+                                    layout='fill'
+                                    objectFit='contain'
+                                    quality={100}
+                                />
+                            )}
+                        </div>
+                    </div>
+                    <div className={styles.details_container_right}>
+                        <div className={styles.title_container}>
+                            <b className={styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</b>
+                        </div>
+                        <div className={styles.checkout_return_message_container}>
+                            <div className={styles.checkout_return_message}>
+                                {`Successfully purhcased ${this.state.piece_details['title']}!` }
+                            </div>
+                            <div className={styles.checkout_return_message}>
+                                {`Check your email for your reciept from Stripe.` }
+                            </div>
+                            <div className={styles.checkout_return_message}>
+                                {`Please E Mail at jwsfineart@gmail.com with any questions.` }
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className={styles.details_container_right}>
-                    <div className={styles.title_container}>
-                        <b className={styles.title}>{this.state.piece_details['title']}</b>
-                    </div>
-                    <div className={styles.checkout_return_message_container}>
-                        <div className={styles.checkout_return_message}>
-                            {`Successfully purhcased ${this.state.piece_details['title']}!` }
-                        </div>
-                        <div className={styles.checkout_return_message}>
-                            {`Check your email for your reciept from Stripe.` }
-                        </div>
-                        <div className={styles.checkout_return_message}>
-                            {`Please E Mail at jwsfineart@gmail.com with any questions.` }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </PageLayout>
+            </PageLayout>
         )
     }
 }

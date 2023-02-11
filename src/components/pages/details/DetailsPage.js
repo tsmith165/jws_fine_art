@@ -183,29 +183,31 @@ class DetailsPage extends React.Component {
             )
          } else {
             page_layout = (
-                <PageLayout page_title={`Piece Details - ${title}}`}>
+                <PageLayout page_title={ (title == '') ? (``) : (`Piece Details - ${title}`) }>
                     <div className={styles.details_container}>
                         <div className={styles.details_container_left}>
                             <div className={styles.details_image_container}>
-                                <Image
-                                    className={styles.details_image}
-                                    src={this.state.image_url}
-                                    alt={this.state.piece_details['title']}
-                                    width={this.state.piece_details['width']}
-                                    height={this.state.piece_details['height']}
-                                    priority={true}
-                                    layout='fill'
-                                    objectFit='contain'
-                                    quality={100}
-                                    onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
-                                />
+                                { (this.state.image_url == '') ? (null) : (
+                                    <Image
+                                        className={styles.details_image}
+                                        src={this.state.image_url}
+                                        alt={this.state.piece_details['title']}
+                                        // width={this.state.piece_details['width']}
+                                        // height={this.state.piece_details['height']}
+                                        priority={true}
+                                        layout='fill'
+                                        objectFit='contain'
+                                        quality={100}
+                                        onClick={(e) => {e.preventDefault(); set_full_screen(true)}}
+                                    />
+                                )}
                             </div>
                         </div>
                         <div className={styles.details_container_right}>
                             <div className={styles.title_container}>
                                 <div className={styles.title_inner_container}>
                                     <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.last_oid)}} />
-                                    <b className={styles.title}>{`"${this.state.piece_details['title']}"`}</b>
+                                    <b className={styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</b>
                                     <ArrowForwardIosRoundedIcon className={`${styles.title_arrow}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.next_oid)}} />
                                 </div>
                             </div>
@@ -228,7 +230,7 @@ class DetailsPage extends React.Component {
                                         }
                                         {
                                             (this.state.piece_details['instagram'] != null && this.state.piece_details['instagram'] != '') ? (
-                                                <Link href={`https://www.instagram.com/${this.state.piece_details['instagram']}`}>
+                                                <Link href={this.state.piece_details['instagram']}>
                                                     <div className={styles.instagram_link_container}>
                                                         <div className={styles.instagram_image_container}>
                                                             <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} layout="fill" objectFit='contain'/>
