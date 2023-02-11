@@ -17,7 +17,7 @@ const Checkout = ({ pieces }) => {
 
 export default Checkout
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = async (context) => {
     console.log(`-------------- Fetching Initial Server List --------------`)
     const pieces = await fetch_pieces();
   
