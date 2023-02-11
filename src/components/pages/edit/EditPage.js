@@ -69,12 +69,10 @@ class EditPage extends React.Component {
         // Refrences
         this.file_input_ref = React.createRef(null);
         this.text_area_ref = React.createRef(null);
-
-        this.fetch_pieces_from_api()
     }
 
     async componentDidMount() {
-        // await this.fetch_pieces_from_api()
+        await this.fetch_pieces_from_api()
     }
 
     async fetch_pieces_from_api() {
@@ -84,25 +82,25 @@ class EditPage extends React.Component {
         console.log('Pieces fetched in state (Next Line):')
         console.log(pieces)
 
-        this.setState({pieces: pieces}, async () => {await this.update_current_piece(this.state.url_o_id)})
+        this.update_current_piece(pieces, this.state.url_o_id)
     }
 
     async set_page_piece_details(piece_details) {
         this.setState({piece_details: piece_details, image_url: piece_details['image_path']})
     }
 
-    async update_current_piece(o_id) {
-        const pieces_length = this.state.pieces.length;
+    async update_current_piece(pieces, o_id) {
+        const pieces_length = pieces.length;
 
         console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
-        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(o_id);
+        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(pieces, o_id);
         const piece_db_id = current_piece['id']
 
         console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
         console.log(current_piece)
 
-        const next_oid = (piece_position + 1 > pieces_length - 1) ? this.state.pieces[0]['o_id']                 : this.state.pieces[piece_position + 1]['o_id'];
-        const last_oid = (piece_position - 1 < 0)                 ? this.state.pieces[pieces_length - 1]['o_id'] : this.state.pieces[piece_position - 1]['o_id'];
+        const next_oid = (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[piece_position + 1]['o_id'];
+        const last_oid = (piece_position - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'];
 
         console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
@@ -128,6 +126,7 @@ class EditPage extends React.Component {
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
 
         this.setState({
+            pieces: pieces,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
             piece: current_piece, 
@@ -139,14 +138,16 @@ class EditPage extends React.Component {
             sold: (piece_details['sold'] == true) ? "True" : "False", 
             type: piece_details['type']
         }, async () => {
-            this.router.push(`/edit/${o_id}`) 
+            if (this.state.url_o_id != o_id) {
+                this.router.push(`/edit/${o_id}`) 
+            }
         })
     }
 
-    async get_piece_from_path_o_id(o_id) {
-        for (var i=0; i < this.state.pieces.length; i++) {
-            if (this.state.pieces[i]['o_id'].toString() == o_id.toString()) {
-                return [i, this.state.pieces[i]]
+    async get_piece_from_path_o_id(pieces, o_id) {
+        for (var i=0; i < pieces.length; i++) {
+            if (pieces[i]['o_id'].toString() == o_id.toString()) {
+                return [i, pieces[i]]
             }
         }
     }
@@ -316,9 +317,9 @@ class EditPage extends React.Component {
                         <div className={form_styles.edit_details_form_container}>
                             <form method="post" onSubmit={this.handleSubmit}>
                                 <div className={form_styles.title_container}>
-                                    <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.last_oid)}} />
-                                    <input type="text" className={form_styles.title_input} id="title" defaultValue={ (title == '') ? (``) : (`"${title}"`) } key={this.state.piece_details['title']}/>
-                                    <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.next_oid)}}/>
+                                    <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.pieces, this.state.last_oid)}} />
+                                    <input type="text" className={form_styles.title_input} id="title" defaultValue={ title } key={ title }/>
+                                    <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.pieces, this.state.next_oid)}}/>
                                 </div>
 
                                 <div className={form_styles.edit_details_description_container}>

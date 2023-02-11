@@ -44,28 +44,28 @@ class CancelPage extends React.Component {
         this.update_current_piece = this.update_current_piece.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
 
-        this.fetch_pieces_from_api()
+        // this.fetch_pieces_from_api()
     }
 
     async componentDidMount() {
-        // await this.fetch_pieces_from_api()
+        await this.fetch_pieces_from_api()
     }
 
     async fetch_pieces_from_api() {
         console.log(`-------------- Fetching Initial Server List --------------`)
         const pieces = await fetch_pieces();
 
-        console.log('Pieces output (Next Line):')
-        console.log(pieces)
+        // console.log('Pieces output (Next Line):')
+        // console.log(pieces)
 
-        this.setState({pieces: pieces}, async () => {await this.update_current_piece(this.state.url_o_id)})
+        this.update_current_piece(pieces, this.state.url_o_id)
     }
 
-    async update_current_piece(o_id) {
-        const pieces_length = this.state.pieces.length;
+    async update_current_piece(pieces, o_id) {
+        const pieces_length = pieces.length;
 
         console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
-        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(o_id);
+        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(pieces, o_id);
         const piece_db_id = current_piece['id']
 
         console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
@@ -96,20 +96,23 @@ class CancelPage extends React.Component {
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
 
         this.setState({
+            pieces: pieces,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
             piece: current_piece, 
             piece_details: piece_details, 
             image_url: image_url
         }, async () => {
-            this.router.push(`/checkout/cancel/${o_id}`) 
+            if (this.state.url_o_id != o_id) {
+                this.router.push(`/checkout/cancel/${o_id}`) 
+            }
         })
     }
 
-    async get_piece_from_path_o_id(o_id) {
-        for (var i=0; i < this.state.pieces.length; i++) {
-            if (this.state.pieces[i]['o_id'].toString() == o_id.toString()) {
-                return [i, this.state.pieces[i]]
+    async get_piece_from_path_o_id(pieces, o_id) {
+        for (var i=0; i < pieces.length; i++) {
+            if (pieces[i]['o_id'].toString() == o_id.toString()) {
+                return [i, pieces[i]]
             }
         }
     }
