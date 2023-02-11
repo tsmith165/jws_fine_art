@@ -22,40 +22,87 @@ class EditPage extends React.Component {
 
         console.log(`ID PROP: ${this.props.id}`)
 
-        // Don't call this.setState() here!
-        this.state = {
-            debug: false,
-            loading: true,
-            url_o_id: this.props.id,
-            pieces: null,
-            piece_position: null,
-            piece_db_id: null,
-            current_piece: null,
-            piece_details: {
-                title:       '',
-                type:        '',
+        console.log(`getServerSideProps Pieces (Next Line):`)
+        console.log(this.props.pieces)
+
+        const pieces = this.props.pieces
+        const pieces_length = this.props.pieces.length
+        console.log(`Pieces Length: ${pieces_length}`)
+
+        if (pieces_length > 0) {
+            const piece_position = 0
+            const current_piece = this.props.pieces[piece_position]
+
+            // Don't call this.setState() here!
+            this.state = {
+                debug: false,
+                loading: true,
+                url_o_id: props.id,
+                pieces: pieces,
+                current_piece: current_piece,
+                piece_position: piece_position,
+                piece_db_id: (current_piece['id'] !== undefined) ? current_piece['id'] : '',
+                piece_details: {
+                    title:       (current_piece['title']       !== undefined) ? current_piece['title'] : '',
+                    type:        (current_piece['type']        !== undefined) ? current_piece['type'] : '',
+                    description: (current_piece['description'] !== undefined) ? current_piece['description'] : '',
+                    sold:        (current_piece['sold']        !== undefined) ? current_piece['sold'] : '',
+                    price:       (current_piece['price']       !== undefined) ? current_piece['price'] : '',
+                    width:       (current_piece['width']       !== undefined) ? current_piece['width'] : '',
+                    height:      (current_piece['height']      !== undefined) ? current_piece['height'] : '',
+                    real_width:  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : '',
+                    real_height: (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : '',
+                    image_path:  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : '',
+                    instagram:   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : '',
+                },
+                image_url: '',
+                next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
+                last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
+                description: (current_piece['description'] !== undefined) ? current_piece['description'] : '',
+                loading: false,
+                submitted: false,
+                error: false,
+                uploaded: false,
+                upload_error: false,
+                sold: (current_piece['sold'] !== undefined) ? ((current_piece['sold'] == true) ? 'True' : 'False') : 'False',
+                type: (current_piece['type'] !== undefined) ? current_piece['type'] : ''
+            }; 
+        } else {
+            // Don't call this.setState() here!
+            this.state = {
+                debug: false,
+                loading: true,
+                url_o_id: this.props.id,
+                pieces: null,
+                piece_position: null,
+                piece_db_id: null,
+                current_piece: null,
+                piece_details: {
+                    title:       '',
+                    type:        '',
+                    description: '',
+                    sold:        '',
+                    price:       '',
+                    width:       '',
+                    height:      '',
+                    real_width:  '',
+                    real_height: '',
+                    image_path:  '',
+                    instagram:   '',
+                },
+                next_oid: null,
+                last_oid: null,
+                image_url: '',
                 description: '',
-                sold:        '',
-                price:       '',
-                width:       '',
-                height:      '',
-                real_width:  '',
-                real_height: '',
-                image_path:  '',
-                instagram:   '',
-            },
-            next_oid: null,
-            last_oid: null,
-            image_url: '',
-            description: '',
-            loading: false,
-            submitted: false,
-            error: false,
-            uploaded: false,
-            upload_error: false,
-            sold: "False",
-            type: 'Oil On Canvas'
-        }; 
+                loading: false,
+                submitted: false,
+                error: false,
+                uploaded: false,
+                upload_error: false,
+                sold: "False",
+                type: 'Oil On Canvas'
+            }; 
+        }
 
         this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.set_page_piece_details = this.set_page_piece_details.bind(this);
@@ -73,7 +120,7 @@ class EditPage extends React.Component {
     }
 
     async componentDidMount() {
-        await this.fetch_pieces_from_api()
+        await this.update_current_piece(this.state.pieces, this.state.url_o_id)
     }
 
     async fetch_pieces_from_api() {

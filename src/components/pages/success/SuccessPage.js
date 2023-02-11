@@ -19,29 +19,64 @@ class SuccessPage extends React.Component {
 
         console.log(`ID PROP: ${props.id}`)
 
-        // Don't call this.setState() here!
-        this.state = {
-            debug: false,
-            loading: true,
-            url_o_id: props.id,
-            piece_position: null,
-            piece_db_id: null,
-            current_piece: null,
-            piece_details: {
-                title:       '',
-                type:        '',
-                description: '',
-                sold:        '',
-                price:       '',
-                width:       0,
-                height:      0,
-                real_width:  '',
-                real_height: '',
-                image_path:  '',
-                instagram:   '',
-            },
-            image_url: ''
-        }; 
+        console.log(`getServerSideProps Pieces (Next Line):`)
+        console.log(this.props.pieces)
+
+        const pieces = this.props.pieces
+        const pieces_length = this.props.pieces.length
+        console.log(`Pieces Length: ${pieces_length}`)
+
+        if (pieces_length > 0) {
+            const piece_position = 0
+            const current_piece = this.props.pieces[piece_position]
+
+            this.state = {
+                debug: false,
+                loading: true,
+                url_o_id: props.id,
+                pieces: pieces,
+                current_piece: current_piece,
+                piece_position: piece_position,
+                piece_db_id: (current_piece['id'] !== undefined) ? current_piece['id'] : '',
+                piece_details: {
+                    title:       (current_piece['title']       !== undefined) ? current_piece['title'] : '',
+                    type:        (current_piece['type']        !== undefined) ? current_piece['type'] : '',
+                    description: (current_piece['description'] !== undefined) ? current_piece['description'] : '',
+                    sold:        (current_piece['sold']        !== undefined) ? current_piece['sold'] : '',
+                    price:       (current_piece['price']       !== undefined) ? current_piece['price'] : '',
+                    width:       (current_piece['width']       !== undefined) ? current_piece['width'] : '',
+                    height:      (current_piece['height']      !== undefined) ? current_piece['height'] : '',
+                    real_width:  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : '',
+                    real_height: (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : '',
+                    image_path:  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : '',
+                    instagram:   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : '',
+                },
+                image_url: (current_piece['image_path'] !== undefined) ? `${baseURL}${current_piece['image_path']}` : '',
+            }; 
+        } else {
+            this.state = {
+                debug: false,
+                loading: true,
+                url_o_id: props.id,
+                piece_position: null,
+                piece_db_id: null,
+                current_piece: null,
+                piece_details: {
+                    title:       '',
+                    type:        '',
+                    description: '',
+                    sold:        '',
+                    price:       '',
+                    width:       0,
+                    height:      0,
+                    real_width:  '',
+                    real_height: '',
+                    image_path:  '',
+                    instagram:   '',
+                },
+                image_url: ''
+            }; 
+        }
 
         this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
@@ -51,7 +86,7 @@ class SuccessPage extends React.Component {
     }
 
     async componentDidMount() {
-        await this.fetch_pieces_from_api()
+        // await this.fetch_pieces_from_api()
     }
 
     async fetch_pieces_from_api() {
