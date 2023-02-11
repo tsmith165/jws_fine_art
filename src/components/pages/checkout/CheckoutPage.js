@@ -69,35 +69,35 @@ class CheckoutPage extends React.Component {
         this.check_fields = this.check_fields.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
-        this.fetch_pieces_from_api()
+        // this.fetch_pieces_from_api()
     }
 
     async componentDidMount() {
-        // await this.fetch_pieces_from_api()
+        await this.fetch_pieces_from_api()
     }
 
     async fetch_pieces_from_api() {
         console.log(`-------------- Fetching Initial Server List --------------`)
         const pieces = await fetch_pieces();
 
-        console.log('Pieces output (Next Line):')
-        console.log(pieces)
+        // console.log('Pieces output (Next Line):')
+        // console.log(pieces)
 
-        this.setState({pieces: pieces, loaded: true}, async () => {await this.update_current_piece(this.state.url_o_id)})
+        this.update_current_piece(pieces, this.state.url_o_id)
     }
 
-    async update_current_piece(o_id) {
-        const pieces_length = this.state.pieces.length;
+    async update_current_piece(pieces, o_id) {
+        const pieces_length = pieces.length;
 
         console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
-        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(o_id);
+        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(pieces, o_id);
         const piece_db_id = current_piece['id']
 
         console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
         console.log(current_piece)
 
-        const next_oid = (piece_position + 1 > pieces_length - 1) ? this.state.pieces[0]['o_id']                 : this.state.pieces[piece_position + 1]['o_id'];
-        const last_oid = (piece_position - 1 < 0)                 ? this.state.pieces[pieces_length - 1]['o_id'] : this.state.pieces[piece_position - 1]['o_id'];
+        const next_oid = (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[piece_position + 1]['o_id'];
+        const last_oid = (piece_position - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'];
         
         console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
@@ -139,6 +139,7 @@ class CheckoutPage extends React.Component {
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
 
         this.setState({
+            pieces: pieces,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
             piece: current_piece, 
@@ -152,14 +153,16 @@ class CheckoutPage extends React.Component {
             price_html: price_html, 
             description: description
         }, async () => {
-            this.router.push(`/checkout/${o_id}`) 
+            if (this.state.url_o_id != o_id) {
+                this.router.push(`/checkout/${o_id}`) 
+            }
         })
     }
 
-    async get_piece_from_path_o_id(o_id) {
-        for (var i=0; i < this.state.pieces.length; i++) {
-            if (this.state.pieces[i]['o_id'].toString() == o_id.toString()) {
-                return [i, this.state.pieces[i]]
+    async get_piece_from_path_o_id(pieces, o_id) {
+        for (var i=0; i < pieces.length; i++) {
+            if (pieces[i]['o_id'].toString() == o_id.toString()) {
+                return [i, pieces[i]]
             }
         }
     }
@@ -308,13 +311,9 @@ class CheckoutPage extends React.Component {
 
                                 { /* Title Container */ }
                                 <div className={form_styles.checkout_title_container}>
-                                    <Link href={`/checkout/${this.state.last_oid}`}>
-                                        <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} />
-                                    </Link>
+                                    <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.pieces, this.state.last_oid)}} />
                                     <div className={form_styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</div>
-                                    <Link href={`/checkout/${this.state.next_oid}`}>
-                                        <ArrowForwardIosRoundedIcon className={form_styles.title_arrow}  />
-                                    </Link>
+                                    <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.pieces, this.state.next_oid)}}/>
                                 </div>
                                 
                                 { /* Full Name Container */ }

@@ -181,9 +181,9 @@ class EditDetailsForm extends React.Component {
         
             const new_image_path = await upload_image(s3_upload_url, selected_file)
             console.log(`Got Upload Reponse: ${new_image_path}`)
-        
+            
+            console.log(`Loading image at path: ${new_image_path}`)
             var image = new Image();
-        
             image.src = new_image_path;
         
             //Validate the File Height and Width.
@@ -234,8 +234,8 @@ class EditDetailsForm extends React.Component {
         if (this.state.pieces != null) {
             this.update_current_piece()
 
-            console.log('Form Pieces output (Next Line):')
-            console.log(this.state.pieces)
+            // console.log('Form Pieces output (Next Line):')
+            // console.log(this.state.pieces)
         }
 
         console.log(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`)
