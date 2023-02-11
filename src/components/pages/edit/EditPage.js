@@ -69,10 +69,12 @@ class EditPage extends React.Component {
         // Refrences
         this.file_input_ref = React.createRef(null);
         this.text_area_ref = React.createRef(null);
+
+        this.fetch_pieces_from_api()
     }
 
     async componentDidMount() {
-        await this.fetch_pieces_from_api()
+        // await this.fetch_pieces_from_api()
     }
 
     async fetch_pieces_from_api() {

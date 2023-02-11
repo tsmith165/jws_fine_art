@@ -68,10 +68,12 @@ class CheckoutPage extends React.Component {
         this.address_change = this.address_change.bind(this);
         this.check_fields = this.check_fields.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.fetch_pieces_from_api()
     }
 
     async componentDidMount() {
-        await this.fetch_pieces_from_api()
+        // await this.fetch_pieces_from_api()
     }
 
     async fetch_pieces_from_api() {
