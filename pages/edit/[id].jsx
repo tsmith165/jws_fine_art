@@ -10,6 +10,9 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const Edit = ({ pieces }) => {
     const { isLoaded, isSignedIn, user } = useUser();
 
+    console.log(`Passing pieces (Next Line): `)
+    console.log(pieces)
+
     const router = useRouter();
     const id = router.query.id;
     console.log(`Page ID: ${id}`);
@@ -28,14 +31,14 @@ const Edit = ({ pieces }) => {
     if (user.publicMetadata.role !== "ADMIN") {
       router.push('/')
     }
-    
+
     if (!router.isReady) return null
     return ( <EditPage id={id} pieces={pieces} router={router}/> )
 }
 
 export default Edit
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = async (context) => {
   console.log(`-------------- Fetching Initial Server List --------------`)
   const pieces = await fetch_pieces();
 

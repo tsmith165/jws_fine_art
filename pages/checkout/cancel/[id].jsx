@@ -11,13 +11,16 @@ const Cancel = ({ pieces }) => {
     const id = router.query.id;
     console.log(`Page ID: ${id}`);
 
+    console.log(`Passing pieces (Next Line): `)
+    console.log(pieces)
+
     if (!router.isReady) return null
     return ( <CancelPage id={id} pieces={pieces} router={router}/> )
 }
 
 export default Cancel
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = async (context) => {
     console.log(`-------------- Fetching Initial Server List --------------`)
     const pieces = await fetch_pieces();
   
