@@ -291,22 +291,24 @@ class EditPage extends React.Component {
 
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
         return (
-            <PageLayout page_title={`Edit Details - ${title}`}>
+            <PageLayout page_title={ (title == '') ? (``) : (`Edit Details - ${title}`) }>
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
 
-                            <NextImage
-                                className={styles.details_image}
-                                src={this.state.image_url}
-                                alt={this.state.piece_details['title']}
-                                width={this.state.piece_details['width']}
-                                height={this.state.piece_details['height']}
-                                priority={true}
-                                layout='fill'
-                                objectFit='contain'
-                                quality={100}
-                            />
+                            { (this.state.image_url == '') ? (null) : (
+                                <NextImage
+                                    className={styles.details_image}
+                                    src={this.state.image_url}
+                                    alt={this.state.piece_details['title']}
+                                    // width={this.state.piece_details['width']}
+                                    // height={this.state.piece_details['height']}
+                                    priority={true}
+                                    layout='fill'
+                                    objectFit='contain'
+                                    quality={100}
+                                />
+                            )}
 
                         </div>
                     </div>
@@ -315,7 +317,7 @@ class EditPage extends React.Component {
                             <form method="post" onSubmit={this.handleSubmit}>
                                 <div className={form_styles.title_container}>
                                     <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.last_oid)}} />
-                                    <input type="text" className={form_styles.title_input} id="title" defaultValue={this.state.piece_details['title']} key={this.state.piece_details['title']}/>
+                                    <input type="text" className={form_styles.title_input} id="title" defaultValue={ (title == '') ? (``) : (`"${title}"`) } key={this.state.piece_details['title']}/>
                                     <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.next_oid)}}/>
                                 </div>
 

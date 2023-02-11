@@ -118,27 +118,30 @@ class CancelPage extends React.Component {
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(this.state.piece_details)
 
+        const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
         return (
-            <PageLayout page_title={`Checkout Cancel - ${this.state.piece_details['title']}`}>
+            <PageLayout page_title={ (title == '') ? (``) : (`Checkout Cancel - ${title}`) }>
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
-                            <Image
-                                className={styles.details_image}
-                                src={`${this.state.image_url}`}
-                                alt={this.state.piece_details['title']}
-                                width={this.state.piece_details['width']}
-                                height={this.state.piece_details['height']}
-                                priority={true}
-                                layout='fill'
-                                objectFit='contain'
-                                quality={100}
-                            />
+                            { (this.state.image_url == '') ? (null) : (
+                                <Image
+                                    className={styles.details_image}
+                                    src={`${this.state.image_url}`}
+                                    alt={this.state.piece_details['title']}
+                                    // width={this.state.piece_details['width']}
+                                    // height={this.state.piece_details['height']}
+                                    priority={true}
+                                    layout='fill'
+                                    objectFit='contain'
+                                    quality={100}
+                                />
+                            )}
                         </div>
                     </div>
                     <div className={styles.details_container_right}>
                         <div className={styles.title_container}>
-                            <b className={styles.title}>{this.state.piece_details['title']}</b>
+                            <b className={styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</b>
                         </div>
                         <div className={styles.checkout_return_message_container}>
                             <div className={styles.checkout_return_message}>

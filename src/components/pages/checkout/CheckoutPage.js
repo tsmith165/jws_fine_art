@@ -281,22 +281,24 @@ class CheckoutPage extends React.Component {
 
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
         return (
-            <PageLayout page_title={`Checkout - ${title}`} use_maps_api={true}>
+            <PageLayout page_title={ (title == '') ? (``) : (`Checkout - ${title}`) } use_maps_api={true}>
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
 
-                            <Image
-                                className={styles.details_image}
-                                src={this.state.image_url}
-                                alt={this.state.piece_details['title']}
-                                width={this.state.piece_details['width']}
-                                height={this.state.piece_details['height']}
-                                priority={true}
-                                layout='fill'
-                                objectFit='contain'
-                                quality={100}
-                            />
+                            { (this.state.image_url == '') ? (null) : (
+                                <Image
+                                    className={styles.details_image}
+                                    src={`${this.state.image_url}`}
+                                    alt={this.state.piece_details['title']}
+                                    // width={this.state.piece_details['width']}
+                                    // height={this.state.piece_details['height']}
+                                    priority={true}
+                                    layout='fill'
+                                    objectFit='contain'
+                                    quality={100}
+                                />
+                            )}
 
                         </div>
                     </div>
@@ -309,7 +311,7 @@ class CheckoutPage extends React.Component {
                                     <Link href={`/checkout/${this.state.last_oid}`}>
                                         <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} />
                                     </Link>
-                                    <div className={form_styles.title}>{this.state.piece_details['title']}</div>
+                                    <div className={form_styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</div>
                                     <Link href={`/checkout/${this.state.next_oid}`}>
                                         <ArrowForwardIosRoundedIcon className={form_styles.title_arrow}  />
                                     </Link>
