@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '../../../lib/prisma'
 
 import SuccessPage from '../../../src/components/pages/success/SuccessPage';
 

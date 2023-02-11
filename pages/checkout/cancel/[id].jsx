@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '../../../lib/prisma'
 
 import CancelPage from '../../../src/components/pages/cancel/CancelPage';
 
