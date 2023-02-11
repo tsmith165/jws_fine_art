@@ -7,6 +7,8 @@ import styles from '../../../../styles/pages/Details.module.scss'
 import PageLayout from '../../../../src/components/layout/PageLayout'
 import { fetch_pieces } from '../../../../lib/api_calls';
 
+import { CircularProgress } from '@material-ui/core';
+
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 class CancelPage extends React.Component {
@@ -20,6 +22,7 @@ class CancelPage extends React.Component {
         // Don't call this.setState() here!
         this.state = {
             debug: false,
+            loading: true,
             url_o_id: props.id,
             piece_position: null,
             piece_db_id: null,
@@ -94,8 +97,10 @@ class CancelPage extends React.Component {
         console.log(piece_details)
 
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
-
+        const previous_url_o_id = this.state.url_o_id
         this.setState({
+            loading: false,
+            url_o_id: o_id,
             pieces: pieces,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
@@ -103,7 +108,7 @@ class CancelPage extends React.Component {
             piece_details: piece_details, 
             image_url: image_url
         }, async () => {
-            if (this.state.url_o_id != o_id) {
+            if (previous_url_o_id != o_id) {
                 this.router.push(`/checkout/cancel/${o_id}`) 
             }
         })
@@ -127,7 +132,7 @@ class CancelPage extends React.Component {
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
-                            { (this.state.image_url == '') ? (null) : (
+                            { (this.state.image_url == '') ? ( <CircularProgress color="inherit" className={styles.loader}/> ) : (
                                 <Image
                                     className={styles.details_image}
                                     src={`${this.state.image_url}`}

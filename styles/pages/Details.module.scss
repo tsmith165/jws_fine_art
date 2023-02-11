@@ -208,3 +208,14 @@
     -ms-transform: scale(-1);
         transform: scale(-1);
 }
+
+.loader_container {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 100%; 
+}
+    .loader { 
+        height: 25px !important; 
+        width: 25px !important; 
+    }

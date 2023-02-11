@@ -31,6 +31,7 @@ class CheckoutPage extends React.Component {
         // Don't call this.setState() here!
         this.state = {
             debug: false,
+            loading: true,
             url_o_id: props.id,
             pieces: null,
             piece_position: null,
@@ -137,8 +138,10 @@ class CheckoutPage extends React.Component {
         console.log(piece_details)
 
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
-
+        const previous_url_o_id = this.state.url_o_id
         this.setState({
+            loading: false,
+            url_o_id: o_id,
             pieces: pieces,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
@@ -153,7 +156,7 @@ class CheckoutPage extends React.Component {
             price_html: price_html, 
             description: description
         }, async () => {
-            if (this.state.url_o_id != o_id) {
+            if (previous_url_o_id != o_id) {
                 this.router.push(`/checkout/${o_id}`) 
             }
         })
@@ -289,7 +292,7 @@ class CheckoutPage extends React.Component {
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
 
-                            { (this.state.image_url == '') ? (null) : (
+                            { (this.state.image_url == '') ? ( <CircularProgress color="inherit" className={styles.loader}/> ) : (
                                 <Image
                                     className={styles.details_image}
                                     src={`${this.state.image_url}`}

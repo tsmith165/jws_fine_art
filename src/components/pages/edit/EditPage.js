@@ -25,6 +25,7 @@ class EditPage extends React.Component {
         // Don't call this.setState() here!
         this.state = {
             debug: false,
+            loading: true,
             url_o_id: this.props.id,
             pieces: null,
             piece_position: null,
@@ -124,8 +125,10 @@ class EditPage extends React.Component {
         console.log(piece_details)
 
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
-
+        const previous_url_o_id = this.state.url_o_id
         this.setState({
+            loading: false,
+            url_o_id: o_id,
             pieces: pieces,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
@@ -138,7 +141,7 @@ class EditPage extends React.Component {
             sold: (piece_details['sold'] == true) ? "True" : "False", 
             type: piece_details['type']
         }, async () => {
-            if (this.state.url_o_id != o_id) {
+            if (previous_url_o_id != o_id) {
                 this.router.push(`/edit/${o_id}`) 
             }
         })
@@ -297,7 +300,7 @@ class EditPage extends React.Component {
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
 
-                            { (this.state.image_url == '') ? (null) : (
+                            { (this.state.image_url == '') ? ( <CircularProgress color="inherit" className={form_styles.loader}/> ) : (
                                 <NextImage
                                     className={styles.details_image}
                                     src={this.state.image_url}
