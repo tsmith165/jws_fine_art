@@ -132,7 +132,11 @@ class CancelPage extends React.Component {
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_container}>
-                            { (this.state.image_url == '') ? ( <CircularProgress color="inherit" className={styles.loader}/> ) : (
+                            { (this.state.image_url == '') ? ( 
+                                <div className={styles.loader_container}>
+                                    <CircularProgress color="inherit" className={styles.loader}/>
+                                </div>
+                            ) : (
                                 <Image
                                     className={styles.details_image}
                                     src={`${this.state.image_url}`}

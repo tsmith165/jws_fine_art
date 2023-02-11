@@ -216,6 +216,7 @@
     height: 100%; 
 }
     .loader { 
-        height: 25px !important; 
-        width: 25px !important; 
+        color: $light;
+        height: 100px !important; 
+        width: 100px !important; 
     }
