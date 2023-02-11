@@ -150,6 +150,7 @@ class EditPage extends React.Component {
     }
 
     async handleSubmit(event) {
+        console.log(`Submitting piece`)
         event.preventDefault()
         
         this.setState({loading: true, submitted: false});
@@ -182,7 +183,7 @@ class EditPage extends React.Component {
             }
             else {
                 console.log("--------------- Attempting To Create New Piece ---------------")
-                console.log(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.current_piece['image_path']}`)
+                console.log(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.piece_details['image_path']}`)
                 const response = await create_piece(title, this.state.description, type, sold, price, instagram, this.state.piece_details["width"], this.state.piece_details["height"], real_width, real_height, this.state.piece_details['image_path']);
     
                 console.log(`Create Piece Response (Next Line):`)
@@ -231,15 +232,15 @@ class EditPage extends React.Component {
         
             //Validate the File Height and Width.
             image.onload = () => {
-                console.log(`WIDTH: ${this.width} | HEIGHT: ${this.height}`)
+                console.log(`WIDTH: ${image.width} | HEIGHT: ${image.height}`)
         
                 const uploaded_piece_details = {
                     title: 'Enter Title...',
                     description: 'Enter Description...',
                     sold: '',
                     price: '',
-                    width: this.width,
-                    height: this.height,
+                    width: image.width,
+                    height: image.height,
                     real_width: '',
                     real_height: '',
                     image_path: uploaded_image_path,
