@@ -26,6 +26,6 @@ export const getServerSideProps = async (context) => {
     pieces.sort((a, b) => a['o_id'] - b['o_id']);
 
     return {
-      props: {pieces: pieces}, // will be passed to the page component as props
+      props: {pieces: pieces, most_recent_id: pieces[pieces.length - 1]['id']}, // will be passed to the page component as props
     }
 }

@@ -59,14 +59,14 @@ const App = ({ Component, pageProps }: AppProps) => {
         }}
       />
       {!isPrivatePath && (
-        <Layout>
+        <Layout most_recent_page_id={pageProps.most_recent_id}>
           <Component {...pageProps} />
         </Layout>
       )}
       {isPrivatePath && (
         <>
           <SignedIn>
-            <Layout>
+            <Layout most_recent_page_id={pageProps.most_recent_id}>
               <Component {...pageProps} />
             </Layout>
           </SignedIn>

@@ -80,10 +80,16 @@ export const getServerSideProps = async (context) => {
   console.log("Getting Server Side Props")
   const verified_list = await fetchVerfiedPayments()
 
-  //console.log(context)
+  const piece = await prisma.piece.findFirst({
+    orderBy: {
+        o_id: 'desc',
+    },
+  })
+
   return { 
     props: {
-      "verified_list": verified_list
+      "verified_list": verified_list,
+      "most_recent_id": piece['id']
     }
   }
 }

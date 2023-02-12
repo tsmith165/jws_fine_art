@@ -3,7 +3,7 @@ import Navbar from './Navbar'
 const Layout = (props) => {
     return (
         <>
-            <Navbar />
+            <Navbar most_recent_page_id={props.most_recent_page_id}/>
             {props.children}
         </>
     )
