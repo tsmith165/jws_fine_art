@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 
 import { prisma } from '../../lib/prisma'
 
