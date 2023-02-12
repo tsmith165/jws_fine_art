@@ -51,7 +51,7 @@
         }
             .edit_details_description_textarea { 
                 width: 100%;
-                height: fit-content; 
+                min-height: 150px; 
                 overflow: hidden;
                 min-width: 100%; 
                 max-width: 100%; 
