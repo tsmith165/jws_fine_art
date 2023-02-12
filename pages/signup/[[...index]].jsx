@@ -1,5 +1,7 @@
 import { SignUp } from "@clerk/nextjs";
 
+import { prisma } from '../lib/prisma'
+
 import styles from "../../styles/forms/SignIn.module.scss"
 
 const SignUpPage = () => (
