@@ -47,7 +47,6 @@ class DetailsPage extends React.Component {
         var instagram = '';
 
         if (pieces_length > 0) {
-            const piece_position = 0
             const current_piece = this.props.pieces[piece_position]
 
             title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
@@ -61,24 +60,6 @@ class DetailsPage extends React.Component {
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
             image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
-
-            for (var i=0; i < pieces.length; i++) {
-                let piece = pieces[i];
-                image_array.push((
-                    <Image
-                        className={styles.details_image}
-                        src={`${baseURL}${piece['image_path']}`}
-                        alt={piece['title']}
-                        // width={this.state.piece_details['width']}
-                        // height={this.state.piece_details['height']}
-                        priority={true}
-                        layout='fill'
-                        objectFit='contain'
-                        quality={100}
-                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
-                    />
-                ))
-            }
         }
 
         this.state = {
@@ -86,7 +67,7 @@ class DetailsPage extends React.Component {
             loading: true,
             url_o_id: props.id,
             pieces: pieces,
-            image_array: image_array,
+            image_array: [],
             current_piece: current_piece,
             piece_position: piece_position,
             piece_db_id: piece_db_id,
@@ -119,7 +100,7 @@ class DetailsPage extends React.Component {
         // this.fetch_pieces_from_api()
     }
 
-    async componentDidMount() {
+    async componentDidMount() {        
         await this.update_current_piece(this.state.pieces, this.state.url_o_id)
     }
 
@@ -134,6 +115,7 @@ class DetailsPage extends React.Component {
     }
 
     async update_current_piece(pieces, o_id) {
+        const previous_url_o_id = this.state.url_o_id
         const pieces_length = pieces.length;
 
         console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
@@ -180,15 +162,37 @@ class DetailsPage extends React.Component {
 
         const description = current_piece['description'].split('<br>').join("\n");
 
+        var image_array = [];
+        for (var i=0; i < pieces.length; i++) {
+            let piece = pieces[i];
+            image_array.push((
+                <div className={(i == this.state.piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                    <Image
+                        id={`details_image_${i}`}
+                        className={styles.details_image}
+                        src={`${baseURL}${piece['image_path']}`}
+                        alt={piece['title']}
+                        // width={this.state.piece_details['width']}
+                        // height={this.state.piece_details['height']}
+                        priority={true}
+                        layout='fill'
+                        objectFit='contain'
+                        quality={100}
+                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
+                    />
+                </div>
+            ))
+        }
+
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(piece_details)
 
         console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
-        const previous_url_o_id = this.state.url_o_id
         this.setState({
             loading: false,
             url_o_id: o_id,
             pieces: pieces,
+            image_array: image_array,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
             piece: current_piece, 
@@ -227,7 +231,9 @@ class DetailsPage extends React.Component {
                 <PageLayout page_title={`Piece Details - ${title}`}>
                     <div className={styles.full_screen_container}>
                         <div className={styles.full_screen_image_container}>
-                            {this.state.image_array[this.state.piece_position]}
+                            <div className={styles.details_image_outer_container}>
+                                {this.state.image_array}
+                            </div>
                         </div>
                         <div className={styles.full_screen_close_container} onClick={(e) => {e.preventDefault(); this.setState({full_screen: false})}}>
                             <CloseIcon className={`${styles.full_screen_close_icon}`} />
@@ -240,14 +246,14 @@ class DetailsPage extends React.Component {
                 <PageLayout page_title={ (title == '') ? (``) : (`Piece Details - ${title}`) }>
                     <div className={styles.details_container}>
                         <div className={styles.details_container_left}>
-                            <div className={styles.details_image_container}>
+                            <div className={styles.details_image_outer_container}>
                                 { (this.state.image_url == '') ? ( 
                                     <div className={styles.loader_container}>
                                         <div>Loading Gallery</div>
                                         <CircularProgress color="inherit" className={styles.loader}/>
                                     </div>
                                 ) : (
-                                    this.state.image_array[this.state.piece_position]
+                                    this.state.image_array
                                 )}
                             </div>
                         </div>
