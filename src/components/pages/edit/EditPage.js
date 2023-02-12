@@ -378,7 +378,11 @@ class EditPage extends React.Component {
         } else if (this.state.uploaded == true) {
             loader_jsx = ( <div className={form_styles.submit_label}>Image Upload was successful...</div> );
         } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width < 1000 && this.state.piece_details.height < 1000 ) ) {
-            loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Uploaded image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
+            if (this.state.uploaded == true) {
+                loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
+            } else {
+                loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Uploaded image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
+            }
         } else if (this.state.upload_error == true) {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Image Upload was NOT successful...</div> );
         }
