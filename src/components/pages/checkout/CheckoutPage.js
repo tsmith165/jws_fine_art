@@ -88,7 +88,7 @@ class CheckoutPage extends React.Component {
                             alt={piece['title']}
                             // width={this.state.piece_details['width']}
                             // height={this.state.piece_details['height']}
-                            priority={(i > piece_position - 2 && i < piece_position - 1) ? true : false}
+                            priority={(i > piece_position - 5 && i < piece_position + 5) ? true : false}
                             layout='fill'
                             objectFit='contain'
                             quality={100}
@@ -212,7 +212,7 @@ class CheckoutPage extends React.Component {
                         alt={piece['title']}
                         // width={this.state.piece_details['width']}
                         // height={this.state.piece_details['height']}
-                        priority={(i > piece_position - 2 && i < piece_position - 1) ? true : false}
+                        priority={(i > piece_position - 5 && i < piece_position + 5) ? true : false}
                         layout='fill'
                         objectFit='contain'
                         quality={100}
