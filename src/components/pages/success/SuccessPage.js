@@ -221,7 +221,7 @@ class SuccessPage extends React.Component {
                                     this.state.image_array
                                 )}
                             </div>
-                            </div>
+                        </div>
                     </div>
                     <div className={styles.details_container_right}>
                         <div className={styles.title_container}>

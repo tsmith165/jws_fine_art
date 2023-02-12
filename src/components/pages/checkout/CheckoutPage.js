@@ -348,7 +348,6 @@ class CheckoutPage extends React.Component {
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_outer_container}>
                             <div className={styles.details_image_container}>
-
                                 { (this.state.loading == true) ? ( 
                                     <div className={styles.loader_container}>
                                         <div>Loading Gallery</div>
@@ -357,7 +356,6 @@ class CheckoutPage extends React.Component {
                                 ) : (
                                     this.state.image_array
                                 )}
-
                             </div>
                         </div>
                     </div>
