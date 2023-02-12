@@ -2,10 +2,52 @@ import styles from "../../../styles/layout/MenuOverlay.module.scss"
 
 import MenuOverlayButton from './MenuOverlayButton';
 
+import { fetch_most_recent_piece } from '../../../lib/api_calls';
+
 import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 
-import { admin_menu_list, signed_out_menu_list, signed_in_menu_list } from "../../../lib/menu_list"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const signed_out_menu_list = [
+    ["gallery", "Gallery", false, "/"],
+    ["details", "Piece Details", false, "/details/"],
+    ["slideshow", "Slideshow", false, "/slideshow"],
+    ["biography", "Biography", false, "/biography"],
+    ["contact", "Contact", false, "/contact"],
+    ["sign_in", "Sign In", false, "/signin"]
+]
+
+const signed_in_menu_list = [
+    ["gallery", "Gallery", false, "/"],
+    ["details", "Piece Details", false, "/details/"],
+    ["slideshow", "Slideshow", false, "/slideshow"],
+    ["biography", "Biography", false, "/biography"],
+    ["contact", "Contact", false, "/contact"],
+    ["sign_out", "Sign Out", false, "/signout"]
+]
+
+const admin_menu_list = [
+    ["gallery", "Gallery", false, "/"],
+    ["details", "Details", false, "/details/"],
+    ["slideshow", "Slideshow", false, "/slideshow"],
+    ["biography", "Biography", false, "/biography"],
+    ["contact", "Contact", false, "/contact"],
+    ["admin", "Admin", false, "/admin"],
+    ["edit_details", "Edit Details", true, "/edit/"],
+    ["management", "Management", true, "/manage"],
+    ["orders", "Orders", true, "/orders"],
+    ["sign_out", "Sign Out", false, "/signout"]
+]
+
+async function fetch_most_recent_piece_from_api() {
+    console.log(`-------------- Fetching Most Recent Piece From API --------------`)
+    const piece = await fetch_most_recent_piece();
+
+    console.log('Piece output (Next Line):')
+    console.log(piece)
+
+    return piece
+}
 
 function generate_menu(menu_list, set_menu_open) {
     var menu_items = [];
@@ -60,12 +102,26 @@ function select_menu(isLoaded, isSignedIn, user) {
     return signed_in_menu_list
 }
 
-const MenuOverlay = ({ set_menu_open }) => {
-
+const MenuOverlay = ({ set_menu_open, most_recent_page_id }) => {
     const { isLoaded, isSignedIn, user } = useUser();
     console.log(`Generating menu list - Loaded?: ${isLoaded} | Signed In: ${isSignedIn} | User (Next Line): `)
     console.log(user)
     const using_menu = select_menu(isLoaded, isSignedIn, user);
+
+    console.log(`Most recent page ID: ${most_recent_page_id}`)
+    
+    for (var i = 0; i < using_menu.length; i++) {
+        let menu_item = using_menu[i];
+        let menu_class = menu_item[0];
+        let menu_name = menu_item[1];
+        let is_admin = menu_item[2];
+        let menu_slug = menu_item[3];
+
+        const id_pages = ['details', 'edit_details']
+        if ((menu_class == 'details' || menu_class == 'edit_details') && (!using_menu[i][3].includes(most_recent_page_id))) {
+            using_menu[i][3] += most_recent_page_id
+        }
+    }
 
     console.log("Menu List (Next Line):");
     console.log(using_menu);

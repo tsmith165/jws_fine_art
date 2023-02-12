@@ -12,7 +12,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
-const Navbar = ({}) => {
+const Navbar = ({most_recent_page_id}) => {
     const use_account_icon_as_link = true;
 
     const [menu_open, set_menu_open] = useState(false)
@@ -75,7 +75,7 @@ const Navbar = ({}) => {
                         menu_open == true ? (
                             <div className={styles.page_menu_container}>
                                 <div className={styles.page_menu_body}>
-                                    <MenuOverlay set_menu_open={set_menu_open}/>
+                                    <MenuOverlay set_menu_open={set_menu_open} most_recent_page_id={most_recent_page_id}/>
                                 </div>
                             </div>
                         ) : (

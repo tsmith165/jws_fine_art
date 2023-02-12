@@ -61,9 +61,15 @@ export async function getServerSideProps() {
   console.log(`Retrieved users (Next Line):`)
   console.log(users);
 
+  const piece = await prisma.piece.findFirst({
+    orderBy: {
+        o_id: 'desc',
+    },
+  })
+
   const user_tree_data = JSON.parse(JSON.stringify(users));
 
-  return { props: { user_tree_data } }
+  return { props: { "user_tree_data": user_tree_data, "most_recent_id": piece['id'] } }
 
 }
 
