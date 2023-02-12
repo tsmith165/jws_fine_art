@@ -21,15 +21,15 @@ class SlideshowComponent extends React.Component {
         console.log(`getServerSideProps Pieces (Next Line):`)
         console.log(pieces)
 
-        const pieces_length = pieces.length
-        console.log(`Pieces Length: ${pieces_length}`)
+        const piece_list_length = pieces.length
+        console.log(`Pieces Length: ${piece_list_length}`)
 
         var image_array = [];
         
         var current_piece = null;
         var piece_position = 0;
-        var piece_o_id = 0;
         var piece_db_id = null;
+        var piece_o_id = 0;
 
         var title = '';
         var type = '';
@@ -43,7 +43,7 @@ class SlideshowComponent extends React.Component {
         var image_path = '';
         var instagram = '';
 
-        if (pieces_length > 0) {
+        if (piece_list_length > 0) {
             const current_piece = pieces[piece_position]
 
             piece_db_id = (current_piece['id']          !== undefined) ? current_piece['id'] : ''
@@ -83,8 +83,8 @@ class SlideshowComponent extends React.Component {
                 image_path: image_path,
                 instagram: instagram,
             },
-            next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
-            last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
+            next_oid: (piece_position + 1 > piece_list_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
+            last_oid: (piece_position - 1 < 0) ? pieces[piece_list_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
             running: true,
             speed_open: false,
             speed: 50,
@@ -109,9 +109,9 @@ class SlideshowComponent extends React.Component {
     }
 
     async update_current_piece(pieces, o_id, set_running=false) {
-        const pieces_length = pieces.length;
+        const piece_list_length = pieces.length;
 
-        // console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
+        // console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
         const [piece_position, current_piece] = await this.get_piece_from_path_o_id(pieces, o_id);
         const piece_db_id = current_piece['id']
         const piece_o_id = current_piece['0_id']
@@ -119,8 +119,8 @@ class SlideshowComponent extends React.Component {
         // console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
         console.log(current_piece)
 
-        const next_oid = (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[piece_position + 1]['o_id'];
-        const last_oid = (piece_position - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'];
+        const next_oid = (piece_position + 1 > piece_list_length - 1) ? pieces[0]['o_id']                 : pieces[piece_position + 1]['o_id'];
+        const last_oid = (piece_position - 1 < 0)                 ? pieces[piece_list_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'];
 
         // console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
