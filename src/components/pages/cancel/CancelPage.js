@@ -131,7 +131,6 @@ class CancelPage extends React.Component {
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(piece_details)
 
-        console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
         const previous_url_o_id = this.state.url_o_id
         this.setState({
             loading: false,
@@ -166,25 +165,27 @@ class CancelPage extends React.Component {
             <PageLayout page_title={ (title == '') ? (``) : (`Checkout Cancel - ${title}`) }>
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
-                        <div className={styles.details_image_container}>
-                            { (this.state.image_url == '') ? ( 
-                                <div className={styles.loader_container}>
-                                    <div>Loading Gallery</div>
-                                    <CircularProgress color="inherit" className={styles.loader}/>
-                                </div>
-                            ) : (
-                                <Image
-                                    className={styles.details_image}
-                                    src={`${this.state.image_url}`}
-                                    alt={this.state.piece_details['title']}
-                                    // width={this.state.piece_details['width']}
-                                    // height={this.state.piece_details['height']}
-                                    priority={true}
-                                    layout='fill'
-                                    objectFit='contain'
-                                    quality={100}
-                                />
-                            )}
+                        <div className={styles.details_image_outer_container}>
+                            <div className={styles.details_image_container}>
+                                { (this.state.loading == true) ? ( 
+                                    <div className={styles.loader_container}>
+                                        <div>Loading Gallery</div>
+                                        <CircularProgress color="inherit" className={styles.loader}/>
+                                    </div>
+                                ) : (
+                                    <Image
+                                        className={styles.details_image}
+                                        src={`${this.state.image_url}`}
+                                        alt={this.state.piece_details['title']}
+                                        // width={this.state.piece_details['width']}
+                                        // height={this.state.piece_details['height']}
+                                        priority={true}
+                                        layout='fill'
+                                        objectFit='contain'
+                                        quality={100}
+                                    />
+                                )}
+                            </div>
                         </div>
                     </div>
                     <div className={styles.details_container_right}>

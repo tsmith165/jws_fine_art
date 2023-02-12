@@ -28,8 +28,9 @@ class DetailsPage extends React.Component {
         const pieces = this.props.pieces
         const pieces_length = this.props.pieces.length
         console.log(`Pieces Length: ${pieces_length}`)
-        
+
         var image_array = [];
+        
         var current_piece = null;
         var piece_position = 0;
         var piece_db_id = null;
@@ -50,9 +51,9 @@ class DetailsPage extends React.Component {
             const current_piece = this.props.pieces[piece_position]
 
             title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
-            type =        (current_piece['type']        !== undefined) ? current_piece['type'] : ''
+            type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
+            sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
             description = (current_piece['description'] !== undefined) ? current_piece['description'] : ''
-            sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : ''
             price =       (current_piece['price']       !== undefined) ? current_piece['price'] : ''
             width =       (current_piece['width']       !== undefined) ? current_piece['width'] : ''
             height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
@@ -67,7 +68,7 @@ class DetailsPage extends React.Component {
             loading: true,
             url_o_id: props.id,
             pieces: pieces,
-            image_array: [],
+            image_array: image_array,
             current_piece: current_piece,
             piece_position: piece_position,
             piece_db_id: piece_db_id,
@@ -84,7 +85,6 @@ class DetailsPage extends React.Component {
                 image_path: image_path,
                 instagram: instagram,
             },
-            image_url: '',
             next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
             last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
             description: description,
@@ -145,28 +145,42 @@ class DetailsPage extends React.Component {
         }
 
         const sold = current_piece["sold"]
-        const sold_html = (sold == true) ? 
-            ( 
-                <b className={styles.piece_sold}>Sold</b> 
-            ) : ( 
-                <Link href={`/checkout/${o_id}`}>
-                    <button className={styles.buy_now_button}>Buy</button>
-                </Link> 
-            )
-    
         const price = current_piece['price']
-        const price_html = (current_piece["sold"] == false) ? ( <b className={styles.price_text}>{`$${current_piece['price']}`}</b> ) : ( null )
-
-        const image_url = piece_details.image_path
-        console.log(`Setting Details Image Path: ${image_url}`)
 
         const description = current_piece['description'].split('<br>').join("\n");
 
+        const image_array = await this.create_image_array(this.state.pieces, piece_position);
+
+        console.log("CURRENT PIECE DETAILS (Next Line):")
+        console.log(piece_details)
+
+        this.setState({
+            loading: false,
+            url_o_id: o_id,
+            pieces: pieces,
+            image_array: image_array,
+            piece_position: piece_position,
+            piece_db_id: piece_db_id, 
+            piece: current_piece, 
+            piece_details: piece_details, 
+            next_oid: next_oid, 
+            last_oid: last_oid, 
+            description: description,
+            sold: sold,
+            price: price
+        }, async () => {
+            if (previous_url_o_id != o_id) {
+                this.router.push(`/details/${o_id}`) 
+            }
+        })
+    }
+
+    async create_image_array(pieces, piece_position) {
         var image_array = [];
         for (var i=0; i < pieces.length; i++) {
             let piece = pieces[i];
             image_array.push((
-                <div className={(i == this.state.piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                <div className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
                     <Image
                         id={`details_image_${i}`}
                         className={styles.details_image}
@@ -183,33 +197,7 @@ class DetailsPage extends React.Component {
                 </div>
             ))
         }
-
-        console.log("CURRENT PIECE DETAILS (Next Line):")
-        console.log(piece_details)
-
-        console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
-        this.setState({
-            loading: false,
-            url_o_id: o_id,
-            pieces: pieces,
-            image_array: image_array,
-            piece_position: piece_position,
-            piece_db_id: piece_db_id, 
-            piece: current_piece, 
-            piece_details: piece_details, 
-            image_url: image_url,
-            next_oid: next_oid, 
-            last_oid: last_oid, 
-            sold: sold, 
-            sold_html: sold_html, 
-            price: price, 
-            price_html: price_html, 
-            description: description
-        }, async () => {
-            if (previous_url_o_id != o_id) {
-                this.router.push(`/details/${o_id}`) 
-            }
-        })
+        return image_array
     }
 
     async get_piece_from_path_o_id(pieces, o_id) {
@@ -247,7 +235,7 @@ class DetailsPage extends React.Component {
                     <div className={styles.details_container}>
                         <div className={styles.details_container_left}>
                             <div className={styles.details_image_outer_container}>
-                                { (this.state.image_url == '') ? ( 
+                                { (this.state.loading == true) ? ( 
                                     <div className={styles.loader_container}>
                                         <div>Loading Gallery</div>
                                         <CircularProgress color="inherit" className={styles.loader}/>
