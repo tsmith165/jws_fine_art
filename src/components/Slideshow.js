@@ -114,7 +114,7 @@ class SlideshowComponent extends React.Component {
             },
             next_oid: (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'],
             last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
-            running: true,
+            running: false,
             speed_open: false,
             base_speed: base_speed,
             speed: ratioed_value * 10,
@@ -130,7 +130,7 @@ class SlideshowComponent extends React.Component {
     }
 
     async componentDidMount() {
-        this.update_current_piece(this.state.piece_list, this.state.next_oid)
+        this.update_current_piece(this.state.piece_list, this.state.next_oid, true)
 
         // this.start_timer()
     }
