@@ -72,7 +72,7 @@ export const getServerSideProps = async (context) => {
   return { 
     props: {
       "piece_list": piece_list,
-      "most_recent_id": piece_list[piece_list.length - 1]['id']
+      "most_recent_id": piece_list[0]['id']
     }
   }
 }
