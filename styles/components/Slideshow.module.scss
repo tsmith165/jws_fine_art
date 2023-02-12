@@ -111,6 +111,13 @@
         border-radius: 30px;
         border: 1px solid $light;
       }
+
+      .speed_text {
+        color: $light !important;
+        font-size: 20px;
+        font-weight: bold;
+        padding-left: 10px;
+      }
 }
 
 @media (max-width: 800px) {
@@ -221,6 +228,13 @@
         height: 30px;
         border-radius: 30px;
         border: 1px solid $light;
+      }
+
+      .speed_text {
+        color: $light !important;
+        font-size: 20px;
+        font-weight: bold;
+        padding-left: 10px;
       }
 }
 
