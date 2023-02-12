@@ -12,19 +12,32 @@
   .slideshow_body {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 100% !important;
   }
-    .slideshow_image_container {
+    .slideshow_image_outer_container {
       position: relative;
       width: 100%;
-      height: calc(100% - 80px);
+      height: calc(100% - 80px) !important;
       background-color: $dark;
     }
-      .slideshow_image {
-        position: relative;
-        width: 100%;
-        height: calc(100% - 80px);
+
+      .slideshow_image_container { 
+        width: 100%; 
+        height: 100%; 
+        position: absolute; 
+        top: 0;
       }
+      .slideshow_image_container_hidden { 
+          width: 100%; 
+          height: 100%; 
+          position: relative;
+          visibility: hidden;
+      }
+        .slideshow_image {
+          position: relative;
+          width: 100%;
+          height: calc(100% - 80px);
+        }
 
     .slideshow_menu_container {
       display: flex;
@@ -112,18 +125,31 @@
     .slideshow_body {
       position: relative;
       width: 100%;
-      height: 100%;
+      height: calc(100% - 100px)
     }
-      .slideshow_image_container {
-        position: relative;
-        width: 100%;
-        height: calc(100% - 50px);
-        background-color: $dark;
+    .slideshow_image_outer_container {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 80px) !important;
+      background-color: $dark;
+    }
+
+      .slideshow_image_container { 
+        width: 100%; 
+        height: 100%; 
+        position: absolute; 
+        top: 0;
+      }
+      .slideshow_image_container_hidden { 
+          width: 100%; 
+          height: 100%; 
+          position: relative;
+          visibility: hidden;
       }
         .slideshow_image {
           position: relative;
           width: 100%;
-          height: calc(100% - 50px);
+          height: calc(100% - 80px);
         }
         
     .slideshow_menu_container {
@@ -204,4 +230,22 @@
       transform: scale(-1);
 }
 
+.loader_container {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  flex-direction: column;
+  height: 100%; 
+}
 
+.loader_container > div {
+  color: $light;
+  font-size: 24px;
+  font-weight: bold;
+  padding-bottom: 20px;
+}
+  .loader { 
+      color: $light;
+      height: 100px !important; 
+      width: 100px !important; 
+  }
