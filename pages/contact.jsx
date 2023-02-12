@@ -1,6 +1,8 @@
 import PageLayout from '../src/components/layout/PageLayout'
 import ContactLayout from '../src/components/layout/ContactLayout';
 
+import { prisma } from '../lib/prisma'
+
 export default function Biography({}) {
   return (
     <PageLayout page_title={"Contact"}>
