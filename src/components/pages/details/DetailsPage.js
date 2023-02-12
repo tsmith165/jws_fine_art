@@ -18,7 +18,8 @@ class DetailsPage extends React.Component {
 
         this.router = props.router
 
-        console.log(`ID PROP: ${props.id}`)
+        console.log(`ID PROP: ${this.props.id}`)
+        const passed_o_id = this.props.id;
 
         const piece_list = this.props.piece_list;
 
@@ -34,6 +35,12 @@ class DetailsPage extends React.Component {
         var piece_position = 0;
         var piece_db_id = null;
         var piece_o_id = null;
+
+        for (var i=0; i < piece_list.length; i++) {
+            if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
+                piece_position = i
+            }
+        }
 
         var title = '';
         var type = '';
@@ -89,7 +96,7 @@ class DetailsPage extends React.Component {
         this.state = {
             debug: false,
             loading: true,
-            url_o_id: props.id,
+            url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
             current_piece: current_piece,
@@ -123,7 +130,8 @@ class DetailsPage extends React.Component {
     }
 
     async componentDidMount() {        
-        await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
+        // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
+        // this.setState({loading: false})
     }
 
     async update_current_piece(piece_list, o_id) {
@@ -246,14 +254,7 @@ class DetailsPage extends React.Component {
                     <div className={styles.details_container}>
                         <div className={styles.details_container_left}>
                             <div className={styles.details_image_outer_container}>
-                                { (this.state.loading == true) ? ( 
-                                    <div className={styles.loader_container}>
-                                        <div>Loading Gallery</div>
-                                        <CircularProgress color="inherit" className={styles.loader}/>
-                                    </div>
-                                ) : (
-                                    this.state.image_array
-                                )}
+                                {this.state.image_array}
                             </div>
                         </div>
                         <div className={styles.details_container_right}>
