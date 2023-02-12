@@ -32,6 +32,25 @@ class DetailsPage extends React.Component {
         if (pieces_length > 0) {
             const piece_position = 0
             const current_piece = this.props.pieces[piece_position]
+
+            var image_array = [];
+            for (var i=0; i < pieces.length; i++) {
+                let piece = pieces[i];
+                image_array.push((
+                    <Image
+                        className={styles.details_image}
+                        src={`${baseURL}${piece['image_path']}`}
+                        alt={piece['title']}
+                        // width={this.state.piece_details['width']}
+                        // height={this.state.piece_details['height']}
+                        priority={true}
+                        layout='fill'
+                        objectFit='contain'
+                        quality={100}
+                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
+                    />
+                ))
+            }
     
             const sold = current_piece["sold"]
             const sold_html = (sold == true) ? 
@@ -54,6 +73,7 @@ class DetailsPage extends React.Component {
                 loading: true,
                 url_o_id: props.id,
                 pieces: pieces,
+                image_array: image_array,
                 current_piece: current_piece,
                 piece_position: piece_position,
                 piece_db_id: (current_piece['id'] !== undefined) ? current_piece['id'] : '',
@@ -229,18 +249,7 @@ class DetailsPage extends React.Component {
                 <PageLayout page_title={`Piece Details - ${title}`}>
                     <div className={styles.full_screen_container}>
                         <div className={styles.full_screen_image_container}>
-                            <Image
-                                className={styles.full_screen_image}
-                                src={this.state.image_url}
-                                alt={this.state.piece_details['title']}
-                                width={this.state.piece_details['width']}
-                                height={this.state.piece_details['height']}
-                                priority={true}
-                                layout='fill'
-                                objectFit='contain'
-                                quality={100}
-                                onClick={(e) => {e.preventDefault(); this.setState({full_screen: true})}}
-                            />
+                            {this.state.image_array[this.state.piece_position]}
                         </div>
                         <div className={styles.full_screen_close_container} onClick={(e) => {e.preventDefault(); this.setState({full_screen: false})}}>
                             <CloseIcon className={`${styles.full_screen_close_icon}`} />
@@ -260,18 +269,7 @@ class DetailsPage extends React.Component {
                                         <CircularProgress color="inherit" className={styles.loader}/>
                                     </div>
                                 ) : (
-                                    <Image
-                                        className={styles.details_image}
-                                        src={this.state.image_url}
-                                        alt={this.state.piece_details['title']}
-                                        // width={this.state.piece_details['width']}
-                                        // height={this.state.piece_details['height']}
-                                        priority={true}
-                                        layout='fill'
-                                        objectFit='contain'
-                                        quality={100}
-                                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: true})}}
-                                    />
+                                    this.state.image_array[this.state.piece_position]
                                 )}
                             </div>
                         </div>
