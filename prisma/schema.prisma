@@ -28,6 +28,8 @@ model Piece {
   real_width  Float
   real_height Float
   active      Boolean @default(true)
+  theme       String?
+  available   Boolean @default(true)
 }
 
 model Account {
