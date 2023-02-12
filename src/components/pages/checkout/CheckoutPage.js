@@ -28,11 +28,12 @@ class CheckoutPage extends React.Component {
 
         console.log(`ID PROP: ${props.id}`)
 
-        console.log(`getServerSideProps Pieces (Next Line):`)
-        console.log(this.props.pieces)
+        const pieces = this.props.piece_list;
 
-        const pieces = this.props.pieces
-        const pieces_length = this.props.pieces.length
+        console.log(`getServerSideProps Pieces (Next Line):`)
+        console.log(pieces)
+
+        const pieces_length = pieces.length
         console.log(`Pieces Length: ${pieces_length}`)
 
         var image_array = [];
@@ -54,8 +55,10 @@ class CheckoutPage extends React.Component {
         var instagram = '';
 
         if (pieces_length > 0) {
-            const current_piece = this.props.pieces[piece_position]
+            const current_piece = pieces[piece_position]
 
+            piece_db_id = (current_piece['id']          !== undefined) ? current_piece['id'] : ''
+            piece_o_id =  (current_piece['o_id']        !== undefined) ? current_piece['o_id'] : ''
             title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
             type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
             sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
@@ -78,6 +81,7 @@ class CheckoutPage extends React.Component {
             current_piece: current_piece,
             piece_position: piece_position,
             piece_db_id: piece_db_id,
+            piece_o_id: piece_o_id,
             piece_details: {
                 title: title,
                 type: type,
@@ -115,6 +119,7 @@ class CheckoutPage extends React.Component {
         console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
         const [piece_position, current_piece] = await this.get_piece_from_path_o_id(pieces, o_id);
         const piece_db_id = current_piece['id']
+        const piece_o_id = current_piece['o_id']
 
         console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
         console.log(current_piece)
@@ -152,6 +157,7 @@ class CheckoutPage extends React.Component {
             image_array: image_array,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
+            piece_o_id: piece_o_id,
             piece: current_piece, 
             piece_details: piece_details,
             next_oid: next_oid, 
