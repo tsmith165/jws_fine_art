@@ -87,7 +87,7 @@ class EditPage extends React.Component {
                             alt={piece['title']}
                             // width={this.state.piece_details['width']}
                             // height={this.state.piece_details['height']}
-                            priority={(i > piece_position - 2 && i < piece_position + 2) ? true : false}
+                            priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                             layout='fill'
                             objectFit='contain'
                             quality={100}
@@ -256,7 +256,7 @@ class EditPage extends React.Component {
                         alt={piece['title']}
                         // width={this.state.piece_details['width']}
                         // height={this.state.piece_details['height']}
-                        priority={(i > piece_position - 2 && i < piece_position + 2) ? true : false}
+                        priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                         layout='fill'
                         objectFit='contain'
                         quality={100}
