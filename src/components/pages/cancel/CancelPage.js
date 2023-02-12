@@ -123,7 +123,7 @@ class CancelPage extends React.Component {
 
     async componentDidMount() {
         // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
-        // this.setState({loading: false})
+        this.setState({loading: false})
     }
 
     async update_current_piece(piece_list, o_id) {
@@ -220,7 +220,14 @@ class CancelPage extends React.Component {
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_outer_container}>
                             <div className={styles.details_image_container}>
-                                {this.state.image_array}
+                                { (this.state.loading == true) ? ( 
+                                    <div className={styles.loader_container}>
+                                        <div>Loading Gallery</div>
+                                        <CircularProgress color="inherit" className={styles.loader}/>
+                                    </div>
+                                ) : (
+                                    this.state.image_array
+                                )}
                             </div>
                         </div>
                     </div>
