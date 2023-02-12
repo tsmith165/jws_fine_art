@@ -439,11 +439,11 @@ class EditPage extends React.Component {
             loader_jsx = ( <div className={form_styles.submit_label}>Piece Details Update was successful...</div> );
         } else if (this.state.error == true) {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Piece Details Update was NOT successful...</div> );
-        } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width > 2000 && this.state.piece_details.height > 2000 ) ) {
+        } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width > 1500 && this.state.piece_details.height > 1500 ) ) {
             if (this.state.uploaded == true) {
-                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Image upload successful but image resolution is too high!  Re-Upload with width / height < 2000px`}</div> );
+                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Image upload successful but image resolution is too high!  Re-Upload with width / height < 1500px`}</div> );
             } else {
-                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Uploaded image resolution is too high!  Re-Upload with width / height < 2000px`}</div> );
+                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Uploaded image resolution is too high!  Re-Upload with width / height < 1500px`}</div> );
             }
         } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width < 1000 && this.state.piece_details.height < 1000 ) ) {
             if (this.state.uploaded == true) {
