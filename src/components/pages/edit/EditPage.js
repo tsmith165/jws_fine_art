@@ -375,15 +375,15 @@ class EditPage extends React.Component {
             loader_jsx = ( <div className={form_styles.submit_label}>Piece Details Update was successful...</div> );
         } else if (this.state.error == true) {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Piece Details Update was NOT successful...</div> );
-        } else if (this.state.uploaded == true) {
-            loader_jsx = ( <div className={form_styles.submit_label}>Image Upload was successful...</div> );
         } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width < 1000 && this.state.piece_details.height < 1000 ) ) {
             if (this.state.uploaded == true) {
                 loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
             } else {
                 loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Uploaded image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
             }
-        } else if (this.state.upload_error == true) {
+        } else if (this.state.uploaded == true) {
+            loader_jsx = ( <div className={form_styles.submit_label}>Image Upload was successful...</div> );
+        }  else if (this.state.upload_error == true) {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Image Upload was NOT successful...</div> );
         }
 
@@ -453,7 +453,7 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Price</div>
                                     </div>
-                                    <input id="price" className={form_styles.input_textbox} defaultValue={this.state.piece_details['price']} key={this.state.piece_details['price']}/>
+                                    <input id="price" className={form_styles.input_textbox} defaultValue={this.state.piece_details['price']} key={'price'}/>
                                 </div>
 
                                 {/* Instagram Link Textbox */}
@@ -461,7 +461,7 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Instagram</div>
                                     </div>
-                                    <input id="instagram" className={form_styles.input_textbox} defaultValue={this.state.piece_details['instagram']} key={this.state.piece_details['instagram']}/>
+                                    <input id="instagram" className={form_styles.input_textbox} defaultValue={this.state.piece_details['instagram']} key={'instagram'}/>
                                 </div>
 
                                 {/* Split Container For real_width / real_height */}
@@ -470,13 +470,13 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Width</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" defaultValue={this.state.piece_details['real_width']} key={this.state.piece_details['real_width']}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" defaultValue={this.state.piece_details['real_width']} key={'real_width'}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Height</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" defaultValue={this.state.piece_details['real_height']} key={this.state.piece_details['real_height']}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" defaultValue={this.state.piece_details['real_height']} key={'real_height'}/>
                                     </div> 
                                 </div>
 
@@ -486,13 +486,29 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Pixel Width</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" defaultValue={this.state.piece_details['width']} key={this.state.piece_details['width']}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" defaultValue={this.state.piece_details['width']} key={'width'}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Pixel Height</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" defaultValue={this.state.piece_details['height']} key={this.state.piece_details['height']}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" defaultValue={this.state.piece_details['height']} key={'height'}/>
+                                    </div> 
+                                </div>
+
+                                {/* Split Container For Theme / Available */}
+                                <div className={form_styles.input_container_split_container}>         
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Theme</div>
+                                        </div>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="theme" defaultValue={this.state.piece_details['theme']} key={'theme'}/>
+                                    </div> 
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Available</div>
+                                        </div>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="available" defaultValue={this.state.piece_details['available']} key={'available'}/>
                                     </div> 
                                 </div>
 
