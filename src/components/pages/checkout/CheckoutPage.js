@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { fetch_pieces, create_pending_transaction, create_stripe_checkout_session } from '../../../../lib/api_calls';
+import { create_pending_transaction, create_stripe_checkout_session } from '../../../../lib/api_calls';
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
 
@@ -28,19 +28,20 @@ class CheckoutPage extends React.Component {
 
         console.log(`ID PROP: ${props.id}`)
 
-        const pieces = this.props.piece_list;
+        const piece_list = this.props.piece_list;
 
         console.log(`getServerSideProps Pieces (Next Line):`)
-        console.log(pieces)
+        console.log(piece_list)
 
-        const pieces_length = pieces.length
-        console.log(`Pieces Length: ${pieces_length}`)
+        const piece_list_length = piece_list.length
+        console.log(`Pieces Length: ${piece_list_length}`)
 
         var image_array = [];
         
         var current_piece = null;
         var piece_position = 0;
         var piece_db_id = null;
+        var piece_o_id = null;
 
         var title = '';
         var type = '';
@@ -54,8 +55,8 @@ class CheckoutPage extends React.Component {
         var image_path = '';
         var instagram = '';
 
-        if (pieces_length > 0) {
-            const current_piece = pieces[piece_position]
+        if (piece_list_length > 0) {
+            const current_piece = piece_list[piece_position]
 
             piece_db_id = (current_piece['id']          !== undefined) ? current_piece['id'] : ''
             piece_o_id =  (current_piece['o_id']        !== undefined) ? current_piece['o_id'] : ''
@@ -76,7 +77,7 @@ class CheckoutPage extends React.Component {
             debug: false,
             loading: true,
             url_o_id: props.id,
-            pieces: pieces,
+            piece_list: piece_list,
             image_array: image_array,
             current_piece: current_piece,
             piece_position: piece_position,
@@ -95,8 +96,8 @@ class CheckoutPage extends React.Component {
                 image_path: image_path,
                 instagram: instagram,
             },
-            next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
-            last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
+            next_oid: (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'],
+            last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
             description: description,
             price: price
         }
@@ -110,22 +111,22 @@ class CheckoutPage extends React.Component {
     }
 
     async componentDidMount() {
-        await this.update_current_piece(this.state.pieces, this.state.url_o_id)
+        await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
     }
 
-    async update_current_piece(pieces, o_id) {
-        const pieces_length = pieces.length;
+    async update_current_piece(piece_list, o_id) {
+        const piece_list_length = piece_list.length;
 
-        console.log(`Piece Count: ${pieces_length} | Searching for URL_O_ID: ${o_id}`)
-        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(pieces, o_id);
+        console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
+        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(piece_list, o_id);
         const piece_db_id = current_piece['id']
         const piece_o_id = current_piece['o_id']
 
         console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
         console.log(current_piece)
 
-        const next_oid = (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id']                 : pieces[piece_position + 1]['o_id'];
-        const last_oid = (piece_position - 1 < 0)                 ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'];
+        const next_oid = (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id']                 : piece_list[piece_position + 1]['o_id'];
+        const last_oid = (piece_position - 1 < 0)                 ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
         
         console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
@@ -142,7 +143,7 @@ class CheckoutPage extends React.Component {
             image_path:  `${baseURL}${current_piece['image_path']}`,
             instagram:   current_piece['instagram']
         }
-        const image_array = await this.create_image_array(this.state.pieces, piece_position);
+        const image_array = await this.create_image_array(this.state.piece_list, piece_position);
         const description = current_piece['description'].split('<br>').join("\n");
         const price = current_piece['price']
 
@@ -153,7 +154,7 @@ class CheckoutPage extends React.Component {
         this.setState({
             loading: false,
             url_o_id: o_id,
-            pieces: pieces,
+            piece_list: piece_list,
             image_array: image_array,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
@@ -171,10 +172,10 @@ class CheckoutPage extends React.Component {
         })
     }
 
-    async create_image_array(pieces, piece_position) {
+    async create_image_array(piece_list, piece_position) {
         var image_array = [];
-        for (var i=0; i < pieces.length; i++) {
-            let piece = pieces[i];
+        for (var i=0; i < piece_list.length; i++) {
+            let piece = piece_list[i];
             image_array.push((
                 <div className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
                     <Image
@@ -196,10 +197,10 @@ class CheckoutPage extends React.Component {
         return image_array
     }
 
-    async get_piece_from_path_o_id(pieces, o_id) {
-        for (var i=0; i < pieces.length; i++) {
-            if (pieces[i]['o_id'].toString() == o_id.toString()) {
-                return [i, pieces[i]]
+    async get_piece_from_path_o_id(piece_list, o_id) {
+        for (var i=0; i < piece_list.length; i++) {
+            if (piece_list[i]['o_id'].toString() == o_id.toString()) {
+                return [i, piece_list[i]]
             }
         }
     }
@@ -345,9 +346,9 @@ class CheckoutPage extends React.Component {
 
                                 { /* Title Container */ }
                                 <div className={form_styles.checkout_title_container}>
-                                    <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.pieces, this.state.last_oid)}} />
+                                    <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.last_oid)}} />
                                     <div className={form_styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</div>
-                                    <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.pieces, this.state.next_oid)}}/>
+                                    <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.next_oid)}}/>
                                 </div>
                                 
                                 { /* Full Name Container */ }

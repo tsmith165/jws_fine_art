@@ -6,26 +6,26 @@ import DetailsPage from '../../src/components/pages/details/DetailsPage';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
-const Details = ({pieces}) => {
+const Details = ({piece_list}) => {
     const router = useRouter();
     const id = router.query.id;
     console.log(`Page ID: ${id}`);
 
-    console.log(`Passing pieces (Next Line): `)
-    console.log(pieces)
+    console.log(`Passing piece_list (Next Line): `)
+    console.log(piece_list)
 
     if (!router.isReady) return null
-    return ( <DetailsPage id={id} pieces={pieces} router={router}/> )
+    return ( <DetailsPage id={id} piece_list={piece_list} router={router}/> )
 }
 
 export default Details
 
 export const getServerSideProps = async (context) => {
     console.log(`-------------- Fetching Initial Server List --------------`)
-    var pieces = await prisma.piece.findMany()
-    pieces.sort((a, b) => a['o_id'] - b['o_id']);
+    var piece_list = await prisma.piece.findMany()
+    piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
     return {
-      props: {pieces: pieces, most_recent_id: pieces[pieces.length - 1]['id']}, // will be passed to the page component as props
+      props: {piece_list: piece_list, most_recent_id: piece_list[piece_list.length - 1]['id']}, // will be passed to the page component as props
     }
 }
