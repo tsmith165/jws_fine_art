@@ -63,6 +63,27 @@ class DetailsPage extends React.Component {
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
             image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
+
+            for (var i=0; i < piece_list.length; i++) {
+                let piece = piece_list[i];
+                image_array.push((
+                    <div key={`image_${i}`} className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                        <Image
+                            id={`details_image_${i}`}
+                            className={styles.details_image}
+                            src={`${baseURL}${piece['image_path']}`}
+                            alt={piece['title']}
+                            // width={this.state.piece_details['width']}
+                            // height={this.state.piece_details['height']}
+                            priority={true}
+                            layout='fill'
+                            objectFit='contain'
+                            quality={100}
+                            onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
+                        />
+                    </div>
+                ))
+            }
         }
 
         this.state = {
@@ -136,9 +157,6 @@ class DetailsPage extends React.Component {
             instagram:   current_piece['instagram']
         }
 
-        const sold = current_piece["sold"]
-        const price = current_piece['price']
-
         const description = current_piece['description'].split('<br>').join("\n");
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
@@ -159,8 +177,8 @@ class DetailsPage extends React.Component {
             next_oid: next_oid, 
             last_oid: last_oid, 
             description: description,
-            sold: sold,
-            price: price
+            sold: current_piece['sold'],
+            price: current_piece['price']
         }, async () => {
             if (previous_url_o_id != o_id) {
                 this.router.push(`/details/${o_id}`) 
