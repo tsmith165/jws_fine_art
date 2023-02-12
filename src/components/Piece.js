@@ -4,7 +4,7 @@ import styles from '../../styles/components/Gallery.module.scss'
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
-const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, description, sold}) => {
+const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, description, sold, available}) => {
     var [x, y, img_width, img_height] = dimensions;
 
     if (x == null || x < 0) {
@@ -18,11 +18,19 @@ const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, des
                     <div className={styles.piece_image_container}>
                         <Image className={styles.piece_image} src={`${baseURL}${image_path}`} layout='fixed' width={img_width} height={img_height} alt={title}/>
                     </div>
-                    { sold == false ? null :
-                    <div className={styles.piece_sold_container}>
-                        <Image className={styles.piece_sold} src="/redDot.png" alt="Piece Sold" layout='fixed' width={30} height={30}/> 
-                    </div>
-                    }
+                    { sold == false ? (
+                        ( available == true ? (
+                            null
+                        ) : (
+                            <div className={styles.piece_sold_container}>
+                                <Image className={styles.piece_sold} src="/yellowDot.png" alt="Piece Sold" layout='fixed' width={30} height={30}/> 
+                            </div>
+                        ))
+                    ) : (
+                        <div className={styles.piece_sold_container}>
+                            <Image className={styles.piece_sold} src="/redDot.png" alt="Piece Sold" layout='fixed' width={30} height={30}/> 
+                        </div>
+                    )}
                 </div>
             </Link>
         </div>

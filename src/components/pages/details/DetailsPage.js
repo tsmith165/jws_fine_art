@@ -266,16 +266,15 @@ class DetailsPage extends React.Component {
                                             )
                                         }
                                         {
-                                            (this.state.sold == true) ? 
-                                                (
-                                                    null
-                                                ) : (
-                                                    <Link href='https://stripe.com'>
-                                                        <div className={styles.powered_by_stripe_container}>
-                                                            <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
-                                                            </div>
-                                                    </Link>
-                                                )
+                                            (this.state.sold == true) ? (
+                                                null
+                                            ) : (
+                                                <Link href='https://stripe.com'>
+                                                    <div className={styles.powered_by_stripe_container}>
+                                                        <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
+                                                        </div>
+                                                </Link>
+                                            )
                                         }
                                         {
                                             (this.state.piece_details['instagram'] != null && this.state.piece_details['instagram'] != '' && this.state.piece_details['instagram'].length > 5) ? (
