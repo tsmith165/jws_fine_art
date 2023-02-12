@@ -1,18 +1,14 @@
 import React from 'react';
-import Image from 'next/image'
-import Link from 'next/link'
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
 
-import styles from '../../../../styles/pages/Details.module.scss'
+import styles from '../../../../styles/components/Gallery.module.scss'
 
-import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
-import { CircularProgress } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import Piece from '../components/Piece'
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
-class DetailsPage extends React.Component {
+class GalleryPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -27,7 +23,10 @@ class DetailsPage extends React.Component {
         console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
         console.log(piece_list)
 
-        var image_array = [];
+        
+        console.log(`Pieces Length: ${piece_list_length}`)
+
+        var gallery_pieces = [];
         
         var current_piece = null;
         var piece_position = 0;
@@ -96,9 +95,8 @@ class DetailsPage extends React.Component {
         this.state = {
             debug: false,
             loading: true,
-            url_o_id: passed_o_id,
             piece_list: piece_list,
-            image_array: image_array,
+            gallery_pieces: gallery_pieces,
             current_piece: current_piece,
             piece_position: piece_position,
             piece_db_id: piece_db_id,
@@ -123,108 +121,11 @@ class DetailsPage extends React.Component {
             sold: sold,
             full_screen: false
         }
-
-        this.update_current_piece = this.update_current_piece.bind(this);
-        this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
-        this.create_image_array = this.create_image_array.bind(this);
     }
 
     async componentDidMount() {        
         // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
         this.setState({loading: false})
-    }
-
-    async update_current_piece(piece_list, o_id) {
-        const previous_url_o_id = this.state.url_o_id
-        const piece_list_length = piece_list.length;
-
-        console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
-        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(piece_list, o_id);
-        const piece_db_id = current_piece['id']
-        const piece_o_id = current_piece['o_id']
-
-        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
-        console.log(current_piece)
-
-        const next_oid = (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id']                 : piece_list[piece_position + 1]['o_id'];
-        const last_oid = (piece_position - 1 < 0)                 ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
-        
-        console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
-
-        const piece_details = {
-            title:       current_piece['title'],
-            type:        current_piece['type'],
-            description: current_piece['description'],
-            sold:        current_piece['sold'],
-            price:       current_piece['price'],
-            width:       current_piece['width'],
-            height:      current_piece['height'],
-            real_width:  current_piece['real_width'],
-            real_height: current_piece['real_height'],
-            image_path:  `${baseURL}${current_piece['image_path']}`,
-            instagram:   current_piece['instagram']
-        }
-
-        const description = current_piece['description'].split('<br>').join(" \n");
-
-        const image_array = await this.create_image_array(this.state.piece_list, piece_position);
-
-        console.log("CURRENT PIECE DETAILS (Next Line):")
-        console.log(piece_details)
-
-        this.setState({
-            loading: false,
-            url_o_id: o_id,
-            piece_list: piece_list,
-            image_array: image_array,
-            piece_position: piece_position,
-            piece_db_id: piece_db_id, 
-            piece_o_id: piece_o_id,
-            piece: current_piece, 
-            piece_details: piece_details, 
-            next_oid: next_oid, 
-            last_oid: last_oid, 
-            description: description,
-            sold: current_piece['sold'],
-            price: current_piece['price']
-        }, async () => {
-            if (previous_url_o_id != o_id) {
-                this.router.push(`/details/${o_id}`) 
-            }
-        })
-    }
-
-    async create_image_array(piece_list, piece_position) {
-        var image_array = [];
-        for (var i=0; i < piece_list.length; i++) {
-            let piece = piece_list[i];
-            image_array.push((
-                <div key={`image_${i}`} className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
-                    <Image
-                        id={`details_image_${i}`}
-                        className={styles.details_image}
-                        src={`${baseURL}${piece['image_path']}`}
-                        alt={piece['title']}
-                        // width={this.state.piece_details['width']}
-                        // height={this.state.piece_details['height']}
-                        priority={(i == piece_position) ? true : false}
-                        layout='fill'
-                        objectFit='contain'
-                        quality={100}
-                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
-                    />
-                </div>
-            ))
-        }
-        return image_array
-    }
-
-    async get_piece_from_path_o_id(piece_list, o_id) {
-        for (var i=0; i < piece_list.length; i++) {
-            if (piece_list[i]['o_id'].toString() == o_id.toString()) {
-                return [i, piece_list[i]]
-            }
-        }
     }
 
     render() {
@@ -331,4 +232,4 @@ class DetailsPage extends React.Component {
     }
 }
 
-export default DetailsPage;
+export default GalleryPage;

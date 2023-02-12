@@ -30,10 +30,8 @@ const Gallery = ({piece_list, window_size}) => {
     var leftover_width = window_size.width - gallery_width;
     if (debug) console.log(`GALLERY WIDTH: ${gallery_width} | LEFTOVER: ${leftover_width}`);
   
-    //var leftover_width = window_size.width % (piece_width + (border_margin * 2) + 30);
     var margin = leftover_width / 2;
-  
-    if (debug) console.log(`LEFT MARGIN: ${margin} | MAIN: ${gallery_width} | RIGHT MARGIN: ${window_size.width - gallery_width -margin}`)
+    if (debug) console.log(`LEFT MARGIN: ${margin} | MAIN: ${gallery_width} | RIGHT MARGIN: ${window_size.width - gallery_width - margin}`)
     
     var [cur_x, cur_y] = [margin, inner_margin];
     var [row, col] = [0, 0];
