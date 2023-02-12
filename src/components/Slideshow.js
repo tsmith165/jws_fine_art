@@ -164,7 +164,7 @@ class SlideshowComponent extends React.Component {
         for (var i=0; i < pieces.length; i++) {
             let piece = pieces[i];
             image_array.push((
-                <div key={i} className={(i == piece_position) ? styles.slideshow_image_container : styles.slideshow_image_container_hidden}>
+                <div key={`image_${i}`} className={(i == piece_position) ? styles.slideshow_image_container : styles.slideshow_image_container_hidden}>
                     <Image                                         
                         className={styles.slideshow_image}
                         src={`${baseURL}${piece['image_path']}`}

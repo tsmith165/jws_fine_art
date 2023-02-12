@@ -1,7 +1,7 @@
 import React from 'react';
 import NextImage from 'next/image'
 
-import { edit_details, create_piece, upload_image, get_upload_url } from '../../../../lib/api_calls';
+import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url } from '../../../../lib/api_calls';
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
 // import EditDetailsForm from '../../../../src/components/forms/EditDetailsForm'
@@ -38,7 +38,7 @@ class EditPage extends React.Component {
         var piece_o_id = null;
 
         var title = '';
-        var type = '';
+        var type = 'Oil On Canvas';
         var description = '';
         var sold = false;
         var price = 9999;
@@ -48,6 +48,8 @@ class EditPage extends React.Component {
         var real_height = '';
         var image_path = '';
         var instagram = '';
+        var theme = 'Ocean';
+        var available = true;
 
         if (piece_list_length > 0) {
             const current_piece = piece_list[piece_position]
@@ -65,6 +67,8 @@ class EditPage extends React.Component {
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
             image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
+            theme =       (current_piece['theme']       !== undefined) ? ((current_piece['theme'] == null) ? "None" : current_piece['theme']) : "None"
+            available =   (current_piece['available']   !== undefined) ? current_piece['available'] : ''
         }
 
         this.state = {
@@ -89,20 +93,22 @@ class EditPage extends React.Component {
                 real_height: real_height,
                 image_path: image_path,
                 instagram: instagram,
+                theme: theme,
+                available: available,
             },
             next_oid: (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'],
             last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
             description: description,
             price: price,
             sold: sold,
+            theme: theme,
+            available: available,
             loading: false,
             submitted: false,
             error: false,
             uploaded: false,
             upload_error: false
         }
-
-        this.set_page_piece_details = this.set_page_piece_details.bind(this);
         this.create_image_array = this.create_image_array.bind(this);
 
         // File Upload
@@ -120,8 +126,18 @@ class EditPage extends React.Component {
         await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
     }
 
-    async set_page_piece_details(piece_details) {
-        this.setState({piece_details: piece_details, image_url: piece_details['image_path']})
+    async fetch_pieces_from_api(submitted=false) {
+        console.log(`-------------- Fetching Initial Server List --------------`)
+        const piece_list = await fetch_pieces();
+
+        console.log('Pieces fetched in state (Next Line):')
+        console.log(piece_list)
+        
+        var state = {piece_list: piece_list}
+        if (submitted) {
+            state = {piece_list: piece_list, loading: false, error: false, submitted: true}
+        }
+        this.setState(state, async () => {await this.update_current_piece(this.state.piece_list, this.state.url_o_id)})
     }
 
     async update_current_piece(piece_list, o_id) {
@@ -151,7 +167,9 @@ class EditPage extends React.Component {
             real_width:  current_piece['real_width'],
             real_height: current_piece['real_height'],
             image_path:  `${baseURL}${current_piece['image_path']}`,
-            instagram:   current_piece['instagram']
+            instagram:   current_piece['instagram'],
+            theme:       current_piece['theme'],
+            available:   current_piece['available'],
         }
 
         const description = current_piece['description'].split('<br>').join("\n");
@@ -175,8 +193,11 @@ class EditPage extends React.Component {
             next_oid: next_oid, 
             last_oid: last_oid, 
             description: description, 
+            price: piece_details['price'],
             sold: (piece_details['sold'] == true) ? "True" : "False", 
-            type: piece_details['type']
+            type: piece_details['type'],
+            theme: (piece_details['theme'] == null) ? "None" : piece_details['theme'],
+            available: (piece_details['available'] == true) ? "True" : "False", 
         }, async () => {
             if (previous_url_o_id != o_id) {
                 this.router.push(`/edit/${o_id}`) 
@@ -189,7 +210,7 @@ class EditPage extends React.Component {
         for (var i=0; i < piece_list.length; i++) {
             let piece = piece_list[i];
             image_array.push((
-                <div className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                <div key={`image_${i}`} className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
                     <NextImage
                         id={`details_image_${i}`}
                         className={styles.details_image}
@@ -231,19 +252,19 @@ class EditPage extends React.Component {
         const instagram   = event.target.elements.instagram.value;
         const real_width  = event.target.elements.width.value;
         const real_height = event.target.elements.height.value;
+        const theme       = event.target.elements.theme.value;
+        const available   = event.target.elements.available.value;
     
         if (title) {
             console.log("--------------- Attempting To Edit Piece Details ---------------")
             console.log(`Editing Piece DB ID: ${this.state.piece_db_id} | Title: ${title} | Sold: ${sold}`)
             if (!this.state.uploaded) {
-                const response = await edit_details(this.state.piece_db_id, title, this.state.description, type, sold, price, instagram, this.state.piece_details['width'], this.state.piece_details['height'], real_width, real_height)
+                const response = await edit_details(this.state.piece_db_id, title, this.state.description, type, sold, price, instagram, this.state.piece_details['width'], this.state.piece_details['height'], real_width, real_height, theme, available)
     
                 console.log(`Edit Piece Response (Next Line):`)
                 console.log(response)
-                
-                this.fetch_pieces_from_api();
     
-                if (response) { this.setState({loading: false, error: false, submitted: true}); }
+                if (response) { await this.fetch_pieces_from_api(true) }
                 else { 
                     console.log('Edit Piece - No Response - Setting error = true')
                     this.setState({loading: false, error: true}); 
@@ -252,14 +273,12 @@ class EditPage extends React.Component {
             else {
                 console.log("--------------- Attempting To Create New Piece ---------------")
                 console.log(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.piece_details['image_path']}`)
-                const response = await create_piece(title, this.state.description, type, sold, price, instagram, this.state.piece_details["width"], this.state.piece_details["height"], real_width, real_height, this.state.piece_details['image_path']);
+                const response = await create_piece(title, this.state.description, type, sold, price, instagram, this.state.piece_details["width"], this.state.piece_details["height"], real_width, real_height, this.state.piece_details['image_path'], theme, available);
     
                 console.log(`Create Piece Response (Next Line):`)
                 console.log(response)
-                
-                this.fetch_pieces_from_api();
     
-                if (response) { this.setState({loading: false, error: false, submitted: true}); }
+                if (response) { await this.fetch_pieces_from_api(true)}
                 else { this.setState({loading: false, error: true}); }
             }
         }
@@ -375,11 +394,17 @@ class EditPage extends React.Component {
             loader_jsx = ( <div className={form_styles.submit_label}>Piece Details Update was successful...</div> );
         } else if (this.state.error == true) {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Piece Details Update was NOT successful...</div> );
+        } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width > 2000 && this.state.piece_details.height > 2000 ) ) {
+            if (this.state.uploaded == true) {
+                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Image upload successful but image resolution is too high!  Re-Upload with width / height < 2000px`}</div> );
+            } else {
+                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Uploaded image resolution is too high!  Re-Upload with width / height < 2000px`}</div> );
+            }
         } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width < 1000 && this.state.piece_details.height < 1000 ) ) {
             if (this.state.uploaded == true) {
-                loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
+                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
             } else {
-                loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Uploaded image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
+                loader_jsx = ( <div className={form_styles.submit_label_warning}>{`Uploaded image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
             }
         } else if (this.state.uploaded == true) {
             loader_jsx = ( <div className={form_styles.submit_label}>Image Upload was successful...</div> );
@@ -408,7 +433,7 @@ class EditPage extends React.Component {
                             <form method="post" onSubmit={this.handleSubmit}>
                                 <div className={form_styles.title_container}>
                                     <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.last_oid)}} />
-                                    <input type="text" className={form_styles.title_input} id="title" defaultValue={ title } key={ title }/>
+                                    <input type="text" className={form_styles.title_input} id="title" value={ title } key={ title } onChange={ (e) => {e.preventDefault(); }}/>
                                     <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.next_oid)}}/>
                                 </div>
 
@@ -417,7 +442,8 @@ class EditPage extends React.Component {
                                         className={form_styles.edit_details_description_textarea} 
                                         ref={this.text_area_ref} 
                                         id="description" 
-                                        value={this.state.description.split('<br>').join("\n") } 
+                                        value={this.state.description.split('<br>').join("\n") }
+                                        key={'description'}
                                         onChange={(e) => { e.preventDefault(); this.setState({ description: e.target.value }) }}
                                     />
                                 </div>
@@ -427,7 +453,7 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Type</div>
                                     </div>
-                                    <select id="type" className={form_styles.input_select} value={ this.state.type } onChange={ (e) => this.setState({type: e.target.value}) }>
+                                    <select id="type" className={form_styles.input_select} value={ this.state.type } key={'type'} onChange={ (e) => {e.preventDefault(); this.setState({type: e.target.value})} }>
                                         <option value="Oil On Canvas">Oil On Canvas</option>
                                         <option value="Oil On Cradled Panel">Oil On Cradled Panel</option>
                                         <option value="Intaglio On Paper">Intaglio On Paper</option>
@@ -441,7 +467,7 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Sold</div>
                                     </div>
-                                    <select id="sold" className={form_styles.input_select} value={ this.state.sold } onChange={ (e) => this.setState({sold: e.target.value}) }>
+                                    <select id="sold" className={form_styles.input_select} value={ this.state.sold } key={'sold'} onChange={ (e) => {e.preventDefault(); this.setState({sold: e.target.value})} }>
                                         <option value="True">Sold</option>
                                         <option value="False">Not Sold</option>
                                         {/*<option defaultValue="NFS">Not For Sale</option>*/}
@@ -453,7 +479,7 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Price</div>
                                     </div>
-                                    <input id="price" className={form_styles.input_textbox} defaultValue={this.state.piece_details['price']} key={'price'}/>
+                                    <input id="price" className={form_styles.input_textbox} value={this.state.price} key={'price'} onChange={ (e) => {e.preventDefault(); }}/>
                                 </div>
 
                                 {/* Instagram Link Textbox */}
@@ -461,7 +487,7 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Instagram</div>
                                     </div>
-                                    <input id="instagram" className={form_styles.input_textbox} defaultValue={this.state.piece_details['instagram']} key={'instagram'}/>
+                                    <input id="instagram" className={form_styles.input_textbox} value={this.state.piece_details['instagram']} key={'instagram'} onChange={ (e) => {e.preventDefault(); }}/>
                                 </div>
 
                                 {/* Split Container For real_width / real_height */}
@@ -470,13 +496,13 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Width</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" defaultValue={this.state.piece_details['real_width']} key={'real_width'}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" value={this.state.piece_details['real_width']} key={'real_width'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Height</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" defaultValue={this.state.piece_details['real_height']} key={'real_height'}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" value={this.state.piece_details['real_height']} key={'real_height'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                 </div>
 
@@ -486,13 +512,13 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Pixel Width</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" defaultValue={this.state.piece_details['width']} key={'width'}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" value={this.state.piece_details['width']} key={'width'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Pixel Height</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" defaultValue={this.state.piece_details['height']} key={'height'}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" value={this.state.piece_details['height']} key={'height'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                 </div>
 
@@ -502,13 +528,22 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Theme</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="theme" defaultValue={this.state.piece_details['theme']} key={'theme'}/>
+                                        <select id="theme" className={form_styles.input_select} value={ this.state.theme } onChange={ (e) => {e.preventDefault(); this.setState({theme: e.target.value})} }>
+                                            <option value="Ocean">Ocean</option>
+                                            <option value="Snow">Snow</option>
+                                            <option value="Landscape">Landscape</option>
+                                            <option value="Black and White">Black and White</option>
+                                            <option value="None">None</option>
+                                        </select>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Available</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="available" defaultValue={this.state.piece_details['available']} key={'available'}/>
+                                        <select id="available" className={form_styles.input_select} value={ this.state.available } onChange={ (e) => {e.preventDefault(); this.setState({available: e.target.value})} }>
+                                            <option value="True">True</option>
+                                            <option value="False">False</option>
+                                        </select>
                                     </div> 
                                 </div>
 
@@ -523,8 +558,6 @@ class EditPage extends React.Component {
                                 </div>
                             </form>
                         </div>
-
-
                     </div>
                 </div>
             </PageLayout>

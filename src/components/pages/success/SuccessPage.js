@@ -152,7 +152,7 @@ class SuccessPage extends React.Component {
         for (var i=0; i < piece_list.length; i++) {
             let piece = piece_list[i];
             image_array.push((
-                <div className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                <div key={`image_${i}`} className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
                     <Image
                         id={`details_image_${i}`}
                         className={styles.details_image}
