@@ -64,16 +64,18 @@
                 font-family: $aleg_300; 
                 font-weight: bold; 
             }
+
         .input_container { 
             display: flex; 
             width: 100%; 
+            height: 50px;
             padding: 10px 15px; 
         }
         .input_label_container { 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            width: 30%; 
+            width: 120px !important; 
             height: 100%; 
             padding: 5px 10px; 
             background-color: $secondary; 
@@ -85,9 +87,9 @@
         /* CSS specific to iOS devices */ 
         @supports (-webkit-touch-callout: none) {
             .input_textbox { 
-                width: 70%; 
+                width: calc(100% - 120px) !important; 
                 height: 100%; 
-                padding: 6px 10px;
+                padding: 5px 10px;
                 color: $light; 
                 background-color: $primary; 
                 border-radius: 0px 5px 5px 0px; 
@@ -95,9 +97,9 @@
                 font-weight: bold; 
             }
             .input_select { 
-                width: 70%; 
+                width: calc(100% - 120px) !important; 
                 height: 100%;
-                padding: 5px 10px; 
+                padding: 6px 10px; 
                 background-color: $primary; 
                 color: $secondary; 
                 border-radius: 0px 5px 5px 0px; 
@@ -110,7 +112,7 @@
         /* CSS for other than iOS devices */ 
         @supports not (-webkit-touch-callout: none) {
             .input_textbox { 
-                width: 70%; 
+                width: calc(100% - 120px) !important; 
                 height: 100%; 
                 padding: 6px 10px;
                 color: $light; 
@@ -121,9 +123,9 @@
                 font-weight: bold; 
             }
             .input_select { 
-                width: 70%; 
+                width: calc(100% - 120px) !important;  
                 height: 100%; 
-                padding: 5px 10px;
+                padding: 6px 10px;
                 color: $light; 
                 background-color: $primary; 
                 border-radius: 0px 5px 5px 0px; 
@@ -135,11 +137,11 @@
                 font-weight: bold; 
             }
         }
-        .input_split { 
-            width: 60% !important; 
+        .input_split {
+            width: calc(100% - 120px) !important;  
         }
         .input_label_split { 
-            width: 40% !important; 
+            width: 120px !important; 
             padding: 5px 10px; 
         }
         .input_container_split_container { 
