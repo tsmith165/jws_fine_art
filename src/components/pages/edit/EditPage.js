@@ -29,79 +29,72 @@ class EditPage extends React.Component {
         const pieces_length = this.props.pieces.length
         console.log(`Pieces Length: ${pieces_length}`)
 
+        var image_array = [];
+        
+        var current_piece = null;
+        var piece_position = 0;
+        var piece_db_id = null;
+
+        var title = '';
+        var type = '';
+        var description = '';
+        var sold = false;
+        var price = 9999;
+        var width = '';
+        var height = '';
+        var real_width = '';
+        var real_height = '';
+        var image_path = '';
+        var instagram = '';
+
         if (pieces_length > 0) {
-            const piece_position = 0
             const current_piece = this.props.pieces[piece_position]
 
-            // Don't call this.setState() here!
-            this.state = {
-                debug: false,
-                loading: true,
-                url_o_id: props.id,
-                pieces: pieces,
-                current_piece: current_piece,
-                piece_position: piece_position,
-                piece_db_id: (current_piece['id'] !== undefined) ? current_piece['id'] : '',
-                piece_details: {
-                    title:       (current_piece['title']       !== undefined) ? current_piece['title'] : '',
-                    type:        (current_piece['type']        !== undefined) ? current_piece['type'] : '',
-                    description: (current_piece['description'] !== undefined) ? current_piece['description'] : '',
-                    sold:        (current_piece['sold']        !== undefined) ? current_piece['sold'] : '',
-                    price:       (current_piece['price']       !== undefined) ? current_piece['price'] : '',
-                    width:       (current_piece['width']       !== undefined) ? current_piece['width'] : '',
-                    height:      (current_piece['height']      !== undefined) ? current_piece['height'] : '',
-                    real_width:  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : '',
-                    real_height: (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : '',
-                    image_path:  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : '',
-                    instagram:   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : '',
-                },
-                image_url: '',
-                next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
-                last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
-                description: (current_piece['description'] !== undefined) ? current_piece['description'] : '',
-                loading: false,
-                submitted: false,
-                error: false,
-                uploaded: false,
-                upload_error: false,
-                sold: (current_piece['sold'] !== undefined) ? ((current_piece['sold'] == true) ? 'True' : 'False') : 'False',
-                type: (current_piece['type'] !== undefined) ? current_piece['type'] : ''
-            }; 
-        } else {
-            // Don't call this.setState() here!
-            this.state = {
-                debug: false,
-                loading: true,
-                url_o_id: this.props.id,
-                pieces: null,
-                piece_position: null,
-                piece_db_id: null,
-                current_piece: null,
-                piece_details: {
-                    title:       '',
-                    type:        '',
-                    description: '',
-                    sold:        '',
-                    price:       '',
-                    width:       '',
-                    height:      '',
-                    real_width:  '',
-                    real_height: '',
-                    image_path:  '',
-                    instagram:   '',
-                },
-                next_oid: null,
-                last_oid: null,
-                image_url: '',
-                description: '',
-                loading: false,
-                submitted: false,
-                error: false,
-                uploaded: false,
-                upload_error: false,
-                sold: "False",
-                type: 'Oil On Canvas'
-            }; 
+            title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
+            type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
+            sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
+            description = (current_piece['description'] !== undefined) ? current_piece['description'] : ''
+            price =       (current_piece['price']       !== undefined) ? current_piece['price'] : ''
+            width =       (current_piece['width']       !== undefined) ? current_piece['width'] : ''
+            height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
+            real_width =  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : ''
+            real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
+            image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
+            instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
+        }
+
+        this.state = {
+            debug: false,
+            loading: true,
+            url_o_id: props.id,
+            pieces: pieces,
+            image_array: image_array,
+            current_piece: current_piece,
+            piece_position: piece_position,
+            piece_db_id: piece_db_id,
+            piece_details: {
+                title: title,
+                type: type,
+                description: description,
+                sold: sold,
+                price: price,
+                width: width,
+                height: height,
+                real_width: real_width,
+                real_height: real_height,
+                image_path: image_path,
+                instagram: instagram,
+            },
+            next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
+            last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
+            description: description,
+            price: price,
+            sold: sold,
+            loading: false,
+            submitted: false,
+            error: false,
+            uploaded: false,
+            upload_error: false
         }
 
         this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
@@ -166,25 +159,26 @@ class EditPage extends React.Component {
             instagram:   current_piece['instagram']
         }
 
-        const image_url = piece_details.image_path
+        const description = current_piece['description'].split('<br>').join("\n");
+
+        const image_array = await this.create_image_array(this.state.pieces, piece_position);
 
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(piece_details)
 
-        console.log(`Piece sold: ${piece_details['sold']} | Piece Type: ${piece_details['type']}`)
         const previous_url_o_id = this.state.url_o_id
         this.setState({
             loading: false,
             url_o_id: o_id,
             pieces: pieces,
+            image_array: image_array,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
             piece: current_piece, 
             piece_details: piece_details, 
             next_oid: next_oid, 
             last_oid: last_oid, 
-            image_url: image_url, 
-            description: piece_details['description'], 
+            description: description, 
             sold: (piece_details['sold'] == true) ? "True" : "False", 
             type: piece_details['type']
         }, async () => {
@@ -192,6 +186,31 @@ class EditPage extends React.Component {
                 this.router.push(`/edit/${o_id}`) 
             }
         })
+    }
+
+    async create_image_array(pieces, piece_position) {
+        var image_array = [];
+        for (var i=0; i < pieces.length; i++) {
+            let piece = pieces[i];
+            image_array.push((
+                <div className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                    <NextImage
+                        id={`details_image_${i}`}
+                        className={styles.details_image}
+                        src={`${baseURL}${piece['image_path']}`}
+                        alt={piece['title']}
+                        // width={this.state.piece_details['width']}
+                        // height={this.state.piece_details['height']}
+                        priority={true}
+                        layout='fill'
+                        objectFit='contain'
+                        quality={100}
+                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
+                    />
+                </div>
+            ))
+        }
+        return image_array
     }
 
     async get_piece_from_path_o_id(pieces, o_id) {
@@ -346,28 +365,14 @@ class EditPage extends React.Component {
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_outer_container}>
-                            <div className={styles.details_image_container}>
-                                
-                                { (this.state.image_url == '') ? ( 
-                                    <div className={styles.loader_container}>
-                                        <div>Loading Gallery</div>
-                                        <CircularProgress color="inherit" className={styles.loader}/>
-                                    </div>
-                                ) : (
-                                    <NextImage
-                                        className={styles.details_image}
-                                        src={this.state.image_url}
-                                        alt={this.state.piece_details['title']}
-                                        // width={this.state.piece_details['width']}
-                                        // height={this.state.piece_details['height']}
-                                        priority={true}
-                                        layout='fill'
-                                        objectFit='contain'
-                                        quality={100}
-                                    />
-                                )}
-
-                            </div>
+                            { (this.state.loading == true) ? ( 
+                                <div className={styles.loader_container}>
+                                    <div>Loading Gallery</div>
+                                    <CircularProgress color="inherit" className={styles.loader}/>
+                                </div>
+                            ) : (
+                                this.state.image_array
+                            )}
                         </div>
                     </div>
                     <div className={styles.details_container_right}>
