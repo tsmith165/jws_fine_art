@@ -462,32 +462,33 @@ class EditPage extends React.Component {
                                     </select>
                                 </div>
 
-                                {/* Sold Select */}
-                                <div className={form_styles.input_container}>
-                                    <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Sold</div>
-                                    </div>
-                                    <select id="sold" className={form_styles.input_select} value={ this.state.sold } key={'sold'} onChange={ (e) => {e.preventDefault(); this.setState({sold: e.target.value})} }>
-                                        <option value="True">Sold</option>
-                                        <option value="False">Not Sold</option>
-                                        {/*<option defaultValue="NFS">Not For Sale</option>*/}
-                                    </select>
-                                </div>
-
-                                {/* Price Textbox */}
-                                <div className={form_styles.input_container}>
-                                    <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Price</div>
-                                    </div>
-                                    <input id="price" className={form_styles.input_textbox} value={this.state.price} key={'price'} onChange={ (e) => {e.preventDefault(); }}/>
-                                </div>
-
                                 {/* Instagram Link Textbox */}
                                 <div className={form_styles.input_container}>
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Instagram</div>
                                     </div>
-                                    <input id="instagram" className={form_styles.input_textbox} value={this.state.piece_details['instagram']} key={'instagram'} onChange={ (e) => {e.preventDefault(); }}/>
+                                    <input id="instagram" className={form_styles.input_textbox} defaultValue={this.state.piece_details['instagram']} key={'instagram'} onChange={ (e) => {e.preventDefault(); }}/>
+                                </div>
+
+
+                                {/* Split Container For price / sold */}
+                                <div className={form_styles.input_container_split_container}>         
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Price</div>
+                                        </div>
+                                        <input id="price" className={form_styles.input_textbox} defaultValue={this.state.price} key={'price'} onChange={ (e) => {e.preventDefault(); }}/>
+                                    </div> 
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Sold</div>
+                                        </div>
+                                        <select id="sold" className={form_styles.input_select} value={ this.state.sold } key={'sold'} onChange={ (e) => {e.preventDefault(); this.setState({sold: e.target.value})} }>
+                                            <option value="True">Sold</option>
+                                            <option value="False">Not Sold</option>
+                                            {/*<option defaultValue="NFS">Not For Sale</option>*/}
+                                        </select>
+                                    </div> 
                                 </div>
 
                                 {/* Split Container For real_width / real_height */}
@@ -496,13 +497,13 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Width</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" value={this.state.piece_details['real_width']} key={'real_width'} onChange={ (e) => {e.preventDefault(); }}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" defaultValue={this.state.piece_details['real_width']} key={'real_width'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Height</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" value={this.state.piece_details['real_height']} key={'real_height'} onChange={ (e) => {e.preventDefault(); }}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" defaultValue={this.state.piece_details['real_height']} key={'real_height'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                 </div>
 
@@ -512,13 +513,13 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Pixel Width</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" value={this.state.piece_details['width']} key={'width'} onChange={ (e) => {e.preventDefault(); }}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" defaultValue={this.state.piece_details['width']} key={'width'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Pixel Height</div>
                                         </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" value={this.state.piece_details['height']} key={'height'} onChange={ (e) => {e.preventDefault(); }}/>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" defaultValue={this.state.piece_details['height']} key={'height'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                 </div>
 
