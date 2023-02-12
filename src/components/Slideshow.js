@@ -71,7 +71,7 @@ class SlideshowComponent extends React.Component {
                             className={styles.slideshow_image}
                             src={`${baseURL}${piece['image_path']}`}
                             alt={piece['title']}
-                            priority={true}
+                            priority={(i == piece_position) ? true : false}
                             layout='fill'
                             objectFit='contain'
                             quality={100} 
@@ -215,7 +215,7 @@ class SlideshowComponent extends React.Component {
                         className={styles.slideshow_image}
                         src={`${baseURL}${piece['image_path']}`}
                         alt={piece['title']}
-                        priority={true}
+                        priority={(i == piece_position) ? true : false}
                         layout='fill'
                         objectFit='contain'
                         quality={100} 

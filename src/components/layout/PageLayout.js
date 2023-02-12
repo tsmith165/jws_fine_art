@@ -24,6 +24,7 @@ const PageLayout = ({page_title="JWS Fine Art", use_maps_api=false, children}) =
             <Head>
                 <title>{page_title}</title>
                 <meta name="description" content="JWS Fine Art Gallery - Browse and Purchase online!" />
+                <meta charset="UTF-8"/>
                 <link rel="icon" href="/JWS_ICON.png" />
             </Head>
             
