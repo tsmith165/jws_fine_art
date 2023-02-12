@@ -193,7 +193,7 @@ class EditPage extends React.Component {
                     <NextImage
                         id={`details_image_${i}`}
                         className={styles.details_image}
-                        src={`${baseURL}${piece['image_path']}`}
+                        src={(piece['image_path'].includes(baseURL)) ? piece['image_path'] : `${baseURL}${piece['image_path']}`}
                         alt={piece['title']}
                         // width={this.state.piece_details['width']}
                         // height={this.state.piece_details['height']}
@@ -299,8 +299,31 @@ class EditPage extends React.Component {
             image.src = uploaded_image_path;
         
             //Validate the File Height and Width.
-            image.onload = () => {
+            image.onload = async () => {
                 console.log(`WIDTH: ${image.width} | HEIGHT: ${image.height}`)
+
+                console.log(`Creating piece with image path: ${uploaded_image_path}`)
+
+                var new_piece_list = this.state.piece_list
+                new_piece_list.push({
+                    "id": -1,
+                    "o_id": -1,
+                    "class_name": "temp",
+                    "title": "temp",
+                    "image_path": uploaded_image_path,
+                    "width": 0,
+                    "height": 0,
+                    "description": "",
+                    "type": "Intaglio On Paper",
+                    "sold": 'True',
+                    "price": 0,
+                    "instagram": "",
+                    "real_width": 0,
+                    "real_height": 0,
+                    "active": true
+                })
+
+                const new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1)
         
                 const uploaded_piece_details = {
                     title: 'Enter Title...',
@@ -317,7 +340,14 @@ class EditPage extends React.Component {
                 console.log("Updating state with uploaded piece details (Next Line):")
                 console.log(uploaded_piece_details)
                 
-                this.setState({uploaded: true, upload_error: false, piece_details: uploaded_piece_details, image_url: uploaded_image_path});
+                this.setState({
+                    uploaded: true, 
+                    upload_error: false, 
+                    image_array: new_image_array, 
+                    piece_list: new_piece_list,
+                    piece_position: new_piece_list.length - 1,
+                    piece_details: uploaded_piece_details, 
+                });
             }
         }  catch (err) {
             this.setState({uploaded: false, upload_error: true});
@@ -347,6 +377,8 @@ class EditPage extends React.Component {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Piece Details Update was NOT successful...</div> );
         } else if (this.state.uploaded == true) {
             loader_jsx = ( <div className={form_styles.submit_label}>Image Upload was successful...</div> );
+        } else if ( (this.state.piece_details.width != '' && this.state.piece_details.height != '') && (this.state.piece_details.width < 1000 && this.state.piece_details.height < 1000 ) ) {
+            loader_jsx = ( <div className={form_styles.submit_label_failed}>{`Uploaded image resolution is low!  Re-Upload with width / height > 1000px`}</div> );
         } else if (this.state.upload_error == true) {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Image Upload was NOT successful...</div> );
         }
@@ -441,6 +473,22 @@ class EditPage extends React.Component {
                                             <div className={form_styles.input_label}>Height</div>
                                         </div>
                                         <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" defaultValue={this.state.piece_details['real_height']} key={this.state.piece_details['real_height']}/>
+                                    </div> 
+                                </div>
+
+                                {/* Split Container For image pixel width / pixel height */}
+                                <div className={form_styles.input_container_split_container}>         
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Pixel Width</div>
+                                        </div>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" defaultValue={this.state.piece_details['width']} key={this.state.piece_details['width']}/>
+                                    </div> 
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Pixel Height</div>
+                                        </div>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" defaultValue={this.state.piece_details['height']} key={this.state.piece_details['height']}/>
                                     </div> 
                                 </div>
 
