@@ -93,25 +93,13 @@ class DetailsPage extends React.Component {
             full_screen: false
         }
 
-        this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
-
-        // this.fetch_pieces_from_api()
+        this.create_image_array = this.create_image_array.bind(this);
     }
 
     async componentDidMount() {        
         await this.update_current_piece(this.state.pieces, this.state.url_o_id)
-    }
-
-    async fetch_pieces_from_api() {
-        console.log(`-------------- Fetching Server List --------------`)
-        const pieces = await fetch_pieces();
-
-        // console.log('Pieces output (Next Line):')
-        // console.log(pieces)
-
-        this.update_current_piece(pieces, this.state.url_o_id)
     }
 
     async update_current_piece(pieces, o_id) {

@@ -97,9 +97,8 @@ class EditPage extends React.Component {
             upload_error: false
         }
 
-        this.fetch_pieces = this.fetch_pieces_from_api.bind(this);
         this.set_page_piece_details = this.set_page_piece_details.bind(this);
-        this.delay = this.delay.bind(this);
+        this.create_image_array = this.create_image_array.bind(this);
 
         // File Upload
         this.showFileUpload = this.showFileUpload.bind(this);
@@ -114,16 +113,6 @@ class EditPage extends React.Component {
 
     async componentDidMount() {
         await this.update_current_piece(this.state.pieces, this.state.url_o_id)
-    }
-
-    async fetch_pieces_from_api() {
-        console.log(`-------------- Fetching Initial Server List --------------`)
-        const pieces = await fetch_pieces();
-
-        console.log('Pieces fetched in state (Next Line):')
-        console.log(pieces)
-
-        this.update_current_piece(pieces, this.state.url_o_id)
     }
 
     async set_page_piece_details(piece_details) {
@@ -328,10 +317,6 @@ class EditPage extends React.Component {
             console.error(`Image Load Error: ${err.message}`)
             return;
         }
-    }
-
-    delay(time) {
-        return new Promise(resolve => setTimeout(resolve, time));
     }
 
     showFileUpload(event) {

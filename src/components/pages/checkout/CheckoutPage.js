@@ -35,119 +35,78 @@ class CheckoutPage extends React.Component {
         const pieces_length = this.props.pieces.length
         console.log(`Pieces Length: ${pieces_length}`)
 
-        if (pieces_length > 0) {
-            const piece_position = 0
-            const current_piece = this.props.pieces[piece_position]
-    
-            const sold = current_piece["sold"]
-            const sold_html = (sold == true) ? 
-                ( 
-                    <b className={styles.piece_sold}>Sold</b> 
-                ) : ( 
-                    <Link href={`/checkout/${props.id}`}>
-                        <button className={styles.buy_now_button}>Buy</button>
-                    </Link> 
-                )
+        var image_array = [];
         
-            const price = current_piece['price']
-            const price_html = (current_piece["sold"] == false) ? ( <b className={styles.price_text}>{`$${current_piece['price']}`}</b> ) : ( null )
+        var current_piece = null;
+        var piece_position = 0;
+        var piece_db_id = null;
 
-            console.log(`IMAGE PATH: ${current_piece['image_path']}`)
-    
-            // Don't call this.setState() here!
-            this.state = {
-                debug: false,
-                loading: true,
-                url_o_id: props.id,
-                pieces: pieces,
-                current_piece: current_piece,
-                piece_position: piece_position,
-                piece_db_id: (current_piece['id'] !== undefined) ? current_piece['id'] : '',
-                piece_details: {
-                    title:       (current_piece['title']       !== undefined) ? current_piece['title'] : '',
-                    type:        (current_piece['type']        !== undefined) ? current_piece['type'] : '',
-                    description: (current_piece['description'] !== undefined) ? current_piece['description'] : '',
-                    sold:        (current_piece['sold']        !== undefined) ? current_piece['sold'] : '',
-                    price:       (current_piece['price']       !== undefined) ? current_piece['price'] : '',
-                    width:       (current_piece['width']       !== undefined) ? current_piece['width'] : '',
-                    height:      (current_piece['height']      !== undefined) ? current_piece['height'] : '',
-                    real_width:  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : '',
-                    real_height: (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : '',
-                    image_path:  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : '',
-                    instagram:   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : '',
-                },
-                image_url: '',
-                next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
-                last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
-                description: (current_piece['description'] !== undefined) ? current_piece['description'] : '',
-                full_screen: false,
-                price: price,
-                price_html: price_html,
-                sold: sold,
-                sold_html: sold_html,
-                address: '',
-                international: false,
-                loaded: false
-            };     
-        } else {
-            this.state = {
-                debug: false,
-                loading: true,
-                url_o_id: props.id,
-                pieces: null,
-                current_piece: null,
-                piece_position: null,
-                piece_db_id: null,
-                piece_details: {
-                    title:       '',
-                    type:        '',
-                    description: '',
-                    sold:        '',
-                    price:       '',
-                    width:       0,
-                    height:      0,
-                    real_width:  '',
-                    real_height: '',
-                    image_path:  '',
-                    instagram:   '',
-                },
-                image_url: '',
-                next_oid: null,
-                last_oid: null,
-                description: '',
-                price: 0,
-                price_html: null,
-                sold: false,
-                sold_html: null,
-                address: '',
-                international: false,
-                loaded: false
-            };
+        var title = '';
+        var type = '';
+        var description = '';
+        var sold = false;
+        var price = 9999;
+        var width = '';
+        var height = '';
+        var real_width = '';
+        var real_height = '';
+        var image_path = '';
+        var instagram = '';
+
+        if (pieces_length > 0) {
+            const current_piece = this.props.pieces[piece_position]
+
+            title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
+            type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
+            sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
+            description = (current_piece['description'] !== undefined) ? current_piece['description'] : ''
+            price =       (current_piece['price']       !== undefined) ? current_piece['price'] : ''
+            width =       (current_piece['width']       !== undefined) ? current_piece['width'] : ''
+            height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
+            real_width =  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : ''
+            real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
+            image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
+            instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
         }
 
+        this.state = {
+            debug: false,
+            loading: true,
+            url_o_id: props.id,
+            pieces: pieces,
+            image_array: image_array,
+            current_piece: current_piece,
+            piece_position: piece_position,
+            piece_db_id: piece_db_id,
+            piece_details: {
+                title: title,
+                type: type,
+                description: description,
+                sold: sold,
+                price: price,
+                width: width,
+                height: height,
+                real_width: real_width,
+                real_height: real_height,
+                image_path: image_path,
+                instagram: instagram,
+            },
+            next_oid: (piece_position + 1 > pieces_length - 1) ? pieces[0]['o_id'] : pieces[piece_position + 1]['o_id'],
+            last_oid: (piece_position - 1 < 0) ? pieces[pieces_length - 1]['o_id'] : pieces[piece_position - 1]['o_id'],
+            description: description,
+            price: price
+        }
 
-        this.fetch_pieces_from_api = this.fetch_pieces_from_api.bind(this);
         this.update_current_piece = this.update_current_piece.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
         this.address_change = this.address_change.bind(this);
         this.check_fields = this.check_fields.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
-        // this.fetch_pieces_from_api()
+        this.create_image_array = this.create_image_array.bind(this);
     }
 
     async componentDidMount() {
         await this.update_current_piece(this.state.pieces, this.state.url_o_id)
-    }
-
-    async fetch_pieces_from_api() {
-        console.log(`-------------- Fetching Initial Server List --------------`)
-        const pieces = await fetch_pieces();
-
-        // console.log('Pieces output (Next Line):')
-        // console.log(pieces)
-
-        this.update_current_piece(pieces, this.state.url_o_id)
     }
 
     async update_current_piece(pieces, o_id) {
@@ -178,24 +137,9 @@ class CheckoutPage extends React.Component {
             image_path:  `${baseURL}${current_piece['image_path']}`,
             instagram:   current_piece['instagram']
         }
-
-        const sold = current_piece["sold"]
-        const sold_html = (sold == true) ? 
-            ( 
-                <b className={styles.piece_sold}>Sold</b> 
-            ) : ( 
-                <Link href={`/checkout/${o_id}`}>
-                    <button className={styles.buy_now_button}>Buy</button>
-                </Link> 
-            )
-    
-        const price = current_piece['price']
-        const price_html = (current_piece["sold"] == false) ? ( <b className={styles.price_text}>{`$${current_piece['price']}`}</b> ) : ( null )
-
-        const image_url = piece_details.image_path
-        console.log(`Setting Details Image Path: ${image_url}`)
-
+        const image_array = await this.create_image_array(this.state.pieces, piece_position);
         const description = current_piece['description'].split('<br>').join("\n");
+        const price = current_piece['price']
 
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(piece_details)
@@ -205,23 +149,45 @@ class CheckoutPage extends React.Component {
             loading: false,
             url_o_id: o_id,
             pieces: pieces,
+            image_array: image_array,
             piece_position: piece_position,
             piece_db_id: piece_db_id, 
             piece: current_piece, 
-            piece_details: piece_details, 
-            image_url: image_url,
+            piece_details: piece_details,
             next_oid: next_oid, 
             last_oid: last_oid, 
-            sold: sold, 
-            sold_html: sold_html, 
-            price: price, 
-            price_html: price_html, 
-            description: description
+            description: description,
+            price: price
         }, async () => {
             if (previous_url_o_id != o_id) {
                 this.router.push(`/checkout/${o_id}`) 
             }
         })
+    }
+
+    async create_image_array(pieces, piece_position) {
+        var image_array = [];
+        for (var i=0; i < pieces.length; i++) {
+            let piece = pieces[i];
+            image_array.push((
+                <div className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                    <Image
+                        id={`details_image_${i}`}
+                        className={styles.details_image}
+                        src={`${baseURL}${piece['image_path']}`}
+                        alt={piece['title']}
+                        // width={this.state.piece_details['width']}
+                        // height={this.state.piece_details['height']}
+                        priority={true}
+                        layout='fill'
+                        objectFit='contain'
+                        quality={100}
+                        onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
+                    />
+                </div>
+            ))
+        }
+        return image_array
     }
 
     async get_piece_from_path_o_id(pieces, o_id) {
@@ -361,17 +327,7 @@ class CheckoutPage extends React.Component {
                                         <CircularProgress color="inherit" className={styles.loader}/>
                                     </div>
                                 ) : (
-                                    <Image
-                                        className={styles.details_image}
-                                        src={`${this.state.image_url}`}
-                                        alt={this.state.piece_details['title']}
-                                        // width={this.state.piece_details['width']}
-                                        // height={this.state.piece_details['height']}
-                                        priority={true}
-                                        layout='fill'
-                                        objectFit='contain'
-                                        quality={100}
-                                    />
+                                    this.state.image_array
                                 )}
 
                             </div>
@@ -453,7 +409,7 @@ class CheckoutPage extends React.Component {
                                 ) : ( null ) }
 
                                 <div className={form_styles.submit_container}>
-                                    <div className={form_styles.price_label}>{`$${this.state.piece_details['price']}`}</div>
+                                    <div className={form_styles.price_label}>{`$${this.state.price}`}</div>
 
                                     <button type="submit" className={form_styles.submit_button}>Checkout</button>
 
