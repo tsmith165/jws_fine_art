@@ -71,6 +71,8 @@ class DetailsPage extends React.Component {
             image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
 
+            description = current_piece['description'].split('<br>').join(" \n");
+
             for (var i=0; i < piece_list.length; i++) {
                 let piece = piece_list[i];
                 image_array.push((
@@ -165,7 +167,7 @@ class DetailsPage extends React.Component {
             instagram:   current_piece['instagram']
         }
 
-        const description = current_piece['description'].split('<br>').join("\n");
+        const description = current_piece['description'].split('<br>').join(" \n");
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
