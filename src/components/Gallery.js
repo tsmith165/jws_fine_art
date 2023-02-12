@@ -59,6 +59,7 @@ const Gallery = ({piece_list, window_size}) => {
             var title           = current_piece_json['title'];
             var description     = current_piece_json['description'];
             var sold            = current_piece_json['sold'];
+            var available       = current_piece_json['available'];
             var [width, height] = [current_piece_json['width'], current_piece_json['height']];
   
             if (debug) console.log(`Width: ${width} | Height: ${height}`);
@@ -122,7 +123,8 @@ const Gallery = ({piece_list, window_size}) => {
                                   dimensions={dimensions}
                                   title={title} 
                                   description={description}
-                                  sold={sold}/>);
+                                  sold={sold}
+                                  available={available}/>);
                 
                 if (debug) console.log(`CUR COL: ${col} | MAX COL: ${max_columns}`)
                 if ( col < max_columns - 1 ) {
