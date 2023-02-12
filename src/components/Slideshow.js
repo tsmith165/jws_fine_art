@@ -283,7 +283,16 @@ class SlideshowComponent extends React.Component {
 
                 {this.state.speed_open == true ? (
                     <div className={styles.speed_menu}>
-                        <input type="range" min="1" max="100" defaultValue={this.state.base_speed} className={styles.speed_slider} id="speed_slider" onMouseUp={(e) => {e.preventDefault(); this.change_speed(e.target.value) }}/>
+                        <input 
+                            type="range" 
+                            min="1" 
+                            max="100" 
+                            defaultValue={this.state.base_speed} 
+                            className={styles.speed_slider} 
+                            id="speed_slider" 
+                            onMouseUp={(e) => {e.preventDefault(); this.change_speed(e.target.value) }}
+                            onTouchEnd={(e) => {e.preventDefault(); this.change_speed(e.target.value) }}
+                        />
                         <div className={styles.speed_text}>
                             {`${(this.state.speed / 1000)}s`}
                         </div>
