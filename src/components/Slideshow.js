@@ -116,6 +116,7 @@ class SlideshowComponent extends React.Component {
             last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
             running: true,
             speed_open: false,
+            base_speed: base_speed,
             speed: ratioed_value,
             timer: null
         }
@@ -146,7 +147,7 @@ class SlideshowComponent extends React.Component {
         var ratioed_value = default_ratio * ratio_range
         console.log(`Ratioed Speed: ${ratioed_value}`)
 
-        this.setState({speed: ratioed_value})
+        this.setState({base_speed: value, speed: ratioed_value})
     }
 
     async update_current_piece(piece_list, o_id, set_running=false) {
@@ -283,6 +284,7 @@ class SlideshowComponent extends React.Component {
                 {this.state.speed_open == true ? (
                     <div className={styles.speed_menu}>
                         <input type="range" min="1" max="100" defaultValue={50} className={styles.speed_slider} id="speed_slider" onMouseUp={(e) => {e.preventDefault(); this.change_speed(e.target.value) }}/>
+                        {this.state.base_speed}
                     </div>
                 ) : (
                     null
