@@ -61,6 +61,27 @@ class SuccessPage extends React.Component {
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
             image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
+
+            for (var i=0; i < piece_list.length; i++) {
+                let piece = piece_list[i];
+                image_array.push((
+                    <div key={`image_${i}`} className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
+                        <Image
+                            id={`details_image_${i}`}
+                            className={styles.details_image}
+                            src={`${baseURL}${piece['image_path']}`}
+                            alt={piece['title']}
+                            // width={this.state.piece_details['width']}
+                            // height={this.state.piece_details['height']}
+                            priority={true}
+                            layout='fill'
+                            objectFit='contain'
+                            quality={100}
+                            onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
+                        />
+                    </div>
+                ))
+            }
         }
 
         this.state = {
