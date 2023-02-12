@@ -2,7 +2,7 @@ import styles from '../../styles/components/Gallery.module.scss'
 
 import Piece from '../components/Piece'
 
-const Gallery = ({piece_list, window_size}) => {
+const Gallery = ({piece_list, window_size,}) => {
     const debug = false;
     if (debug) {
         console.log(`WINDOW WIDTH: ${window_size.width} | HEIGHT: ${window_size.height}`);
@@ -151,10 +151,6 @@ const Gallery = ({piece_list, window_size}) => {
     for (var i = 0; i < column_bottom_list.length; i++) {
         if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
     }
-    if (debug) console.log("Lowest: " + lowest_height);
-  
-    //pieces.push(<div id="space_" style={{position: 'absolute', height: '10px', width: '100%', top: lowest_height, left: 0}}></div>)
-  
     if (window_size.width < 600) lowest_height = lowest_height + 60;
 
     return (
