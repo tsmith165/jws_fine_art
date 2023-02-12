@@ -20,12 +20,10 @@ class SlideshowComponent extends React.Component {
         super(props);
 
         const piece_list = this.props.piece_list;
-
-        console.log(`getServerSideProps Pieces (Next Line):`)
-        console.log(piece_list)
-
         const piece_list_length = piece_list.length
-        console.log(`Pieces Length: ${piece_list_length}`)
+
+        console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
+        console.log(piece_list)
 
         var image_array = [];
         
