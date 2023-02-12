@@ -4,230 +4,215 @@ import PageLayout from '../../../../src/components/layout/PageLayout'
 
 import styles from '../../../../styles/components/Gallery.module.scss'
 
-import Piece from '../components/Piece'
+import Piece from '../../../components/Piece'
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
+
+const DEBUG = false;
+
+const DEFAULT_PIECE_WIDTH = 250;
+const INNER_MARGIN_WIDTH = 30;
+const BORDER_MARGIN_WIDTH = 10;
 
 class GalleryPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.router = props.router
-
-        console.log(`ID PROP: ${this.props.id}`)
-        const passed_o_id = this.props.id;
-
-        const piece_list = this.props.piece_list;
-        const piece_list_length = piece_list.length
-
-        console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
-        console.log(piece_list)
-
+        console.log('Passed piece list:')
+        console.log(this.props.piece_list)
         
-        console.log(`Pieces Length: ${piece_list_length}`)
-
-        var gallery_pieces = [];
-        
-        var current_piece = null;
-        var piece_position = 0;
-        var piece_db_id = null;
-        var piece_o_id = null;
-
-        for (var i=0; i < piece_list.length; i++) {
-            if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
-                piece_position = i
-            }
-        }
-
-        var title = '';
-        var type = '';
-        var description = '';
-        var sold = false;
-        var price = 9999;
-        var width = '';
-        var height = '';
-        var real_width = '';
-        var real_height = '';
-        var image_path = '';
-        var instagram = '';
-
-        if (piece_list_length > 0) {
-            const current_piece = piece_list[piece_position]
-
-            piece_db_id = (current_piece['id']          !== undefined) ? current_piece['id'] : ''
-            piece_o_id =  (current_piece['o_id']        !== undefined) ? current_piece['o_id'] : ''
-            title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
-            type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
-            sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
-            description = (current_piece['description'] !== undefined) ? current_piece['description'] : ''
-            price =       (current_piece['price']       !== undefined) ? current_piece['price'] : ''
-            width =       (current_piece['width']       !== undefined) ? current_piece['width'] : ''
-            height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
-            real_width =  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : ''
-            real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
-            image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
-            instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
-
-            description = current_piece['description'].split('<br>').join(" \n");
-
-            for (var i=0; i < piece_list.length; i++) {
-                let piece = piece_list[i];
-                image_array.push((
-                    <div key={`image_${i}`} className={(i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden}>
-                        <Image
-                            id={`details_image_${i}`}
-                            className={styles.details_image}
-                            src={`${baseURL}${piece['image_path']}`}
-                            alt={piece['title']}
-                            // width={this.state.piece_details['width']}
-                            // height={this.state.piece_details['height']}
-                            priority={(i == piece_position) ? true : false}
-                            layout='fill'
-                            objectFit='contain'
-                            quality={100}
-                            onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
-                        />
-                    </div>
-                ))
-            }
-        }
-
         this.state = {
-            debug: false,
             loading: true,
-            piece_list: piece_list,
-            gallery_pieces: gallery_pieces,
-            current_piece: current_piece,
-            piece_position: piece_position,
-            piece_db_id: piece_db_id,
-            piece_o_id: piece_o_id,
-            piece_details: {
-                title: title,
-                type: type,
-                description: description,
-                sold: sold,
-                price: price,
-                width: width,
-                height: height,
-                real_width: real_width,
-                real_height: real_height,
-                image_path: image_path,
-                instagram: instagram,
-            },
-            next_oid: (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'],
-            last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
-            description: description,
-            price: price,
-            sold: sold,
-            full_screen: false
+            window_width: props.window_width,
+            window_height: props.window_height,
+            piece_list: this.props.piece_list,
+            gallery_pieces: [],
+            lowest_height: 0
+        }
+
+        this.log_debug_message = this.log_debug_message.bind(this);
+        this.handleResize = this.handleResize.bind(this);
+    }
+
+    log_debug_message(message) {
+        if (DEBUG) {
+            console.log(message)
         }
     }
 
-    async componentDidMount() {        
-        // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
-        this.setState({loading: false})
+    async componentDidMount() {
+        // Add event listener
+        window.addEventListener("resize", this.handleResize);
+
+        // Call handler right away so state gets updated with initial window size
+        this.handleResize();
+    }
+
+    async componentWillUnmount() {
+        window.removeEventListener("resize", this.handleResize);
+    }
+
+    handleResize() {
+        // Set window width/height to state
+        console.log(`Width: ${window.innerWidth} | Height: ${window.innerHeight}`)
+        this.setState({
+          window_width: window.innerWidth,
+          window_height: window.innerHeight,
+        });
     }
 
     render() {
-        console.log("CURRENT PIECE DETAILS (Next Line):")
-        console.log(this.state.piece_details)
+        console.log('Component mounted.  Creating gallery...')     
+        console.log(`Passed Window Size: ${this.state.window_width} | ${this.state.window_height}`)
 
-        var page_layout = null;
-        const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
-        if (this.state.full_screen == true) {
-            page_layout = (
-                <PageLayout page_title={`Piece Details - ${title}`}>
-                    <div className={styles.full_screen_container}>
-                        <div className={styles.full_screen_image_container}>
-                            <div className={styles.details_image_outer_container}>
-                                { (this.state.loading == true) ? ( 
-                                    <div className={styles.loader_container}>
-                                        <div>Loading Gallery</div>
-                                        <CircularProgress color="inherit" className={styles.loader}/>
-                                    </div>
-                                ) : (
-                                    this.state.image_array
-                                )}
-                            </div>
-                        </div>
-                        <div className={styles.full_screen_close_container} onClick={(e) => {e.preventDefault(); this.setState({full_screen: false})}}>
-                            <CloseIcon className={`${styles.full_screen_close_icon}`} />
-                        </div>
-                    </div>
-                </PageLayout>
-            )
-         } else {
-            page_layout = (
-                <PageLayout page_title={ (title == '') ? (``) : (`Piece Details - ${title}`) }>
-                    <div className={styles.details_container}>
-                        <div className={styles.details_container_left}>
-                            <div className={styles.details_image_outer_container}>
-                                {this.state.image_array}
-                            </div>
-                        </div>
-                        <div className={styles.details_container_right}>
-                            <div className={styles.title_container}>
-                                <div className={styles.title_inner_container}>
-                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.last_oid)}} />
-                                    <b className={styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</b>
-                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.next_oid)}} />
-                                </div>
-                            </div>
-                            <div className={styles.details_form_container}>
-                                <div className={styles.details_navigation_container}>
-                                    <div className={styles.details_navigation_inner_container}>
-                                        {
-                                            (this.state.sold == false) ? ( 
-                                                <b className={styles.price_text}>{`$${this.state.price}`}</b> 
-                                            ) : ( 
-                                                null
-                                            )
-                                        }
-                                        {
-                                            (this.state.sold == true) ? ( 
-                                                <b className={styles.piece_sold}>Sold</b> 
-                                            ) : ( 
-                                                <Link href={`/checkout/${this.state.url_o_id}`}>
-                                                    <button className={styles.buy_now_button}>Buy</button>
-                                                </Link> 
-                                            )
-                                        }
-                                        {
-                                            (this.state.sold == true) ? (
-                                                null
-                                            ) : (
-                                                <Link href='https://stripe.com'>
-                                                    <div className={styles.powered_by_stripe_container}>
-                                                        <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
-                                                        </div>
-                                                </Link>
-                                            )
-                                        }
-                                        {
-                                            (this.state.piece_details['instagram'] != null && this.state.piece_details['instagram'] != '' && this.state.piece_details['instagram'].length > 5) ? (
-                                                <Link href={this.state.piece_details['instagram']}>
-                                                    <div className={styles.instagram_link_container}>
-                                                        <div className={styles.instagram_image_container}>
-                                                            <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} layout="fill" objectFit='contain'/>
-                                                        </div>
-                                                        <div className={styles.instagram_link_label}>View On Instagram</div>
-                                                    </div>
-                                                </Link>
-                                            ) : (
-                                                null
-                                            )
-                                        }
-                                    </div>
-                                </div>
-                                <div className={styles.details_description_container}>
-                                    <h3 className={styles.details_description}>{this.state.description}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </PageLayout>
-            )
+        var gallery_pieces = [];
+        var column_bottom_list = [];
+        var lowest_height = 0;
+        
+        if (this.state.window_width != undefined && this.state.window_height != undefined) {
+            var piece_width = DEFAULT_PIECE_WIDTH;
+            if (this.state.window_width < 500 + 40 + 60 + 30) {
+                piece_width = (this.state.window_width - 40 - 60 - 20) / 2;
+            }
+            this.log_debug_message(`PIECE WIDTH: ${piece_width}`)
+          
+            var max_columns = Math.trunc(this.state.window_width / (piece_width + (BORDER_MARGIN_WIDTH * 2) + INNER_MARGIN_WIDTH));
+            this.log_debug_message(`COLUMNS: ${max_columns}`);
+          
+            var gallery_width = ((piece_width + (BORDER_MARGIN_WIDTH * 2)) * max_columns) + (10 * max_columns);
+            if (max_columns < 3) gallery_width -= 20;
+            
+            var leftover_width = this.state.window_width - gallery_width;
+            this.log_debug_message(`GALLERY WIDTH: ${gallery_width} | LEFTOVER: ${leftover_width}`);
+          
+            var margin = leftover_width / 2;
+            this.log_debug_message(`LEFT MARGIN: ${margin} | MAIN: ${gallery_width} | RIGHT MARGIN: ${this.state.window_width - gallery_width - margin}`)
+            
+            var [cur_x, cur_y] = [margin, INNER_MARGIN_WIDTH];
+            var [row, col] = [0, 0];
+          
+            var row_starting_height = INNER_MARGIN_WIDTH;
+            var skip_col = false;
+    
+            const piece_list = this.props.piece_list;
+            const piece_list_length = piece_list.length
+    
+            console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
+            console.log(piece_list)
+            
+            if (piece_list != null && piece_list.length > 0) {
+                this.log_debug_message(`PIECE LIST LENGTH: ${piece_list_length}`)
+          
+                var i = 0; var real_i = 0;
+                while (i < piece_list_length) {
+                    var current_piece_json =  piece_list[i];
+          
+                    var o_id            = current_piece_json['o_id'];
+                    var class_name      = current_piece_json['class_name'];
+                    var image_path      = current_piece_json['image_path'];
+                    var title           = current_piece_json['title'];
+                    var description     = current_piece_json['description'];
+                    var sold            = current_piece_json['sold'];
+                    var available       = current_piece_json['available'];
+                    var [width, height] = [current_piece_json['width'], current_piece_json['height']];
+          
+                    this.log_debug_message(`Width: ${width} | Height: ${height}`);
+                    
+                    var [scaled_width, scaled_height] = [piece_width, height];
+                    scaled_height = (piece_width / width) * height;
+          
+                    this.log_debug_message(`Scaled Width: ${scaled_width} | Scaled Height: ${scaled_height}`);
+          
+                    real_i = (row * max_columns) + col;
+                    var index = real_i % max_columns;
+                    this.log_debug_message(`CURRENT INDEX: ${index} | COL: ${col} | ROW: ${row}`);
+                    
+                    this.log_debug_message(column_bottom_list);
+                    this.log_debug_message(`LAST COLUMN BOTTOM: ${column_bottom_list[index]}`);
+          
+                    if (row > 0) cur_y = column_bottom_list[index];
+                    else         column_bottom_list.push(INNER_MARGIN_WIDTH);
+          
+                    if (col == 0) {
+                        row_starting_height = column_bottom_list[index] + INNER_MARGIN_WIDTH;
+          
+                        if (row_starting_height > column_bottom_list[index + 1] + INNER_MARGIN_WIDTH) {
+                            skip_col = true;
+                        }
+                        else {
+                            skip_col = false;
+                        }
+                    }
+                    else {
+                        if (cur_y > row_starting_height) {
+                            this.log_debug_message("Y from last row intercepts current row.  Skipping column...");
+                            skip_col = true;
+          
+                        }
+                        else skip_col = false;
+                    }
+          
+                    if (skip_col == true) {
+                        if (col < max_columns - 1) {
+                            col += 1;
+                            cur_x += piece_width + INNER_MARGIN_WIDTH;
+                        }
+                        else {
+                            [row, col] = [(row + 1), 0];
+                            [cur_x, cur_y] = [margin, 0];
+                        }
+                    }
+                    else if (skip_col == false) {
+                        this.log_debug_message(`Current X: ${cur_x} | Current Y: ${cur_y}`);
+          
+                        column_bottom_list[index] = column_bottom_list[index] + scaled_height + INNER_MARGIN_WIDTH;
+                        this.log_debug_message(`CURRENT BOTTOM (${index}): ${column_bottom_list[index]}` );
+          
+                        var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
+                        //console.log(`Dimensions: ${dimensions}`)
+          
+                        gallery_pieces.push(<Piece key={i} id={`piece-${i}`} o_id={o_id}
+                                          className={class_name} 
+                                          image_path={image_path}
+                                          dimensions={dimensions}
+                                          title={title} 
+                                          description={description}
+                                          sold={sold}
+                                          available={available}/>);
+                        
+                        this.log_debug_message(`CUR COL: ${col} | MAX COL: ${max_columns}`)
+                        if ( col < max_columns - 1 ) {
+                            cur_x += scaled_width + INNER_MARGIN_WIDTH;
+                            col += 1;
+                        }
+                        else {
+                            [row, col] = [(row + 1), 0];
+                            [cur_x, cur_y] = [margin, 0];
+          
+                            this.log_debug_message('####################################################################');
+                            this.log_debug_message("GOING TO NEXT ROW");
+                        }
+          
+                        i += 1;
+                    } 
+                    this.log_debug_message('--------------------------------------------------------------------');
+                }
+    
+                for (var i = 0; i < column_bottom_list.length; i++) {
+                    if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
+                }
+                if (this.state.window_width < 600) lowest_height = lowest_height + 60;
+            }
+            else {
+                console.log("Screenshot list length = 0");
+            }
         }
+
+        const page_layout = (
+            <div className={styles.gallery_body} style={{height: lowest_height}}>
+                {gallery_pieces}
+            </div>
+        )
         return page_layout
     }
 }

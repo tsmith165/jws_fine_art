@@ -1,7 +1,7 @@
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import Gallery from '../src/components/Gallery';
+import GalleryPage from '../src/components/pages/gallery/GalleryPage';
 
 import styles from '../styles/components/Gallery.module.scss'
 import useWindowSize from '../lib/useWindowSize'
@@ -10,12 +10,13 @@ export default function Home({piece_list}) {
   //console.log("CURRENT PIECE LIST (NEXT LINE):")
   //console.log(piece_list);
 
-  var window_size = useWindowSize()
+  const window_size = useWindowSize()
+  console.log(`Width: ${window_size.width} | Height: ${window_size.height}`)
 
   return (
     <PageLayout page_title={"JWS Fine Art"}>
       <div className={styles.gallery_container}>
-        <Gallery piece_list={piece_list} window_size={window_size}/>
+        <GalleryPage piece_list={piece_list} window_width={window_size.width} window_height={window_size.height}/>
       </div>
     </PageLayout>
   )
