@@ -278,7 +278,7 @@ class DetailsPage extends React.Component {
                                                 )
                                         }
                                         {
-                                            (this.state.piece_details['instagram'] != null && this.state.piece_details['instagram'] != '') ? (
+                                            (this.state.piece_details['instagram'] != null && this.state.piece_details['instagram'] != '' && this.state.piece_details['instagram'].length > 5) ? (
                                                 <Link href={this.state.piece_details['instagram']}>
                                                     <div className={styles.instagram_link_container}>
                                                         <div className={styles.instagram_image_container}>

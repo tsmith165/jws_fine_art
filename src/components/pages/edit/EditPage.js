@@ -42,13 +42,13 @@ class EditPage extends React.Component {
         var description = '';
         var sold = false;
         var price = 9999;
-        var width = '';
-        var height = '';
+        var width = 0;
+        var height = 0;
         var real_width = '';
         var real_height = '';
         var image_path = '';
-        var instagram = '';
-        var theme = 'Ocean';
+        var instagram = 'p/';
+        var theme = 'None';
         var available = true;
 
         if (piece_list_length > 0) {
@@ -59,6 +59,7 @@ class EditPage extends React.Component {
             title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
             type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
             sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
+            title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
             description = (current_piece['description'] !== undefined) ? current_piece['description'] : ''
             price =       (current_piece['price']       !== undefined) ? current_piece['price'] : ''
             width =       (current_piece['width']       !== undefined) ? current_piece['width'] : ''
@@ -99,10 +100,15 @@ class EditPage extends React.Component {
             next_oid: (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'],
             last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
             description: description,
-            price: price,
-            sold: sold,
-            theme: theme,
+            title: title,
             available: available,
+            sold: sold,
+            price: price,
+            theme: theme,
+            width: width,
+            height: height,
+            real_width: real_width,
+            real_height: real_height,
             loading: false,
             submitted: false,
             error: false,
@@ -154,7 +160,9 @@ class EditPage extends React.Component {
         const next_oid = (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id']                 : piece_list[piece_position + 1]['o_id'];
         const last_oid = (piece_position - 1 < 0)                 ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
 
-        console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
+        // console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
+        console.log("CURRENT PIECE (Next Line):")
+        console.log(current_piece)
 
         const piece_details = {
             title:       current_piece['title'],
@@ -176,9 +184,6 @@ class EditPage extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
-        console.log("CURRENT PIECE DETAILS (Next Line):")
-        console.log(piece_details)
-
         const previous_url_o_id = this.state.url_o_id
         this.setState({
             loading: false,
@@ -193,11 +198,17 @@ class EditPage extends React.Component {
             next_oid: next_oid, 
             last_oid: last_oid, 
             description: description, 
+            title: piece_details['title'],
             price: piece_details['price'],
             sold: (piece_details['sold'] == true) ? "True" : "False", 
             type: piece_details['type'],
             theme: (piece_details['theme'] == null) ? "None" : piece_details['theme'],
             available: (piece_details['available'] == true) ? "True" : "False", 
+            instagram: piece_details['instagram'],
+            width: piece_details['width'],
+            height: piece_details['height'],
+            real_width: piece_details['real_width'],
+            real_height: piece_details['real_height']
         }, async () => {
             if (previous_url_o_id != o_id) {
                 this.router.push(`/edit/${o_id}`) 
@@ -347,14 +358,16 @@ class EditPage extends React.Component {
                 const uploaded_piece_details = {
                     title: 'Enter Title...',
                     description: 'Enter Description...',
-                    sold: '',
-                    price: '',
+                    sold: false,
+                    price: 9999,
                     width: image.width,
                     height: image.height,
-                    real_width: '',
-                    real_height: '',
+                    real_width: 0,
+                    real_height: 0,
                     image_path: uploaded_image_path,
-                    instagram: ''
+                    instagram: 'p/',
+                    theme: 'None',
+                    available: true
                 }
                 console.log("Updating state with uploaded piece details (Next Line):")
                 console.log(uploaded_piece_details)
@@ -366,6 +379,17 @@ class EditPage extends React.Component {
                     piece_list: new_piece_list,
                     piece_position: new_piece_list.length - 1,
                     piece_details: uploaded_piece_details, 
+                    description: uploaded_piece_details['description'],
+                    title: uploaded_piece_details['title'],
+                    available: uploaded_piece_details['available'],
+                    sold: uploaded_piece_details['sold'],
+                    price: uploaded_piece_details['price'],
+                    theme: uploaded_piece_details['theme'],
+                    instagram: uploaded_piece_details['instagram'],
+                    width: uploaded_piece_details['width'],
+                    height: uploaded_piece_details['height'],
+                    real_width: uploaded_piece_details['real_width'],
+                    real_height: uploaded_piece_details['real_height'],
                 });
             }
         }  catch (err) {
@@ -412,9 +436,8 @@ class EditPage extends React.Component {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Image Upload was NOT successful...</div> );
         }
 
-        const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
         return (
-            <PageLayout page_title={ (title == '') ? (``) : (`Edit Details - ${title}`) }>
+            <PageLayout page_title={ (this.state.title == '') ? (`Edit Details`) : (`Edit Details - ${this.state.title}`) }>
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_outer_container}>
@@ -433,7 +456,7 @@ class EditPage extends React.Component {
                             <form method="post" onSubmit={this.handleSubmit}>
                                 <div className={form_styles.title_container}>
                                     <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.last_oid)}} />
-                                    <input type="text" className={form_styles.title_input} id="title" value={ title } key={ title } onChange={ (e) => {e.preventDefault(); }}/>
+                                    <input type="text" className={form_styles.title_input} id="title" value={ this.state.title } key={ "title" } onChange={ (e) => {e.preventDefault(); this.setState({title: e.target.value}); }}/>
                                     <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.next_oid)}}/>
                                 </div>
 
@@ -442,9 +465,9 @@ class EditPage extends React.Component {
                                         className={form_styles.edit_details_description_textarea} 
                                         ref={this.text_area_ref} 
                                         id="description" 
-                                        value={this.state.description.split('<br>').join("\n") }
+                                        value={this.state.description }
                                         key={'description'}
-                                        onChange={(e) => { e.preventDefault(); this.setState({ description: e.target.value }) }}
+                                        onChange={(e) => { e.preventDefault(); this.setState({ description: e.target.value.split('<br>').join("\n") }) }}
                                     />
                                 </div>
 
@@ -453,7 +476,7 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Type</div>
                                     </div>
-                                    <select id="type" className={form_styles.input_select} value={ this.state.type } key={'type'} onChange={ (e) => {e.preventDefault(); this.setState({type: e.target.value})} }>
+                                    <select id="type" className={form_styles.input_select} value={ this.state.type } key={'type'} onChange={ (e) => {e.preventDefault(); this.setState({type: e.target.value}); } }>
                                         <option value="Oil On Canvas">Oil On Canvas</option>
                                         <option value="Oil On Cradled Panel">Oil On Cradled Panel</option>
                                         <option value="Intaglio On Paper">Intaglio On Paper</option>
@@ -467,59 +490,30 @@ class EditPage extends React.Component {
                                     <div className={form_styles.input_label_container}>
                                         <div className={form_styles.input_label}>Instagram</div>
                                     </div>
-                                    <input id="instagram" className={form_styles.input_textbox} defaultValue={this.state.piece_details['instagram']} key={'instagram'} onChange={ (e) => {e.preventDefault(); }}/>
+                                    <input id="instagram" className={form_styles.input_textbox} value={ this.state.instagram } key={'instagram'} onChange={ (e) => {e.preventDefault(); this.setState({instagram: e.target.value}); }}/>
                                 </div>
 
 
-                                {/* Split Container For price / sold */}
+                                {/* Split Container For Available / sold */}
                                 <div className={form_styles.input_container_split_container}>         
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Price</div>
+                                            <div className={form_styles.input_label}>Available</div>
                                         </div>
-                                        <input id="price" className={form_styles.input_textbox} defaultValue={this.state.price} key={'price'} onChange={ (e) => {e.preventDefault(); }}/>
-                                    </div> 
+                                        <select id="available" className={form_styles.input_select} value={ this.state.available } key={'available'} onChange={ (e) => {e.preventDefault(); this.setState({available: e.target.value}); } }>
+                                            <option value="True">True</option>
+                                            <option value="False">False</option>
+                                        </select>
+                                    </div>  
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Sold</div>
                                         </div>
-                                        <select id="sold" className={form_styles.input_select} value={ this.state.sold } key={'sold'} onChange={ (e) => {e.preventDefault(); this.setState({sold: e.target.value})} }>
+                                        <select id="sold" className={form_styles.input_select} value={ this.state.sold } key={'sold'} onChange={ (e) => {e.preventDefault(); this.setState({sold: e.target.value}); } }>
                                             <option value="True">Sold</option>
                                             <option value="False">Not Sold</option>
                                             {/*<option defaultValue="NFS">Not For Sale</option>*/}
                                         </select>
-                                    </div> 
-                                </div>
-
-                                {/* Split Container For real_width / real_height */}
-                                <div className={form_styles.input_container_split_container}>         
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
-                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Width</div>
-                                        </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" defaultValue={this.state.piece_details['real_width']} key={'real_width'} onChange={ (e) => {e.preventDefault(); }}/>
-                                    </div> 
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
-                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Height</div>
-                                        </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" defaultValue={this.state.piece_details['real_height']} key={'real_height'} onChange={ (e) => {e.preventDefault(); }}/>
-                                    </div> 
-                                </div>
-
-                                {/* Split Container For image pixel width / pixel height */}
-                                <div className={form_styles.input_container_split_container}>         
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
-                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Pixel Width</div>
-                                        </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" defaultValue={this.state.piece_details['width']} key={'width'} onChange={ (e) => {e.preventDefault(); }}/>
-                                    </div> 
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
-                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Pixel Height</div>
-                                        </div>
-                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" defaultValue={this.state.piece_details['height']} key={'height'} onChange={ (e) => {e.preventDefault(); }}/>
                                     </div> 
                                 </div>
 
@@ -529,22 +523,51 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Theme</div>
                                         </div>
-                                        <select id="theme" className={form_styles.input_select} value={ this.state.theme } onChange={ (e) => {e.preventDefault(); this.setState({theme: e.target.value})} }>
+                                        <select id="theme" className={form_styles.input_select} value={ this.state.theme } key={'theme'} onChange={ (e) => {e.preventDefault(); this.setState({theme: e.target.value}); } }>
                                             <option value="Ocean">Ocean</option>
                                             <option value="Snow">Snow</option>
                                             <option value="Landscape">Landscape</option>
                                             <option value="Black and White">Black and White</option>
                                             <option value="None">None</option>
                                         </select>
+                                    </div>
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Price</div>
+                                        </div>
+                                        <input id="price" className={form_styles.input_textbox} value={this.state.price} key={'price'} onChange={ (e) => {e.preventDefault(); this.setState({price: e.target.value}); }}/>
+                                    </div>
+                                </div>
+
+                                {/* Split Container For real_width / real_height */}
+                                <div className={form_styles.input_container_split_container}>         
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Width</div>
+                                        </div>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="width" value={this.state.real_width} key={'real_width'} onChange={ (e) => {e.preventDefault(); this.setState({real_width: e.target.value}); }}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Available</div>
+                                            <div className={form_styles.input_label}>Height</div>
                                         </div>
-                                        <select id="available" className={form_styles.input_select} value={ this.state.available } onChange={ (e) => {e.preventDefault(); this.setState({available: e.target.value})} }>
-                                            <option value="True">True</option>
-                                            <option value="False">False</option>
-                                        </select>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="height" value={this.state.real_height} key={'real_height'} onChange={ (e) => {e.preventDefault(); this.setState({real_height: e.target.value}); }}/>
+                                    </div> 
+                                </div>
+
+                                {/* Split Container For image pixel width / pixel height */}
+                                <div className={form_styles.input_container_split_container}>         
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Pixel Width</div>
+                                        </div>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" value={this.state.width} key={'width'} onChange={ (e) => {e.preventDefault(); this.setState({width: e.target.value}); }}/>
+                                    </div> 
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
+                                        <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
+                                            <div className={form_styles.input_label}>Pixel Height</div>
+                                        </div>
+                                        <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" value={this.state.height} key={'height'} onChange={ (e) => {e.preventDefault(); this.setState({height: e.target.value}); }}/>
                                     </div> 
                                 </div>
 
