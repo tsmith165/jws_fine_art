@@ -122,8 +122,8 @@
         right: 150px;
         width: fit-content;
         height: 50px; 
-        color: $dark !important;
-        background-color: $light !important;
+        color: $light !important;
+        background-color: $primary !important;
         border-top-right-radius: 5px;
         border-top-left-radius: 5px;
         display: flex;
@@ -131,8 +131,8 @@
         z-index: 1;
       }
       .gallery_filter_menu_toggle_open > .gallery_filter_menu_toggle_icon:hover {
-        background-color: $primary !important;
-        color: $light !important;
+        background-color: $light !important;
+        color: $dark !important;
       }
       .gallery_filter_menu_tooltip {
         position: relative; 
