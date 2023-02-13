@@ -10,19 +10,19 @@ import Piece from '../../../components/Piece'
 import Tune from '@material-ui/icons/Tune';     // Filter Menu Toggle Button
 import AcUnit from '@material-ui/icons/AcUnit'; // Snow
 import Waves from '@material-ui/icons/Waves';   // Ocean
-import Landscape from '@material-ui/icons/Landscape'; // Landscape
-import LocationCity from '@material-ui/icons/LocationCity'; // Landscape
-import LocalFlorist from '@material-ui/icons/LocalFlorist'; // Landscape
-import Portrait from '@material-ui/icons/Portrait'; // Landscape
+import Landscape from '@material-ui/icons/Landscape'; // Mountains
+import LocationCity from '@material-ui/icons/LocationCity'; // City
+import LocalFlorist from '@material-ui/icons/LocalFlorist'; // Flowers
+import Portrait from '@material-ui/icons/Portrait'; // Portrait
 import Exposure from '@material-ui/icons/Exposure'; // Black And White
 import Block from '@material-ui/icons/Block'; // None
 
 const theme_filters = [
     ['Ocean', <Waves className={styles.gallery_filter_icon} />], 
     ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
-    ['Landscape', <Landscape className={styles.gallery_filter_icon} />], 
+    ['Mountain', <Landscape className={styles.gallery_filter_icon} />], 
+    ['Landscape', <LocalFlorist className={styles.gallery_filter_icon} />], 
     ['City', <LocationCity className={styles.gallery_filter_icon} />],
-    ['Flowers', <LocalFlorist className={styles.gallery_filter_icon} />],
     ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
     ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
     ['None', <Block className={styles.gallery_filter_icon} />]

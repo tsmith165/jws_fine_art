@@ -623,9 +623,9 @@ class EditPage extends React.Component {
                                             options={[
                                                 { value: 'Ocean', label: 'Ocean' },
                                                 { value: 'Snow', label: 'Snow' },
+                                                { value: 'Mountains', label: 'Mountains' },
                                                 { value: 'Landscape', label: 'Landscape' },
                                                 { value: 'City', label: 'City' },
-                                                { value: 'Flowers', label: 'Flowers' },
                                                 { value: 'Portrait', label: 'Portrait' },
                                                 { value: 'Black and White', label: 'Black and White' },
                                                 { value: 'None', label: 'None' }
