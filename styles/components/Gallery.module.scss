@@ -101,6 +101,7 @@
         width: fit-content;
         height: 50px; 
         color: $light !important;
+        background-color: $dark !important;
         border-top-right-radius: 5px;
         border-top-left-radius: 5px;
         display: flex;
@@ -123,7 +124,7 @@
         width: fit-content;
         height: 50px; 
         color: $light !important;
-        background-color: $primary !important;
+        background-color: $dark !important;
         border-top-right-radius: 5px;
         border-top-left-radius: 5px;
         display: flex;
@@ -165,7 +166,7 @@
         width: 50px;
         height: 50px;
         color: $light;
-        background-color: $primary !important;
+        background-color: $dark !important;
       }
       .gallery_filter_icon_container:hover {
         background-color: $light !important;
