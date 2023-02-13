@@ -142,6 +142,7 @@ class EditPage extends React.Component {
             upload_error: false
         }
         this.create_image_array = this.create_image_array.bind(this);
+        this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
 
         // File Upload
         this.showFileUpload = this.showFileUpload.bind(this);
@@ -170,6 +171,7 @@ class EditPage extends React.Component {
         if (submitted) {
             state = {piece_list: piece_list, loading: false, error: false, submitted: true}
         }
+        console.log(`URL o_id: ${this.state.url_o_id}`)
         this.setState(state, async () => {await this.update_current_piece(this.state.piece_list, this.state.url_o_id)})
     }
 
@@ -552,6 +554,9 @@ class EditPage extends React.Component {
                                             <option value="Ocean">Ocean</option>
                                             <option value="Snow">Snow</option>
                                             <option value="Landscape">Landscape</option>
+                                            <option value="City">City</option>
+                                            <option value="Flowers">Flowers</option>
+                                            <option value="Portrait">Portrait</option>
                                             <option value="Black and White">Black and White</option>
                                             <option value="None">None</option>
                                         </select>
