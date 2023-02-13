@@ -136,7 +136,7 @@ class GalleryPage extends React.Component {
                 while (i < piece_list_length) {
                     var current_piece_json =  piece_list[i];
                     
-                    var piece_theme     = current_piece_json['theme'];
+                    var piece_theme = (current_piece_json['theme'] !== undefined) ? current_piece_json['theme'] : 'None';
                     console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
                     if ((theme != 'None') && (piece_theme !== undefined) && (!piece_theme.includes(theme))) {
                         console.log('Skipping piece as it does not match theme')
@@ -144,14 +144,14 @@ class GalleryPage extends React.Component {
                         continue;
                     }
           
-                    var o_id            = current_piece_json['o_id'];
-                    var class_name      = current_piece_json['class_name'];
-                    var image_path      = current_piece_json['image_path'];
-                    var title           = current_piece_json['title'];
-                    var description     = current_piece_json['description'];
-                    var sold            = current_piece_json['sold'];
-                    var available       = current_piece_json['available'];
-                    var [width, height] = [current_piece_json['width'], current_piece_json['height']];
+                    var o_id        = (current_piece_json['o_id'] !== undefined) ? current_piece_json['o_id'] : 'None';
+                    var class_name  = (current_piece_json['class_name'] !== undefined) ? current_piece_json['class_name'] : 'None';
+                    var image_path  = (current_piece_json['image_path'] !== undefined) ? current_piece_json['image_path'] : 'None';
+                    var title       = (current_piece_json['title'] !== undefined) ? current_piece_json['title'] : 'None';
+                    var description = (current_piece_json['description'] !== undefined) ? current_piece_json['description'] : 'None';
+                    var sold        = (current_piece_json['sold'] !== undefined) ? current_piece_json['sold'] : 'None';
+                    var available   = (current_piece_json['available'] !== undefined) ? current_piece_json['available'] : 'None';
+                    var [width, height] = (current_piece_json['width'] !== undefined && current_piece_json['height'] !== undefined) ? [current_piece_json['width'], current_piece_json['height']] : 'None';
           
                     this.log_debug_message(`Width: ${width} | Height: ${height}`);
                     
