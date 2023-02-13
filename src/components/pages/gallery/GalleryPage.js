@@ -173,7 +173,6 @@ class GalleryPage extends React.Component {
           
                     if (col == 0) {
                         row_starting_height = column_bottom_list[index] + INNER_MARGIN_WIDTH;
-
                         skip_col = (row_starting_height > column_bottom_list[index + 1] + INNER_MARGIN_WIDTH) ? true : false;
                     }
                     else {
