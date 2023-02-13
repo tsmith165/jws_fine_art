@@ -135,8 +135,9 @@ class GalleryPage extends React.Component {
                 var i = 0; var real_i = 0;
                 while (i < piece_list_length) {
                     var current_piece_json =  piece_list[i];
+                    console.log(current_piece_json)
                     
-                    var piece_theme = (current_piece_json['theme'] !== undefined) ? current_piece_json['theme'] : 'None';
+                    var piece_theme = (current_piece_json['theme'] !== undefined ) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
                     console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
                     if ((theme != 'None') && (piece_theme !== undefined) && (!piece_theme.includes(theme))) {
                         console.log('Skipping piece as it does not match theme')
