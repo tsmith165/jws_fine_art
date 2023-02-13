@@ -621,7 +621,7 @@ class EditPage extends React.Component {
                                                 }),
                                             }}
                                             options={[
-                                                { value: 'Ocean', label: 'Ocean' },
+                                                { value: 'Water', label: 'Water' },
                                                 { value: 'Snow', label: 'Snow' },
                                                 { value: 'Mountains', label: 'Mountains' },
                                                 { value: 'Landscape', label: 'Landscape' },
