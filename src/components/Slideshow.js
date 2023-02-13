@@ -198,7 +198,7 @@ class SlideshowComponent extends React.Component {
             running: (set_running == true) ? true : this.state.running
         })
 
-        if (this.state.running) {
+        if (this.state.running == true || set_running == true) {
             setTimeout( () =>  { console.log(`Speed: ${this.state.speed}`); this.update_current_piece(this.state.piece_list, this.state.next_oid) }, (this.state.speed));
         }
     }
@@ -241,7 +241,7 @@ class SlideshowComponent extends React.Component {
                 <div className={styles.slideshow_image_outer_container} onClick={(e) => { 
                     e.preventDefault(); 
                     {(this.state.running == false) ? ( 
-                        this.setState({running: true}) 
+                        this.update_current_piece(this.state.piece_list, this.state.next_oid, true)
                     ) : ( 
                         this.setState({running: false}) 
                     )
@@ -255,7 +255,7 @@ class SlideshowComponent extends React.Component {
                         ) : (
                             <PlayArrow className={`${styles.slideshow_icon}`}  onClick={(e) => {
                                 e.preventDefault();
-                                this.setState({running: true}) 
+                                this.update_current_piece(this.state.piece_list, this.state.next_oid, true)
                             }}/>
                         )}
 
@@ -281,8 +281,7 @@ class SlideshowComponent extends React.Component {
                             defaultValue={this.state.base_speed} 
                             className={styles.speed_slider} 
                             id="speed_slider" 
-                            onMouseUp={(e) => {e.preventDefault(); this.change_speed(e.target.value) }}
-                            onTouchEnd={(e) => {e.preventDefault(); this.change_speed(e.target.value) }}
+                            onChange={(e) => {e.preventDefault(); this.change_speed(e.target.value) }}
                         />
                         <div className={styles.speed_text}>
                             {`${(this.state.speed / 1000)}s`}

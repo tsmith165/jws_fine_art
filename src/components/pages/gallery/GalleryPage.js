@@ -6,6 +6,14 @@ import styles from '../../../../styles/components/Gallery.module.scss'
 
 import Piece from '../../../components/Piece'
 
+import Tune from '@material-ui/icons/Tune';     // Filter Menu Toggle Button
+import AcUnit from '@material-ui/icons/AcUnit'; // Snow
+import Waves from '@material-ui/icons/Waves';   // Ocean
+import Landscape from '@material-ui/icons/Landscape'; // Landscape
+import Exposure from '@material-ui/icons/Exposure'; // Black And White
+import Block from '@material-ui/icons/Block'; // None
+
+
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const DEBUG = false;
@@ -23,11 +31,13 @@ class GalleryPage extends React.Component {
         
         this.state = {
             loading: true,
+            filter_menu_open: false,
             window_width: props.window_width,
             window_height: props.window_height,
             piece_list: this.props.piece_list,
             gallery_pieces: [],
-            lowest_height: 0
+            lowest_height: 0,
+            theme: 'None'
         }
 
         this.log_debug_message = this.log_debug_message.bind(this);
@@ -208,9 +218,38 @@ class GalleryPage extends React.Component {
             }
         }
 
+        const theme_filters = [
+            ['Ocean', <Waves className={styles.gallery_filter_icon} />], 
+            ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
+            ['Landscape', <Landscape className={styles.gallery_filter_icon} />], 
+            ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
+            ['None', <Block className={styles.gallery_filter_icon} />]
+        ]
+        var filter_menu_array = [];
+        for (var i = 0; i < theme_filters.length; i++) {
+            let filter = theme_filters[i][0];
+            let icon = theme_filters[i][1];
+            filter_menu_array.push((
+                <div className={(filter == this.state.theme) ? styles.gallery_filter_icon_container_selected : styles.gallery_filter_icon_container} onClick={(e) => { e.preventDefault(); this.setState({theme: filter}) }}>
+                    {icon}
+                </div>
+            ))
+        }
+
         const page_layout = (
-            <div className={styles.gallery_body} style={{height: lowest_height}}>
-                {gallery_pieces}
+            <div className={styles.gallery_inner_container}>
+                <div className={styles.gallery_filter_menu_toggle} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
+                    <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} />
+                </div>
+                {(this.state.filter_menu_open == true) ? (
+                    <div className={styles.gallery_filter_menu} >
+                        { filter_menu_array }
+                    </div>
+                ) : (  null )}
+
+                <div className={styles.gallery_body} style={{height: lowest_height}}>
+                    {gallery_pieces}
+                </div>
             </div>
         )
         return page_layout
