@@ -16,10 +16,13 @@ export default async function (req, res) {
       pieces = await prisma.piece.findMany({
         where: {
           theme: theme
-        }
+        },
+        orderBy: {
+          o_id: 'desc',
+        },
       });
     } else {
-      pieces = await prisma.piece.findMany()
+      pieces = await prisma.piece.findMany({orderBy: { o_id: 'desc' }})
     }
 
 

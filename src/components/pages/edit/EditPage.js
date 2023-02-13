@@ -163,6 +163,7 @@ class EditPage extends React.Component {
     async fetch_pieces_from_api(submitted=false) {
         console.log(`-------------- Fetching Initial Server List --------------`)
         const piece_list = await fetch_pieces();
+        piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
         console.log('Pieces fetched in state (Next Line):')
         console.log(piece_list)
