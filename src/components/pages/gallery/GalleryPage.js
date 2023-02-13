@@ -49,7 +49,7 @@ class GalleryPage extends React.Component {
         
         this.state = {
             loading: true,
-            filter_menu_open: false,
+            filter_menu_open: true,
             window_width: this.props.window_width,
             window_height: this.props.window_height,
             piece_list: piece_list,
