@@ -32,13 +32,13 @@
         width: 50px;
         height: 50px; 
         color: $light !important;
-        background-color: $secondary !important;
+        background-color: $dark !important;
         border-top-right-radius: 5px;
         border-top-left-radius: 5px;
       }
         .gallery_filter_menu_toggle_icon {
-          width: 40px !important;
-          height: 40px !important;
+          width: 50px !important;
+          height: 50px !important;
           padding: 5px;
           border-top-right-radius: 5px;
         }
@@ -61,25 +61,23 @@
         right: 0px;
         min-height: 50px;
         max-width: 100vw !important;
-        background-color: $primary; 
-        border-bottom: 2px solid $secondary;
-        border-left: 2px solid $secondary;
-        border-bottom-left-radius: 5px;
+        border-bottom-left-radius: 7px;
         z-index: 1;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+        border-bottom: 2px solid $secondary;
+        border-left: 2px solid $secondary;
       }
-
       .gallery_filter_menu > .gallery_filter_icon_container:first-of-type {
-        border-top-left-radius: 4px !important;
+        border-bottom-left-radius: 5px !important;
       }
 
       .gallery_filter_icon_container {
         width: 50px;
         height: 50px;
-        background-color: $primary;
-        color: $dark;
+        background-color: $dark;
+        color: $light;
       }
       .gallery_filter_icon_container_selected {
         width: 50px;
@@ -142,7 +140,6 @@
         line-height: 50px;
         margin-right: 5px;
         margin-left: 10px;
-        font-weight: bold;
       }
       .gallery_filter_menu_container { 
         position: relative; 
