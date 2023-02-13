@@ -1,5 +1,6 @@
 import React from 'react';
 import NextImage from 'next/image'
+import Select from 'react-select'
 
 import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url } from '../../../../lib/api_calls';
 
@@ -54,6 +55,7 @@ class EditPage extends React.Component {
         var image_path = '';
         var instagram = 'p/';
         var theme = 'None';
+        var theme_options = [{ value: theme, label: theme }]
         var available = true;
 
         if (piece_list_length > 0) {
@@ -76,6 +78,18 @@ class EditPage extends React.Component {
             theme =       (current_piece['theme']       !== undefined) ? ((current_piece['theme'] == null) ? "None" : current_piece['theme']) : "None"
             available =   (current_piece['available']   !== undefined) ? current_piece['available'] : ''
 
+            theme_options = [{ value: theme, label: theme }]
+            if (theme != "None" && theme.includes(', ')) {
+                console.log(`Splitting theme string: ${theme}`)
+                theme_options = [];
+                theme.split(', ').forEach(function (theme_string) {
+                    if (theme_string.length > 1) {
+                        console.log(`Adding theme string ${theme_string} to options...`)
+                        theme_options.push({ value: theme_string, label: theme_string })
+                    }
+                })
+            }
+
             for (var i=0; i < piece_list.length; i++) {
                 let piece = piece_list[i];
                 image_array.push((
@@ -97,6 +111,9 @@ class EditPage extends React.Component {
                 ))
             }
         }
+
+        console.log(`Setting initial state theme to: ${theme} | options (Next line):`)
+        console.log(theme_options)
 
         this.state = {
             debug: false,
@@ -131,6 +148,7 @@ class EditPage extends React.Component {
             sold: sold,
             price: price,
             theme: theme,
+            theme_options: theme_options,
             width: width,
             height: height,
             real_width: real_width,
@@ -143,6 +161,7 @@ class EditPage extends React.Component {
         }
         this.create_image_array = this.create_image_array.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
+        this.handle_multi_select_change = this.handle_multi_select_change.bind(this);
 
         // File Upload
         this.showFileUpload = this.showFileUpload.bind(this);
@@ -210,6 +229,23 @@ class EditPage extends React.Component {
             available:   current_piece['available'],
         }
 
+        var theme = (piece_details['theme'] == null || piece_details['theme'] == undefined) ? "None" : piece_details['theme']
+        var theme_options = [{ value: theme, label: theme }];
+
+        if (theme != "None" && theme.includes(', ')) {
+            console.log(`Splitting theme string: ${theme}`)
+            theme_options = [];
+            theme.split(', ').forEach(function (theme_string) {
+                if (theme_string.length > 1) {
+                    console.log(`Adding theme string ${theme_string} to options...`)
+                    theme_options.push({ value: theme_string, label: theme_string })
+                }
+            })
+        }
+
+        console.log(`Setting theme to: ${theme} | options (Next line):`)
+        console.log(theme_options)
+
         const description = current_piece['description'].split('<br>').join("\n");
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
@@ -232,7 +268,8 @@ class EditPage extends React.Component {
             price: piece_details['price'],
             sold: (piece_details['sold'] == true) ? "True" : "False", 
             type: piece_details['type'],
-            theme: (piece_details['theme'] == null) ? "None" : piece_details['theme'],
+            theme: theme,
+            theme_options: theme_options,
             available: (piece_details['available'] == true) ? "True" : "False", 
             instagram: piece_details['instagram'],
             width: piece_details['width'],
@@ -298,7 +335,7 @@ class EditPage extends React.Component {
             console.log("--------------- Attempting To Edit Piece Details ---------------")
             console.log(`Editing Piece DB ID: ${this.state.piece_db_id} | Title: ${title} | Sold: ${sold}`)
             if (!this.state.uploaded) {
-                const response = await edit_details(this.state.piece_db_id, title, this.state.description, type, sold, price, instagram, this.state.piece_details['width'], this.state.piece_details['height'], real_width, real_height, theme, available)
+                const response = await edit_details(this.state.piece_db_id, title, this.state.description, type, sold, price, instagram, this.state.piece_details['width'], this.state.piece_details['height'], real_width, real_height, this.state.theme, available, this.state)
     
                 console.log(`Edit Piece Response (Next Line):`)
                 console.log(response)
@@ -312,7 +349,7 @@ class EditPage extends React.Component {
             else {
                 console.log("--------------- Attempting To Create New Piece ---------------")
                 console.log(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.piece_details['image_path']}`)
-                const response = await create_piece(title, this.state.description, type, sold, price, instagram, this.state.piece_details["width"], this.state.piece_details["height"], real_width, real_height, this.state.piece_details['image_path'], theme, available);
+                const response = await create_piece(title, this.state.description, type, sold, price, instagram, this.state.piece_details["width"], this.state.piece_details["height"], real_width, real_height, this.state.piece_details['image_path'], this.state.theme, available);
     
                 console.log(`Create Piece Response (Next Line):`)
                 console.log(response)
@@ -436,6 +473,19 @@ class EditPage extends React.Component {
         this.router.replace(this.router.asPath)
     }
 
+    handle_multi_select_change(new_selected_options) {
+        console.log(`New theme passed (Next Line):`); 
+        console.log(new_selected_options)
+        var theme_string = ''
+        for (var option_index in new_selected_options) {
+            let option = new_selected_options[option_index]
+            console.log(option);
+            theme_string += `${option.value}, `
+        }
+        console.log(`Setting theme: ${theme_string}`)
+        this.setState({theme: theme_string, theme_options: new_selected_options});
+    }
+
     render() {
         console.log(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`)
 
@@ -463,6 +513,9 @@ class EditPage extends React.Component {
         }  else if (this.state.upload_error == true) {
             loader_jsx = ( <div className={form_styles.submit_label_failed}>Image Upload was NOT successful...</div> );
         }
+
+        const using_theme = (this.state.theme !== undefined || this.state.theme !== null || this.state.theme !== '') ? this.state.theme : 'None'
+        console.log(`Theme: ${using_theme}`)
 
         return (
             <PageLayout page_title={ (this.state.title == '') ? (`Edit Details`) : (`Edit Details - ${this.state.title}`) }>
@@ -551,16 +604,33 @@ class EditPage extends React.Component {
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
                                             <div className={form_styles.input_label}>Theme</div>
                                         </div>
-                                        <select id="theme" className={form_styles.input_select} value={ this.state.theme } key={'theme'} onChange={ (e) => {e.preventDefault(); this.setState({theme: e.target.value}); } }>
-                                            <option value="Ocean">Ocean</option>
-                                            <option value="Snow">Snow</option>
-                                            <option value="Landscape">Landscape</option>
-                                            <option value="City">City</option>
-                                            <option value="Flowers">Flowers</option>
-                                            <option value="Portrait">Portrait</option>
-                                            <option value="Black and White">Black and White</option>
-                                            <option value="None">None</option>
-                                        </select>
+                                        <Select
+                                            value={this.state.theme_options}
+                                            isMulti
+                                            id="theme"
+                                            name="theme"
+                                            className={form_styles.input_multi_select}
+                                            classNamePrefix="select"
+                                            onChange={(new_selected_options) => this.handle_multi_select_change(new_selected_options) }
+                                            styles={{
+                                                control: (baseStyles, state) => ({
+                                                    ...baseStyles,
+                                                    borderColor: '',
+                                                    backgroundColor: '#45544d'
+                                                    
+                                                }),
+                                            }}
+                                            options={[
+                                                { value: 'Ocean', label: 'Ocean' },
+                                                { value: 'Snow', label: 'Snow' },
+                                                { value: 'Landscape', label: 'Landscape' },
+                                                { value: 'City', label: 'City' },
+                                                { value: 'Flowers', label: 'Flowers' },
+                                                { value: 'Portrait', label: 'Portrait' },
+                                                { value: 'Black and White', label: 'Black and White' },
+                                                { value: 'None', label: 'None' }
+                                            ]}
+                                        />
                                     </div>
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>

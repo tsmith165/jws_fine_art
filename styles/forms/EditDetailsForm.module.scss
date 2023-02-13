@@ -107,6 +107,17 @@
                 font-size: 14px; 
                 font-weight: bold; 
             }
+            .input_multi_select { 
+                width: calc(100% - 120px) !important;  
+                height: 100%; 
+                padding: 6px 10px;
+                color: $light; 
+                background-color: $primary; 
+                border-radius: 0px 5px 5px 0px; 
+                border: none; 
+                font-size: 14px; 
+                font-weight: bold; 
+            }
         }
 
         /* CSS for other than iOS devices */ 
@@ -134,6 +145,17 @@
                 font-weight: bold; 
             }
             .input_select > option { 
+                font-weight: bold; 
+            }
+            .input_multi_select { 
+                width: calc(100% - 120px) !important;  
+                height: 100%; 
+                padding: 6px 10px;
+                color: $light; 
+                background-color: $primary; 
+                border-radius: 0px 5px 5px 0px; 
+                border: none; 
+                font-size: 14px; 
                 font-weight: bold; 
             }
         }

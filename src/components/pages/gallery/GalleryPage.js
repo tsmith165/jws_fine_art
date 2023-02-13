@@ -135,9 +135,11 @@ class GalleryPage extends React.Component {
                     var current_piece_json =  piece_list[i];
                     
                     var piece_theme     = current_piece_json['theme'];
-                    console.log('Current piece theme: ${piece_theme} | State theme: ${theme}')
-                    if ((theme != 'None') && (piece_theme !== undefined) && (piece_theme.includes(theme))) {
-
+                    console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
+                    if ((theme != 'None') && (piece_theme !== undefined) && (!piece_theme.includes(theme))) {
+                        console.log('Skipping piece as it does not match theme')
+                        i += 1;
+                        continue;
                     }
           
                     var o_id            = current_piece_json['o_id'];
