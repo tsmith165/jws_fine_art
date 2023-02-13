@@ -19,7 +19,7 @@ import Block from '@material-ui/icons/Block'; // None
 import FilterBAndW from '@material-ui/icons/FilterBAndW'; // Abstract
 
 const theme_filters = [
-    ['Ocean', <Waves className={styles.gallery_filter_icon} />], 
+    ['Water', <Waves className={styles.gallery_filter_icon} />], 
     ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
     ['Mountain', <Landscape className={styles.gallery_filter_icon} />], 
     ['Landscape', <LocalFlorist className={styles.gallery_filter_icon} />], 
