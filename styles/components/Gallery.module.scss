@@ -13,54 +13,120 @@
     width: 100%;
     height: 100%;
   }
-    .gallery_filter_menu_toggle {
-      position: fixed;
-      top: 50px;
-      right: 150px;
-      width: 50px;
-      height: 50px; 
-      color: $light !important;
-      border-top-right-radius: 5px;
-      border-top-left-radius: 5px;
-    }
-    .gallery_filter_menu_toggle:hover {
-      background-color: $light !important;
-      color: $dark !important;
-    }
-      .gallery_filter_menu_toggle_icon {
-        width: 40px !important;
-        height: 40px !important;
-        margin: 5px;
+
+    @media (max-width: 800px) { // mobile
+      .gallery_filter_menu_toggle {
+        position: fixed;
+        top: 50px;
+        right: 150px;
+        width: 50px;
+        height: 50px; 
+        color: $light !important;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+      }
+      .gallery_filter_menu_toggle:hover {
+        background-color: $light !important;
+        color: $dark !important;
+      }
+        .gallery_filter_menu_toggle_icon {
+          width: 40px !important;
+          height: 40px !important;
+          margin: 5px;
+        }
+      .gallery_filter_menu_toggle_open {
+        position: fixed;
+        top: 50px;
+        right: 150px;
+        width: 50px;
+        height: 50px; 
+        color: $dark !important;
+        background-color: $light !important;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+      }
+      .gallery_filter_menu_toggle_open:hover {
+        background-color: $secondary !important;
+        color: $light !important;
       }
 
-    .gallery_filter_menu {
-      position: fixed; 
-      top: 100px; 
-      right: 0px;
-      width: fit-content; 
-      min-height: 50px;
-      background-color: $primary; 
-      border-bottom: 2px solid $secondary;
-      border-left: 2px solid $secondary;
-      border-bottom-left-radius: 5px;
-      z-index: 1;
-      display: flex;
-      flex-direction: row;
+      .gallery_filter_menu {
+        position: fixed; 
+        top: 100px; 
+        right: 0px;
+        width: fit-content; 
+        min-height: 50px;
+        background-color: $primary; 
+        border-bottom: 2px solid $secondary;
+        border-left: 2px solid $secondary;
+        border-bottom-left-radius: 5px;
+        z-index: 1;
+        display: flex;
+        flex-direction: row;
+      }
+    }
+    @media (min-width: 799px) { // browser
+      .gallery_filter_menu_toggle {
+        position: fixed;
+        top: 50px;
+        right: 150px;
+        width: 50px;
+        height: 50px; 
+        color: $light !important;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+      }
+      .gallery_filter_menu_toggle:hover {
+        background-color: $light !important;
+        color: $dark !important;
+      }
+        .gallery_filter_menu_toggle_icon {
+          width: 40px !important;
+          height: 40px !important;
+          margin: 5px;
+        }
+      .gallery_filter_menu_toggle_open {
+        position: fixed;
+        top: 50px;
+        right: 150px;
+        width: 50px;
+        height: 50px; 
+        color: $dark !important;
+        background-color: $light !important;
+        border-top-right-radius: 5px;
+      }
+      .gallery_filter_menu_toggle_open:hover {
+        background-color: $secondary !important;
+        color: $light !important;
+      }
+
+      .gallery_filter_menu {
+        position: fixed; 
+        top: 50px; 
+        right: 200px;
+        width: fit-content; 
+        min-height: 50px;
+        background-color: $light; 
+        z-index: 1;
+        display: flex;
+        flex-direction: row;
+        border-top-left-radius: 5px !important;
+      }
     }
       .gallery_filter_icon_container {
         width: 50px;
         height: 50px;
-        color: $light;
+        color: $dark;
       }
       .gallery_filter_icon_container:hover {
-        background-color: $light !important;
-        color: $dark !important;
+        background-color: $primary !important;
+        color: $light !important;
       }
       .gallery_filter_icon_container_selected {
         width: 50px;
         height: 50px;
-        background-color: $light !important;
-        color: $dark;
+        background-color: $primary !important;
+        color: $light;
       }
       .gallery_filter_icon_container_selected:hover {
         background-color: $light !important;

@@ -133,6 +133,12 @@ class GalleryPage extends React.Component {
                 var i = 0; var real_i = 0;
                 while (i < piece_list_length) {
                     var current_piece_json =  piece_list[i];
+                    
+                    var piece_theme     = current_piece_json['theme'];
+                    console.log('Current piece theme: ${piece_theme} | State theme: ${theme}')
+                    if ((theme != 'None') && (piece_theme !== undefined) && (piece_theme.includes(theme))) {
+
+                    }
           
                     var o_id            = current_piece_json['o_id'];
                     var class_name      = current_piece_json['class_name'];
@@ -238,12 +244,8 @@ class GalleryPage extends React.Component {
     }
 
     async update_pieces_with_theme(theme) {
-        const new_piece_list = await fetch_pieces(theme);
-
-        console.log('New Piece List (Next Line):')
-        console.log(new_piece_list)
         
-        this.create_gallery(new_piece_list, theme)
+        this.create_gallery(this.state.piece_list, theme)
     }
 
     render() {
@@ -260,7 +262,7 @@ class GalleryPage extends React.Component {
 
         const page_layout = (
             <div className={styles.gallery_inner_container}>
-                <div className={styles.gallery_filter_menu_toggle} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
+                <div className={(this.state.filter_menu_open) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
                     <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} />
                 </div>
                 {(this.state.filter_menu_open == true) ? (
