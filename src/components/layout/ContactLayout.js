@@ -9,7 +9,7 @@ const ContactLayout = ({}) => {
                 <div className={styles.contact_image_border}>
                     <Image
                         className={styles.contact_image}
-                        src={"/bio_pic.jpg"}
+                        src={"https://jwsfineartpieces.s3.us-west-1.amazonaws.com/site/bio_pic.jpg"}
                         alt={"Bio Pic"}
                         priority={true}
                         layout='fill'
