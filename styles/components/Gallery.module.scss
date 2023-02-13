@@ -27,28 +27,28 @@
       }
       .gallery_filter_menu_toggle {
         position: fixed;
-        top: 50px;
-        right: 150px;
-        width: 50px;
-        height: 50px; 
+        top: 60px;
+        right: 120px;
+        width: 40px;
+        height: 40px; 
         color: $light !important;
         background-color: $dark !important;
         border-top-right-radius: 5px;
         border-top-left-radius: 5px;
       }
         .gallery_filter_menu_toggle_icon {
-          width: 50px !important;
-          height: 50px !important;
+          width: 40px !important;
+          height: 40px !important;
           padding: 5px;
           border-top-right-radius: 5px;
         }
 
       .gallery_filter_menu_toggle_open {
         position: fixed;
-        top: 50px;
-        right: 150px;
-        width: 50px;
-        height: 50px; 
+        top: 60px;
+        right: 120px;
+        width: 40px;
+        height: 40px; 
         color: $dark !important;
         background-color: $light !important;
         border-top-right-radius: 5px;
