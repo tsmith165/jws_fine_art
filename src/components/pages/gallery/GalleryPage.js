@@ -49,7 +49,7 @@ class GalleryPage extends React.Component {
         
         this.state = {
             loading: true,
-            filter_menu_open: true,
+            filter_menu_open: false,
             window_width: this.props.window_width,
             window_height: this.props.window_height,
             piece_list: piece_list,
@@ -268,16 +268,21 @@ class GalleryPage extends React.Component {
 
         const page_layout = (
             <div className={styles.gallery_inner_container}>
-                <div className={(this.state.filter_menu_open) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle} 
-                    onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}
-                >
-                    <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} />
+                <div className={(this.state.filter_menu_open) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle}>
+                    {(this.state.filter_menu_open == true) ? (
+                        <div className={styles.gallery_filter_menu_container} >
+                            <div className={styles.gallery_filter_menu} >
+                                { filter_menu_array }
+                            </div>
+                        </div>
+                    ) : (  
+                        <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
+                            Filters
+                        </div>
+                    )}
+                    <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}/>
                 </div>
-                {(this.state.filter_menu_open == true) ? (
-                    <div className={styles.gallery_filter_menu} >
-                        { filter_menu_array }
-                    </div>
-                ) : (  null )}
+
 
                 <div className={styles.gallery_body} style={{height: this.state.lowest_height}}>
                     {this.state.gallery_pieces}
