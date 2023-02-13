@@ -80,8 +80,6 @@ class DetailsPage extends React.Component {
                             className={styles.details_image}
                             src={`${baseURL}${piece['image_path']}`}
                             alt={piece['title']}
-                            // width={this.state.piece_details['width']}
-                            // height={this.state.piece_details['height']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                             layout='fill'
                             objectFit='contain'
@@ -205,7 +203,7 @@ class DetailsPage extends React.Component {
                         className={styles.details_image}
                         src={`${baseURL}${piece['image_path']}`}
                         alt={piece['title']}
-                        // width={this.state.piece_details['width']}
+                        
                         // height={this.state.piece_details['height']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                         layout='fill'
