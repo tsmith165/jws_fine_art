@@ -64,6 +64,9 @@
         display: flex;
         flex-direction: row;
       }
+      .gallery_filter_menu > .gallery_filter_icon_container:first-of-type {
+        border-top-left-radius: 4px !important;
+      }
     }
     @media (min-width: 799px) { // browser
       .gallery_filter_menu_toggle {
@@ -111,6 +114,9 @@
         display: flex;
         flex-direction: row;
         border-top-left-radius: 5px !important;
+      }
+      .gallery_filter_menu > .gallery_filter_icon_container:first-of-type {
+        border-top-left-radius: 4px !important;
       }
     }
       .gallery_filter_icon_container {
