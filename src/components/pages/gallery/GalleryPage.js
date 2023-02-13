@@ -1,6 +1,7 @@
 import React from 'react';
 
-import PageLayout from '../../../../src/components/layout/PageLayout'
+
+import { fetch_pieces } from '../../../../lib/api_calls';
 
 import styles from '../../../../styles/components/Gallery.module.scss'
 
@@ -10,9 +11,22 @@ import Tune from '@material-ui/icons/Tune';     // Filter Menu Toggle Button
 import AcUnit from '@material-ui/icons/AcUnit'; // Snow
 import Waves from '@material-ui/icons/Waves';   // Ocean
 import Landscape from '@material-ui/icons/Landscape'; // Landscape
+import LocationCity from '@material-ui/icons/LocationCity'; // Landscape
+import LocalFlorist from '@material-ui/icons/LocalFlorist'; // Landscape
+import Portrait from '@material-ui/icons/Portrait'; // Landscape
 import Exposure from '@material-ui/icons/Exposure'; // Black And White
 import Block from '@material-ui/icons/Block'; // None
 
+const theme_filters = [
+    ['Ocean', <Waves className={styles.gallery_filter_icon} />], 
+    ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
+    ['Landscape', <Landscape className={styles.gallery_filter_icon} />], 
+    ['City', <LocationCity className={styles.gallery_filter_icon} />],
+    ['Flowers', <LocalFlorist className={styles.gallery_filter_icon} />],
+    ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
+    ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
+    ['None', <Block className={styles.gallery_filter_icon} />]
+]
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
@@ -26,15 +40,17 @@ class GalleryPage extends React.Component {
     constructor(props) {
         super(props);
 
+        const piece_list = this.props.piece_list;
+
         console.log('Passed piece list:')
-        console.log(this.props.piece_list)
+        console.log(piece_list)
         
         this.state = {
             loading: true,
             filter_menu_open: false,
-            window_width: props.window_width,
-            window_height: props.window_height,
-            piece_list: this.props.piece_list,
+            window_width: this.props.window_width,
+            window_height: this.props.window_height,
+            piece_list: piece_list,
             gallery_pieces: [],
             lowest_height: 0,
             theme: 'None'
@@ -42,6 +58,8 @@ class GalleryPage extends React.Component {
 
         this.log_debug_message = this.log_debug_message.bind(this);
         this.handleResize = this.handleResize.bind(this);
+        this.update_pieces_with_theme = this.update_pieces_with_theme.bind(this);
+        this.create_gallery = this.create_gallery.bind(this);
     }
 
     log_debug_message(message) {
@@ -68,10 +86,12 @@ class GalleryPage extends React.Component {
         this.setState({
           window_width: window.innerWidth,
           window_height: window.innerHeight,
-        });
+        }, async () => { this.create_gallery(this.state.piece_list, this.state.theme) });
     }
 
-    render() {
+    async create_gallery(piece_list, theme) {
+        const piece_list_length = piece_list.length
+
         console.log('Component mounted.  Creating gallery...')     
         console.log(`Passed Window Size: ${this.state.window_width} | ${this.state.window_height}`)
 
@@ -103,9 +123,6 @@ class GalleryPage extends React.Component {
           
             var row_starting_height = INNER_MARGIN_WIDTH;
             var skip_col = false;
-    
-            const piece_list = this.props.piece_list;
-            const piece_list_length = piece_list.length
     
             console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
             console.log(piece_list)
@@ -217,20 +234,25 @@ class GalleryPage extends React.Component {
                 console.log("Screenshot list length = 0");
             }
         }
+        this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height, theme: theme})
+    }
 
-        const theme_filters = [
-            ['Ocean', <Waves className={styles.gallery_filter_icon} />], 
-            ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
-            ['Landscape', <Landscape className={styles.gallery_filter_icon} />], 
-            ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
-            ['None', <Block className={styles.gallery_filter_icon} />]
-        ]
+    async update_pieces_with_theme(theme) {
+        const new_piece_list = await fetch_pieces(theme);
+
+        console.log('New Piece List (Next Line):')
+        console.log(new_piece_list)
+        
+        this.create_gallery(new_piece_list, theme)
+    }
+
+    render() {
         var filter_menu_array = [];
         for (var i = 0; i < theme_filters.length; i++) {
             let filter = theme_filters[i][0];
             let icon = theme_filters[i][1];
             filter_menu_array.push((
-                <div className={(filter == this.state.theme) ? styles.gallery_filter_icon_container_selected : styles.gallery_filter_icon_container} onClick={(e) => { e.preventDefault(); this.setState({theme: filter}) }}>
+                <div className={(filter == this.state.theme) ? styles.gallery_filter_icon_container_selected : styles.gallery_filter_icon_container} onClick={(e) => { e.preventDefault(); this.update_pieces_with_theme(filter) }}>
                     {icon}
                 </div>
             ))
@@ -247,8 +269,8 @@ class GalleryPage extends React.Component {
                     </div>
                 ) : (  null )}
 
-                <div className={styles.gallery_body} style={{height: lowest_height}}>
-                    {gallery_pieces}
+                <div className={styles.gallery_body} style={{height: this.state.lowest_height}}>
+                    {this.state.gallery_pieces}
                 </div>
             </div>
         )
