@@ -12,7 +12,7 @@ const MenuOverlayButton = ({id, menu_name, url_endpoint, set_menu_open}) => {
         )
     }
     return (
-        <Link href={url_endpoint}> 
+        <Link href={url_endpoint} onClick={set_menu_open(false)}> 
             <div className={styles.menu_overlay_item} id={id}>
                 <b className={styles.menu_overlay_item_title}>{menu_name}</b>
             </div>
