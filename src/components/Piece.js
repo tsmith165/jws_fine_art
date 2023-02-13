@@ -22,9 +22,12 @@ const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, des
                         ( available == true ? (
                             null
                         ) : (
+                            null
+                            /*
                             <div className={styles.piece_sold_container}>
                                 <Image className={styles.piece_sold} src="/yellowDot.png" alt="Piece Sold" layout='fixed' width={30} height={30}/> 
                             </div>
+                            */
                         ))
                     ) : (
                         <div className={styles.piece_sold_container}>

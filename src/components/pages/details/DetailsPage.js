@@ -44,6 +44,7 @@ class DetailsPage extends React.Component {
         var type = '';
         var description = '';
         var sold = false;
+        var available = true;
         var price = 9999;
         var width = '';
         var height = '';
@@ -60,6 +61,7 @@ class DetailsPage extends React.Component {
             title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
             type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
             sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
+            available =   (current_piece['available']   !== undefined) ? current_piece['available'] : false
             description = (current_piece['description'] !== undefined) ? current_piece['description'] : ''
             price =       (current_piece['price']       !== undefined) ? current_piece['price'] : ''
             width =       (current_piece['width']       !== undefined) ? current_piece['width'] : ''
@@ -113,12 +115,14 @@ class DetailsPage extends React.Component {
                 real_height: real_height,
                 image_path: image_path,
                 instagram: instagram,
+                available: available
             },
             next_oid: (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'],
             last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
             description: description,
             price: price,
             sold: sold,
+            available: available,
             full_screen: false
         }
 
@@ -160,7 +164,8 @@ class DetailsPage extends React.Component {
             real_width:  current_piece['real_width'],
             real_height: current_piece['real_height'],
             image_path:  `${baseURL}${current_piece['image_path']}`,
-            instagram:   current_piece['instagram']
+            instagram:   current_piece['instagram'],
+            available:   (current_piece['available'] !== undefined) ? current_piece['available']  : false
         }
 
         const description = current_piece['description'].split('<br>').join(" \n");
@@ -183,8 +188,9 @@ class DetailsPage extends React.Component {
             next_oid: next_oid, 
             last_oid: last_oid, 
             description: description,
-            sold: current_piece['sold'],
-            price: current_piece['price']
+            sold: piece_details['sold'],
+            available: piece_details['available'],
+            price: piece_details['price']
         }, async () => {
             if (previous_url_o_id != o_id) {
                 this.router.push(`/details/${o_id}`) 
@@ -228,6 +234,8 @@ class DetailsPage extends React.Component {
     render() {
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(this.state.piece_details)
+
+        console.log(`Sold: ${this.state.sold} | Available: ${this.state.available}`)
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
@@ -275,7 +283,11 @@ class DetailsPage extends React.Component {
                                     <div className={styles.details_navigation_inner_container}>
                                         {
                                             (this.state.sold == false) ? ( 
-                                                <b className={styles.price_text}>{`$${this.state.price}`}</b> 
+                                                (this.state.available == true) ? ( 
+                                                    <b className={styles.price_text}>{`$${this.state.price}`}</b> 
+                                                ) : (
+                                                    null
+                                                )
                                             ) : ( 
                                                 null
                                             )
@@ -284,20 +296,28 @@ class DetailsPage extends React.Component {
                                             (this.state.sold == true) ? ( 
                                                 <b className={styles.piece_sold}>Sold</b> 
                                             ) : ( 
-                                                <Link href={`/checkout/${this.state.url_o_id}`}>
-                                                    <button className={styles.buy_now_button}>Buy</button>
-                                                </Link> 
+                                                (this.state.available == false) ? ( 
+                                                    <b className={styles.piece_sold}>Not For Sale</b> 
+                                                ) : (
+                                                    <Link href={`/checkout/${this.state.url_o_id}`}>
+                                                        <button className={styles.buy_now_button}>Buy</button>
+                                                    </Link> 
+                                                )
                                             )
                                         }
                                         {
-                                            (this.state.sold == true) ? (
-                                                null
+                                            (this.state.sold == false) ? (
+                                                (this.state.available == true) ? ( 
+                                                    <Link href='https://stripe.com'>
+                                                        <div className={styles.powered_by_stripe_container}>
+                                                            <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
+                                                            </div>
+                                                    </Link>
+                                                ) : (
+                                                    null
+                                                )
                                             ) : (
-                                                <Link href='https://stripe.com'>
-                                                    <div className={styles.powered_by_stripe_container}>
-                                                        <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
-                                                        </div>
-                                                </Link>
+                                                null
                                             )
                                         }
                                         {
