@@ -68,7 +68,7 @@
                     background-color: $primary !important; 
                     border-top-left-radius: 5px; 
                     border-top-right-radius: 5px; 
-                    padding: 10px !important; 
+                    padding: 7.5px !important; 
                 }
                 .instagram_logo_link:hover { 
                     background-color: $light !important; 
@@ -83,10 +83,19 @@
             right: 40px;
             width: 40px;
             height: 40px;
-            padding: 9px;
+            padding: 5px;
         }
         .clerk_user_button_container:hover {
             background-color: $light;
+        }
+
+        .sign_in_button {
+            width: 32px !important;
+            height: 32px !important;
+            fill: $light !important;
+        }
+        .sign_in_button:hover {
+            fill: $secondary !important;
         }
     }
     @media (min-width: 799px) { // browser
@@ -156,8 +165,6 @@
         .clerk_user_button_container:hover {
             background-color: $light;
         }
-    }
-
 
         .sign_in_button {
             width: 32px !important;
@@ -167,6 +174,7 @@
         .sign_in_button:hover {
             fill: $secondary !important;
         }
+    }
 
         // Page Menu Overlay
         .page_menu_container { 
