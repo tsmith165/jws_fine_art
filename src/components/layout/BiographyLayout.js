@@ -9,7 +9,7 @@ const BiographyLayout = ({}) => {
                 <div className={styles.bio_image_border}>
                     <Image
                         className={styles.bio_image}
-                        src={"/bio_pic.jpg"}
+                        src={`https://jwsfineartpieces.s3.us-west-1.amazonaws.com/site/bio_pic.jpg`}
                         alt={"Bio Pic"}
                         priority={true}
                         layout='fill'
