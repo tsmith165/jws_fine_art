@@ -258,7 +258,9 @@ class GalleryPage extends React.Component {
             let filter = theme_filters[i][0];
             let icon = theme_filters[i][1];
             filter_menu_array.push((
-                <div className={(filter == this.state.theme) ? styles.gallery_filter_icon_container_selected : styles.gallery_filter_icon_container} onClick={(e) => { e.preventDefault(); this.update_pieces_with_theme(filter) }}>
+                <div className={(filter == this.state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
+                    onClick={(e) => { e.preventDefault(); this.update_pieces_with_theme(filter) }}
+                >
                     {icon}
                 </div>
             ))
@@ -266,7 +268,9 @@ class GalleryPage extends React.Component {
 
         const page_layout = (
             <div className={styles.gallery_inner_container}>
-                <div className={(this.state.filter_menu_open) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
+                <div className={(this.state.filter_menu_open) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle} 
+                    onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}
+                >
                     <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} />
                 </div>
                 {(this.state.filter_menu_open == true) ? (
