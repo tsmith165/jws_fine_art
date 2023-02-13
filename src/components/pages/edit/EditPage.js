@@ -628,6 +628,7 @@ class EditPage extends React.Component {
                                                 { value: 'City', label: 'City' },
                                                 { value: 'Portrait', label: 'Portrait' },
                                                 { value: 'Black and White', label: 'Black and White' },
+                                                { value: 'Abstract', label: 'Abstract' },
                                                 { value: 'None', label: 'None' }
                                             ]}
                                         />

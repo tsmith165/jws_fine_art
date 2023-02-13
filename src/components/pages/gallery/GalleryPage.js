@@ -16,6 +16,7 @@ import LocalFlorist from '@material-ui/icons/LocalFlorist'; // Flowers
 import Portrait from '@material-ui/icons/Portrait'; // Portrait
 import Exposure from '@material-ui/icons/Exposure'; // Black And White
 import Block from '@material-ui/icons/Block'; // None
+import FilterBAndW from '@material-ui/icons/FilterBAndW'; // Abstract
 
 const theme_filters = [
     ['Ocean', <Waves className={styles.gallery_filter_icon} />], 
@@ -25,6 +26,7 @@ const theme_filters = [
     ['City', <LocationCity className={styles.gallery_filter_icon} />],
     ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
     ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
+    ['Abstract', <FilterBAndW className={styles.gallery_filter_icon} />],
     ['None', <Block className={styles.gallery_filter_icon} />]
 ]
 
