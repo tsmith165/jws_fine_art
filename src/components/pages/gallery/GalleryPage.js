@@ -173,21 +173,12 @@ class GalleryPage extends React.Component {
           
                     if (col == 0) {
                         row_starting_height = column_bottom_list[index] + INNER_MARGIN_WIDTH;
-          
-                        if (row_starting_height > column_bottom_list[index + 1] + INNER_MARGIN_WIDTH) {
-                            skip_col = true;
-                        }
-                        else {
-                            skip_col = false;
-                        }
+
+                        skip_col = (row_starting_height > column_bottom_list[index + 1] + INNER_MARGIN_WIDTH) ? true : false;
                     }
                     else {
-                        if (cur_y > row_starting_height) {
-                            this.log_debug_message("Y from last row intercepts current row.  Skipping column...");
-                            skip_col = true;
-          
-                        }
-                        else skip_col = false;
+                        skip_col = (cur_y > row_starting_height) ? true : false
+                        if (skip_col) { this.log_debug_message("Y from last row intercepts current row.  Skipping column..."); }
                     }
           
                     if (skip_col == true) {
