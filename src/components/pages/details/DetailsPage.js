@@ -300,7 +300,7 @@ class DetailsPage extends React.Component {
                                                     <b className={styles.piece_sold}>Not For Sale</b> 
                                                 ) : (
                                                     <Link href={`/checkout/${this.state.url_o_id}`}>
-                                                        <button className={styles.buy_now_button}>Buy</button>
+                                                        <button className={styles.buy_now_button}>Purchase</button>
                                                     </Link> 
                                                 )
                                             )
