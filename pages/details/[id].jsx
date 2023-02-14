@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import { useUser } from "@clerk/clerk-react";
+import { useState } from 'react';
 
 import { prisma } from '../../lib/prisma'
 
@@ -14,16 +15,23 @@ const Details = ({piece_list}) => {
     const id = router.query.id;
     console.log(`Page ID: ${id}`);
 
-    console.log(`Passing piece_list (Next Line): `)
-    console.log(piece_list)
+    // console.log(`Passing piece_list (Next Line): `)
+    // console.log(piece_list)
 
-    console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} ${(user != null) ?  `| User (next line):` : ``}`)
-    if (user != null) console.log(user)
+    // console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} ${(user != null) ?  `| User (next line):` : ``}`)
+    // if (user != null) console.log(user)
 
-    if (!router.isReady) return null
-    return ( 
-        <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={isSignedIn} user={user}/> 
-    )
+    console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} | User (next line):`)
+    console.log((user != null) ? user : `No User`)
+
+    if (!router.isReady) { return null }
+    else if (user == undefined || user == null) { return null }
+    else {
+        return ( 
+            <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={isSignedIn} user={user}/> 
+        )
+    }
+
 }
 
 export default Details
