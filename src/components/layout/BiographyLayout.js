@@ -12,7 +12,8 @@ const BiographyLayout = ({}) => {
                         src={`https://jwsfineartpieces.s3.us-west-1.amazonaws.com/site/bio_pic_small.jpg`}
                         alt={"Bio Pic"}
                         priority={true}
-                        layout='fill'
+                        width={200}
+                        height={267}
                         quality={100}
                     />
                 </div>
