@@ -25,7 +25,11 @@ const Details = ({piece_list}) => {
     console.log((user != null) ? user : `No User`)
 
     if (!router.isReady) { return null }
-    else if (isLoaded == false) { return null }
+    else if (isLoaded == false) { 
+        return ( 
+            <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={false} isSignedIn={false} user={null}/> 
+        )
+    }
     else if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
         return ( 
             <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={false} user={null}/> 
