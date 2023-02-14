@@ -273,7 +273,8 @@ class GalleryPage extends React.Component {
                 console.log("Screenshot list length = 0");
             }
         }
-        this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height, theme: theme, filter_menu_open: ((this.state.window_width < 800) ? false : this.state.filter_menu_open) })
+        this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height, theme: theme })
+        // this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height, theme: theme, filter_menu_open: ((this.state.window_width < 800) ? false : this.state.filter_menu_open) })
     }
 
     async update_pieces_with_theme(theme) {

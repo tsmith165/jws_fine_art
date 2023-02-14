@@ -35,6 +35,8 @@
         background-color: $dark !important;
         border-top-right-radius: 5px;
         border-top-left-radius: 5px;
+        z-index: 1;
+        overflow: visible;
       }
         .gallery_filter_menu_toggle_icon {
           width: 40px !important;
@@ -54,6 +56,7 @@
         border-top-right-radius: 5px;
         border-top-left-radius: 5px;
         z-index: 1;
+        overflow: visible;
       }
       .gallery_filter_menu {
         position: fixed; 
@@ -106,6 +109,8 @@
         border-top-left-radius: 5px;
         display: flex;
         flex-direction: row;
+        overflow: visible;
+        z-index: 1;
       }
       .gallery_filter_menu_toggle:hover {
         background-color: $light !important;
@@ -130,6 +135,7 @@
         display: flex;
         flex-direction: row;
         z-index: 1;
+        overflow: visible;
       }
       .gallery_filter_menu_toggle_open > .gallery_filter_menu_toggle_icon:hover {
         background-color: $light !important;
