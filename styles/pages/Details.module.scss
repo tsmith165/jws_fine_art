@@ -174,7 +174,22 @@
                         font-weight: bold; 
                         margin-right: 10px; 
                     }
-
+            .edit_piece_button {
+                height: 3rem;
+                font-size: 1.3rem;
+                font-weight: 700;
+                border-radius: 5px;
+                padding: 0px 10px;
+                background-color: $primary; 
+                border: 1px solid $secondary; 
+                color: $light;
+                font-weight: bold; 
+            }  
+            .edit_piece_button:hover { 
+                background-color: $secondary; 
+                border: 1px solid $secondary; 
+                color: $light; 
+            }
 
 .full_screen_container {
     position: absolute;
