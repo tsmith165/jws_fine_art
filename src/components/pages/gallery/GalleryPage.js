@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 
@@ -43,7 +44,6 @@ const BORDER_MARGIN_WIDTH = 10;
 class GalleryPage extends React.Component {
     constructor(props) {
         super(props);
-
         const piece_list = this.props.piece_list;
 
         console.log('Passed piece list:')
@@ -82,6 +82,28 @@ class GalleryPage extends React.Component {
 
     async componentWillUnmount() {
         window.removeEventListener("resize", this.handleResize);
+    }
+
+    async check_if_admin() {
+        
+        var isAdmin = true;
+        
+        if  (!isLoaded) {
+            return false;
+        }
+        if (!isSignedIn) {
+            return false;
+        }
+        if (user == null) {
+            return false;
+        } else {
+            const role = user.publicMetadata.role;
+            console.log(`USER ROLE: ${role}`)
+            if (user.publicMetadata.role !== "ADMIN") {
+                return false;
+            }
+        }
+        return true
     }
 
     handleResize() {

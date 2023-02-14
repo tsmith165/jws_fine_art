@@ -16,6 +16,12 @@ class DetailsPage extends React.Component {
     constructor(props) {
         super(props);
 
+        const isLoaded = this.props.isLoaded;
+        const isSignedIn = this.props.isSignedIn;
+        const user = this.props.user;
+        console.log(`User (Next Line):`)
+        console.log(user)
+
         this.router = props.router
 
         console.log(`ID PROP: ${this.props.id}`)
@@ -94,8 +100,12 @@ class DetailsPage extends React.Component {
         }
 
         this.state = {
+            user: user,
+            isLoaded: isLoaded,
+            isSignedIn: isSignedIn,
             debug: false,
             loading: true,
+            isAdmin: this.props.isAdmin,
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
@@ -237,6 +247,9 @@ class DetailsPage extends React.Component {
 
         console.log(`Sold: ${this.state.sold} | Available: ${this.state.available}`)
 
+        console.log(`Loaded: ${this.state.isLoaded} | Signed in: ${this.state.isSignedIn} ${(this.state.user != null) ?  `| User (next line):` : ``}`)
+        if (this.state.user != null) console.log(this.state.user.publicMetadata.role)        
+
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
         if (this.state.full_screen == true) {
@@ -333,6 +346,22 @@ class DetailsPage extends React.Component {
                                             ) : (
                                                 null
                                             )
+                                        }
+                                        {
+                                            (!this.state.isLoaded == false) ? ( null ) : (
+                                                (!this.state.isSignedIn == false) ? ( null ) : (
+                                                    (this.state.user !== undefined && this.state.user.publicMetadata.role == "ADMIN") ? ( 
+                                                        <Link href={`/edit/${this.state.url_o_id}`}>
+                                                            <div className={styles.edit_piece_button}>
+                                                                Edit Piece
+                                                            </div>
+                                                        </Link>
+                                                    ) : (
+                                                        null
+                                                    )
+                                                )
+                                            )
+
                                         }
                                     </div>
                                 </div>
