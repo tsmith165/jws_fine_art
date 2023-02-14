@@ -16,6 +16,8 @@ import Portrait from '@material-ui/icons/Portrait'; // Portrait
 import Exposure from '@material-ui/icons/Exposure'; // Black And White
 import Block from '@material-ui/icons/Block'; // None
 import FilterBAndW from '@material-ui/icons/FilterBAndW'; // Abstract
+import AttachMoney from '@material-ui/icons/AttachMoney'; // Abstract
+
 
 const theme_filters = [
     ['Water', <Waves className={styles.gallery_filter_icon} />], 
@@ -26,6 +28,7 @@ const theme_filters = [
     ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
     ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
     ['Abstract', <FilterBAndW className={styles.gallery_filter_icon} />],
+    ['For Sale', <AttachMoney className={styles.gallery_filter_icon} />],
     ['None', <Block className={styles.gallery_filter_icon} />]
 ]
 
@@ -137,11 +140,22 @@ class GalleryPage extends React.Component {
                     console.log(current_piece_json)
                     
                     var piece_theme = (current_piece_json['theme'] !== undefined ) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
+                    var piece_sold = (current_piece_json['sold'] !== undefined ) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
                     console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
-                    if ((theme != 'None') && (piece_theme !== undefined) && (!piece_theme.includes(theme))) {
-                        console.log('Skipping piece as it does not match theme')
-                        i += 1;
-                        continue;
+                    if (theme != 'None') {
+                        if (theme == 'For Sale') {
+                            if (!piece_sold) {
+                                console.log('Skipping piece as it is sold')
+                                i += 1;
+                                continue;
+                            }
+                        } else {
+                            if ((piece_theme !== undefined) && (!piece_theme.includes(theme))) {
+                                console.log('Skipping piece as it does not match theme')
+                                i += 1;
+                                continue;
+                            }
+                        }
                     }
           
                     var o_id        = (current_piece_json['o_id'] !== undefined) ? current_piece_json['o_id'] : 'None';
