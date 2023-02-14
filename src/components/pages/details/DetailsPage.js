@@ -19,19 +19,21 @@ class DetailsPage extends React.Component {
         const isLoaded = this.props.isLoaded;
         const isSignedIn = this.props.isSignedIn;
         const user = this.props.user;
-        console.log(`User (Next Line):`)
-        console.log(user)
+
+        console.log(`------------------------- LOADING PAGE -------------------------`)
+        console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} | User (next line):`)
+        console.log((user != null) ? user : `No User`)
 
         this.router = props.router
 
-        console.log(`ID PROP: ${this.props.id}`)
+        //console.log(`ID PROP: ${this.props.id}`)
         const passed_o_id = this.props.id;
 
         const piece_list = this.props.piece_list;
         const piece_list_length = piece_list.length
 
-        console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
-        console.log(piece_list)
+        // console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
+        // console.log(piece_list)
 
         var image_array = [];
         
@@ -247,8 +249,8 @@ class DetailsPage extends React.Component {
 
         console.log(`Sold: ${this.state.sold} | Available: ${this.state.available}`)
 
-        console.log(`Loaded: ${this.state.isLoaded} | Signed in: ${this.state.isSignedIn} ${(this.state.user != null) ?  `| User (next line):` : ``}`)
-        if (this.state.user != null) console.log(this.state.user.publicMetadata.role)        
+        console.log(`------------------------- RENDERING PAGE -------------------------`)
+        console.log(`Loaded: ${this.state.isLoaded} | Signed in: ${this.state.isSignedIn} | User Role: ${(this.state.user !== undefined && this.state.user.publicMetadata.role == "ADMIN") ? 'IS ADMIN' : 'No Role'}`)
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
@@ -348,18 +350,14 @@ class DetailsPage extends React.Component {
                                             )
                                         }
                                         {
-                                            (!this.state.isLoaded == false) ? ( null ) : (
-                                                (!this.state.isSignedIn == false) ? ( null ) : (
-                                                    (this.state.user !== undefined && this.state.user.publicMetadata.role == "ADMIN") ? ( 
-                                                        <Link href={`/edit/${this.state.url_o_id}`}>
-                                                            <div className={styles.edit_piece_button}>
-                                                                Edit Piece
-                                                            </div>
-                                                        </Link>
-                                                    ) : (
-                                                        null
-                                                    )
-                                                )
+                                            (this.state.user !== undefined && this.state.user.publicMetadata.role == "ADMIN") ? ( 
+                                                <Link href={`/edit/${this.state.url_o_id}`}>
+                                                    <div className={styles.edit_piece_button}>
+                                                        Edit Piece
+                                                    </div>
+                                                </Link>
+                                            ) : (
+                                                null
                                             )
 
                                         }
