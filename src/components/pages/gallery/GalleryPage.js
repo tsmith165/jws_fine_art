@@ -141,11 +141,17 @@ class GalleryPage extends React.Component {
                     
                     var piece_theme = (current_piece_json['theme'] !== undefined ) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
                     var piece_sold = (current_piece_json['sold'] !== undefined ) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
+                    var piece_available = (current_piece_json['available'] !== undefined ) ? ((current_piece_json['available'] != null) ? current_piece_json['available'] : false) : false;
                     console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
                     if (theme != 'None') {
                         if (theme == 'For Sale') {
                             if (!piece_sold) {
                                 console.log('Skipping piece as it is sold')
+                                i += 1;
+                                continue;
+                            }
+                            if (!piece_available) {
+                                console.log('Skipping piece as it is not available')
                                 i += 1;
                                 continue;
                             }
