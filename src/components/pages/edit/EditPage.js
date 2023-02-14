@@ -335,7 +335,7 @@ class EditPage extends React.Component {
             console.log("--------------- Attempting To Edit Piece Details ---------------")
             console.log(`Editing Piece DB ID: ${this.state.piece_db_id} | Title: ${title} | Sold: ${sold}`)
             if (!this.state.uploaded) {
-                const response = await edit_details(this.state.piece_db_id, title, this.state.description, type, sold, price, instagram, this.state.piece_details['width'], this.state.piece_details['height'], real_width, real_height, this.state.theme, available, this.state)
+                const response = await edit_details(this.state.piece_db_id, title, this.state.description, type, sold, price, instagram, this.state.piece_details['width'], this.state.piece_details['height'], real_width, real_height, this.state.theme, available)
     
                 console.log(`Edit Piece Response (Next Line):`)
                 console.log(response)
@@ -474,16 +474,20 @@ class EditPage extends React.Component {
     }
 
     handle_multi_select_change(new_selected_options) {
-        console.log(`New theme passed (Next Line):`); 
-        console.log(new_selected_options)
-        var theme_string = ''
+        console.log(`New theme passed (Next Lines):`); 
+        //console.log(new_selected_options)
+        var theme_string = 'None'
+        var final_options = []
         for (var option_index in new_selected_options) {
-            let option = new_selected_options[option_index]
-            console.log(option);
-            theme_string += `${option.value}, `
+            let options = new_selected_options[option_index]
+            console.log(options);
+            if (options.value != 'None') {
+                theme_string += `${options.value}, `
+                final_options.push(options)
+            }
         }
         console.log(`Setting theme: ${theme_string}`)
-        this.setState({theme: theme_string, theme_options: new_selected_options});
+        this.setState({theme: theme_string, theme_options: final_options});
     }
 
     render() {

@@ -1,10 +1,8 @@
 import React from 'react';
 import { Tooltip } from 'react-tooltip'
-
-import { fetch_pieces } from '../../../../lib/api_calls';
+import 'react-tooltip/dist/react-tooltip.css'
 
 import styles from '../../../../styles/components/Gallery.module.scss'
-import 'react-tooltip/dist/react-tooltip.css'
 
 import Piece from '../../../components/Piece'
 
