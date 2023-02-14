@@ -50,6 +50,10 @@
             color: $primary !important; 
             border-top-left-radius: 5px; 
         }
+        .hamburger_button:hover { 
+            background-color: $primary !important; 
+            color: $light !important; 
+        }
         
         .instagram_link_container { 
             position: absolute; 
