@@ -53,7 +53,7 @@ class EditPage extends React.Component {
         var real_width = '';
         var real_height = '';
         var image_path = '';
-        var instagram = 'p/';
+        var instagram = '';
         var theme = 'None';
         var theme_options = [{ value: theme, label: theme }]
         var available = true;
@@ -430,7 +430,7 @@ class EditPage extends React.Component {
                     real_width: 0,
                     real_height: 0,
                     image_path: uploaded_image_path,
-                    instagram: 'p/',
+                    instagram: '',
                     theme: 'None',
                     available: true
                 }
