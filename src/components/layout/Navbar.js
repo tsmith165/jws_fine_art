@@ -66,7 +66,7 @@ const Navbar = ({most_recent_page_id}) => {
                 
 
                                 
-                <div className={styles.page_menu_full_container} >
+                <div className={styles.page_menu_full_container} onMouseLeave={ (e) => { e.preventDefault(); set_menu_open(false) }}>
                     <div className={styles.menu_button_container} onClick={ (e) => { e.preventDefault(); set_menu_open(!menu_open) }}>
                         <MenuRoundedIcon className={(menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
                     </div>
