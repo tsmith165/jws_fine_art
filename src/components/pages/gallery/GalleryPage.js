@@ -28,7 +28,7 @@ const theme_filters = [
     ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
     ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
     ['Abstract', <FilterBAndW className={styles.gallery_filter_icon} />],
-    ['For Sale', <ShoppingCart className={styles.gallery_filter_icon} />],
+    ['Available', <ShoppingCart className={styles.gallery_filter_icon} />],
     ['None', <Block className={styles.gallery_filter_icon} />]
 ]
 
@@ -144,8 +144,8 @@ class GalleryPage extends React.Component {
                     var piece_available = (current_piece_json['available'] !== undefined ) ? ((current_piece_json['available'] != null) ? current_piece_json['available'] : false) : false;
                     console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
                     if (theme != 'None') {
-                        if (theme == 'For Sale') {
-                            if (!piece_sold) {
+                        if (theme == 'Available') {
+                            if (piece_sold) {
                                 console.log('Skipping piece as it is sold')
                                 i += 1;
                                 continue;
