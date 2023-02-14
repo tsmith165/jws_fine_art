@@ -476,7 +476,7 @@ class EditPage extends React.Component {
     handle_multi_select_change(new_selected_options) {
         console.log(`New theme passed (Next Lines):`); 
         //console.log(new_selected_options)
-        var theme_string = 'None'
+        var theme_string = ''
         var final_options = []
         for (var option_index in new_selected_options) {
             let options = new_selected_options[option_index]
@@ -486,6 +486,7 @@ class EditPage extends React.Component {
                 final_options.push(options)
             }
         }
+        theme_string = (theme_string == '') ? 'None' : theme_string
         console.log(`Setting theme: ${theme_string}`)
         this.setState({theme: theme_string, theme_options: final_options});
     }
