@@ -46,8 +46,8 @@ class GalleryPage extends React.Component {
         super(props);
         const piece_list = this.props.piece_list;
 
-        console.log('Passed piece list:')
-        console.log(piece_list)
+        // console.log('Passed piece list:')
+        // console.log(piece_list)
         
         this.state = {
             loading: true,
@@ -108,7 +108,7 @@ class GalleryPage extends React.Component {
 
     handleResize() {
         // Set window width/height to state
-        console.log(`Width: ${window.innerWidth} | Height: ${window.innerHeight}`)
+        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`)
         this.setState({
           window_width: window.innerWidth,
           window_height: window.innerHeight,
@@ -117,9 +117,6 @@ class GalleryPage extends React.Component {
 
     async create_gallery(piece_list, theme) {
         const piece_list_length = piece_list.length
-
-        console.log('Component mounted.  Creating gallery...')     
-        console.log(`Passed Window Size: ${this.state.window_width} | ${this.state.window_height}`)
 
         var gallery_pieces = [];
         var column_bottom_list = [];
@@ -150,7 +147,7 @@ class GalleryPage extends React.Component {
             var row_starting_height = INNER_MARGIN_WIDTH;
             var skip_col = false;
     
-            console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
+            console.log(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
             console.log(piece_list)
             
             if (piece_list != null && piece_list.length > 0) {
@@ -159,12 +156,12 @@ class GalleryPage extends React.Component {
                 var i = 0; var real_i = 0;
                 while (i < piece_list_length) {
                     var current_piece_json =  piece_list[i];
-                    console.log(current_piece_json)
+                    // console.log(current_piece_json)
                     
                     var piece_theme = (current_piece_json['theme'] !== undefined ) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
                     var piece_sold = (current_piece_json['sold'] !== undefined ) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
                     var piece_available = (current_piece_json['available'] !== undefined ) ? ((current_piece_json['available'] != null) ? current_piece_json['available'] : false) : false;
-                    console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
+                    // console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
                     if (theme != 'None') {
                         if (theme == 'Available') {
                             if (piece_sold) {

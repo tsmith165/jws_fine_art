@@ -250,7 +250,7 @@ class DetailsPage extends React.Component {
         console.log(`Sold: ${this.state.sold} | Available: ${this.state.available}`)
 
         console.log(`------------------------- RENDERING PAGE -------------------------`)
-        console.log(`Loaded: ${this.state.isLoaded} | Signed in: ${this.state.isSignedIn} | User Role: ${(this.state.user !== undefined && this.state.user.publicMetadata.role == "ADMIN") ? 'IS ADMIN' : 'No Role'}`)
+        console.log(`Loaded: ${this.state.isLoaded !== undefined && this.state.isLoaded} | Signed in: ${this.state.isLoaded !== undefined && this.state.isSignedIn} | User Role: ${(this.state.user !== undefined && this.state.user !== null && this.state.user.publicMetadata.role == "ADMIN") ? 'IS ADMIN' : 'No Role'}`)
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
@@ -350,7 +350,7 @@ class DetailsPage extends React.Component {
                                             )
                                         }
                                         {
-                                            (this.state.user !== undefined && this.state.user.publicMetadata.role == "ADMIN") ? ( 
+                                            (this.state.user !== undefined && this.state.user !== null && this.state.user.publicMetadata.role == "ADMIN") ? ( 
                                                 <Link href={`/edit/${this.state.url_o_id}`}>
                                                     <div className={styles.edit_piece_button}>
                                                         Edit Piece
