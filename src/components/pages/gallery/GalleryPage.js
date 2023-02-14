@@ -1,9 +1,10 @@
 import React from 'react';
-
+import { Tooltip } from 'react-tooltip'
 
 import { fetch_pieces } from '../../../../lib/api_calls';
 
 import styles from '../../../../styles/components/Gallery.module.scss'
+import 'react-tooltip/dist/react-tooltip.css'
 
 import Piece from '../../../components/Piece'
 
@@ -250,9 +251,12 @@ class GalleryPage extends React.Component {
             let icon = theme_filters[i][1];
             filter_menu_array.push((
                 <div className={(filter == this.state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
+                    id={filter}
+                    data-tooltip-content={`${filter}`}
                     onClick={(e) => { e.preventDefault(); this.update_pieces_with_theme(filter) }}
                 >
                     {icon}
+                    <Tooltip anchorId={filter} />
                 </div>
             ))
         }

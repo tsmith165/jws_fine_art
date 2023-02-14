@@ -37,6 +37,7 @@
     "react-places-autocomplete": "^7.3.0",
     "react-query": "^3.34.19",
     "react-select": "^5.7.0",
+    "react-tooltip": "^5.7.5",
     "sass": "^1.49.9",
     "sharp": "^0.30.3",
     "stripe": "^8.215.0",
