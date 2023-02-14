@@ -16,7 +16,7 @@ import Portrait from '@material-ui/icons/Portrait'; // Portrait
 import Exposure from '@material-ui/icons/Exposure'; // Black And White
 import Block from '@material-ui/icons/Block'; // None
 import FilterBAndW from '@material-ui/icons/FilterBAndW'; // Abstract
-import AttachMoney from '@material-ui/icons/AttachMoney'; // Abstract
+import ShoppingCart from '@material-ui/icons/ShoppingCart'; // Abstract
 
 
 const theme_filters = [
@@ -28,7 +28,7 @@ const theme_filters = [
     ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
     ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
     ['Abstract', <FilterBAndW className={styles.gallery_filter_icon} />],
-    ['For Sale', <AttachMoney className={styles.gallery_filter_icon} />],
+    ['For Sale', <ShoppingCart className={styles.gallery_filter_icon} />],
     ['None', <Block className={styles.gallery_filter_icon} />]
 ]
 
