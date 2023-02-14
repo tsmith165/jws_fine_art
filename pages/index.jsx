@@ -11,7 +11,7 @@ export default function Home({piece_list}) {
   //console.log(piece_list);
 
   const window_size = useWindowSize()
-  console.log(`Width: ${window_size.width} | Height: ${window_size.height}`)
+  // console.log(`Width: ${window_size.width} | Height: ${window_size.height}`)
 
   return (
     <PageLayout page_title={"JWS Fine Art"}>
