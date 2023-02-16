@@ -85,19 +85,19 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state}) => {
                 </Link>
 
                 { (app_state.url_path == '/') ? (
-                    <div className={(app_state.filter_menu_open == true) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle}>
-                        {(app_state.filter_menu_open == true) ? (
-                            <div className={styles.gallery_filter_menu_container} >
-                                <div className={styles.gallery_filter_menu} >
-                                    { filter_menu_array }
-                                </div>
-                            </div>
-                        ) : (  
-                            <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); app_set_state({theme: app_state.theme, url_path: app_state.url_path, filter_menu_open: !app_state.filter_menu_open}) }}>
+                    <div className={(app_state.filter_menu_open == false) ? styles.gallery_filter_menu_toggle : `${styles.gallery_filter_menu_toggle} ${styles.gallery_filter_menu_toggle_open}` }>
+                        {(app_state.filter_menu_open == false) ? (
+                            <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, url_path: app_state.url_path}) }}>
                                 Filters
                             </div>
-                        )}
-                        <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} onClick={(e) => { e.preventDefault(); app_set_state({theme: app_state.theme, url_path: app_state.url_path, filter_menu_open: !app_state.filter_menu_open}) }}/>
+                        ) : ( null ) }
+                        <Tune className={styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, url_path: app_state.url_path}) }}/>
+                    </div>
+                ) : ( null ) }
+
+                {(app_state.url_path == '/' && app_state.filter_menu_open == true) ? (
+                    <div className={styles.gallery_filter_menu} >
+                        { filter_menu_array }
                     </div>
                 ) : ( null ) }
 
