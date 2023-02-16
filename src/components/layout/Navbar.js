@@ -10,7 +10,7 @@ import styles from "../../../styles/layout/Navbar.module.scss"
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton, ClerkLoading } from "@clerk/nextjs";
 
 const Navbar = ({most_recent_page_id}) => {
     const use_account_icon_as_link = true;
@@ -49,11 +49,11 @@ const Navbar = ({most_recent_page_id}) => {
                 
                 <div className={styles.clerk_user_button_container}>
                     <SignedIn>
-                    <UserButton
-                        appearance={{
-                        userProfile: { elements: { breadcrumbs: "bg-slate-500" } },
-                        }}
-                    />
+                        <UserButton
+                            appearance={{
+                            userProfile: { elements: { breadcrumbs: "bg-slate-500" } },
+                            }}
+                        />
                     </SignedIn>
                     <SignedOut>
                         <Link href="/signin">
