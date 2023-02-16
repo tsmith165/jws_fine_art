@@ -75,6 +75,7 @@
                     line-height: 1.5em; 
                     text-align: center; 
                     font-family: $lato_300; 
+                    font-weight: 800;
                 }
         .details_form_container { 
             display: flex;
@@ -95,6 +96,8 @@
                     justify-content: left; 
                     white-space: pre-wrap; 
                     color: $secondary; 
+                    font-family: $lato_300; 
+                    font-weight: 800;
                     font-size: 1.2em; 
                     line-height: 1.4em; 
                 }
@@ -114,14 +117,14 @@
             }
                 .buy_now_button {
                     height: 3rem;
-                    font-size: 1.3rem;
-                    font-weight: 700;
                     border-radius: 5px;
                     padding: 0px 10px;
                     background-color: $primary; 
                     border: 1px solid $secondary; 
                     color: $light;
-                    font-weight: bold; 
+                    font-family: $lato_300; 
+                    font-weight: 800;
+                    font-size: 20px;
                 }  
                 .buy_now_button:hover { 
                     background-color: $secondary; 
@@ -130,16 +133,22 @@
                 }
                 .price_text { 
                     font-size: 24px;
+                    font-family: $lato_300; 
+                    font-weight: 800;
                     margin-right: 10px; 
                     color: $secondary; 
                 }
                 .piece_sold {
                     font-size: 24px;
+                    font-family: $lato_300; 
+                    font-weight: 800;
                     margin-right: 10px; 
                     color: $error; 
                 }
                 .piece_nfs  { 
                     font-size: 24px;
+                    font-family: $lato_300; 
+                    font-weight: 800;
                     margin-right: 10px; 
                     color: $error; 
                 }
