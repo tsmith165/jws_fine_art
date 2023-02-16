@@ -6,11 +6,14 @@
   height: 100vh; 
   width: 100vw; 
   z-index: 10;
+  pointer-events: none;
 }
   .gallery_navbar_container { 
     position: relative;
     height: 100px; 
     width: 100%; 
+    z-index: 10;
+    
   }
 
   .gallery_main_container { 
