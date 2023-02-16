@@ -40,6 +40,7 @@ const App = ({ Component, pageProps }) => {
 
   console.log(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
   
+  console.log(`Rendering APP with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
 
   return (
     <ClerkProvider appearance={{baseTheme: dark}}>
