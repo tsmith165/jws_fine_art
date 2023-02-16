@@ -15,9 +15,7 @@ export default function Home({piece_list}) {
 
   return (
     <PageLayout page_title={"JWS Fine Art"}>
-      <div className={styles.gallery_container}>
-        <GalleryPage piece_list={piece_list} window_width={window_size.width} window_height={window_size.height}/>
-      </div>
+      <GalleryPage piece_list={piece_list} window_width={window_size.width} window_height={window_size.height}/>
     </PageLayout>
   )
 }
