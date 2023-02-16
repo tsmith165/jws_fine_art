@@ -47,6 +47,9 @@ export const getServerSideProps = async ({ req, res }) => {
     var piece_list = await prisma.piece.findMany()
     piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
+    console.log(`Passing piece list (Next Line):`)
+    console.log(piece_list)
+
     return {
       props: {"piece_list": piece_list, "most_recent_id": piece_list[piece_list.length - 1]['id']}, // will be passed to the page component as props
     }
