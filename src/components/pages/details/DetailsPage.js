@@ -20,7 +20,7 @@ class DetailsPage extends React.Component {
         const user = this.props.user;
 
         console.log(`------------------------- LOADING PAGE -------------------------`)
-        console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} | User (next line):`)
+        console.log(`Signed in: ${isSignedIn} | User (next line):`)
         console.log((user != null) ? user : `No User`)
 
         this.router = props.router
@@ -285,7 +285,7 @@ class DetailsPage extends React.Component {
                                         <CircularProgress color="inherit" className={styles.loader}/>
                                     </div>
                                 ) : (
-                                    {this.state.image_array}
+                                    this.state.image_array
                                 )}
                             </div>
                         </div>
