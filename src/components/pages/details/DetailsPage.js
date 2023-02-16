@@ -290,7 +290,7 @@ class DetailsPage extends React.Component {
                             <div className={styles.title_container}>
                                 <div className={styles.title_inner_container}>
                                     <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.last_oid)}} />
-                                    <b className={styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</b>
+                                    <div className={styles.title}>{ (title == '') ? (``) : (`"${title}"`) }</div>
                                     <ArrowForwardIosRoundedIcon className={`${styles.title_arrow}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.next_oid)}} />
                                 </div>
                             </div>
@@ -300,7 +300,7 @@ class DetailsPage extends React.Component {
                                         {
                                             (this.state.sold == false) ? ( 
                                                 (this.state.available == true) ? ( 
-                                                    <b className={styles.price_text}>{`$${this.state.price}`}</b> 
+                                                    <div className={styles.price_text}>{`$${this.state.price}`}</div> 
                                                 ) : (
                                                     null
                                                 )
@@ -310,10 +310,10 @@ class DetailsPage extends React.Component {
                                         }
                                         {
                                             (this.state.sold == true) ? ( 
-                                                <b className={styles.piece_sold}>Sold</b> 
+                                                <div className={styles.piece_sold}>Sold</div> 
                                             ) : ( 
                                                 (this.state.available == false) ? ( 
-                                                    <b className={styles.piece_sold}>Not For Sale</b> 
+                                                    <div className={styles.piece_sold}>Not For Sale</div> 
                                                 ) : (
                                                     <Link href={`/checkout/${this.state.url_o_id}`}>
                                                         <button className={styles.buy_now_button}>Purchase</button>

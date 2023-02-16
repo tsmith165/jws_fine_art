@@ -571,12 +571,39 @@ class EditPage extends React.Component {
                                     </select>
                                 </div>
 
-                                {/* Instagram Link Textbox */}
-                                <div className={form_styles.input_container}>
+                                {/* Theme Multiselect */}
+                                <div className={form_styles.input_multi_select_container}>
                                     <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Instagram</div>
+                                        <div className={form_styles.input_label}>Theme</div>
                                     </div>
-                                    <input id="instagram" className={form_styles.input_textbox} value={ this.state.instagram } key={'instagram'} onChange={ (e) => {e.preventDefault(); this.setState({instagram: e.target.value}); }}/>
+                                    <Select
+                                        value={this.state.theme_options}
+                                        isMulti
+                                        id="theme"
+                                        name="theme"
+                                        className={form_styles.input_multi_select}
+                                        classNamePrefix="select"
+                                        onChange={(new_selected_options) => this.handle_multi_select_change(new_selected_options) }
+                                        styles={{
+                                            control: (baseStyles, state) => ({
+                                                ...baseStyles,
+                                                borderColor: '',
+                                                backgroundColor: '#45544d'
+                                                
+                                            }),
+                                        }}
+                                        options={[
+                                            { value: 'Water', label: 'Water' },
+                                            { value: 'Snow', label: 'Snow' },
+                                            { value: 'Mountains', label: 'Mountains' },
+                                            { value: 'Landscape', label: 'Landscape' },
+                                            { value: 'City', label: 'City' },
+                                            { value: 'Portrait', label: 'Portrait' },
+                                            { value: 'Black and White', label: 'Black and White' },
+                                            { value: 'Abstract', label: 'Abstract' },
+                                            { value: 'None', label: 'None' }
+                                        ]}
+                                    />
                                 </div>
 
 
@@ -603,40 +630,13 @@ class EditPage extends React.Component {
                                     </div> 
                                 </div>
 
-                                {/* Split Container For Theme / Available */}
+                                {/* Split Container For Instagram Link / Available */}
                                 <div className={form_styles.input_container_split_container}>         
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Theme</div>
+                                            <div className={form_styles.input_label}>Instagram</div>
                                         </div>
-                                        <Select
-                                            value={this.state.theme_options}
-                                            isMulti
-                                            id="theme"
-                                            name="theme"
-                                            className={form_styles.input_multi_select}
-                                            classNamePrefix="select"
-                                            onChange={(new_selected_options) => this.handle_multi_select_change(new_selected_options) }
-                                            styles={{
-                                                control: (baseStyles, state) => ({
-                                                    ...baseStyles,
-                                                    borderColor: '',
-                                                    backgroundColor: '#45544d'
-                                                    
-                                                }),
-                                            }}
-                                            options={[
-                                                { value: 'Water', label: 'Water' },
-                                                { value: 'Snow', label: 'Snow' },
-                                                { value: 'Mountains', label: 'Mountains' },
-                                                { value: 'Landscape', label: 'Landscape' },
-                                                { value: 'City', label: 'City' },
-                                                { value: 'Portrait', label: 'Portrait' },
-                                                { value: 'Black and White', label: 'Black and White' },
-                                                { value: 'Abstract', label: 'Abstract' },
-                                                { value: 'None', label: 'None' }
-                                            ]}
-                                        />
+                                        <input id="instagram" className={form_styles.input_textbox} value={ this.state.instagram } key={'instagram'} onChange={ (e) => {e.preventDefault(); this.setState({instagram: e.target.value}); }}/>
                                     </div>
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
