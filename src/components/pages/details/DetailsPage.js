@@ -16,7 +16,6 @@ class DetailsPage extends React.Component {
     constructor(props) {
         super(props);
 
-        const isLoaded = this.props.isLoaded;
         const isSignedIn = this.props.isSignedIn;
         const user = this.props.user;
 
@@ -102,7 +101,6 @@ class DetailsPage extends React.Component {
 
         this.state = {
             user: user,
-            isLoaded: isLoaded,
             isSignedIn: isSignedIn,
             debug: false,
             loading: true,
@@ -144,7 +142,7 @@ class DetailsPage extends React.Component {
 
     async componentDidMount() {        
         // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
-        // this.setState({loading: false})
+        this.setState({loading: false})
     }
 
     async update_current_piece(piece_list, o_id) {
@@ -249,7 +247,7 @@ class DetailsPage extends React.Component {
         console.log(`Sold: ${this.state.sold} | Available: ${this.state.available}`)
 
         console.log(`------------------------- RENDERING PAGE -------------------------`)
-        console.log(`Loaded: ${this.state.isLoaded !== undefined && this.state.isLoaded} | Signed in: ${this.state.isLoaded !== undefined && this.state.isSignedIn} | User Role: ${(this.state.user !== undefined && this.state.user !== null && this.state.user.publicMetadata.role == "ADMIN") ? 'IS ADMIN' : 'No Role'}`)
+        console.log(`Signed in: ${this.state.isSignedIn !== undefined && this.state.isSignedIn} | User Role: ${(this.state.user !== undefined && this.state.user !== null && this.state.user.publicMetadata.role == "ADMIN") ? 'IS ADMIN' : 'No Role'}`)
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
@@ -281,7 +279,14 @@ class DetailsPage extends React.Component {
                     <div className={styles.details_container}>
                         <div className={styles.details_container_left}>
                             <div className={styles.details_image_outer_container}>
-                                {this.state.image_array}
+                                { (this.state.loading == true) ? ( 
+                                    <div className={styles.loader_container}>
+                                        <div>Loading Gallery</div>
+                                        <CircularProgress color="inherit" className={styles.loader}/>
+                                    </div>
+                                ) : (
+                                    {this.state.image_array}
+                                )}
                             </div>
                         </div>
                         <div className={styles.details_container_right}>

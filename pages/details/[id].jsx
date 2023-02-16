@@ -24,15 +24,15 @@ const Details = ({piece_list}) => {
 
     if (!router.isReady) { return null }
     if (AUTH_ENABLED == false) { 
-        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={true} isSignedIn={false} user={null}/> )
+        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={false} user={null}/> )
     }
     if (isLoaded == false) { 
-        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={false} isSignedIn={false} user={null}/> )
+        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={false} user={null}/> )
     }
     if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
-        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={false} user={null}/> )
+        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={false} user={null}/> )
     } 
-    return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={isSignedIn} user={user}/> )
+    return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={isSignedIn} user={user}/> )
 }
 
 export default Details
