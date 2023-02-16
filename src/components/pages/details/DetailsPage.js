@@ -16,10 +16,13 @@ class DetailsPage extends React.Component {
     constructor(props) {
         super(props);
 
+        this.app_state = this.props.app_state;
+        this.app_set_state = this.props.app_set_state.bind(this);
+
         const isSignedIn = this.props.isSignedIn;
         const user = this.props.user;
 
-        console.log(`------------------------- LOADING PAGE -------------------------`)
+        console.log(`------------------------- LOADING DETAILS PAGE -------------------------`)
         console.log(`Signed in: ${isSignedIn} | User (next line):`)
         console.log((user != null) ? user : `No User`)
 
@@ -241,6 +244,8 @@ class DetailsPage extends React.Component {
     }
 
     render() {
+        console.log(`Rendering DETAILS with app_state URL Path: ${this.app_state.url_path} | Theme: ${this.app_state.theme} | Filter Menu Open: ${this.app_state.filter_menu_open}`)
+        
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(this.state.piece_details)
 
