@@ -44,7 +44,7 @@ class DetailsPage extends React.Component {
         
         var current_piece = null;
         var piece_position = 0;
-        for (var i=0; i < piece_list.length; i++) {
+        for (var i=0; i < piece_list_length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
                 piece_position = i
             }
