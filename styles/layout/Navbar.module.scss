@@ -316,7 +316,7 @@
         color: $light !important;
         background-color: $dark !important;
         border-top-right-radius: 5px;
-        border-top-left-radius: 5px;
+        border-top-left-radius: 0px !important;
         display: flex;
         flex-direction: row;
         z-index: 1;

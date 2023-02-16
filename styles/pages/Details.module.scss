@@ -75,7 +75,7 @@
                     line-height: 1.5em; 
                     text-align: center; 
                     font-family: $lato_300; 
-                    font-weight: 800;
+                    font-weight: 700;
                 }
         .details_form_container { 
             display: flex;
@@ -97,7 +97,7 @@
                     white-space: pre-wrap; 
                     color: $secondary; 
                     font-family: $lato_300; 
-                    font-weight: 800;
+                    font-weight: 600;
                     font-size: 1.2em; 
                     line-height: 1.4em; 
                 }
@@ -123,7 +123,7 @@
                     border: 1px solid $secondary; 
                     color: $light;
                     font-family: $lato_300; 
-                    font-weight: 800;
+                    font-weight: 600;
                     font-size: 20px;
                 }  
                 .buy_now_button:hover { 
@@ -134,21 +134,21 @@
                 .price_text { 
                     font-size: 24px;
                     font-family: $lato_300; 
-                    font-weight: 800;
+                    font-weight: 600;
                     margin-right: 10px; 
                     color: $secondary; 
                 }
                 .piece_sold {
                     font-size: 24px;
                     font-family: $lato_300; 
-                    font-weight: 800;
+                    font-weight: 600;
                     margin-right: 10px; 
                     color: $error; 
                 }
                 .piece_nfs  { 
                     font-size: 24px;
                     font-family: $lato_300; 
-                    font-weight: 800;
+                    font-weight: 600;
                     margin-right: 10px; 
                     color: $error; 
                 }
@@ -180,19 +180,18 @@
                     .instagram_link_label { 
                         font-size: 1.5rem; 
                         line-height: 3rem; 
-                        font-weight: bold; 
+                        font-weight: 500; 
                         margin-right: 10px; 
                     }
             .edit_piece_button {
                 height: 3rem;
                 font-size: 1.3rem;
-                font-weight: 700;
                 border-radius: 5px;
                 padding: 0px 10px;
                 background-color: $primary; 
                 border: 1px solid $secondary; 
                 color: $light;
-                font-weight: bold; 
+                font-weight: 500; 
             }  
             .edit_piece_button:hover { 
                 background-color: $secondary; 
@@ -256,7 +255,7 @@
 .loader_container > div {
     color: $light;
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 600;
     padding-bottom: 20px;
 }
     .loader { 
