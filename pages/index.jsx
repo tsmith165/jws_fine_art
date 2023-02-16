@@ -6,7 +6,7 @@ import GalleryPage from '../src/components/pages/gallery/GalleryPage';
 import styles from '../styles/components/Gallery.module.scss'
 import useWindowSize from '../lib/useWindowSize'
 
-export default function Home({piece_list}) {
+export default function Home({piece_list, app_state, app_set_state}) {
   //console.log("CURRENT PIECE LIST (NEXT LINE):")
   //console.log(piece_list);
 
@@ -15,7 +15,7 @@ export default function Home({piece_list}) {
 
   return (
     <PageLayout page_title={"JWS Fine Art"}>
-      <GalleryPage piece_list={piece_list} window_width={window_size.width} window_height={window_size.height}/>
+      <GalleryPage piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} window_width={window_size.width} window_height={window_size.height}/>
     </PageLayout>
   )
 }

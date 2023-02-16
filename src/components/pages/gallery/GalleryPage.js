@@ -19,6 +19,9 @@ class GalleryPage extends React.Component {
         super(props);
         const piece_list = this.props.piece_list;
 
+        this.app_state = this.props.app_state;
+        this.app_set_state = this.props.app_set_state.bind(this);
+
         // console.log('Passed piece list:')
         // console.log(piece_list)
         
@@ -53,30 +56,18 @@ class GalleryPage extends React.Component {
         this.handleResize();
     }
 
-    async componentWillUnmount() {
-        window.removeEventListener("resize", this.handleResize);
+    async componentDidUpdate(prevProps, prevState) {
+        console.log('prev (next)')
+        console.log(prevProps)
+        console.log('cur (next)')
+        console.log(this.props)
+        if (prevProps.app_state.theme !== this.props.app_state.theme) {
+            this.create_gallery(this.state.piece_list, this.props.app_state.theme)
+        }
     }
 
-    async check_if_admin() {
-        
-        var isAdmin = true;
-        
-        if  (!isLoaded) {
-            return false;
-        }
-        if (!isSignedIn) {
-            return false;
-        }
-        if (user == null) {
-            return false;
-        } else {
-            const role = user.publicMetadata.role;
-            console.log(`USER ROLE: ${role}`)
-            if (user.publicMetadata.role !== "ADMIN") {
-                return false;
-            }
-        }
-        return true
+    async componentWillUnmount() {
+        window.removeEventListener("resize", this.handleResize);
     }
 
     handleResize() {
@@ -148,7 +139,7 @@ class GalleryPage extends React.Component {
                                 continue;
                             }
                         } else {
-                            if ((piece_theme !== undefined) && (!piece_theme.includes(theme))) {
+                            if ((piece_theme !== undefined) && (!piece_theme.includes(this.props.app_state.theme))) {
                                 console.log('Skipping piece as it does not match theme')
                                 i += 1;
                                 continue;
