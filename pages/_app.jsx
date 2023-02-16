@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import * as gtag from '../lib/gtag'
@@ -13,16 +12,23 @@ import Layout from '../src/components/layout/Layout'
 
 const ADMIN_PAGES = new Set(['/edit/[id]', '/manage', '/admin', '/orders'])
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App = ({ Component, pageProps }) => {
   const router = useRouter()
   const { pathname } = useRouter();
   const isPrivatePath = ADMIN_PAGES.has(pathname)
-  console.log(`Pathname ${pathname} is private?: ${isPrivatePath}`)
+
+  const [app_state, app_set_state] = useState({
+    url_path: pathname, 
+    filter_menu_open: false,
+    theme: 'None', 
+  });
+  console.log(`Using state with URL Pathname: ${app_state.url_path} | Theme: ${app_state.theme}`)
 
   useEffect(() => {
     const handleRouteChange = (url) => {
       console.log(`Sending analytics call with url: ${url}`)
       gtag.pageview(url)
+      app_set_state({url_path: url, filter_menu_open: false})
     }
     router.events.on('routeChangeComplete', handleRouteChange)
     router.events.on('hashChangeComplete', handleRouteChange)
@@ -33,6 +39,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   }, [router.events])
 
   console.log(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
+  
 
   return (
     <ClerkProvider appearance={{baseTheme: dark}}>
@@ -59,15 +66,15 @@ const App = ({ Component, pageProps }: AppProps) => {
         }}
       />
       {!isPrivatePath && (
-        <Layout most_recent_page_id={pageProps.most_recent_id}>
-          <Component {...pageProps} />
+        <Layout most_recent_page_id={pageProps.most_recent_id} app_state={app_state} app_set_state={app_set_state}>
+          <Component {...pageProps} app_state={app_state} app_set_state={app_set_state}/>
         </Layout>
       )}
       {isPrivatePath && (
         <>
           <SignedIn>
-            <Layout most_recent_page_id={pageProps.most_recent_id}>
-              <Component {...pageProps} />
+            <Layout most_recent_page_id={pageProps.most_recent_id} app_state={app_state} app_set_state={app_set_state}>
+              <Component {...pageProps} app_state={app_state} app_set_state={app_set_state}/>
             </Layout>
           </SignedIn>
           <SignedOut>

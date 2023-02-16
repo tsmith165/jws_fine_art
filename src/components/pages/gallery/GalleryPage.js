@@ -1,37 +1,10 @@
 import React from 'react';
 
-import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 
 import styles from '../../../../styles/components/Gallery.module.scss'
 
 import Piece from '../../../components/Piece'
-
-import Tune from '@material-ui/icons/Tune';     // Filter Menu Toggle Button
-import AcUnit from '@material-ui/icons/AcUnit'; // Snow
-import Waves from '@material-ui/icons/Waves';   // Ocean
-import Landscape from '@material-ui/icons/Landscape'; // Mountains
-import LocationCity from '@material-ui/icons/LocationCity'; // City
-import LocalFlorist from '@material-ui/icons/LocalFlorist'; // Flowers
-import Portrait from '@material-ui/icons/Portrait'; // Portrait
-import Exposure from '@material-ui/icons/Exposure'; // Black And White
-import Block from '@material-ui/icons/Block'; // None
-import FilterBAndW from '@material-ui/icons/FilterBAndW'; // Abstract
-import ShoppingCart from '@material-ui/icons/ShoppingCart'; // Abstract
-
-
-const theme_filters = [
-    ['Water', <Waves className={styles.gallery_filter_icon} />], 
-    ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
-    ['Mountain', <Landscape className={styles.gallery_filter_icon} />], 
-    ['Landscape', <LocalFlorist className={styles.gallery_filter_icon} />], 
-    ['City', <LocationCity className={styles.gallery_filter_icon} />],
-    ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
-    ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
-    ['Abstract', <FilterBAndW className={styles.gallery_filter_icon} />],
-    ['Available', <ShoppingCart className={styles.gallery_filter_icon} />],
-    ['None', <Block className={styles.gallery_filter_icon} />]
-]
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
@@ -283,40 +256,8 @@ class GalleryPage extends React.Component {
     }
 
     render() {
-        var filter_menu_array = [];
-        for (var i = 0; i < theme_filters.length; i++) {
-            let filter = theme_filters[i][0];
-            let icon = theme_filters[i][1];
-            filter_menu_array.push((
-                <div className={(filter == this.state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
-                    id={filter}
-                    data-tooltip-content={`${filter}`}
-                    onClick={(e) => { e.preventDefault(); this.update_pieces_with_theme(filter) }}
-                >
-                    {icon}
-                    <Tooltip anchorId={filter} />
-                </div>
-            ))
-        }
-
         const page_layout = (
-            <div className={styles.gallery_inner_container}>
-                <div className={(this.state.filter_menu_open) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle}>
-                    {(this.state.filter_menu_open == true) ? (
-                        <div className={styles.gallery_filter_menu_container} >
-                            <div className={styles.gallery_filter_menu} >
-                                { filter_menu_array }
-                            </div>
-                        </div>
-                    ) : (  
-                        <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
-                            Filters
-                        </div>
-                    )}
-                    <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}/>
-                </div>
-
-
+            <div className={styles.gallery_container}>
                 <div className={styles.gallery_body} style={{height: this.state.lowest_height}}>
                     {this.state.gallery_pieces}
                 </div>
