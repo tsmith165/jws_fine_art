@@ -10,7 +10,7 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const AUTH_ENABLED = false;
 
-const Details = ({piece_list, app_state, app_set_state}) => {
+const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
     if (AUTH_ENABLED) { 
         const { isLoaded, isSignedIn, user } = useUser();
     }
