@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import { useUser } from "@clerk/clerk-react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { prisma } from '../../lib/prisma'
 
@@ -12,7 +12,9 @@ const AUTH_ENABLED = false;
 
 const Details = ({piece_list}) => {
     if (AUTH_ENABLED) { 
-        const { isLoaded, isSignedIn, user } = useUser();
+        useEffect(() => {
+            const { isLoaded, isSignedIn, user } = useUser();
+        }, []);
     }
 
     const router = useRouter();
