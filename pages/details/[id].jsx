@@ -19,8 +19,8 @@ const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
     const id = router.query.id;
     console.log(`Page ID: ${id}`);
 
-    // console.log(`Passing piece_list (Next Line): `)
-    // console.log(piece_list)
+    console.log(`Passing piece_list (Next Line): `)
+    console.log(piece_list)
 
     if (!router.isReady) { return null }
     if (AUTH_ENABLED == false) { 
