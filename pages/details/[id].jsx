@@ -22,29 +22,17 @@ const Details = ({piece_list}) => {
     // console.log(`Passing piece_list (Next Line): `)
     // console.log(piece_list)
 
-    // console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} ${(user != null) ?  `| User (next line):` : ``}`)
-    // if (user != null) console.log(user)
-
-    console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} | User (next line):`)
-    console.log((user != null) ? user : `No User`)
-
     if (!router.isReady) { return null }
-    else if (AUTH_ENABLED == false) { 
-        <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={true} isSignedIn={false} user={null}/> 
-    } else if (isLoaded == false) { 
-        return ( 
-            <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={false} isSignedIn={false} user={null}/> 
-        )
-    } else if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
-        return ( 
-            <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={false} user={null}/> 
-        )
-    } else {
-        return ( 
-            <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={isSignedIn} user={user}/> 
-        )
+    if (AUTH_ENABLED == false) { 
+        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={true} isSignedIn={false} user={null}/> )
     }
-
+    if (isLoaded == false) { 
+        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={false} isSignedIn={false} user={null}/> )
+    }
+    if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
+        return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={false} user={null}/> )
+    } 
+    return ( <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={isSignedIn} user={user}/> )
 }
 
 export default Details
