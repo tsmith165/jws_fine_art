@@ -21,16 +21,21 @@ class DetailsPage extends React.Component {
         const user = this.props.user;
 
         console.log(`------------------------- LOADING DETAILS PAGE -------------------------`)
-        console.log(`Signed in: ${isSignedIn} | User (next line):`)
-        console.log((user != null) ? user : `No User`)
+        console.log(`Props (Next Line):`)
+        console.log(this.props)
+
+        // console.log(`Signed in: ${isSignedIn} | User (next line):`)
+        // console.log((user != null) ? user : `No User`)
 
         this.router = this.props.router;
 
         //console.log(`ID PROP: ${this.props.id}`)
         const passed_o_id = this.props.id;
 
+        
+
         const piece_list = this.props.piece_list;
-        const piece_list_length = (this.props.piece_list == undefined || this.props.piece_list == null) ? 0 : piece_list.length
+        const piece_list_length = (piece_list == undefined || piece_list == null) ? 0 : piece_list.length
 
         // console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
         // console.log(piece_list)
