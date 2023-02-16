@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import { useUser } from "@clerk/clerk-react";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { prisma } from '../../lib/prisma'
 
@@ -11,36 +11,28 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const AUTH_ENABLED = false;
 
 const Details = ({piece_list}) => {
-    const [state, setState] = useState({isLoaded: null, isSignedIn: null, user: null, url_id: null});
+    if (AUTH_ENABLED) { 
+        const { isLoaded, isSignedIn, user } = useUser();
+    }
 
     const router = useRouter();
     const id = router.query.id;
     console.log(`Page ID: ${id}`);
-    
-    if (AUTH_ENABLED) { 
-        useEffect(() => {
-            const { isLoaded, isSignedIn, user } = useUser();
-            console.log(`Loaded: ${isLoaded} | Signed in: ${isSignedIn} | User (next line):`)
-            console.log((user != null) ? user : `No User`)
-
-            setState({isLoaded: isLoaded, isSignedIn: isSignedIn, user: user})
-        }, []);
-    }
 
     // console.log(`Passing piece_list (Next Line): `)
     // console.log(piece_list)
 
-    if (router == null || !router.isReady) { return null }
+    if (!router.isReady) { return null }
     if (AUTH_ENABLED == false) { 
         return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={false} user={null}/> )
     }
-    if (state.isLoaded == false) { 
+    if (isLoaded == false) { 
         return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={false} user={null}/> )
     }
-    if ((state.isSignedIn !== undefined && state.isSignedIn == true) && (state.user == undefined || state.user == null)) { 
+    if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
         return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={false} user={null}/> )
     } 
-    return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={state.isSignedIn} user={state.user}/> )
+    return ( <DetailsPage id={id} piece_list={piece_list} router={router} isSignedIn={isSignedIn} user={user}/> )
 }
 
 export default Details
