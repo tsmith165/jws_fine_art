@@ -54,18 +54,14 @@ class GalleryPage extends React.Component {
         this.handleResize();
     }
 
+    async componentWillUnmount() {
+        window.removeEventListener("resize", this.handleResize);
+    }
+
     async componentDidUpdate(prevProps, prevState) {
-        //console.log('prev (next)')
-        //console.log(prevProps)
-        //console.log('cur (next)')
-        //console.log(this.props)
         if (prevProps.app_state.theme !== this.props.app_state.theme) {
             this.create_gallery(this.state.piece_list, this.props.app_state.theme)
         }
-    }
-
-    async componentWillUnmount() {
-        window.removeEventListener("resize", this.handleResize);
     }
 
     handleResize() {
@@ -250,7 +246,8 @@ class GalleryPage extends React.Component {
     }
 
     render() {
-        console.log(`redner fallery Filter menu open: ${this.props.app_state.filter_menu_open} | window width: ${this.state.window_width}`)
+        // console.log(`Render gallery Filter menu open: ${this.props.app_state.filter_menu_open} | window width: ${this.state.window_width}`)
+
         const page_layout = (
             <div className={(this.state.window_width !== undefined && this.state.window_width < 800 && this.props.app_state.filter_menu_open == true) ? `${styles.gallery_container} ${styles.gallery_container_open}` : styles.gallery_container }>
                 <div className={styles.gallery_main_container}>
