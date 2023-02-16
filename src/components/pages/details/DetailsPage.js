@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
 
@@ -23,7 +24,7 @@ class DetailsPage extends React.Component {
         console.log(`Signed in: ${isSignedIn} | User (next line):`)
         console.log((user != null) ? user : `No User`)
 
-        this.router = props.router
+        this.router = useRouter()
 
         //console.log(`ID PROP: ${this.props.id}`)
         const passed_o_id = this.props.id;
