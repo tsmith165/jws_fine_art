@@ -24,7 +24,7 @@ class DetailsPage extends React.Component {
         console.log(`Signed in: ${isSignedIn} | User (next line):`)
         console.log((user != null) ? user : `No User`)
 
-        this.router = useRouter()
+        this.router = this.props.router;
 
         //console.log(`ID PROP: ${this.props.id}`)
         const passed_o_id = this.props.id;
