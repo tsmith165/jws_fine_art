@@ -62,6 +62,13 @@ const Navbar = ({most_recent_page_id}) => {
                             </div>
                         </Link>
                     </SignedOut>
+                    <ClerkLoading>
+                        <Link href="/signin">
+                            <div className={styles.sign_in_container}>
+                                <AccountCircleIcon className={styles.sign_in_button} />
+                            </div>
+                        </Link>
+                    </ClerkLoading>
                 </div>
                 
 
