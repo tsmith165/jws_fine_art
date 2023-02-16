@@ -67,7 +67,7 @@ class EditPage extends React.Component {
             type =        (current_piece['type']        !== undefined) ? current_piece['type'] : 'Oil On Canvas'
             sold =        (current_piece['sold']        !== undefined) ? current_piece['sold'] : 'False'
             title =       (current_piece['title']       !== undefined) ? current_piece['title'] : ''
-            description = (current_piece['description'] !== undefined) ? current_piece['description'] : ''
+            description = (current_piece['description'] !== undefined) ? current_piece['description'].split('<br>').join("\n") : ''
             price =       (current_piece['price']       !== undefined) ? current_piece['price'] : ''
             width =       (current_piece['width']       !== undefined) ? current_piece['width'] : ''
             height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
