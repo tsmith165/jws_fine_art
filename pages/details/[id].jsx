@@ -8,8 +8,12 @@ import DetailsPage from '../../src/components/pages/details/DetailsPage';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
+const AUTH_ENABLED = false;
+
 const Details = ({piece_list}) => {
-    const { isLoaded, isSignedIn, user } = useUser();
+    if (AUTH_ENABLED) { 
+        const { isLoaded, isSignedIn, user } = useUser();
+    }
 
     const router = useRouter();
     const id = router.query.id;
@@ -25,17 +29,17 @@ const Details = ({piece_list}) => {
     console.log((user != null) ? user : `No User`)
 
     if (!router.isReady) { return null }
-    else if (isLoaded == false) { 
+    else if (AUTH_ENABLED == false) { 
+        <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={true} isSignedIn={false} user={null}/> 
+    } else if (isLoaded == false) { 
         return ( 
             <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={false} isSignedIn={false} user={null}/> 
         )
-    }
-    else if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
+    } else if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
         return ( 
             <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={false} user={null}/> 
         )
-    }
-    else {
+    } else {
         return ( 
             <DetailsPage id={id} piece_list={piece_list} router={router} isLoaded={isLoaded} isSignedIn={isSignedIn} user={user}/> 
         )
