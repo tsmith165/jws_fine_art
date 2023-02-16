@@ -37,7 +37,12 @@ const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
 
 export default Details
 
-export const getServerSideProps = async (context) => {
+export const getServerSideProps = async ({ req, res }) => {
+    res.setHeader(
+        'Cache-Control',
+        'public, s-maxage=10, stale-while-revalidate=59'
+    )
+
     console.log(`-------------- Fetching Initial Server List --------------`)
     var piece_list = await prisma.piece.findMany()
     piece_list.sort((a, b) => a['o_id'] - b['o_id']);
