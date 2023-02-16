@@ -144,7 +144,7 @@ class DetailsPage extends React.Component {
 
     async componentDidMount() {        
         // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
-        this.setState({loading: false})
+        // this.setState({loading: false})
     }
 
     async update_current_piece(piece_list, o_id) {
