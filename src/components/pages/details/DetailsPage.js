@@ -39,14 +39,13 @@ class DetailsPage extends React.Component {
         
         var current_piece = null;
         var piece_position = 0;
-        var piece_db_id = null;
-        var piece_o_id = null;
-
         for (var i=0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
                 piece_position = i
             }
         }
+        var piece_db_id = null;
+        var piece_o_id = null;
 
         var title = '';
         var type = '';
