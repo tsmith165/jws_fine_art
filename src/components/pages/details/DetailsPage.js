@@ -30,7 +30,7 @@ class DetailsPage extends React.Component {
         const passed_o_id = this.props.id;
 
         const piece_list = this.props.piece_list;
-        const piece_list_length = piece_list.length
+        const piece_list_length = (this.props.piece_list == undefined || this.props.piece_list == null) ? 0 : piece_list.length
 
         // console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
         // console.log(piece_list)
