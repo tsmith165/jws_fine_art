@@ -116,12 +116,12 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@clerk/backend@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-0.5.2.tgz#6e78ced68ec8c6c34a4dafd9bc931d6205fd19b3"
-  integrity sha512-h+XbgxXFm/ft+E24zAZFO9JViMSrAXsoptHWlJ5Rajx6MdIGkCN3qL7nah1mHOccSlmXWb3h1I5Zz3SXoRjHJQ==
+"@clerk/backend@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-0.7.0.tgz#e63846bb24ddf896deab875398067b858f70e9aa"
+  integrity sha512-ZljdGNjNKzR2gXAlb28IwRdvRR7l1zt4BZg8AoPcAeZkEY3cuKkxidzy0AvI2l/IoNrj0ix8wrVI62aOcieGtA==
   dependencies:
-    "@clerk/types" "^3.25.1"
+    "@clerk/types" "^3.28.0"
     "@peculiar/webcrypto" "1.4.1"
     "@types/node" "16.18.6"
     deepmerge "4.2.2"
@@ -130,57 +130,56 @@
     snakecase-keys "5.4.4"
     tslib "2.4.1"
 
-"@clerk/clerk-react@^4.10.0":
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/@clerk/clerk-react/-/clerk-react-4.10.0.tgz#71a8c97ed46003bd23167a1c9fa47e6bc83893c7"
-  integrity sha512-r/jw4Td2/AHGiojWii5kotb3lQlvGaurFO1QbtXXjeDwHt7qRvbiANQ5pDgqMd4JgasLEhL3kPpQ46/Ti4Okwg==
+"@clerk/clerk-react@^4.11.3":
+  version "4.11.3"
+  resolved "https://registry.yarnpkg.com/@clerk/clerk-react/-/clerk-react-4.11.3.tgz#637aee7715c2fccd134e984d83bb736e871b150c"
+  integrity sha512-g64bcRc79zd7gGqKzjxOYEaufk9T3l8QeyXUFZG+9iJGcc2CfOf1su6/6r8JNxNkXQ9ckusdTn+yJhD14S1oeQ==
   dependencies:
-    "@clerk/shared" "^0.10.0"
-    "@clerk/types" "^3.25.1"
+    "@clerk/shared" "^0.11.3"
+    "@clerk/types" "^3.28.0"
     swr "1.3.0"
     tslib "2.4.1"
 
-"@clerk/clerk-sdk-node@^4.6.6":
-  version "4.6.6"
-  resolved "https://registry.yarnpkg.com/@clerk/clerk-sdk-node/-/clerk-sdk-node-4.6.6.tgz#7dd526c64120a0bacc96de40d6febdef5f3c9003"
-  integrity sha512-mGiItYooNv1P5q2nwoEzwRQ5/7qKkF3sSyrtr+rnKN8ddYdNoVT+cJW86dWcTcrmTACKy+78NDaQoEpB16POSA==
+"@clerk/clerk-sdk-node@^4.7.3":
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/@clerk/clerk-sdk-node/-/clerk-sdk-node-4.7.3.tgz#95621538066f74dc52ab3211a1f132f0b8b34d7d"
+  integrity sha512-EDN/Dk1eYJV0ddHT+KIqnexwTck0hNn8iBoy+5S/VE2M0zJzaPJTfmLANEhQOWZyIpjmTiIj5L6aG8dcSxjcKw==
   dependencies:
-    "@clerk/backend" "^0.5.2"
-    "@clerk/types" "^3.25.1"
+    "@clerk/backend" "^0.7.0"
+    "@clerk/types" "^3.28.0"
     "@types/cookies" "0.7.7"
     "@types/express" "4.17.14"
-    "@types/jsonwebtoken" "8.5.9"
     "@types/node-fetch" "2.6.2"
     camelcase-keys "6.2.2"
     cookie "0.5.0"
     snakecase-keys "3.2.1"
     tslib "2.4.1"
 
-"@clerk/nextjs@^4.8.2":
-  version "4.8.2"
-  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-4.8.2.tgz#c10321fb98d522699817a424b9db2cb1803f4c86"
-  integrity sha512-hgZm/CUHlbi8lDwE48eR9nVfWNJ6CmmvuloOXRF/oamQs7H0NnX4rsM7mlTm8SlDNf26NTjVT1Pc+u647MIbmA==
+"@clerk/nextjs@^4.10.1":
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-4.10.1.tgz#7fe3a2bdac5702c609b8b368efab5daa568420a8"
+  integrity sha512-oFnGbOS44vBmNjQ3QonrpQIZqzcHj7gH0PKqBpgG015iXdpEB92WhBmXrAcAi1T7AksBumacGcfQK08aNCiJ+Q==
   dependencies:
-    "@clerk/backend" "^0.5.2"
-    "@clerk/clerk-react" "^4.10.0"
-    "@clerk/clerk-sdk-node" "^4.6.6"
-    "@clerk/types" "^3.25.1"
+    "@clerk/backend" "^0.7.0"
+    "@clerk/clerk-react" "^4.11.3"
+    "@clerk/clerk-sdk-node" "^4.7.3"
+    "@clerk/types" "^3.28.0"
     tslib "2.4.1"
 
-"@clerk/shared@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@clerk/shared/-/shared-0.10.0.tgz#dfb1c2771f2246b29114d5e760e75675bb0aa4c9"
-  integrity sha512-D61w65vaGcknlW+A37wc8GZqymXY7iBDJOS6xfNMtObnaiLlI8e47Rso+rS+Z93DbxzlSKM3roSNsOiVU3ei2g==
+"@clerk/shared@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@clerk/shared/-/shared-0.11.3.tgz#7d2562def7332804bf1b8e3d6f7a42eb8fe1c238"
+  integrity sha512-cvthHp1ieR6U0niaWqDNeXNrc8ZCmAonyzGbpb2fb2Rn183/HFPzSpWoras+cHdI8iOVcHwxU73ruCT2sNbkZg==
 
 "@clerk/themes@^1.2.41":
   version "1.2.41"
   resolved "https://registry.yarnpkg.com/@clerk/themes/-/themes-1.2.41.tgz#2bc094bb247984d539d1aa9ff49e7d00479ccdab"
   integrity sha512-TRbpPpsMwKBPOzf33MPgJN26V+maiHs8sAJujRqi7+RFohLo4Co0kDLWSV9X/QfoWBwqk/MjzCd95c5MMUkz2Q==
 
-"@clerk/types@^3.25.1":
-  version "3.25.1"
-  resolved "https://registry.yarnpkg.com/@clerk/types/-/types-3.25.1.tgz#d444057031170e78aebde947004fcec723b7a986"
-  integrity sha512-g6diw/CYBzzzYxFYMl4sPGGNKOY1N0/qUeqj7PEQT9QasCv6aTKvhBq4YQohMKZ+1mR2Di0bdxVDlKYXDVRxhg==
+"@clerk/types@^3.28.0":
+  version "3.28.0"
+  resolved "https://registry.yarnpkg.com/@clerk/types/-/types-3.28.0.tgz#035b1f241488017b2874f28e614fc69d2d89989d"
+  integrity sha512-hZWnMfDvureGz+oSUQ2BjalNCA0Fx9+HZ9MH2JC93lu+rJzoxqAjHE/MuOrMqufPD/auCz+Bjt1CU1K21U2JiA==
   dependencies:
     csstype "3.1.1"
 
@@ -835,13 +834,6 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
-"@types/jsonwebtoken@8.5.9":
-  version "8.5.9"
-  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.5.9.tgz#2c064ecb0b3128d837d2764aa0b117b0ff6e4586"
-  integrity sha512-272FMnFGzAVMGtu9tkr29hRL6bZj4Zs1KZNeHLnKqAvp06tAIcarTMwOh8/8bz4FmKRcMxZhZNeUAQsNLoiPhg==
-  dependencies:
-    "@types/node" "*"
-
 "@types/keygrip@*":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/keygrip/-/keygrip-1.0.2.tgz#513abfd256d7ad0bf1ee1873606317b33b1b2a72"
@@ -860,15 +852,20 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@17.0.23", "@types/node@>=8.1.0":
-  version "17.0.23"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.23.tgz#3b41a6e643589ac6442bdbd7a4a3ded62f33f7da"
-  integrity sha512-UxDxWn7dl97rKVeVS61vErvw086aCYhDLyvRQZ5Rk65rZKepaFdm53GeqXaKBuOhED4e9uWq34IC3TdSdJJ2Gw==
+"@types/node@*":
+  version "18.13.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.13.0.tgz#0400d1e6ce87e9d3032c19eb6c58205b0d3f7850"
+  integrity sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==
 
 "@types/node@16.18.6":
   version "16.18.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.6.tgz#87846192fd51b693368fad3e99123169225621d4"
   integrity sha512-vmYJF0REqDyyU0gviezF/KHq/fYaUbFhkcNbQCuPGFQj6VTbXuHZoxs/Y7mutWe73C8AC6l9fFu8mSYiBAqkGA==
+
+"@types/node@17.0.23", "@types/node@>=8.1.0":
+  version "17.0.23"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.23.tgz#3b41a6e643589ac6442bdbd7a4a3ded62f33f7da"
+  integrity sha512-UxDxWn7dl97rKVeVS61vErvw086aCYhDLyvRQZ5Rk65rZKepaFdm53GeqXaKBuOhED4e9uWq34IC3TdSdJJ2Gw==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -4815,9 +4812,9 @@ vercel@^24.0.1:
     update-notifier "4.1.0"
 
 webcrypto-core@^1.7.4:
-  version "1.7.5"
-  resolved "https://registry.yarnpkg.com/webcrypto-core/-/webcrypto-core-1.7.5.tgz#c02104c953ca7107557f9c165d194c6316587ca4"
-  integrity sha512-gaExY2/3EHQlRNNNVSrbG2Cg94Rutl7fAaKILS1w8ZDhGxdFOaw6EbCfHIxPy9vt/xwp5o0VQAx9aySPF6hU1A==
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/webcrypto-core/-/webcrypto-core-1.7.6.tgz#e32c4a12a13de4251f8f9ef336a6cba7cdec9b55"
+  integrity sha512-TBPiewB4Buw+HI3EQW+Bexm19/W4cP/qZG/02QJCXN+iN+T5sl074vZ3rJcle/ZtDBQSgjkbsQO/1eFcxnSBUA==
   dependencies:
     "@peculiar/asn1-schema" "^2.1.6"
     "@peculiar/json-schema" "^1.1.12"
