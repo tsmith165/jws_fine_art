@@ -300,28 +300,25 @@ class GalleryPage extends React.Component {
         }
 
         const page_layout = (
-            <div className={styles.gallery_container}>
-                <div className={styles.gallery_navbar_container}>
-                    <div className={(this.state.filter_menu_open == false) ? styles.gallery_filter_menu_toggle : `${styles.gallery_filter_menu_toggle} ${styles.gallery_filter_menu_toggle_open}` }>
-                        {(this.state.filter_menu_open == false) ? (
-                            <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
-                                Filters
+            <div className={styles.gallery_inner_container}>
+                <div className={(this.state.filter_menu_open) ? styles.gallery_filter_menu_toggle_open : styles.gallery_filter_menu_toggle}>
+                    {(this.state.filter_menu_open == true) ? (
+                        <div className={styles.gallery_filter_menu_container} >
+                            <div className={styles.gallery_filter_menu} >
+                                { filter_menu_array }
                             </div>
-                        ) : ( null ) }
-                        <Tune className={styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}/>
-                    </div>
-                </div>
-                {(this.state.filter_menu_open == true) ? (
-                    <div className={styles.gallery_filter_menu} >
-                        { filter_menu_array }
-                    </div>
-                ) : ( null ) }
-                <div className={styles.gallery_main_container}>
-                    <div className={styles.gallery_inner_container}>
-                        <div className={styles.gallery_body} style={{height: this.state.lowest_height}}>
-                            {this.state.gallery_pieces}
                         </div>
-                    </div>
+                    ) : (  
+                        <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}>
+                            Filters
+                        </div>
+                    )}
+                    <Tune className={`${styles.gallery_filter_menu_toggle_icon}`} onClick={(e) => { e.preventDefault(); this.setState({filter_menu_open: !this.state.filter_menu_open}) }}/>
+                </div>
+
+
+                <div className={styles.gallery_body} style={{height: this.state.lowest_height}}>
+                    {this.state.gallery_pieces}
                 </div>
             </div>
         )

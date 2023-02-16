@@ -2,30 +2,17 @@
 
 .gallery_container { 
   position: absolute;
-  top: 0px;
-  height: 100vh; 
+  height: calc(100% - 100px); 
   width: 100vw; 
-  z-index: 10;
+  overflow-y: scroll; 
+  overflow-x: hidden; 
+  background-color: $light 
 }
-  .gallery_navbar_container { 
+  .gallery_inner_container {
     position: relative;
-    height: 100px; 
-    width: 100%; 
+    width: 100%;
+    height: 100%;
   }
-
-  .gallery_main_container { 
-    position: relative;
-    height: calc(100% - 100px); 
-    width: 100vw; 
-    overflow-y: scroll; 
-    overflow-x: hidden; 
-    background-color: $light 
-  }
-    .gallery_inner_container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
 
     @media (max-width: 450px) { // mobile
       .gallery_filter_menu {
@@ -39,7 +26,7 @@
         display: none;
       }
       .gallery_filter_menu_toggle {
-        position: absolute;
+        position: fixed;
         top: 60px;
         right: 120px;
         width: 40px;
@@ -59,7 +46,7 @@
         }
 
       .gallery_filter_menu_toggle_open {
-        position: absolute;
+        position: fixed;
         top: 60px;
         right: 120px;
         width: 40px;
@@ -72,11 +59,11 @@
         overflow: visible;
       }
       .gallery_filter_menu {
-        position: absolute; 
+        position: fixed; 
         top: 100px; 
-        left: 0px;
+        right: 0px;
         min-height: 40px;
-        width: 100vw !important;
+        max-width: 100vw !important;
         border-bottom-left-radius: 7px;
         z-index: 1;
         display: flex;
@@ -111,7 +98,7 @@
     }
     @media (min-width: 799px) { // browser
       .gallery_filter_menu_toggle {
-        position: absolute;
+        position: fixed;
         top: 50px;
         right: 150px;
         width: fit-content;
@@ -129,22 +116,14 @@
         background-color: $light !important;
         color: $dark !important;
       }
-      .gallery_filter_menu_toggle_open {
-        border-top-left-radius: 0px !important;
-      }
         .gallery_filter_menu_toggle_icon {
           width: 50px !important;
           height: 50px !important;
           padding: 5px;
           border-top-right-radius: 5px;
         }
-        .gallery_filter_menu_toggle_icon_open {
-          width: 50px !important;
-          height: 50px !important;
-          padding: 5px;
-        }
       .gallery_filter_menu_toggle_open {
-        position: absolute;
+        position: fixed;
         top: 50px;
         right: 150px;
         width: fit-content;
@@ -170,10 +149,12 @@
         margin-right: 5px;
         margin-left: 10px;
       }
+      .gallery_filter_menu_container { 
+        position: relative; 
+        width: fit-content; 
+      }
       .gallery_filter_menu {
-        position: absolute; 
-        top: 50px;
-        right: 200px;
+        position: relative; 
         width: fit-content; 
         min-height: 50px;
         background-color: $light; 
