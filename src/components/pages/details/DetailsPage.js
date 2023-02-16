@@ -16,9 +16,6 @@ class DetailsPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.app_state = this.props.app_state;
-        this.app_set_state = this.props.app_set_state.bind(this);
-
         const isSignedIn = this.props.isSignedIn;
         const user = this.props.user;
 
@@ -244,15 +241,10 @@ class DetailsPage extends React.Component {
     }
 
     render() {
-        console.log(`Rendering DETAILS with app_state URL Path: ${this.app_state.url_path} | Theme: ${this.app_state.theme} | Filter Menu Open: ${this.app_state.filter_menu_open}`)
-        
+        console.log(`Rendering DETAILS with app_state URL Path: ${this.props.app_state.url_path} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
+
         console.log("CURRENT PIECE DETAILS (Next Line):")
         console.log(this.state.piece_details)
-
-        console.log(`Sold: ${this.state.sold} | Available: ${this.state.available}`)
-
-        console.log(`------------------------- RENDERING PAGE -------------------------`)
-        console.log(`Signed in: ${this.state.isSignedIn !== undefined && this.state.isSignedIn} | User Role: ${(this.state.user !== undefined && this.state.user !== null && this.state.user.publicMetadata.role == "ADMIN") ? 'IS ADMIN' : 'No Role'}`)
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
