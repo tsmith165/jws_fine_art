@@ -1,21 +1,19 @@
 import React from 'react';
-import { useEffect, useRef } from 'react'
 import Image from 'next/image'
 
-import styles from '../../styles/components/Slideshow.module.scss'
+import styles from '../../../../styles/pages/Slideshow.module.scss'
 
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Pause from '@material-ui/icons/Pause';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import SpeedIcon from '@material-ui/icons/Speed';
-import { CircularProgress } from '@material-ui/core';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const DEFAULT_MIN = 0; const DEFAULT_MAX = 100;
 const RATIO_MIN = 0; const RATIO_MAX = 1000;
 
-class SlideshowComponent extends React.Component {
+class SlideshowPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -295,4 +293,4 @@ class SlideshowComponent extends React.Component {
     }
 }
 
-export default SlideshowComponent;
+export default SlideshowPage;

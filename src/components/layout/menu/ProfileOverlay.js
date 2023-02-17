@@ -1,7 +1,6 @@
-import Link from 'next/link'
 import React, { useState } from 'react';
 
-import styles from "../../../styles/layout/ProfileOverlay.module.scss"
+import styles from "../../../../styles/layout/ProfileOverlay.module.scss"
 
 import { CircularProgress } from '@material-ui/core';
 
