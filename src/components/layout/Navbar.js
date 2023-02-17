@@ -1,19 +1,21 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import React, { useState } from 'react';
+import { React } from 'react';
+
+import { SignedIn, SignedOut, UserButton, ClerkLoading } from "@clerk/nextjs";
+import { Tooltip } from 'react-tooltip'
 
 import MenuOverlay from './menu/MenuOverlay'
-// import ProfileOverlay from './menu/ProfileOverlay'
 
 import styles from "../../../styles/layout/Navbar.module.scss"
 
+// Menu Hamburger Icon
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
+
+// Account Profile Icon
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-import { SignedIn, SignedOut, SignInButton, UserButton, ClerkLoading } from "@clerk/nextjs";
-
-import { Tooltip } from 'react-tooltip'
-
+// Filter Menu Icons
 import Tune from '@material-ui/icons/Tune';     // Filter Menu Toggle Button
 import AcUnit from '@material-ui/icons/AcUnit'; // Snow
 import Waves from '@material-ui/icons/Waves';   // Ocean
@@ -26,8 +28,7 @@ import Block from '@material-ui/icons/Block'; // None
 import FilterBAndW from '@material-ui/icons/FilterBAndW'; // Abstract
 import ShoppingCart from '@material-ui/icons/ShoppingCart'; // Abstract
 
-
-const theme_filters = [
+const THEME_FILTERS = [
     ['Water', <Waves className={styles.gallery_filter_icon} />], 
     ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
     ['Mountain', <Landscape className={styles.gallery_filter_icon} />], 
@@ -45,9 +46,9 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSign
     console.log(`Rendering Navbar with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
 
     var filter_menu_array = [];
-    for (var i = 0; i < theme_filters.length; i++) {
-        let filter = theme_filters[i][0];
-        let icon = theme_filters[i][1];
+    for (var i = 0; i < THEME_FILTERS.length; i++) {
+        let filter = THEME_FILTERS[i][0];
+        let icon = THEME_FILTERS[i][1];
         filter_menu_array.push((
             <div className={(filter == app_state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
                 id={filter}
