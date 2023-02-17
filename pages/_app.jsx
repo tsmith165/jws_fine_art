@@ -18,7 +18,7 @@ const App = ({ Component, pageProps }) => {
   const isPrivatePath = ADMIN_PAGES.has(pathname)
 
   const [app_state, app_set_state] = useState({
-    url_path: pathname, 
+    url_path: router.query.id, 
     filter_menu_open: false,
     theme: 'None', 
   });

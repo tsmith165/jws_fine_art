@@ -132,7 +132,7 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state}) => {
                         menu_open == true ? (
                             <div className={styles.page_menu_container}>
                                 <div className={styles.page_menu_body}>
-                                    <MenuOverlay set_menu_open={set_menu_open} most_recent_page_id={most_recent_page_id}/>
+                                    <MenuOverlay set_menu_open={set_menu_open} most_recent_page_id={most_recent_page_id} app_state={app_state} app_set_state={app_set_state}/>
                                 </div>
                             </div>
                         ) : (
