@@ -34,16 +34,9 @@ class GalleryPage extends React.Component {
             theme: 'None'
         }
 
+        this.create_gallery = this.create_gallery.bind(this);
         this.log_debug_message = this.log_debug_message.bind(this);
         this.handleResize = this.handleResize.bind(this);
-        this.update_pieces_with_theme = this.update_pieces_with_theme.bind(this);
-        this.create_gallery = this.create_gallery.bind(this);
-    }
-
-    log_debug_message(message) {
-        if (DEBUG) {
-            console.log(message)
-        }
     }
 
     async componentDidMount() {
@@ -64,8 +57,11 @@ class GalleryPage extends React.Component {
         }
     }
 
+    log_debug_message(message) {
+        if (DEBUG) { console.log(message) }
+    }
+
     handleResize() {
-        // Set window width/height to state
         console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`)
         this.setState({
           window_width: window.innerWidth,
@@ -204,14 +200,20 @@ class GalleryPage extends React.Component {
                 var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
                 //console.log(`Dimensions: ${dimensions}`)
     
-                gallery_pieces.push(<Piece key={i} id={`piece-${i}`} o_id={o_id}
-                                    className={class_name} 
-                                    image_path={image_path}
-                                    dimensions={dimensions}
-                                    title={title} 
-                                    description={description}
-                                    sold={sold}
-                                    available={available}/>);
+                gallery_pieces.push(
+                    <Piece 
+                        key={i} 
+                        id={`piece-${i}`} 
+                        o_id={o_id}
+                        className={class_name} 
+                        image_path={image_path}
+                        dimensions={dimensions}
+                        title={title} 
+                        description={description}
+                        sold={sold}
+                        available={available}
+                    />
+                );
                 
                 this.log_debug_message(`CUR COL: ${col} | MAX COL: ${max_columns}`)
                 if ( col < max_columns - 1 ) {
@@ -237,12 +239,6 @@ class GalleryPage extends React.Component {
         if (this.state.window_width < 600) lowest_height = lowest_height + 60;
 
         this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height, theme: theme })
-        // this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height, theme: theme, filter_menu_open: ((this.state.window_width < 800) ? false : this.state.filter_menu_open) })
-    }
-
-    async update_pieces_with_theme(theme) {
-        
-        this.create_gallery(this.state.piece_list, theme)
     }
 
     render() {
