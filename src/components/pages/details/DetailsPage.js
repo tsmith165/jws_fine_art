@@ -21,8 +21,8 @@ class DetailsPage extends React.Component {
         const user = this.props.user;
 
         console.log(`------------------------- LOADING DETAILS PAGE -------------------------`)
-        console.log(`Props (Next Line):`)
-        console.log(this.props)
+        // console.log(`Props (Next Line):`)
+        // console.log(this.props)
 
         // console.log(`Signed in: ${isSignedIn} | User (next line):`)
         // console.log((user != null) ? user : `No User`)
@@ -185,8 +185,8 @@ class DetailsPage extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
-        console.log("CURRENT PIECE DETAILS (Next Line):")
-        console.log(piece_details)
+        // console.log("CURRENT PIECE DETAILS (Next Line):")
+        // console.log(piece_details)
 
         this.setState({
             loading: false,
@@ -245,10 +245,13 @@ class DetailsPage extends React.Component {
     }
 
     render() {
-        console.log(`Rendering DETAILS with app_state URL Path: ${this.props.app_state.url_path} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
+        console.log(`Rendering DETAILS with app_state URL Path: ${this.props.app_state.url_path} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}${(this.props.user !== undefined && this.props.user !== null) ? ' | User (Next Line):' : ''}`)
+        if (this.props.user !== undefined && this.props.user !== null) {
+            console.log()
+        }
 
-        console.log("CURRENT PIECE DETAILS (Next Line):")
-        console.log(this.state.piece_details)
+        // console.log("CURRENT PIECE DETAILS (Next Line):")
+        // console.log(this.state.piece_details)
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
