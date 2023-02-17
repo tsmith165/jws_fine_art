@@ -77,22 +77,39 @@
             height: fit-content;
             padding: 10px 15px; 
         }
-        .input_label_container { 
+        .input_container_split_container { 
             display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            width: 120px !important; 
-            padding: 5px 10px; 
-            background-color: $secondary; 
-            border-radius: 5px 0px 0px 5px;                     
-            font-weight: bold; 
-        }                     
-        .input_label { color: $light; }
+            width: 100%; 
+            padding: 10px 15px; 
+        }
+        .input_container_split { 
+            display: flex; 
+            flex-direction: row; 
+            width: 50%; 
+            margin: 0px; 
+        }
 
-        /* CSS specific to iOS devices */ 
-        @supports (-webkit-touch-callout: none) {
+
+        @media (max-width: 800px) { // Mobile
+            .input_label_container { 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                width: 90px !important; 
+                padding: 5px 10px; 
+                background-color: $secondary; 
+                border-radius: 5px 0px 0px 5px;                     
+                font-weight: 600; 
+            }
+            .input_split {
+                width: calc(100% - 90px) !important;  
+            }
+            .input_label_split { 
+                width: 90px !important; 
+                padding: 5px 10px; 
+            }
             .input_textbox { 
-                width: calc(100% - 120px) !important; 
+                width: calc(100% - 90px) !important; 
                 height: 100%; 
                 padding: 5px 10px;
                 color: $light; 
@@ -100,20 +117,21 @@
                 border-radius: 0px 5px 5px 0px; 
                 font-size: 14px; 
                 font-weight: bold; 
+                border: none !important; 
             }
             .input_select { 
-                width: calc(100% - 120px) !important; 
+                width: calc(100% - 90px) !important; 
                 height: 100%;
                 padding: 6px 10px; 
                 color: $light; 
                 background-color: $primary; 
                 border-radius: 0px 5px 5px 0px; 
-                border: none; 
+                border: none !important; 
                 font-size: 14px; 
                 font-weight: bold; 
             }
             .input_multi_select { 
-                width: calc(100% - 120px) !important;  
+                width: calc(100% - 90px) !important;  
                 height: 100%; 
                 padding: 6px 10px;
                 color: $light; 
@@ -123,10 +141,25 @@
                 font-size: 14px; 
                 font-weight: bold; 
             }
-        }
-
-        /* CSS for other than iOS devices */ 
-        @supports not (-webkit-touch-callout: none) {
+        }    
+        @media (min-width: 799px) { // browser
+            .input_label_container { 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                width: 120px !important; 
+                padding: 5px 10px; 
+                background-color: $secondary; 
+                border-radius: 5px 0px 0px 5px;                     
+                font-weight: 500; 
+            }
+            .input_split {
+                width: calc(100% - 120px) !important;  
+            }
+            .input_label_split { 
+                width: 120px !important; 
+                padding: 5px 10px; 
+            }
             .input_textbox { 
                 width: calc(100% - 120px) !important; 
                 height: 100%; 
@@ -164,24 +197,10 @@
                 font-weight: bold; 
             }
         }
-        .input_split {
-            width: calc(100% - 120px) !important;  
-        }
-        .input_label_split { 
-            width: 120px !important; 
-            padding: 5px 10px; 
-        }
-        .input_container_split_container { 
-            display: flex; 
-            width: 100%; 
-            padding: 10px 15px; 
-        }
-        .input_container_split { 
-            display: flex; 
-            flex-direction: row; 
-            width: 50%; 
-            margin: 0px; 
-        }
+
+        .input_label { color: $light; }
+
+
         .split_left { 
             padding-right: 7.5px; 
         }

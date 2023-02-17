@@ -665,13 +665,13 @@ class EditPage extends React.Component {
                                 <div className={form_styles.input_container_split_container}>         
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Pixel Width</div>
+                                            <div className={form_styles.input_label}>PX Width</div>
                                         </div>
                                         <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_width" value={this.state.width} key={'width'} onChange={ (e) => {e.preventDefault(); this.setState({width: e.target.value}); }}/>
                                     </div> 
                                     <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
                                         <div className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}>
-                                            <div className={form_styles.input_label}>Pixel Height</div>
+                                            <div className={form_styles.input_label}>PX Height</div>
                                         </div>
                                         <input className={`${form_styles.input_textbox} ${form_styles.input_split}`} id="pixel_height" value={this.state.height} key={'height'} onChange={ (e) => {e.preventDefault(); this.setState({height: e.target.value}); }}/>
                                     </div> 
