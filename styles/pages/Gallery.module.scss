@@ -3,7 +3,7 @@
 @media (max-width: 800px) { // mobile
   .gallery_container { 
     position: absolute;
-    min-height: calc(100vh - 100px) !important; 
+    height: calc(100vh - 100px) !important;
     width: 100vw; 
     background-color: $light;
   }
