@@ -4,7 +4,7 @@ import 'react-tooltip/dist/react-tooltip.css'
 
 import styles from '../../../../styles/components/Gallery.module.scss'
 
-import Piece from '../../../components/Piece'
+import Piece from './Piece';
 import { isUndefined } from 'underscore';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";

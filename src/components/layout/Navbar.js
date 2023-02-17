@@ -2,8 +2,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import React, { useState } from 'react';
 
-import MenuOverlay from './MenuOverlay'
-import ProfileOverlay from './ProfileOverlay'
+import MenuOverlay from './menu/MenuOverlay'
+// import ProfileOverlay from './menu/ProfileOverlay'
 
 import styles from "../../../styles/layout/Navbar.module.scss"
 

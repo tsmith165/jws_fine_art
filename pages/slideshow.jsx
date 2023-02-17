@@ -1,9 +1,9 @@
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import SlideshowComponent from '../src/components/Slideshow';
+import SlideshowPage from '../src/components/pages/slideshow/SlideshowPage';
 
-import styles from '../styles/components/Slideshow.module.scss'
+import styles from '../styles/pages/Slideshow.module.scss'
 
 export default function Slideshow({piece_list}) {
   //console.log("CURRENT PIECE LIST (NEXT LINE):")
@@ -12,7 +12,7 @@ export default function Slideshow({piece_list}) {
   return (
     <PageLayout page_title={"Slideshow"}>
       <div className={styles.slideshow_container}>
-        <SlideshowComponent piece_list={piece_list}/>
+        <SlideshowPage piece_list={piece_list}/>
       </div>
     </PageLayout>
   )

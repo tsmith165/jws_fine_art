@@ -1,12 +1,10 @@
-import styles from "../../../styles/layout/MenuOverlay.module.scss"
+import styles from "../../../../styles/layout/MenuOverlay.module.scss"
 
 import MenuOverlayButton from './MenuOverlayButton';
 
-import { fetch_most_recent_piece } from '../../../lib/api_calls';
+import { fetch_most_recent_piece } from '../../../../lib/api_calls';
 
-import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
-
-import { useEffect, useState } from "react";
+import { useUser } from "@clerk/clerk-react";
 
 const signed_out_menu_list = [
     ["gallery", "Gallery", false, "/"],

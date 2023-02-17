@@ -1,5 +1,5 @@
-import styles from '../../../styles/layout/MenuOverlay.module.scss'
-import Link from 'next/link'
+import styles from '../../../../styles/layout/MenuOverlay.module.scss'
+
 import { useClerk } from "@clerk/clerk-react";
 import {useRouter} from 'next/router'
 
