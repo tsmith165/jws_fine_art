@@ -2,8 +2,6 @@ import styles from "../../../../styles/layout/MenuOverlay.module.scss"
 
 import MenuOverlayButton from './MenuOverlayButton';
 
-import { useUser } from "@clerk/clerk-react";
-
 const signed_out_menu_list = [
     ["gallery", "Gallery", false, "/"],
     ["details", "Piece Details", false, "/details/"],
@@ -88,8 +86,7 @@ function select_menu(isLoaded, isSignedIn, user) {
     return signed_in_menu_list
 }
 
-const MenuOverlay = ({ set_menu_open, most_recent_page_id, app_state, app_set_state }) => {
-    const { isLoaded, isSignedIn, user } = useUser();
+const MenuOverlay = ({ set_menu_open, most_recent_page_id, app_state, app_set_state, isLoaded, isSignedIn, user }) => {
     console.log(`Generating menu list - Loaded?: ${isLoaded} | Signed In: ${isSignedIn} | User (Next Line): `)
     console.log(user)
     const using_menu = select_menu(isLoaded, isSignedIn, user);

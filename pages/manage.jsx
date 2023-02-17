@@ -1,22 +1,19 @@
 import React from 'react';
-import { useRouter } from 'next/router'
-import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
+import { useRouter } from 'next/router';
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '../lib/prisma';
 
-import PageLayout from '../src/components/layout/PageLayout'
-import PieceTree from '../src/components/pages/manage/PieceTree'
+import PageLayout from '../src/components/layout/PageLayout';
+import PieceTree from '../src/components/pages/manage/PieceTree';
 
-import styles from '../styles/pages/Admin.module.scss'
+import styles from '../styles/pages/Admin.module.scss';
 
 // using client side session retrieval
-const Manage = ({ piece_list }) => {
+const Manage = ({ piece_list, isLoaded, isSignedIn, user }) => {
   const router = useRouter()
   const refresh_data = () => {
     router.replace(router.asPath)
   }
-
-  const { isLoaded, isSignedIn, user } = useUser();
 
   if  (!isLoaded) {
     return(<></>)

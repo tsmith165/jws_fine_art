@@ -1,15 +1,12 @@
 import { useRouter } from 'next/router'
-import { useUser } from "@clerk/clerk-react";
 
 import { prisma } from '../../lib/prisma'
 
 import DetailsPage from '../../src/components/pages/details/DetailsPage';
 
-const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
+const Details = ({piece_list, most_recent_id, app_state, app_set_state, isLoaded, isSignedIn, user }) => {
     const router = useRouter();
     const id = router.query.id;
-
-    const { isLoaded, isSignedIn, user } = useUser();
 
     if (!router.isReady) { return null }
     if (!isLoaded) { return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> ) }

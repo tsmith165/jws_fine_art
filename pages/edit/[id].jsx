@@ -1,15 +1,12 @@
-import { useRouter } from 'next/router'
-import { useUser } from "@clerk/clerk-react";
+import { useRouter } from 'next/router';
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '../../lib/prisma';
 
 import EditPage from '../../src/components/pages/edit/EditPage';
 
-const Edit = ({ piece_list }) => {
+const Edit = ({ piece_list, isLoaded, isSignedIn, user }) => {
   const router = useRouter();
   const id = router.query.id;
-
-  const { isLoaded, isSignedIn, user } = useUser();
 
   if (!isLoaded) { return(<></>) }
   if (!isSignedIn) { router.push('/') }
