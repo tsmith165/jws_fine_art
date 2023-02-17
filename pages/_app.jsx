@@ -19,6 +19,7 @@ const App = ({ Component, pageProps }) => {
 
   const [app_state, app_set_state] = useState({
     url_path: router.query.id, 
+    menu_open: false,
     filter_menu_open: false,
     theme: 'None', 
   });

@@ -42,8 +42,6 @@ const theme_filters = [
 
 const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSignedIn, user }) => {
 
-    const [menu_open, set_menu_open] = useState(false)
-
     console.log(`Rendering Navbar with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
 
     var filter_menu_array = [];
@@ -123,17 +121,16 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSign
                 
 
                                 
-                <div className={styles.page_menu_full_container} onMouseLeave={ (e) => { e.preventDefault(); set_menu_open(false) }}>
-                    <div className={styles.menu_button_container} onClick={ (e) => { e.preventDefault(); set_menu_open(!menu_open) }}>
-                        <MenuRoundedIcon className={(menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
+                <div className={styles.page_menu_full_container} onMouseLeave={ (e) => { e.preventDefault(); app_set_state({...app_state, menu_open: false}) }}>
+                    <div className={styles.menu_button_container} onClick={ (e) => { e.preventDefault(); app_set_state({...app_state, menu_open: !app_state.menu_open}) }}>
+                        <MenuRoundedIcon className={(app_state.menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
                     </div>
                     
                     {
-                        menu_open == true ? (
+                        app_state.menu_open == true ? (
                             <div className={styles.page_menu_container}>
                                 <div className={styles.page_menu_body}>
                                     <MenuOverlay 
-                                        set_menu_open={set_menu_open} 
                                         most_recent_page_id={most_recent_page_id} 
                                         app_state={app_state} 
                                         app_set_state={app_set_state} 
