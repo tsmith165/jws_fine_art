@@ -15,7 +15,7 @@ const Orders = ({ verified_list, isLoaded, isSignedIn, user }) => {
     router.replace(router.asPath)
   }
 
-  if  (!isLoaded) {
+  if (!isLoaded) {
     return(<></>)
   }
   if (!isSignedIn) {

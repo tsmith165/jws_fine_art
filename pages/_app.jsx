@@ -16,9 +16,13 @@ const App = ({ Component, pageProps }) => {
   const router = useRouter()
   const { pathname } = useRouter();
   const isPrivatePath = ADMIN_PAGES.has(pathname)
+  var url_path = router.query.id;
+
+  console.log(`APP URL Path: ${url_path} | pathname: ${pathname}`)
 
   const [app_state, app_set_state] = useState({
-    url_path: router.query.id, 
+    url_path: url_path, 
+    pathname: pathname,
     menu_open: false,
     filter_menu_open: false,
     theme: 'None', 

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { React } from 'react';
+import React, {useEffect}  from 'react';
 
 import { SignedIn, SignedOut, UserButton, ClerkLoading } from "@clerk/nextjs";
 import { Tooltip } from 'react-tooltip'
@@ -41,47 +41,56 @@ const THEME_FILTERS = [
     ['None', <Block className={styles.gallery_filter_icon} />]
 ]
 
-const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSignedIn, user }) => {
+class Navbar extends React.Component {
+    constructor(props) {
+        super(props);
 
-    console.log(`Rendering Navbar with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
-
-    var filter_menu_array = [];
-    for (var i = 0; i < THEME_FILTERS.length; i++) {
-        let filter = THEME_FILTERS[i][0];
-        let icon = THEME_FILTERS[i][1];
-        filter_menu_array.push((
-            <div className={(filter == app_state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
-                id={filter}
-                data-tooltip-content={`${filter}`}
-                onClick={(e) => { e.preventDefault(); app_set_state({theme: filter, url_path: app_state.url_path, filter_menu_open: true}) }}
-            >
-                {icon}
-                <Tooltip anchorId={filter} />
-            </div>
-        ))
     }
 
-    return (
-        <nav className={styles.navbar}>
-            <div className={styles.navbar_container}>
-                <Link href="/" styles={{}}>
-                    <div className={styles.navbar_logo}>
-                        <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' layout="fill" objectFit='contain' sizes="250px"/>
-                    </div>
-                </Link>
+    async componentDidMount() {
 
-                { (app_state.url_path == '/') ? (
-                    <div className={(app_state.filter_menu_open == false) ? styles.gallery_filter_menu_toggle : `${styles.gallery_filter_menu_toggle} ${styles.gallery_filter_menu_toggle_open}` }>
-                        {(app_state.filter_menu_open == false) ? (
-                            <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, url_path: app_state.url_path}) }}>
+    }
+
+    render() {
+        console.log(`Rendering Navbar with app_state pathname: ${this.props.app_state.pathname} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
+
+        var filter_menu_array = [];
+        for (var i = 0; i < THEME_FILTERS.length; i++) {
+            let filter = THEME_FILTERS[i][0];
+            let icon = THEME_FILTERS[i][1];
+            filter_menu_array.push((
+                <div className={(filter == this.props.app_state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
+                    id={filter}
+                    data-tooltip-content={`${filter}`}
+                    onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, theme: filter}) }}
+                >
+                    {icon}
+                    <Tooltip anchorId={filter} />
+                </div>
+            ))
+        }
+
+        return (
+            <nav className={styles.navbar}>
+            <div className={styles.navbar_container}>
+                <div className={styles.navbar_logo}>
+                    <Link href="/">
+                        <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' layout="fill" objectFit='contain' sizes="250px"/>
+                    </Link>
+                </div>
+
+                { ( this.props.app_state.pathname == '/') ? (
+                    <div className={(this.props.app_state.filter_menu_open == false) ? styles.gallery_filter_menu_toggle : `${styles.gallery_filter_menu_toggle} ${styles.gallery_filter_menu_toggle_open}` }>
+                        {(this.props.app_state.filter_menu_open == false) ? (
+                            <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}>
                                 Filters
                             </div>
                         ) : ( null ) }
-                        <Tune className={styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, url_path: app_state.url_path}) }}/>
+                        <Tune className={styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}/>
                     </div>
                 ) : ( null ) }
 
-                {(app_state.url_path == '/' && app_state.filter_menu_open == true) ? (
+                { ( this.props.app_state.pathname == '/' && this.props.app_state.filter_menu_open == true) ? (
                     <div className={styles.gallery_filter_menu} >
                         { filter_menu_array }
                     </div>
@@ -119,25 +128,23 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSign
                         </Link>
                     </ClerkLoading>
                 </div>
-                
 
-                                
-                <div className={styles.page_menu_full_container} onMouseLeave={ (e) => { e.preventDefault(); app_set_state({...app_state, menu_open: false}) }}>
-                    <div className={styles.menu_button_container} onClick={ (e) => { e.preventDefault(); app_set_state({...app_state, menu_open: !app_state.menu_open}) }}>
-                        <MenuRoundedIcon className={(app_state.menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
+                <div className={styles.page_menu_full_container} onMouseLeave={ (e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, menu_open: false}) }}>
+                    <div className={styles.menu_button_container} onClick={ (e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, menu_open: !this.props.app_state.menu_open}) }}>
+                        <MenuRoundedIcon className={(this.props.app_state.menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
                     </div>
                     
                     {
-                        app_state.menu_open == true ? (
+                        this.props.app_state.menu_open == true ? (
                             <div className={styles.page_menu_container}>
                                 <div className={styles.page_menu_body}>
                                     <MenuOverlay 
-                                        most_recent_page_id={most_recent_page_id} 
-                                        app_state={app_state} 
-                                        app_set_state={app_set_state} 
-                                        isLoaded={isLoaded} 
-                                        isSignedIn={isSignedIn} 
-                                        user={user}
+                                        most_recent_page_id={this.props.most_recent_page_id}
+                                        app_state={this.props.app_state} 
+                                        app_set_state={this.props.app_set_state} 
+                                        isLoaded={this.props.isLoaded} 
+                                        isSignedIn={this.props.isSignedIn} 
+                                        user={this.props.user}
                                     />
                                 </div>
                             </div>
@@ -149,7 +156,8 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSign
                 </div>
             </div>
         </nav>
-    )
+        )
+    }
 }
 
 export default Navbar;
