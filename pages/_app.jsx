@@ -37,9 +37,9 @@ const App = ({ Component, pageProps }) => {
     }
   }, [router.events])
 
-  console.log(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
-  console.log(`Using Page Props (Next Line)`)
-  console.log(pageProps)
+  // console.log(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
+  // console.log(`Using Page Props (Next Line)`)
+  // console.log(pageProps)
   
   // console.log(`Rendering APP with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
 

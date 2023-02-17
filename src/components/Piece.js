@@ -16,7 +16,7 @@ const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, des
             <Link href={`/details/${o_id}`}>
                 <div className={styles.piece_secondary_container} style={{width: img_width}}>
                     <div className={styles.piece_image_container}>
-                        <Image className={styles.piece_image} src={`${baseURL}${image_path}`} layout='fixed' width={img_width} height={img_height} alt={title}/>
+                        <Image className={styles.piece_image} src={`${baseURL}${image_path}`} width={img_width} height={img_height} alt={title} style={{width: img_width, height: img_height}} sizes="(max-width: 1200px) 50vw, (max-width: 768px) 40vw, 30vw"/>
                     </div>
                     { sold == false ? (
                         ( available == true ? (
@@ -31,7 +31,7 @@ const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, des
                         ))
                     ) : (
                         <div className={styles.piece_sold_container}>
-                            <Image className={styles.piece_sold} src="/redDot.png" alt="Piece Sold" layout='fixed' width={30} height={30} priority={true}/> 
+                            <Image className={styles.piece_sold} src="/redDot.png" alt="Piece Sold" width={30} height={30} priority={true}/> 
                         </div>
                     )}
                 </div>
