@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import * as gtag from '../lib/gtag'
-import { AppProps } from 'next/app';
-import { dark } from '@clerk/themes';
+
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 
 const MAPS_JAVASCRIPT_API_KEY = process.env.MAPS_JAVASCRIPT_API_KEY
-import '../styles/globals/globals.scss'
+import * as gtag from '../lib/gtag'
+
 import Layout from '../src/components/layout/Layout'
+
+import '../styles/globals/globals.scss'
 
 const ADMIN_PAGES = new Set(['/edit/[id]', '/manage', '/admin', '/orders'])
 
@@ -21,7 +23,6 @@ const App = ({ Component, pageProps }) => {
   console.log(`APP URL Path: ${url_path} | pathname: ${pathname}`)
 
   const [app_state, app_set_state] = useState({
-    url_path: url_path, 
     pathname: pathname,
     menu_open: false,
     filter_menu_open: false,
