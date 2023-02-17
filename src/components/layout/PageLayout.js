@@ -3,10 +3,7 @@ import Script from 'next/script'
 import styles from "../../../styles/layout/PageLayout.module.scss"
 
 const PageLayout = ({page_title="JWS Fine Art", use_maps_api=false, children}) => {
-    console.log(`-------------------------------------------------------`)
-    console.log(`Page Title: ${page_title}`)
-    // console.log('Children (NEXT LINE):')
-    // console.log(children)
+    console.log(`Loading Page Layout With Title: ${page_title}`)
 
     return (
         <div className={styles.container}>
