@@ -88,14 +88,27 @@ function select_menu(isLoaded, isSignedIn, user) {
     return signed_in_menu_list
 }
 
-const MenuOverlay = ({ set_menu_open, most_recent_page_id }) => {
+const MenuOverlay = ({ set_menu_open, most_recent_page_id, app_state, app_set_state }) => {
     const { isLoaded, isSignedIn, user } = useUser();
     console.log(`Generating menu list - Loaded?: ${isLoaded} | Signed In: ${isSignedIn} | User (Next Line): `)
     console.log(user)
     const using_menu = select_menu(isLoaded, isSignedIn, user);
 
     console.log(`Most recent page ID: ${most_recent_page_id}`)
-    
+    const url_path = (app_state.url_path !== undefined) ? app_state.url_path : 'None'
+    //console.log(`App State URL Path: ${url_path}`)
+
+    var url_path_id = url_path
+    if (url_path.includes('/')) {
+        var url_path_split = url_path.split('/')
+        console.log(url_path_id)
+        url_path_id = url_path_split[url_path_split.length - 1]
+    }
+    // console.log(`URL PATH ID AFTER SPLIT: ${url_path_id}`)
+
+    // Turning off menu "Edit Piece" button going to current page id as it was causing issues
+    url_path_id = null
+
     for (var i = 0; i < using_menu.length; i++) {
         let menu_item = using_menu[i];
         let menu_class = menu_item[0];
@@ -104,15 +117,23 @@ const MenuOverlay = ({ set_menu_open, most_recent_page_id }) => {
         let menu_slug = menu_item[3];
 
         const id_pages = ['details', 'edit_details']
-        if ((menu_class == 'details' || menu_class == 'edit_details') && (!using_menu[i][3].includes(most_recent_page_id))) {
-            using_menu[i][3] += most_recent_page_id
+        if ((menu_class == 'details' || menu_class == 'edit_details') && (!menu_slug.includes(most_recent_page_id)) && (!menu_slug.includes(url_path_id))) {
+            if (url_path_id != null) {
+                if (using_menu[i][3].includes(`${url_path_id}`) == false) {
+                    using_menu[i][3] += url_path_id
+                } else {
+                    using_menu[i][3] += most_recent_page_id
+                }
+            } else {
+                using_menu[i][3] += most_recent_page_id
+            }
         }
     }
 
     console.log("Menu List (Next Line):");
     console.log(using_menu);
         
-    var menu_items = generate_menu(using_menu, set_menu_open);
+    var menu_items = generate_menu(using_menu, set_menu_open, app_state);
 
     return (
         <div className={styles.menu_overlay_items_container}>
