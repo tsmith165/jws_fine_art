@@ -1,4 +1,4 @@
-import styles from '../../styles/components/OrderTree.module.scss'
+import styles from '../../../../styles/components/OrderTree.module.scss'
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 

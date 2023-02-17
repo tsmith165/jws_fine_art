@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import Image from 'next/image'
 
-import styles from '../../styles/components/PieceTree.module.scss'
+import styles from '../../../../styles/pages/Manage.module.scss'
 
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
 
-import { change_order, delete_piece } from '../../lib/api_calls'
+import { change_order, delete_piece } from '../../../../lib/api_calls'
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 

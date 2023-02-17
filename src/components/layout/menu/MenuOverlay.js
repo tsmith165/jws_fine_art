@@ -2,8 +2,6 @@ import styles from "../../../../styles/layout/MenuOverlay.module.scss"
 
 import MenuOverlayButton from './MenuOverlayButton';
 
-import { fetch_most_recent_piece } from '../../../../lib/api_calls';
-
 import { useUser } from "@clerk/clerk-react";
 
 const signed_out_menu_list = [
@@ -36,16 +34,6 @@ const admin_menu_list = [
     ["orders", "Orders", true, "/orders"],
     ["sign_out", "Sign Out", false, "/signout"]
 ]
-
-async function fetch_most_recent_piece_from_api() {
-    console.log(`-------------- Fetching Most Recent Piece From API --------------`)
-    const piece = await fetch_most_recent_piece();
-
-    console.log('Piece output (Next Line):')
-    console.log(piece)
-
-    return piece
-}
 
 function generate_menu(menu_list, set_menu_open) {
     var menu_items = [];
