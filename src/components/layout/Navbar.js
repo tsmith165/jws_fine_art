@@ -104,7 +104,7 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state}) => {
                 <Link href="https://www.instagram.com/jws_fineart/">
                     <div className={styles.instagram_link_container}>
                         <div className={styles.instagram_logo_link_container}>
-                            <Image className={styles.instagram_logo_link} src='/instagram_icon_50.png' alt='Instagram Link' layout="fill" objectFit='contain' priority={true}/>
+                            <Image className={styles.instagram_logo_link} src='/instagram_icon_50.png' alt='Instagram Link' layout="fill" objectFit='contain'/>
                         </div>
                     </div>
                 </Link>
