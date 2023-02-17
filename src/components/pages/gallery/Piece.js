@@ -16,7 +16,7 @@ const Piece = ({id, o_id, myClick, className, image_path, dimensions, title, des
             <Link href={`/details/${o_id}`}>
                 <div className={styles.piece_secondary_container} style={{width: img_width}}>
                     <div className={styles.piece_image_container}>
-                        <Image className={styles.piece_image} src={`${baseURL}${image_path}`} width={img_width} height={img_height} alt={title} style={{width: img_width, height: img_height}} sizes="(max-width: 1200px) 50vw, (max-width: 768px) 40vw, 30vw"/>
+                        <Image className={styles.piece_image} src={`${baseURL}${image_path}`} width={img_width} height={img_height} alt={title} style={{width: img_width, height: img_height}} sizes="(min-width: 799px) 30vw, (max-width: 800px) 45vw"/>
                     </div>
                     { sold == false ? (
                         ( available == true ? (
