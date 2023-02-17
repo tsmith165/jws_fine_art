@@ -104,8 +104,7 @@
         .details_navigation_container { 
             width: 100%; 
             height: fit-content; 
-            line-height: 3rem; 
-            font-size: 1.25rem; 
+            line-height: 50px; 
             padding-top: 10px; 
             padding-left: 15px; 
         }
@@ -114,17 +113,19 @@
                 flex-direction: row;
                 flex-wrap: wrap;
                 gap: 10px;
+                font-family: $lato_300; 
+                font-size: 20px;
+                font-weight: 500;
             }
                 .buy_now_button {
-                    height: 3rem;
+                    height: 50px;
                     border-radius: 5px;
                     padding: 0px 10px;
                     background-color: $primary; 
                     border: 1px solid $secondary; 
                     color: $light;
                     font-family: $lato_300; 
-                    font-weight: 600;
-                    font-size: 20px;
+                    font-size: 20px !important;
                 }  
                 .buy_now_button:hover { 
                     background-color: $secondary; 
@@ -132,30 +133,27 @@
                     color: $light; 
                 }
                 .price_text { 
-                    font-size: 24px;
-                    font-family: $lato_300; 
-                    font-weight: 600;
+                    font-size: 24px !important;
+                    font-weight: 600 !important;
                     margin-right: 10px; 
                     color: $secondary; 
                 }
                 .piece_sold {
-                    font-size: 24px;
-                    font-family: $lato_300; 
-                    font-weight: 600;
+                    font-size: 24px !important;
+                    font-weight: 600 !important;
                     margin-right: 10px; 
                     color: $error; 
                 }
                 .piece_nfs  { 
-                    font-size: 24px;
-                    font-family: $lato_300; 
-                    font-weight: 600;
+                    font-size: 24px !important;
+                    font-weight: 600 !important;
                     margin-right: 10px; 
                     color: $error; 
                 }
                 .powered_by_stripe_container { 
                     position: relative; 
                     width: 174px; 
-                    height: 3rem; 
+                    height: 50px; 
                 }
                 .instagram_link_container { 
                     display: flex; 
@@ -170,22 +168,20 @@
                     color: $light; 
                 }
                     .instagram_image_container { 
-                        height: 3rem; 
-                        width: 3rem; 
+                        height: 50px; 
+                        width: 50px; 
                         position: relative; 
                     }
                         .instagram_link_image { 
                             padding: 10px !important; 
                         }
                     .instagram_link_label { 
-                        font-size: 1.5rem; 
-                        line-height: 3rem; 
-                        font-weight: 500; 
-                        margin-right: 10px; 
+                        line-height: 50px; 
+                        margin-right: 15px; 
                     }
             .edit_piece_button {
-                height: 3rem;
-                font-size: 1.3rem;
+                height: 50px;
+                font-size: 20px;
                 border-radius: 5px;
                 padding: 0px 10px;
                 background-color: $primary; 
