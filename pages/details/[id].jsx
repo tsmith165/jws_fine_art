@@ -19,9 +19,7 @@ const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
     // console.log(piece_list)
 
     if (!router.isReady) { return null }
-    if (AUTH_ENABLED == false) { 
-        return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
-    } else {
+    if (AUTH_ENABLED == true) { 
         const { isLoaded, isSignedIn, user } = useUser();
 
         if (isLoaded == false) { 
@@ -30,8 +28,9 @@ const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
         if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
             return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
         } 
+        return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={isSignedIn} user={user}/> )
     }
-    return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={isSignedIn} user={user}/> )
+    return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
 }
 
 export default Details
