@@ -540,9 +540,9 @@ class EditPage extends React.Component {
                         <div className={form_styles.edit_details_form_container}>
                             <form method="post" onSubmit={this.handleSubmit}>
                                 <div className={form_styles.title_container}>
-                                    <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.last_oid)}} />
+                                    <ArrowForwardIosRoundedIcon className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.next_oid)}} />
                                     <input type="text" className={form_styles.title_input} id="title" value={ this.state.title } key={ "title" } onChange={ (e) => {e.preventDefault(); this.setState({title: e.target.value}); }}/>
-                                    <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.next_oid)}}/>
+                                    <ArrowForwardIosRoundedIcon className={form_styles.title_arrow} onClick={(e) => { e.preventDefault(); this.update_current_piece(this.state.piece_list, this.state.last_oid)}}/>
                                 </div>
 
                                 <div className={form_styles.edit_details_description_container}>
