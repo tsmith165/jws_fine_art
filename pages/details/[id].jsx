@@ -11,10 +11,6 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const AUTH_ENABLED = true;
 
 const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
-    if (AUTH_ENABLED) { 
-        const { isLoaded, isSignedIn, user } = useUser();
-    }
-
     const router = useRouter();
     const id = router.query.id;
     console.log(`Page ID: ${id}`);
@@ -25,13 +21,16 @@ const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
     if (!router.isReady) { return null }
     if (AUTH_ENABLED == false) { 
         return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
+    } else {
+        const { isLoaded, isSignedIn, user } = useUser();
+
+        if (isLoaded == false) { 
+            return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
+        }
+        if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
+            return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
+        } 
     }
-    if (isLoaded == false) { 
-        return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
-    }
-    if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
-        return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
-    } 
     return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={isSignedIn} user={user}/> )
 }
 
