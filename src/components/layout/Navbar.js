@@ -41,21 +41,8 @@ const theme_filters = [
 ]
 
 const Navbar = ({most_recent_page_id, app_state, app_set_state}) => {
-    const use_account_icon_as_link = true;
 
     const [menu_open, set_menu_open] = useState(false)
-    
-    function menu_clicked(event) {
-        event.preventDefault()
-        console.log(`Setting Menu To: ${menu_open ? false : true}`)
-        set_menu_open(menu_open ? false : true)
-    }
-
-    function menu_hovered(event, mouse_in) {
-        event.preventDefault()
-        console.log(`Setting Menu To: ${mouse_in}`)
-        set_menu_open(mouse_in)
-    }
 
     console.log(`Rendering Navbar with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
 
