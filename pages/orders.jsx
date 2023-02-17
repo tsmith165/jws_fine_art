@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouter } from 'next/router'
-import { useUser } from "@clerk/clerk-react";
 
 import { prisma } from '../lib/prisma'
 
@@ -10,13 +9,11 @@ import OrderTree from '../src/components/pages/orders/OrderTree';
 import styles from '../styles/pages/Orders.module.scss'
 
 // using client side session retrieval
-const Orders = ({ verified_list }) => {
+const Orders = ({ verified_list, isLoaded, isSignedIn, user }) => {
   const router = useRouter()
   const refresh_data = () => {
     router.replace(router.asPath)
   }
-
-  const { isLoaded, isSignedIn, user } = useUser();
 
   if  (!isLoaded) {
     return(<></>)

@@ -40,7 +40,7 @@ const theme_filters = [
     ['None', <Block className={styles.gallery_filter_icon} />]
 ]
 
-const Navbar = ({most_recent_page_id, app_state, app_set_state}) => {
+const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSignedIn, user }) => {
 
     const [menu_open, set_menu_open] = useState(false)
 
@@ -132,7 +132,15 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state}) => {
                         menu_open == true ? (
                             <div className={styles.page_menu_container}>
                                 <div className={styles.page_menu_body}>
-                                    <MenuOverlay set_menu_open={set_menu_open} most_recent_page_id={most_recent_page_id} app_state={app_state} app_set_state={app_set_state}/>
+                                    <MenuOverlay 
+                                        set_menu_open={set_menu_open} 
+                                        most_recent_page_id={most_recent_page_id} 
+                                        app_state={app_state} 
+                                        app_set_state={app_set_state} 
+                                        isLoaded={isLoaded} 
+                                        isSignedIn={isSignedIn} 
+                                        user={user}
+                                    />
                                 </div>
                             </div>
                         ) : (
