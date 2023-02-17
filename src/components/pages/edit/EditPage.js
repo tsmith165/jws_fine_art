@@ -5,7 +5,6 @@ import Select from 'react-select'
 import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url } from '../../../../lib/api_calls';
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
-// import EditDetailsForm from '../../../../src/components/forms/EditDetailsForm'
 
 import styles from '../../../../styles/pages/Details.module.scss'
 import form_styles from '../../../../styles/forms/EditDetailsForm.module.scss'

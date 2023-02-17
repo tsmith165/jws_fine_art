@@ -1,6 +1,6 @@
-import styles from '../../styles/components/UserTree.module.scss'
+import styles from '../../../../styles/components/UserTree.module.scss'
 
-import { demote_user, promote_user, delete_user } from '../../lib/api_calls'
+import { demote_user, promote_user, delete_user } from '../../../../lib/api_calls'
 
 const UserTree = ({user_tree_data, refresh_data}) => {
 

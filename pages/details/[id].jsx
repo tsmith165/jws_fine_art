@@ -1,43 +1,29 @@
 import { useRouter } from 'next/router'
 import { useUser } from "@clerk/clerk-react";
-import { useState } from 'react';
 
 import { prisma } from '../../lib/prisma'
 
 import DetailsPage from '../../src/components/pages/details/DetailsPage';
 
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
-
-const AUTH_ENABLED = true;
-
 const Details = ({piece_list, most_recent_id, app_state, app_set_state}) => {
     const router = useRouter();
     const id = router.query.id;
-    console.log(`Page ID: ${id}`);
 
-    // console.log(`Passing piece_list (Next Line): `)
-    // console.log(piece_list)
+    const { isLoaded, isSignedIn, user } = useUser();
 
     if (!router.isReady) { return null }
-    if (AUTH_ENABLED == true) { 
-        const { isLoaded, isSignedIn, user } = useUser();
-
-        if (isLoaded == false) { 
-            return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
-        }
-        if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
-            return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
-        } 
-        return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={isSignedIn} user={user}/> )
-    }
-    return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
+    if (!isLoaded) { return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> ) }
+    
+    // Not Signed In / User Does Not Exist
+    if ((isSignedIn !== undefined && isSignedIn == true) && (user == undefined || user == null)) { 
+        return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={false} user={null}/> )
+    } 
+    return ( <DetailsPage id={id} piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} router={router} isSignedIn={isSignedIn} user={user}/> )
 }
 
 export default Details
 
 export const getServerSideProps = async (context) => {
-
-    // console.log(`-------------- Fetching Initial Server List --------------`)
     var piece_list = await prisma.piece.findMany()
     piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 

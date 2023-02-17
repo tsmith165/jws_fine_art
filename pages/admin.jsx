@@ -5,7 +5,7 @@ import { UserButton, useUser, RedirectToSignIn } from "@clerk/clerk-react";
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import UserTree from '../src/components/components/UserTree'
+import UserTree from '../src/components/pages/admin/UserTree'
 
 import styles from '../styles/pages/Admin.module.scss'
 

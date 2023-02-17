@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 
 import PageLayout from '../../../../src/components/layout/PageLayout'
 
@@ -24,19 +23,12 @@ class DetailsPage extends React.Component {
         // console.log(`Props (Next Line):`)
         // console.log(this.props)
 
-        // console.log(`Signed in: ${isSignedIn} | User (next line):`)
-        // console.log((user != null) ? user : `No User`)
-
         this.router = this.props.router;
 
-        //console.log(`ID PROP: ${this.props.id}`)
         const passed_o_id = this.props.id;
 
         const piece_list = this.props.piece_list;
         const piece_list_length = (piece_list == undefined || piece_list == null) ? 0 : piece_list.length
-
-        // console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
-        // console.log(piece_list)
 
         var image_array = [];
         
@@ -246,12 +238,7 @@ class DetailsPage extends React.Component {
 
     render() {
         console.log(`Rendering DETAILS with app_state URL Path: ${this.props.app_state.url_path} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}${(this.props.user !== undefined && this.props.user !== null) ? ' | User (Next Line):' : ''}`)
-        if (this.props.user !== undefined && this.props.user !== null) {
-            console.log()
-        }
-
-        // console.log("CURRENT PIECE DETAILS (Next Line):")
-        // console.log(this.state.piece_details)
+        if (this.props.user !== undefined && this.props.user !== null) { console.log(this.props.user) }
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')

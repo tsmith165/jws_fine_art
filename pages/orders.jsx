@@ -5,7 +5,7 @@ import { useUser } from "@clerk/clerk-react";
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import OrderTree from '../src/components/components/OrderTree'
+import OrderTree from '../src/components/pages/orders/OrderTree';
 
 import styles from '../styles/pages/Orders.module.scss'
 
