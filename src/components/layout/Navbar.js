@@ -80,7 +80,7 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state}) => {
             <div className={styles.navbar_container}>
                 <Link href="/" styles={{}}>
                     <div className={styles.navbar_logo}>
-                        <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' layout="fill" objectFit='contain' priority={true}/>
+                        <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' layout="fill" objectFit='contain' sizes="(max-width: 1200px) 20vw, (max-width: 768px) 10vw, 8vw"/>
                     </div>
                 </Link>
 

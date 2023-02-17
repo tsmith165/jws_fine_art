@@ -117,8 +117,8 @@ class GalleryPage extends React.Component {
         var row_starting_height = INNER_MARGIN_WIDTH;
         var skip_col = false;
 
-        console.log(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
-        console.log(piece_list)
+        // console.log(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
+        // console.log(piece_list)
         
         var i = 0; var real_i = 0;
         while (i < piece_list_length) {
