@@ -16,9 +16,6 @@ class DetailsPage extends React.Component {
     constructor(props) {
         super(props);
 
-        const isSignedIn = this.props.isSignedIn;
-        const user = this.props.user;
-
         console.log(`------------------------- LOADING DETAILS PAGE -------------------------`)
         // console.log(`Props (Next Line):`)
         // console.log(this.props)
@@ -96,11 +93,9 @@ class DetailsPage extends React.Component {
         }
 
         this.state = {
-            user: user,
-            isSignedIn: isSignedIn,
+            user: this.props.user,
             debug: false,
             loading: true,
-            isAdmin: this.props.isAdmin,
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
@@ -237,8 +232,6 @@ class DetailsPage extends React.Component {
     }
 
     render() {
-        console.log(`Rendering DETAILS with app_state URL Path: ${this.props.app_state.url_path} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}${(this.props.user !== undefined && this.props.user !== null) ? ' | User (Next Line):' : ''}`)
-        if (this.props.user !== undefined && this.props.user !== null) { console.log(this.props.user) }
 
         var page_layout = null;
         const title = (this.state.piece_details['title'] != null) ? (this.state.piece_details['title']) : ('')
