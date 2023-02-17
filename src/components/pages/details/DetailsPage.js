@@ -32,8 +32,6 @@ class DetailsPage extends React.Component {
         //console.log(`ID PROP: ${this.props.id}`)
         const passed_o_id = this.props.id;
 
-        
-
         const piece_list = this.props.piece_list;
         const piece_list_length = (piece_list == undefined || piece_list == null) ? 0 : piece_list.length
 
