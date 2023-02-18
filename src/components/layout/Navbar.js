@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import React, {useEffect}  from 'react';
+import React from 'react';
 
 import { SignedIn, SignedOut, UserButton, ClerkLoading } from "@clerk/nextjs";
 import { Tooltip } from 'react-tooltip'
