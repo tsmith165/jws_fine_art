@@ -29,7 +29,7 @@ const Piece = ({id, o_id, className, image_path, dimensions, title, description,
                     ) : ( 
                         (USING_YELLOW_DOT && available == false) ? ( 
                             <div className={styles.piece_sold_container}>
-                                <Image className={styles.piece_sold} src="/yellowDot.png" alt="Piece Sold" layout='fixed' width={30} height={30}/> 
+                                <Image className={styles.piece_sold} src="/yellowDot.png" alt="Piece Sold" fill style={{objectFit:"contain"}} width={30} height={30}/> 
                             </div>
                         ) : (
                             null

@@ -82,8 +82,8 @@ class DetailsPage extends React.Component {
                             src={`${baseURL}${piece['image_path']}`}
                             alt={piece['title']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                            layout='fill'
-                            objectFit='contain'
+                            fill 
+                            style={{objectFit:"contain"}}
                             quality={100}
                             onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
                         />
@@ -212,8 +212,8 @@ class DetailsPage extends React.Component {
                         
                         // height={this.state.piece_details['height']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                        layout='fill'
-                        objectFit='contain'
+                        fill 
+                        style={{objectFit:"contain"}}
                         quality={100}
                         onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
                     />
@@ -313,7 +313,7 @@ class DetailsPage extends React.Component {
                                                 (this.state.available == true) ? ( 
                                                     <Link href='https://stripe.com'>
                                                         <div className={styles.powered_by_stripe_container}>
-                                                            <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} layout="fill" objectFit='contain'/>
+                                                            <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} fill style={{objectFit:"contain"}}/>
                                                             </div>
                                                     </Link>
                                                 ) : (
@@ -328,7 +328,7 @@ class DetailsPage extends React.Component {
                                                 <Link href={`https://www.instagram.com/p/${this.state.piece_details['instagram']}`}>
                                                     <div className={styles.instagram_link_container}>
                                                         <div className={styles.instagram_image_container}>
-                                                            <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} layout="fill" objectFit='contain'/>
+                                                            <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} fill style={{objectFit:"contain"}}/>
                                                         </div>
                                                         <div className={styles.instagram_link_label}>View On Instagram</div>
                                                     </div>

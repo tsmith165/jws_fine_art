@@ -68,8 +68,8 @@ class SlideshowPage extends React.Component {
                             src={`${baseURL}${piece['image_path']}`}
                             alt={piece['title']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                            layout='fill'
-                            objectFit='contain'
+                            fill 
+                            style={{objectFit:"contain"}}
                             quality={100} 
                         />
                     </div>
@@ -212,8 +212,8 @@ class SlideshowPage extends React.Component {
                         src={`${baseURL}${piece['image_path']}`}
                         alt={piece['title']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                        layout='fill'
-                        objectFit='contain'
+                        fill 
+                        style={{objectFit:"contain"}}
                         quality={100} 
                     />
                 </div>

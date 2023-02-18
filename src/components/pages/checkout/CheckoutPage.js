@@ -89,8 +89,8 @@ class CheckoutPage extends React.Component {
                             
                             // height={this.state.piece_details['height']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                            layout='fill'
-                            objectFit='contain'
+                            fill 
+                            style={{objectFit:"contain"}}
                             quality={100}
                             onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
                         />
@@ -211,8 +211,8 @@ class CheckoutPage extends React.Component {
                         src={`${baseURL}${piece['image_path']}`}
                         alt={piece['title']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                        layout='fill'
-                        objectFit='contain'
+                        fill 
+                        style={{objectFit:"contain"}}
                         quality={100}
                         onClick={(e) => {e.preventDefault(); this.setState({full_screen: !this.state.full_screen})}}
                     />

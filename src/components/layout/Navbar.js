@@ -76,7 +76,7 @@ class Navbar extends React.Component {
                 <div className={styles.navbar_container}>
                     <div className={styles.navbar_logo}>
                         <Link href="/">
-                            <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' priority={true} layout="fill" objectFit='contain' sizes="250px"/>
+                            <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' priority={true} fill style={{objectFit:"contain"}} sizes="250px"/>
                         </Link>
                     </div>
 
@@ -100,7 +100,7 @@ class Navbar extends React.Component {
                     <Link href="https://www.instagram.com/jws_fineart/">
                         <div className={styles.instagram_link_container}>
                             <div className={styles.instagram_logo_link_container}>
-                                <Image className={styles.instagram_logo_link} src='/instagram_icon_50.png' alt='Instagram Link' layout="fill" objectFit='contain'/>
+                                <Image className={styles.instagram_logo_link} src='/instagram_icon_50.png' alt='Instagram Link' fill style={{objectFit:"contain"}}/>
                             </div>
                         </div>
                     </Link>
