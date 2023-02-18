@@ -79,7 +79,7 @@ class Navbar extends React.Component {
                         </Link>
                     </div>
 
-                    { ( this.props.app_state.pathname == '/') ? (
+                    { ( this.props.app_state.pathname === '/') ? (
                         <div className={(this.props.app_state.filter_menu_open == false) ? styles.gallery_filter_menu_toggle : `${styles.gallery_filter_menu_toggle} ${styles.gallery_filter_menu_toggle_open}` }>
                             {(this.props.app_state.filter_menu_open == false) ? (
                                 <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}>
@@ -90,7 +90,7 @@ class Navbar extends React.Component {
                         </div>
                     ) : ( null ) }
 
-                    { ( this.props.app_state.pathname == '/' && this.props.app_state.filter_menu_open == true) ? (
+                    { ( this.props.app_state.pathname === '/' && this.props.app_state.filter_menu_open == true) ? (
                         <div className={styles.gallery_filter_menu} >
                             { filter_menu_array }
                         </div>

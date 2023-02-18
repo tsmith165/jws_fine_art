@@ -17,7 +17,7 @@ const ADMIN_PAGES = new Set(['/edit/[id]', '/manage', '/admin', '/orders'])
 const App = ({ Component, pageProps }) => {
   const router = useRouter()
   const { pathname } = useRouter();
-  const isPrivatePath = ADMIN_PAGES.has(pathname)
+  const isPrivatePath = ADMIN_PAGES.has(pathname);
 
   console.log(`APP URL pathname: ${pathname}`)
 
@@ -32,7 +32,7 @@ const App = ({ Component, pageProps }) => {
     const handleRouteChange = (url) => {
       console.log(`Sending analytics call with url: ${url}`)
       gtag.pageview(url)
-      app_set_state({url_path: url, filter_menu_open: false})
+      app_set_state({...app_state, pathname: url, filter_menu_open: false})
     }
     router.events.on('routeChangeComplete', handleRouteChange)
     router.events.on('hashChangeComplete', handleRouteChange)
