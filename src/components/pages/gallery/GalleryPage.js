@@ -49,6 +49,7 @@ class GalleryPage extends React.Component {
 
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.app_state.theme !== this.props.app_state.theme) {
+            console.log(`Component updated... Recreating gallery...`)
             this.create_gallery(this.state.piece_list, this.props.app_state.theme)
         }
     }
