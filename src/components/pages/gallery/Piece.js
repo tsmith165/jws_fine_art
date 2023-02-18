@@ -18,8 +18,8 @@ const Piece = ({id, o_id, className, image_path, dimensions, title, description,
         <div id={id} className={`${styles.piece_container} ${className}`} style={{width: img_width + 10, height: img_height + 10, top: y, left: x}}>
             <Link href={`/details/${o_id}`}>
                 <div className={styles.piece_secondary_container} style={{width: img_width}}>
-                    <div className={styles.piece_image_container}>
-                        <Image className={styles.piece_image} src={`${SITE_BASE_URL}${image_path}`} width={img_width} height={img_height} alt={title} style={{width: img_width, height: img_height}} sizes="(min-width: 799px) 30vw, (max-width: 800px) 45vw"/>
+                    <div className={styles.piece_image_container} >
+                        <Image className={styles.piece_image} src={`${SITE_BASE_URL}${image_path}`} width={img_width} height={img_height} alt={title} style={{width: img_width, height: "auto"}} sizes="(min-width: 799px) 30vw, (max-width: 800px) 45vw"/>
                     </div>
                     { 
                     (sold == true) ? (

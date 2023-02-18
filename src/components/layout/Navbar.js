@@ -100,7 +100,7 @@ class Navbar extends React.Component {
                     <Link href="https://www.instagram.com/jws_fineart/">
                         <div className={styles.instagram_link_container}>
                             <div className={styles.instagram_logo_link_container}>
-                                <Image className={styles.instagram_logo_link} src='/instagram_icon_50.png' alt='Instagram Link' fill style={{objectFit:"contain"}}/>
+                                <Image className={styles.instagram_logo_link} src='/instagram_icon_50.png' alt='Instagram Link' fill style={{objectFit:"contain"}} sizes='50px'/>
                             </div>
                         </div>
                     </Link>

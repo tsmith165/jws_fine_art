@@ -328,7 +328,7 @@ class DetailsPage extends React.Component {
                                                 <Link href={`https://www.instagram.com/p/${this.state.piece_details['instagram']}`}>
                                                     <div className={styles.instagram_link_container}>
                                                         <div className={styles.instagram_image_container}>
-                                                            <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} fill style={{objectFit:"contain"}}/>
+                                                            <Image className={styles.instagram_link_image} src='/instagram_icon_100.png' alt='Instagram Link' priority={true} fill style={{objectFit:"contain"}} sizes='100px'/>
                                                         </div>
                                                         <div className={styles.instagram_link_label}>View On Instagram</div>
                                                     </div>
