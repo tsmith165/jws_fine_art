@@ -68,8 +68,8 @@ class Navbar extends React.Component {
             ))
         }
 
-        console.log(`Rendering Navbar with props (Next Line):`)
-        console.log(this.props)
+        console.log(`Rendering Navbar with app state (Next Line):`)
+        console.log(this.props.app_state)
 
         return (
             <nav className={styles.navbar}>
