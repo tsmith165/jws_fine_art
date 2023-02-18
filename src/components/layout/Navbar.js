@@ -5,7 +5,7 @@ import { React } from 'react';
 import { SignedIn, SignedOut, UserButton, ClerkLoading } from "@clerk/nextjs";
 import { Tooltip } from 'react-tooltip'
 
-import MenuOverlay from './menu/MenuOverlay'
+import MenuOverlay from './menu/MenuOverlay';
 
 import styles from "../../../styles/layout/Navbar.module.scss"
 
