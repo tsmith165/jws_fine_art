@@ -241,6 +241,7 @@ class GalleryPage extends React.Component {
 
     render() {
         // console.log(`Render gallery Filter menu open: ${this.props.app_state.filter_menu_open} | window width: ${this.state.window_width}`)
+        
 
         const page_layout = (
             <div className={ (this.state.window_width !== undefined && this.state.window_width < 800 && this.props.app_state.filter_menu_open == true) ? 
