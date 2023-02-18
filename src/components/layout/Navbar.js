@@ -60,7 +60,7 @@ class Navbar extends React.Component {
                 <div key={i} className={(filter == this.props.app_state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
                     id={filter}
                     data-tooltip-content={`${filter}`}
-                    onClick={(e) => { e.preventDefault(); console.log(`Upating theme to: ${filter}`); this.props.app_set_state({...this.props.app_state, theme: filter}) }}
+                    onClick={(e) => { e.preventDefault(); console.log(`Upating theme to: ${filter}`); this.props.app_set_state({theme: filter}) }}
                 >
                     {icon}
                     <Tooltip anchorId={filter} />
