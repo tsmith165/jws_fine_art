@@ -1,11 +1,8 @@
 import React from 'react';
 
-import 'react-tooltip/dist/react-tooltip.css'
-
 import styles from '../../../../styles/pages/Gallery.module.scss'
 
 import Piece from './Piece';
-import { isUndefined } from 'underscore';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 

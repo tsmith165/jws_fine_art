@@ -1,7 +1,9 @@
-import styles from "../../../../styles/layout/MenuOverlay.module.scss"
 import React from 'react';
 
 import MenuOverlayButton from './MenuOverlayButton';
+
+import styles from "../../../../styles/layout/MenuOverlay.module.scss"
+import 'react-tooltip/dist/react-tooltip.css'
 
 const signed_out_menu_list = [
     ["gallery", "Gallery", false, "/"],

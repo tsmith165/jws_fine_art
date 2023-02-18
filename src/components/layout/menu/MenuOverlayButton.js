@@ -1,7 +1,7 @@
 import styles from '../../../../styles/layout/MenuOverlay.module.scss'
 
 import { useClerk } from "@clerk/clerk-react";
-import {useRouter} from 'next/router'
+import { useRouter } from 'next/router'
 
 const MenuOverlayButton = ({id, menu_name, url_endpoint, app_state, app_set_state}) => {
     const router = useRouter();
