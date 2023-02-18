@@ -48,7 +48,8 @@ function generate_menu(menu_list, set_menu_open) {
                             id = {i}
                             menu_name = {menu_item_string}
                             url_endpoint = {url_endpoint}
-                            set_menu_open = {set_menu_open}
+                            app_state={app_state}
+                            app_set_state={app_set_state}
                           />;
 
         menu_items.push(menu_item);
@@ -130,7 +131,7 @@ const MenuOverlay = ({ set_menu_open, most_recent_page_id, app_state, app_set_st
     console.log("Menu List (Next Line):");
     console.log(using_menu);
         
-    var menu_items = generate_menu(using_menu, set_menu_open, app_state);
+    var menu_items = generate_menu(using_menu, set_menu_open, app_state, app_set_state);
 
     return (
         <div className={styles.menu_overlay_items_container}>
