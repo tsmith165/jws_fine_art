@@ -10,7 +10,6 @@ const nextConfig = {
     domains: ["jwsfineartpieces.s3.us-west-1.amazonaws.com"],
     minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
   },
-  swcMinify: false,
   async headers() {
     return [
       {
