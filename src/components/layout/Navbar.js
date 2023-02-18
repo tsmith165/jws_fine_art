@@ -74,11 +74,11 @@ const Navbar = ({most_recent_page_id, app_state, app_set_state, isLoaded, isSign
                 { (app_state.pathname == '/') ? (
                     <div className={(app_state.filter_menu_open == false) ? styles.gallery_filter_menu_toggle : `${styles.gallery_filter_menu_toggle} ${styles.gallery_filter_menu_toggle_open}` }>
                         {(app_state.filter_menu_open == false) ? (
-                            <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, pathname: app_state.pathname}) }}>
+                            <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, pathname: app_state.pathname, menu_open: false}) }}>
                                 Filters
                             </div>
                         ) : ( null ) }
-                        <Tune className={styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, pathname: app_state.pathname}) }}/>
+                        <Tune className={styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); app_set_state({filter_menu_open: !app_state.filter_menu_open, theme: app_state.theme, pathname: app_state.pathname, menu_open: false}) }}/>
                     </div>
                 ) : ( null ) }
 

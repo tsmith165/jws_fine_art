@@ -1,4 +1,5 @@
 import Navbar from './Navbar'
+// import Navbar from './NavbarClass'
 
 import React from 'react';
 import { useUser } from "@clerk/clerk-react";

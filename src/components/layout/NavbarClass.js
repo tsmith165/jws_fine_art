@@ -6,6 +6,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton, ClerkLoading } from "@cl
 import { Tooltip } from 'react-tooltip'
 
 import MenuOverlay from './menu/MenuOverlay'
+//import MenuOverlay from './menu/MenuOverlayClass'
 
 import styles from "../../../styles/layout/Navbar.module.scss"
 
