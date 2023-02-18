@@ -27,8 +27,7 @@ class GalleryPage extends React.Component {
             window_height: this.props.window_height,
             piece_list: piece_list,
             gallery_pieces: [],
-            lowest_height: 0,
-            theme: 'None'
+            lowest_height: 0
         }
 
         this.create_gallery = this.create_gallery.bind(this);
@@ -63,7 +62,7 @@ class GalleryPage extends React.Component {
         this.setState({
           window_width: window.innerWidth,
           window_height: window.innerHeight,
-        }, async () => { this.create_gallery(this.state.piece_list, this.state.theme) });
+        }, async () => { this.create_gallery(this.state.piece_list, this.props.app_state.theme) });
     }
 
     async create_gallery(piece_list, theme) {
@@ -234,8 +233,9 @@ class GalleryPage extends React.Component {
             if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
         }
         if (this.state.window_width < 600) lowest_height = lowest_height + 60;
-
-        this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height, theme: theme })
+        
+        console.log(``)
+        this.setState({piece_list: piece_list, gallery_pieces: gallery_pieces, lowest_height: lowest_height })
     }
 
     render() {
