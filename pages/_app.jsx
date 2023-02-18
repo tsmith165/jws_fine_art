@@ -16,23 +16,14 @@ const App = ({ Component, pageProps }) => {
   const router = useRouter()
   const { pathname } = useRouter();
   const isPrivatePath = ADMIN_PAGES.has(pathname)
-  var url_path = router.query.id;
 
-  console.log(`APP URL Path: ${url_path} | pathname: ${pathname}`)
-
-  const [app_state, app_set_state] = useState({
-    url_path: url_path, 
-    pathname: pathname,
-    menu_open: false,
-    filter_menu_open: false,
-    theme: 'None', 
-  });
+  console.log(`pathname: ${pathname}`)
 
   useEffect(() => {
     const handleRouteChange = (url) => {
       console.log(`Sending analytics call with url: ${url}`)
       gtag.pageview(url)
-      app_set_state({url_path: url, filter_menu_open: false})
+      app_set_state({...app_state, pathname: url, filter_menu_open: false})
     }
     router.events.on('routeChangeComplete', handleRouteChange)
     router.events.on('hashChangeComplete', handleRouteChange)
@@ -41,6 +32,13 @@ const App = ({ Component, pageProps }) => {
       router.events.off('hashChangeComplete', handleRouteChange)
     }
   }, [router.events])
+
+  const [app_state, app_set_state] = useState({
+    pathname: pathname,
+    menu_open: false,
+    filter_menu_open: false,
+    theme: 'None', 
+  });
 
   // console.log(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
   // console.log(`Using Page Props (Next Line)`)
