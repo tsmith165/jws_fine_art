@@ -1,8 +1,8 @@
-import Link from 'next/link'
-import Image from 'next/image'
 import React from 'react';
+import Image from 'next/image'
+import Link from 'next/link'
 
-import { SignedIn, SignedOut, UserButton, ClerkLoading } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton, ClerkLoading } from "@clerk/nextjs";
 import { Tooltip } from 'react-tooltip'
 
 import MenuOverlay from './menu/MenuOverlay'
