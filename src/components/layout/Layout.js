@@ -6,6 +6,9 @@ import { useUser } from "@clerk/clerk-react";
 const Layout = (props) => {
     const { isLoaded, isSignedIn, user } = useUser();
 
+    console.log(`Layout App State (Next Line)`)
+    console.log(props.app_state)
+
     return (
         <>
             <Navbar 

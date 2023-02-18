@@ -52,7 +52,8 @@ class Navbar extends React.Component {
     }
 
     render() {
-        console.log(`Rendering Navbar with app_state pathname: ${this.props.app_state.pathname} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
+        console.log(`Rendering Navbar with app_state (Next Line):`)
+        console.log(this.props.app_state)
 
         var filter_menu_array = [];
         for (var i = 0; i < THEME_FILTERS.length; i++) {
