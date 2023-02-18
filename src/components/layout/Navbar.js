@@ -57,7 +57,7 @@ class Navbar extends React.Component {
             let filter = THEME_FILTERS[i][0];
             let icon = THEME_FILTERS[i][1];
             filter_menu_array.push((
-                <div className={(filter == this.props.app_state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
+                <div key={i} className={(filter == this.props.app_state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
                     id={filter}
                     data-tooltip-content={`${filter}`}
                     onClick={(e) => { e.preventDefault(); console.log(`Upating theme to: ${filter}`); this.props.app_set_state({...this.props.app_state, theme: filter}) }}
@@ -76,7 +76,7 @@ class Navbar extends React.Component {
                 <div className={styles.navbar_container}>
                     <div className={styles.navbar_logo}>
                         <Link href="/">
-                            <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' layout="fill" objectFit='contain' sizes="250px"/>
+                            <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' priority={true} layout="fill" objectFit='contain' sizes="250px"/>
                         </Link>
                     </div>
 
