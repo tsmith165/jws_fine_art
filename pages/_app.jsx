@@ -28,6 +28,9 @@ const App = ({ Component, pageProps }) => {
     theme: 'None', 
   });
 
+  console.log(`Current App State (Next Line):`)
+  console.log(app_state)
+
   useEffect(() => {
     const handleRouteChange = (url) => {
       console.log(`Sending analytics call with url: ${url}`)
