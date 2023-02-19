@@ -1,25 +1,36 @@
+import React from 'react';
+
 import styles from '../../../../styles/layout/MenuOverlay.module.scss'
 
-import { useClerk } from "@clerk/clerk-react";
-import {useRouter} from 'next/router'
+import { withClerk } from "@clerk/clerk-react";
+import { withRouter } from 'next/router'
 
-const MenuOverlayButton = ({id, menu_name, url_endpoint, app_state, app_set_state}) => {
-    const router = useRouter();
-    router.prefetch(url_endpoint);
+class MenuOverlayButton extends React.Component {
+    constructor(props) {
+        super(props);
 
-    if (menu_name == 'Sign Out') {
-        const { signOut } = useClerk();
+    }
+
+    async componentDidMount() {
+
+    }
+
+    render() {
+        this.props.router.prefetch(this.props.url_endpoint)
+
+        if (this.props.menu_name == 'Sign Out') {
+            return (
+                <div className={styles.menu_overlay_item} id={this.props.id} onClick={() => this.props.clerk.signOut()}>
+                    <b className={styles.menu_overlay_item_title}>{this.props.menu_name}</b>
+                </div>
+            )
+        }
         return (
-            <div className={styles.menu_overlay_item} id={id} onClick={() => signOut()}>
-                <b className={styles.menu_overlay_item_title}>{menu_name}</b>
+            <div className={styles.menu_overlay_item} id={this.props.id} onClick={ (e) => {e.preventDefault(); app_set_state({...app_state, menu_open: false}); router.push(this.props.url_endpoint)} }>
+                <b className={styles.menu_overlay_item_title}>{this.props.menu_name}</b>
             </div>
         )
     }
-    return (
-        <div className={styles.menu_overlay_item} id={id} onClick={ (e) => {e.preventDefault(); app_set_state({...app_state, menu_open: false}); router.push(url_endpoint)} }>
-            <b className={styles.menu_overlay_item_title}>{menu_name}</b>
-        </div>
-    )
 }
 
-export default MenuOverlayButton
+export default withRouter(withClerk(MenuOverlayButton));
