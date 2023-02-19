@@ -1,38 +1,10 @@
-import styles from "../../../../styles/layout/MenuOverlay.module.scss"
 import React from 'react';
 
 import MenuOverlayButton from './MenuOverlayButton';
 
-const signed_out_menu_list = [
-    ["gallery", "Gallery", false, "/"],
-    ["details", "Piece Details", false, "/details/"],
-    ["slideshow", "Slideshow", false, "/slideshow"],
-    ["biography", "Biography", false, "/biography"],
-    ["contact", "Contact", false, "/contact"],
-    ["sign_in", "Sign In", false, "/signin"]
-]
+import styles from "../../../../styles/layout/MenuOverlay.module.scss"
 
-const signed_in_menu_list = [
-    ["gallery", "Gallery", false, "/"],
-    ["details", "Piece Details", false, "/details/"],
-    ["slideshow", "Slideshow", false, "/slideshow"],
-    ["biography", "Biography", false, "/biography"],
-    ["contact", "Contact", false, "/contact"],
-    ["sign_out", "Sign Out", false, "/signout"]
-]
-
-const admin_menu_list = [
-    ["gallery", "Gallery", false, "/"],
-    ["details", "Details", false, "/details/"],
-    ["slideshow", "Slideshow", false, "/slideshow"],
-    ["biography", "Biography", false, "/biography"],
-    ["contact", "Contact", false, "/contact"],
-    ["admin", "Admin", false, "/admin"],
-    ["edit_details", "Edit Details", true, "/edit/"],
-    ["management", "Management", true, "/manage"],
-    ["orders", "Orders", true, "/orders"],
-    ["sign_out", "Sign Out", false, "/signout"]
-];
+import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from "../../../../lib/menu_list.js"
 
 class MenuOverlay extends React.Component {
     constructor(props) {
@@ -98,30 +70,30 @@ class MenuOverlay extends React.Component {
     select_menu(isLoaded, isSignedIn, user) {
         if (!isLoaded) {
             console.log('User not loaded - returning signed out menu...')
-            return signed_out_menu_list
+            return SIGNED_OUT_MENU_LIST
         }
         if (!isSignedIn) {
             console.log('User not signed in - returning signed out menu...')
-            return signed_out_menu_list
+            return SIGNED_OUT_MENU_LIST
         }
         if (user == null) {
             console.log('User equals null - returning signed out menu...')
-            return signed_out_menu_list
+            return SIGNED_OUT_MENU_LIST
         }
         if (!'publicMetadata' in user) {
             console.log('User does not contain publicMetadata - returning signed out menu...')
-            return signed_out_menu_list
+            return SIGNED_OUT_MENU_LIST
         }
         if (!'role' in user.publicMetadata) {
             console.log('User does not contain role - returning signed out menu...')
-            return signed_out_menu_list
+            return SIGNED_OUT_MENU_LIST
         }
         if (user.publicMetadata.role === 'ADMIN') {
             console.log('User has role Admin - returning signed in admin menu...')
-            return admin_menu_list
+            return ADMIN_MENU_LIST
         }
         console.log('User does not have role Admin - returning signed in non-admin menu...')
-        return signed_in_menu_list
+        return SIGNED_IN_MENU_LIST
     }
 
     render() {
