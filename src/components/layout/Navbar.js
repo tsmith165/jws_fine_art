@@ -10,23 +10,23 @@ import MenuOverlay from './menu/MenuOverlay'
 import styles from "../../../styles/layout/Navbar.module.scss"
 
 // Menu Hamburger Icon
-import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
+import MenuIcon from '@mui/icons-material/Menu';
 
 // Account Profile Icon
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 // Filter Menu Icons
-import Tune from '@material-ui/icons/Tune';     // Filter Menu Toggle Button
-import AcUnit from '@material-ui/icons/AcUnit'; // Snow
-import Waves from '@material-ui/icons/Waves';   // Ocean
-import Landscape from '@material-ui/icons/Landscape'; // Mountains
-import LocationCity from '@material-ui/icons/LocationCity'; // City
-import LocalFlorist from '@material-ui/icons/LocalFlorist'; // Flowers
-import Portrait from '@material-ui/icons/Portrait'; // Portrait
-import Exposure from '@material-ui/icons/Exposure'; // Black And White
-import Block from '@material-ui/icons/Block'; // None
-import FilterBAndW from '@material-ui/icons/FilterBAndW'; // Abstract
-import ShoppingCart from '@material-ui/icons/ShoppingCart'; // Abstract
+import Tune from '@mui/icons-material/Tune';     // Filter Menu Toggle Button
+import AcUnit from '@mui/icons-material/AcUnit'; // Snow
+import Waves from '@mui/icons-material/Waves';   // Ocean
+import Landscape from '@mui/icons-material/Landscape'; // Mountains
+import LocationCity from '@mui/icons-material/LocationCity'; // City
+import LocalFlorist from '@mui/icons-material/LocalFlorist'; // Flowers
+import Portrait from '@mui/icons-material/Portrait'; // Portrait
+import Exposure from '@mui/icons-material/Exposure'; // Black And White
+import Block from '@mui/icons-material/Block'; // None
+import FilterBAndW from '@mui/icons-material/FilterBAndW'; // Abstract
+import ShoppingCart from '@mui/icons-material/ShoppingCart'; // Abstract
 
 const THEME_FILTERS = [
     ['Water', <Waves className={styles.gallery_filter_icon} />], 
@@ -131,7 +131,7 @@ class Navbar extends React.Component {
 
                 <div className={styles.page_menu_full_container} onMouseLeave={ (e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, menu_open: false}) }}>
                     <div className={styles.menu_button_container} onClick={ (e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, menu_open: !this.props.app_state.menu_open}) }}>
-                        <MenuRoundedIcon className={(this.props.app_state.menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
+                        <MenuIcon className={(this.props.app_state.menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
                     </div>
                     
                     {

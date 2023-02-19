@@ -3,10 +3,10 @@ import Image from 'next/image'
 
 import styles from '../../../../styles/pages/Slideshow.module.scss'
 
-import PlayArrow from '@material-ui/icons/PlayArrow';
-import Pause from '@material-ui/icons/Pause';
-import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
-import SpeedIcon from '@material-ui/icons/Speed';
+import PlayArrow from '@mui/icons-material/PlayArrow';
+import Pause from '@mui/icons-material/Pause';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import SpeedIcon from '@mui/icons-material/Speed';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
