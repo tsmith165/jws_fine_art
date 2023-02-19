@@ -13,8 +13,8 @@ import PageLayout from '../../src/components/layout/PageLayout'
 import styles from '../../styles/pages/Details.module.scss'
 import form_styles from '../../styles/forms/EditDetailsForm.module.scss'
 
-import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
-import { CircularProgress } from '@material-ui/core';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 

@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
@@ -15,7 +14,7 @@ async function swap_o_ids(id, o_id) {
   return swap_output
 }
 
-export default async function handler(req:NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
   if(req.method !== 'POST') {
     console.log("Request.method != POST.  Status: 402")
     res.status(402)
