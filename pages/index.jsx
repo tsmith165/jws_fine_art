@@ -1,7 +1,7 @@
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import GalleryPage from '../src/components/pages/gallery/GalleryPage';
+import Gallery from '../src/components/pages/gallery/Gallery';
 
 import useWindowSize from '../lib/useWindowSize'
 
@@ -14,7 +14,7 @@ export default function Home({piece_list, app_state, app_set_state}) {
 
   return (
     <PageLayout page_title={"JWS Fine Art"}>
-      <GalleryPage piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} window_width={window_size.width} window_height={window_size.height}/>
+      <Gallery piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} window_width={window_size.width} window_height={window_size.height}/>
     </PageLayout>
   )
 }
