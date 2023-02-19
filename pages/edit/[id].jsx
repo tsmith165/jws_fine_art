@@ -500,9 +500,7 @@ class Edit extends React.Component {
         const role = (this.props.user.publicMetadata.role !== undefined) ? this.props.user.publicMetadata.role : null;
         console.log(`USER ROLE: ${role}`)
       
-        if (role !== "ADMIN") {
-            this.props.router.push('/')
-        }
+        if (role !== "ADMIN") { this.props.router.push('/') }
       
         if (!this.props.router.isReady) { return(<></>) }
         

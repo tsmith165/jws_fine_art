@@ -13,7 +13,7 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const DEFAULT_MIN = 0; const DEFAULT_MAX = 100;
 const RATIO_MIN = 0; const RATIO_MAX = 1000;
 
-class SlideshowPage extends React.Component {
+class Slideshow extends React.Component {
     constructor(props) {
         super(props);
 
@@ -293,4 +293,4 @@ class SlideshowPage extends React.Component {
     }
 }
 
-export default SlideshowPage;
+export default Slideshow;

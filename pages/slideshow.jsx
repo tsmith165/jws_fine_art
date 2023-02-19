@@ -1,21 +1,29 @@
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import SlideshowPage from '../src/components/pages/slideshow/SlideshowPage';
+import Slideshow from '../src/components/pages/slideshow/Slideshow';
 
 import styles from '../styles/pages/Slideshow.module.scss'
 
-export default function Slideshow({piece_list}) {
-  //console.log("CURRENT PIECE LIST (NEXT LINE):")
-  //console.log(piece_list);
+import React from 'react';
+class SlideshowPage extends React.Component {
+    constructor(props) {
+        super(props);
 
-  return (
-    <PageLayout page_title={"Slideshow"}>
-      <div className={styles.slideshow_container}>
-        <SlideshowPage piece_list={piece_list}/>
-      </div>
-    </PageLayout>
-  )
+        this.page_title = "Slideshow JWS Fine Art"
+    }
+
+    async componentDidMount() { }
+
+    render() {
+        return (
+            <PageLayout page_title={this.page_title}>
+                <div className={styles.slideshow_container}>
+                    <Slideshow piece_list={this.props.piece_list}/>
+                </div>
+            </PageLayout>
+        )
+    }
 }
 
 async function fetchPieces() {
@@ -41,3 +49,5 @@ export const getServerSideProps = async (context) => {
     }
   }
 }
+
+export default SlideshowPage;

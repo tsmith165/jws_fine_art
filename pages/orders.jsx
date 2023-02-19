@@ -8,6 +8,45 @@ import OrderTree from '../src/components/pages/orders/OrderTree';
 
 import styles from '../styles/pages/Orders.module.scss'
 
+class Orders extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.page_title = "Gallery JWS Fine Art"
+    }
+
+    async componentDidMount() { }
+
+    render() {
+        if (!this.props.isLoaded) { return(<></>) }
+        if (!this.props.isSignedIn) { this.props.router.push('/') }
+        if (this.props.user == null) { this.props.router.push('/') }
+        
+        const role = (this.props.user.publicMetadata.role !== undefined) ? this.props.user.publicMetadata.role : null;
+        console.log(`USER ROLE: ${role}`)
+        
+        if (role !== "ADMIN") { this.props.router.push('/') }
+        
+        if (!this.props.router.isReady) { return(<></>) }
+
+        return (
+            <PageLayout page_title={"Orders"}>
+                <div className={styles.main_container}>
+                    <div className={styles.main_body}>
+                        <h2 className={styles.module_title}>Order Management:</h2>
+                        <div className={styles.manage_main_container}>
+                            <div className={styles.pieces_tree_container}>
+                                <OrderTree verified_list={verified_list} refresh_data={refresh_data}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </PageLayout>
+        )
+    }
+}
+
 // using client side session retrieval
 const Orders = ({ verified_list, isLoaded, isSignedIn, user }) => {
   const router = useRouter()
@@ -32,24 +71,19 @@ const Orders = ({ verified_list, isLoaded, isSignedIn, user }) => {
     router.push('/')
   }
 
-  const page_jsx =  (
-    <div className={styles.manage_main_container}>
-      <div className={styles.pieces_tree_container}>
-        <OrderTree verified_list={verified_list}
-                    refresh_data={refresh_data}
-        />
-      </div>
-    </div>
-  );
-
   return (
     <PageLayout page_title={"Orders"}>
-      <div className={styles.main_container}>
-        <div className={styles.main_body}>
-          <h2 className={styles.module_title}>Order Management:</h2>
-          {page_jsx}
+        <div className={styles.main_container}>
+            <div className={styles.main_body}>
+                <h2 className={styles.module_title}>Order Management:</h2>
+                <div className={styles.manage_main_container}>
+                    <div className={styles.pieces_tree_container}>
+                        <OrderTree verified_list={verified_list} refresh_data={refresh_data}
+                        />
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </PageLayout>
   )
 };
@@ -91,4 +125,4 @@ export const getServerSideProps = async (context) => {
   }
 }
 
-export default Orders;
+export default withRouter(Orders);

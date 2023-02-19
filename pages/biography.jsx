@@ -1,29 +1,27 @@
 import React from 'react';
 
 import PageLayout from '../src/components/layout/PageLayout'
-import BiographyPage from '../src/components/pages/biography/BiographyPage'
+import Biography from '../src/components/pages/biography/Biography'
 
 import { prisma } from '../lib/prisma'
 
-class Biography extends React.Component {
+class BiographyPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.page_title = "Gallery JWS Fine Art"
+        this.page_title = "Biography"
     }
 
     async componentDidMount() { }
 
     render() {
         return (
-            <PageLayout page_title={"Biography"}>
-                <BiographyPage/>
+            <PageLayout page_title={this.page_title}>
+                <Biography/>
             </PageLayout>
         )
     }
 }
-
-export default Biography
 
 export const getServerSideProps = async (context) => {
     console.log("Getting Server Side Props")
@@ -39,3 +37,5 @@ export const getServerSideProps = async (context) => {
         }
     }
 }
+
+export default BiographyPage
