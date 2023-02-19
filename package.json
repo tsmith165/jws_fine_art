@@ -1,6 +1,6 @@
 {
-  "name": "generic_auth",
-  "version": "0.1.0",
+  "name": "jws_fine_art",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "dev": "cross-env next dev",
