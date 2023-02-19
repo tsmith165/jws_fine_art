@@ -1,38 +1,49 @@
+import React from 'react';
+
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
 import Gallery from '../src/components/pages/gallery/Gallery';
 
-export default function Home({piece_list, app_state, app_set_state}) {
-  //console.log("CURRENT PIECE LIST (NEXT LINE):")
-  //console.log(piece_list);
+class Home extends React.Component {
+    constructor(props) {
+        super(props);
 
-  return (
-    <PageLayout page_title={"JWS Fine Art"}>
-      <Gallery piece_list={piece_list} app_state={app_state} app_set_state={app_set_state}/>
-    </PageLayout>
-  )
+        this.page_title = "Gallery JWS Fine Art"
+    }
+
+    async componentDidMount() { }
+
+    render() {
+        return (
+            <PageLayout page_title={this.page_title}>
+              <Gallery piece_list={this.props.piece_list} app_state={this.props.app_state} app_set_state={this.props.app_set_state}/>
+            </PageLayout>
+        )
+    }
 }
 
-async function fetchPieces() {
-  console.log(`Fetching pieces with prisma`)
-  const piece_list = await prisma.piece.findMany({
-      orderBy: {
-          o_id: 'desc',
-      },
-  })
+export default Home
 
-  return piece_list
+async function fetchPieces() {
+    console.log(`Fetching pieces with prisma`)
+    const piece_list = await prisma.piece.findMany({
+        orderBy: {
+            o_id: 'desc',
+        }
+    })
+    return piece_list
 }
 
 export const getServerSideProps = async (context) => {
-  console.log("Getting Server Side Props")
-  const piece_list = await fetchPieces()
+    console.log("Getting Server Side Props")
+    const piece_list = await fetchPieces()
 
-  return { 
-    props: {
-      "piece_list": piece_list,
-      "most_recent_id": piece_list[0]['id']
-    }
-  }
+    return { 
+        props: {
+            "piece_list": piece_list,
+            "most_recent_id": piece_list[0]['id']
+        }
+    } 
 }
+
