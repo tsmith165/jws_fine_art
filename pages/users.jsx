@@ -1,5 +1,4 @@
 import React from 'react';
-import { withRouter } from 'next/router';
 
 import { prisma } from '../lib/prisma';
 
