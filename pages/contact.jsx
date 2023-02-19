@@ -3,9 +3,9 @@ import React from 'react';
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
-import ContactPage from '../src/components/pages/contact/ContactPage';
+import Contact from '../src/components/pages/contact/Contact';
 
-class Contact extends React.Component {
+class ContactPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -17,7 +17,7 @@ class Contact extends React.Component {
     render() {
         return (
           <PageLayout page_title={this.page_title}>
-            <ContactPage/>
+            <Contact/>
           </PageLayout>
         )
     }
@@ -38,4 +38,4 @@ export const getServerSideProps = async (context) => {
     }
 }
 
-export default Contact;
+export default ContactPage;
