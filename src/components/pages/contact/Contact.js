@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 import styles from '../../../../styles/pages/Contact.module.scss'
 
-class ContactPage extends React.Component {
+class Contact extends React.Component {
     constructor(props) {
         super(props);
 
@@ -43,4 +43,4 @@ class ContactPage extends React.Component {
     }
 }
 
-export default ContactPage;
+export default Contact;
