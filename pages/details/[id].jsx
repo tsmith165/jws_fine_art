@@ -1,8 +1,8 @@
+import React from 'react';
 import { withRouter } from 'next/router'
 
 import { prisma } from '../../lib/prisma'
 
-import React from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 

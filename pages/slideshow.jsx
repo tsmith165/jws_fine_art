@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { prisma } from '../lib/prisma'
 
 import PageLayout from '../src/components/layout/PageLayout'
@@ -5,7 +7,6 @@ import Slideshow from '../src/components/pages/slideshow/Slideshow';
 
 import styles from '../styles/pages/Slideshow.module.scss'
 
-import React from 'react';
 class SlideshowPage extends React.Component {
     constructor(props) {
         super(props);
