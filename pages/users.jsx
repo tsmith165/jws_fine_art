@@ -8,7 +8,6 @@ import UserTree from '../src/components/pages/users/UserTree';
 
 import styles from '../styles/pages/Users.module.scss';
 
-import React from 'react';
 class Users extends React.Component {
     constructor(props) {
         super(props);
