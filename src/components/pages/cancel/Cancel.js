@@ -10,7 +10,7 @@ import { CircularProgress } from '@material-ui/core';
 
 const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
-class CancelPage extends React.Component {
+class Cancel extends React.Component {
     constructor(props) {
         super(props);
 
@@ -249,4 +249,4 @@ class CancelPage extends React.Component {
     }
 }
 
-export default CancelPage;
+export default Cancel;

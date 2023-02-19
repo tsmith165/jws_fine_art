@@ -20,7 +20,7 @@ const stripePromise = loadStripe("pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlIC
 const libraries = ["places"];
 
 
-class CheckoutPage extends React.Component {
+class Checkout extends React.Component {
     constructor(props) {
         super(props);
 
@@ -449,7 +449,7 @@ class CheckoutPage extends React.Component {
                                 </div>
                                 <div className={form_styles.submit_container}>
                                     <Link href='https://stripe.com'>
-                                        <Image src='/powered_by_stripe_blue_background.png' height="70px" width="160px" />
+                                        <Image src='/powered_by_stripe_blue_background_small.png' alt='View Stripe Info' priority={true} width={150} height={50}/>
                                     </Link>
                                 </div>
                             </form>
@@ -462,4 +462,4 @@ class CheckoutPage extends React.Component {
     }
 }
 
-export default CheckoutPage;
+export default Checkout;
