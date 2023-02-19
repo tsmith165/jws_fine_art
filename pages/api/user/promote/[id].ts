@@ -2,8 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../lib/prisma";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
-const secret = process.env.SECRET;
-
 export default async function handler(req:NextApiRequest, res: NextApiResponse) {
   const { userId } = getAuth(req);
   const user = userId ? await clerkClient.users.getUser(userId) : null;

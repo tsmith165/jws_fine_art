@@ -2,8 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 import { generate_upload_url } from "../../../lib/s3_api_calls"
 
-const secret = process.env.SECRET;
-
 export default async function handler(req:NextApiRequest, res: NextApiResponse) {
   if(req.method !== 'POST') {
     console.log("Request.method != POST.  Status: 402")

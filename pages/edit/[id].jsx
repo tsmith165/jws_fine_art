@@ -200,7 +200,8 @@ class Edit extends React.Component {
         const piece_list_length = piece_list.length;
 
         console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
-        const [piece_position, current_piece] = await this.get_piece_from_path_o_id(piece_list, o_id);
+        const piece_from_path_o_id = await this.get_piece_from_path_o_id(piece_list, o_id);
+        const [piece_position, current_piece] = piece_from_path_o_id;
         const piece_db_id = current_piece['id']
         const piece_o_id = current_piece['o_id']
 
