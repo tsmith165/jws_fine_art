@@ -9,7 +9,7 @@ import UserTree from '../src/components/pages/admin/UserTree';
 import styles from '../styles/pages/Admin.module.scss';
 
 // using client side session retrieval
-const Admin = ({ user_tree_data, isLoaded, isSignedIn, user }) => {
+const Users = ({ user_tree_data, isLoaded, isSignedIn, user }) => {
   const router = useRouter()
   const refresh_data = () => {
     console.log("Refreshing Data...")
@@ -70,4 +70,4 @@ export async function getServerSideProps() {
 
 }
 
-export default Admin;
+export default Users;
