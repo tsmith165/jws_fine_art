@@ -26,7 +26,7 @@ class MenuOverlayButton extends React.Component {
             )
         }
         return (
-            <div className={styles.menu_overlay_item} id={this.props.id} onClick={ (e) => {e.preventDefault(); app_set_state({...app_state, menu_open: false}); router.push(this.props.url_endpoint)} }>
+            <div className={styles.menu_overlay_item} id={this.props.id} onClick={ (e) => {e.preventDefault(); this.props.app_set_state({...this.props.app_state, menu_open: false}); this.props.router.push(this.props.url_endpoint)} }>
                 <b className={styles.menu_overlay_item_title}>{this.props.menu_name}</b>
             </div>
         )

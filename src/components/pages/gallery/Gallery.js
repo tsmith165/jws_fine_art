@@ -1,13 +1,9 @@
 import React from 'react';
 
+import styles from '../../../../styles/pages/Gallery.module.scss'
 import 'react-tooltip/dist/react-tooltip.css'
 
-import styles from '../../../../styles/pages/Gallery.module.scss'
-
 import Piece from './Piece';
-import { isUndefined } from 'underscore';
-
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const DEBUG = false;
 
@@ -15,7 +11,7 @@ const DEFAULT_PIECE_WIDTH = 250;
 const INNER_MARGIN_WIDTH = 30;
 const BORDER_MARGIN_WIDTH = 10;
 
-class GalleryPage extends React.Component {
+class Gallery extends React.Component {
     constructor(props) {
         super(props);
         const piece_list = this.props.piece_list;
@@ -263,4 +259,4 @@ class GalleryPage extends React.Component {
     }
 }
 
-export default GalleryPage;
+export default Gallery;
