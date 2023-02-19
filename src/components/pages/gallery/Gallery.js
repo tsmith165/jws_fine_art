@@ -22,8 +22,8 @@ class Gallery extends React.Component {
         this.state = {
             loading: true,
             filter_menu_open: false,
-            window_width: this.props.window_width,
-            window_height: this.props.window_height,
+            window_width: null,
+            window_height: null,
             piece_list: piece_list,
             gallery_pieces: [],
             lowest_height: 0,
