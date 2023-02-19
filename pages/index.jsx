@@ -3,18 +3,13 @@ import { prisma } from '../lib/prisma'
 import PageLayout from '../src/components/layout/PageLayout'
 import Gallery from '../src/components/pages/gallery/Gallery';
 
-import useWindowSize from '../lib/useWindowSize'
-
 export default function Home({piece_list, app_state, app_set_state}) {
   //console.log("CURRENT PIECE LIST (NEXT LINE):")
   //console.log(piece_list);
 
-  const window_size = useWindowSize()
-  // console.log(`Width: ${window_size.width} | Height: ${window_size.height}`)
-
   return (
     <PageLayout page_title={"JWS Fine Art"}>
-      <Gallery piece_list={piece_list} app_state={app_state} app_set_state={app_set_state} window_width={window_size.width} window_height={window_size.height}/>
+      <Gallery piece_list={piece_list} app_state={app_state} app_set_state={app_set_state}/>
     </PageLayout>
   )
 }
