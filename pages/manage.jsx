@@ -1,55 +1,50 @@
 import React from 'react';
-import { useRouter } from 'next/router';
+import { withRouter } from 'next/router';
 
 import { prisma } from '../lib/prisma';
 
 import PageLayout from '../src/components/layout/PageLayout';
 import PieceTree from '../src/components/pages/manage/PieceTree';
 
-import styles from '../styles/pages/Admin.module.scss';
+import styles from '../styles/pages/Users.module.scss';
 
-// using client side session retrieval
-const Manage = ({ piece_list, isLoaded, isSignedIn, user }) => {
-  const router = useRouter()
-  const refresh_data = () => {
-    router.replace(router.asPath)
-  }
+class Manage extends React.Component {
+    constructor(props) {
+        super(props);
 
-  if (!isLoaded) {
-    return(<></>)
-  }
-  if (!isSignedIn) {
-    router.push('/')
-  }
-  if (user == null) {
-    router.push('/')
-  }
-  const role = user.publicMetadata.role;
-  console.log(`USER ROLE: ${role}`)
-  if (user.publicMetadata.role !== "ADMIN") {
-    router.push('/')
-  }
-  const page_jsx =  (
-    <div className={styles.manage_main_container}>
-      <div className={styles.pieces_tree_container}>
-        <PieceTree piece_tree_data={piece_list}
-                    refresh_data={refresh_data}
-        />
-      </div>
-    </div>
-  );
+        this.page_title = "Piece Management"
+    }
 
-  return (
-    <PageLayout page_title={"Management"}>
-      <div className={styles.main_container}>
-        <div className={styles.main_body}>
-          <h2 className={styles.module_title}>Piece Management:</h2>
-          {page_jsx}
-        </div>
-      </div>
-    </PageLayout>
-  )
-};
+    async componentDidMount() { }
+
+    render() {
+        if (!this.props.isLoaded) { return(<></>) }
+        if (!this.props.isSignedIn) { this.props.router.push('/') }
+        if (this.props.user == null) { this.props.router.push('/') }
+        
+        const role = (this.props.user.publicMetadata.role !== undefined) ? this.props.user.publicMetadata.role : null;
+        console.log(`USER ROLE: ${role}`)
+        
+        if (role !== "ADMIN") { this.props.router.push('/') }
+        
+        if (!this.props.router.isReady) { return(<></>) }
+        
+        return (
+            <PageLayout page_title={this.page_title}>
+                <div className={styles.main_container}>
+                    <div className={styles.main_body}>
+                        <h2 className={styles.module_title}>Piece Management:</h2>
+                        <div className={styles.manage_main_container}>
+                            <div className={styles.pieces_tree_container}>
+                                <PieceTree piece_tree_data={this.props.piece_list} refresh_data={this.props.refresh_data} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </PageLayout>
+        )
+    }
+}
 
 async function fetchPieces() {
   console.log(`Fetching pieces with prisma`)
@@ -74,4 +69,4 @@ export const getServerSideProps = async (context) => {
   }
 }
 
-export default Manage;
+export default withRouter(Manage);

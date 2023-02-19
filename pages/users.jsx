@@ -8,6 +8,46 @@ import UserTree from '../src/components/pages/users/UserTree';
 
 import styles from '../styles/pages/Users.module.scss';
 
+import React from 'react';
+class Users extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.page_title = "Gallery JWS Fine Art"
+    }
+
+    async componentDidMount() { }
+
+    render() {
+        if (!this.props.isLoaded) { return(<></>) }
+        if (!this.props.isSignedIn) { this.props.router.push('/') }
+        if (this.props.user == null) { this.props.router.push('/') }
+        
+        const role = (this.props.user.publicMetadata.role !== undefined) ? this.props.user.publicMetadata.role : null;
+        console.log(`USER ROLE: ${role}`)
+        
+        if (role !== "ADMIN") { this.props.router.push('/') }
+        
+        if (!this.props.router.isReady) { return(<></>) }
+
+        return (
+            <PageLayout page_title={"Admin"}>
+                <div className={styles.main_container}>
+                    <div className={styles.main_body}>
+                        <h2 className={styles.module_title}>User Management:</h2>
+                        <div className={styles.admin_main_container}>
+                            <div className={styles.user_tree_container}>
+                                <UserTree user_tree_data={this.props.user_tree_data} refresh_data={this.props.refresh_data}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </PageLayout>
+        )
+    }
+}
+
 // using client side session retrieval
 const Users = ({ user_tree_data, isLoaded, isSignedIn, user }) => {
   const router = useRouter()
@@ -46,7 +86,13 @@ const Users = ({ user_tree_data, isLoaded, isSignedIn, user }) => {
       <div className={styles.main_container}>
         <div className={styles.main_body}>
           <h2 className={styles.module_title}>User Management:</h2>
-          {page_jsx}
+          <div className={styles.admin_main_container}>
+            <div className={styles.user_tree_container}>
+              <UserTree user_tree_data={user_tree_data}
+                        refresh_data={refresh_data}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </PageLayout>
