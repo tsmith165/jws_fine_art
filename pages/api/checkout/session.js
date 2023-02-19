@@ -1,8 +1,4 @@
-//import { NextApiRequest, NextApiResponse } from "next";
-//import { prisma } from "../../../lib/prisma";
-
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
-const YOUR_DOMAIN = `https://jwsfineart.com`;
+const SITE_URL = `https://jwsfineart.com`;
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -94,8 +90,8 @@ export default async function handler(req, res) {
                     }
                 },
                 mode: 'payment',
-                success_url: `${YOUR_DOMAIN}/success/${piece_db_id}`,
-                cancel_url: `${YOUR_DOMAIN}/cancel/${piece_db_id}`,
+                success_url: `${SITE_URL}/success/${piece_db_id}`,
+                cancel_url: `${SITE_URL}/cancel/${piece_db_id}`,
             }
 
             console.log("Attempting to create checkout session with following params (Next Line):")

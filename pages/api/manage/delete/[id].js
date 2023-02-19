@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../lib/prisma";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
-export default async function handler(req:NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
 
     if(req.method !== 'POST') {
         console.log("Request.method != POST.  Status: 402")
@@ -31,7 +30,7 @@ export default async function handler(req:NextApiRequest, res: NextApiResponse) 
         res.status(403)
     }
 
-    const id: string = req.query.id.toString();
+    const id = req.query.id.toString();
     console.log(`Auth Successful.  Start DELETE PIECE API for ID: ${id}`);
     
     const delete_output = await prisma.piece.delete({

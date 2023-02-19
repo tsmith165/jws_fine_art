@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../lib/prisma";
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function (req, res) {
   try {
     const piece = await prisma.piece.findFirst({
       orderBy: { id: 'desc' },

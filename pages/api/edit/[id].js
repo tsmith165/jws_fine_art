@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "../../../lib/prisma";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
-import { generate_upload_url } from "../../../lib/s3_api_calls"
 
-export default async function handler(req:NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
   if(req.method !== 'POST') {
     console.log("Request.method != POST.  Status: 402")
     res.status(402)
@@ -30,19 +29,23 @@ export default async function handler(req:NextApiRequest, res: NextApiResponse) 
     res.status(403)
   }
 
-  console.log(`Auth Successful.  Attempting to get upload URL...`);
+  const id = req.query.id.toString();
+  console.log(`Auth Successful.  Start EDIT API for ID: ${id}`);
 
   const passed_json = req.body
 
   console.log(`Passed JSON (Next Line):`)
   console.log(passed_json);
-
-  const image_name = passed_json.image_name
-
-  const url = await generate_upload_url(image_name)
-
-  console.log(`Upload URL (Next Line): ${url}`);
-  res.json({url})
   
+  const update_output = await prisma.piece.update({
+    where: {
+      id: parseInt(id)
+    },
+    data: passed_json
+  });
+
+  console.log(`Update Output (Next Line):`);
+  console.log(update_output)
+  res.json(update_output)
   res.end()
 }

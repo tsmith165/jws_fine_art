@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "../../../../lib/prisma";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
-export default async function handler(req:NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
   if(req.method !== 'POST') {
     console.log("Request.method != POST.  Status: 402")
     res.status(402)
@@ -30,23 +29,21 @@ export default async function handler(req:NextApiRequest, res: NextApiResponse) 
     res.status(403)
   }
 
-  const id: string = req.query.id.toString();
-  console.log(`Auth Successful.  Start EDIT API for ID: ${id}`);
+  const id = req.query.id.toString();
+  console.log(`Auth Successful.  Start DEMOTE API for ID: ${id}`);
 
-  const passed_json = req.body
-
-  console.log(`Passed JSON (Next Line):`)
-  console.log(passed_json);
-  
-  const update_output = await prisma.piece.update({
+  const update_output = await prisma.user.update({
     where: {
-      id: parseInt(id)
+      id: id
     },
-    data: passed_json
+    data: {
+      role: "USER"
+    }
   });
 
   console.log(`Update Output (Next Line):`);
   console.log(update_output)
   res.json(update_output)
+
   res.end()
 }

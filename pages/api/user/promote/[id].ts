@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../../lib/prisma";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
-export default async function handler(req:NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
   const { userId } = getAuth(req);
   const user = userId ? await clerkClient.users.getUser(userId) : null;
 
@@ -25,7 +24,7 @@ export default async function handler(req:NextApiRequest, res: NextApiResponse) 
     res.status(403)
   }
 
-  const id: string = req.query.id.toString();
+  const id = req.query.id.toString();
   console.log(`Auth Successful.  Start PROMOTE API for ID: ${id}`);
 
   const update_output = await prisma.user.update({

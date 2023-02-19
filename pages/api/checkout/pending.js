@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
 
 async function create_pending_transaction(passed_json) { 
@@ -9,7 +8,7 @@ async function create_pending_transaction(passed_json) {
   return pending_transaction_output
 }
 
-export default async function handler(req:NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
     console.log("CREATE PENDING TRANSACTION")
 
     if(req.method !== 'POST') {
