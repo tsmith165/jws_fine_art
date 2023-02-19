@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouter } from 'next/router'
+import { withRouter } from 'next/router'
 
 import { prisma } from '../lib/prisma'
 
@@ -46,47 +46,6 @@ class Orders extends React.Component {
         )
     }
 }
-
-// using client side session retrieval
-const Orders = ({ verified_list, isLoaded, isSignedIn, user }) => {
-  const router = useRouter()
-  const refresh_data = () => {
-    router.replace(router.asPath)
-  }
-
-  if (!isLoaded) {
-    return(<></>)
-  }
-  if (!isSignedIn) {
-    router.push('/')
-  }
-  if (user == null) {
-    router.push('/')
-  }
-  console.log(`USER: ${user}`)
-  if (!'publicMetadata' in user) {
-    router.push('/')
-  }
-  if (user.publicMetadata.role !== "ADMIN") {
-    router.push('/')
-  }
-
-  return (
-    <PageLayout page_title={"Orders"}>
-        <div className={styles.main_container}>
-            <div className={styles.main_body}>
-                <h2 className={styles.module_title}>Order Management:</h2>
-                <div className={styles.manage_main_container}>
-                    <div className={styles.pieces_tree_container}>
-                        <OrderTree verified_list={verified_list} refresh_data={refresh_data}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </PageLayout>
-  )
-};
 
 async function fetchVerfiedPayments() {
   console.log(`Fetching pieces with prisma`)

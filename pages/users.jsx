@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouter } from 'next/router';
+import { withRouter } from 'next/router';
 
 import { prisma } from '../lib/prisma';
 
@@ -116,4 +116,4 @@ export async function getServerSideProps() {
 
 }
 
-export default Users;
+export default withRouter(Users);
