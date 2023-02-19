@@ -18,9 +18,9 @@ class MenuOverlay extends React.Component {
             let menu_name = menu_item[1];
             let is_admin = menu_item[2];
             let menu_slug = menu_item[3];
+            let is_indexed = menu_item[4];
     
-            const id_pages = ['details', 'edit_details']
-            if ((menu_class == 'details' || menu_class == 'edit_details') && (!menu_slug.includes(this.props.most_recent_page_id))) {
+            if ((is_indexed == true) && (!menu_slug.includes(this.props.most_recent_page_id))) {
                 using_menu[i][3] += this.props.most_recent_page_id
             }
         }
