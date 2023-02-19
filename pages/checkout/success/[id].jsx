@@ -1,21 +1,31 @@
-import { useRouter } from 'next/router'
+import React from 'react';
+import { withRouter } from 'next/router'
 
 import { prisma } from '../../../lib/prisma'
 
-import SuccessPage from '../../../src/components/pages/success/SuccessPage';
+import PageLayout from '../../../src/components/layout/PageLayout'
+import Success from '../../../src/components/pages/success/Success';
 
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
+class SuccessPage extends React.Component {
+  constructor(props) {
+      super(props);
 
-const Success = ({ piece_list }) => {
-    const router = useRouter();
-    const id = router.query.id;
-    console.log(`Page ID: ${id}`);
+      this.page_title = "Checkout"
+  }
 
-    if (!router.isReady) return null
-    return ( <SuccessPage id={id} piece_list={piece_list} router={router}/> )
+  async componentDidMount() { }
+
+  render() {
+    if (!this.props.router.isReady) return null
+    return ( 
+      <PageLayout page_title={this.page_title}>
+        <Success id={this.props.router.query.id} piece_list={this.props.piece_list} router={this.props.router}/> 
+      </PageLayout>
+    )
+  }
 }
 
-export default Success
+export default withRouter(SuccessPage)
 
 export const getServerSideProps = async (context) => {
     console.log(`-------------- Fetching Initial Server List --------------`)

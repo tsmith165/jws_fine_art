@@ -1,21 +1,31 @@
-import { useRouter } from 'next/router'
+import React from 'react';
+import { withRouter } from 'next/router'
 
 import { prisma } from '../../lib/prisma'
 
-import CheckoutPage from '../../src/components/pages/checkout/CheckoutPage';
+import PageLayout from '../../src/components/layout/PageLayout'
+import Checkout from '../../src/components/pages/checkout/Checkout';
 
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
+class CheckoutPage extends React.Component {
+  constructor(props) {
+      super(props);
 
-const Checkout = ({ piece_list }) => {
-    const router = useRouter();
-    const id = router.query.id;
-    console.log(`Page ID: ${id}`);
+      this.page_title = "Checkout"
+  }
 
-    if (!router.isReady) return null
-    return ( <CheckoutPage id={id} piece_list={piece_list} router={router}/> )
+  async componentDidMount() { }
+
+  render() {
+    if (!this.props.router.isReady) return null
+    return ( 
+      <PageLayout page_title={this.page_title}>
+        <Checkout id={this.props.router.query.id} piece_list={this.props.piece_list} router={this.props.router}/> 
+      </PageLayout>
+    )
+  }
 }
 
-export default Checkout
+export default withRouter(CheckoutPage)
 
 export const getServerSideProps = async (context) => {
     console.log(`-------------- Fetching Initial Server List --------------`)

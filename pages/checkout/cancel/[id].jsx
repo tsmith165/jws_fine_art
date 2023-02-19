@@ -1,24 +1,31 @@
-import { useRouter } from 'next/router'
+import React from 'react';
+import { withRouter } from 'next/router'
 
 import { prisma } from '../../../lib/prisma'
 
-import CancelPage from '../../../src/components/pages/cancel/CancelPage';
+import PageLayout from '../../../src/components/layout/PageLayout'
+import Cancel from '../../../src/components/pages/cancel/Cancel';
 
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
+class CancelPage extends React.Component {
+  constructor(props) {
+      super(props);
 
-const Cancel = ({ piece_list }) => {
-    const router = useRouter();
-    const id = router.query.id;
-    console.log(`Page ID: ${id}`);
+      this.page_title = "Checkout"
+  }
 
-    console.log(`Passing piece_list (Next Line): `)
-    console.log(piece_list)
+  async componentDidMount() { }
 
-    if (!router.isReady) return null
-    return ( <CancelPage id={id} piece_list={piece_list} router={router}/> )
+  render() {
+    if (!this.props.router.isReady) return null
+    return ( 
+      <PageLayout page_title={this.page_title}>
+        <Cancel id={this.props.router.query.id} piece_list={this.props.piece_list} router={this.props.router}/> 
+      </PageLayout>
+    )
+  }
 }
 
-export default Cancel
+export default withRouter(CancelPage)
 
 export const getServerSideProps = async (context) => {
     console.log(`-------------- Fetching Initial Server List --------------`)
