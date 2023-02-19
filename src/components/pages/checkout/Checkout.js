@@ -19,7 +19,6 @@ const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const stripePromise = loadStripe("pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj");
 const libraries = ["places"];
 
-
 class Checkout extends React.Component {
     constructor(props) {
         super(props);
@@ -61,7 +60,7 @@ class Checkout extends React.Component {
         var instagram = '';
 
         if (piece_list_length > 0) {
-            const current_piece = piece_list[piece_position]
+            current_piece = piece_list[piece_position]
 
             piece_db_id = (current_piece['id']          !== undefined) ? current_piece['id'] : ''
             piece_o_id =  (current_piece['o_id']        !== undefined) ? current_piece['o_id'] : ''
@@ -86,8 +85,6 @@ class Checkout extends React.Component {
                             className={styles.details_image}
                             src={`${baseURL}${piece['image_path']}`}
                             alt={piece['title']}
-                            
-                            // height={this.state.piece_details['height']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                             layout='fill'
                             objectFit='contain'
@@ -125,7 +122,11 @@ class Checkout extends React.Component {
             next_oid: (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'],
             last_oid: (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'],
             description: description,
-            price: price
+            price: price,
+            address: '',
+            international: false,
+            error: '',
+            error_found: false
         }
 
         this.update_current_piece = this.update_current_piece.bind(this);
@@ -248,17 +249,18 @@ class Checkout extends React.Component {
         var error_found = false
         var error_reason = ''
         for (var i=0; i < field_array.length; i++) {
-            let field = field_array[i][0]
-            let field_lenth = field.length
-            let min_length = field_array[i][1]
+            let field_name = field_array[i][0]
+            let field_value = field_array[i][1]
+            let field_lenth = field_value.toString().length
+            let min_length = field_array[i][2]
 
             if (field_lenth < min_length) {
-                error_reason = `${field} requirement not met.  Please enter valid ${field}...}`
+                error_reason = `${field_name} requirement not met.  Please enter valid ${field_name} with length > ${min_length}...`
                 console.error(error_reason)
                 error_found = true
             }
         }
-        this.setState({error: error_found, error_reason: error_reason})
+        this.setState({...this.state, error: error_found, error_reason: error_reason})
         return error_found
     }
 
@@ -277,7 +279,7 @@ class Checkout extends React.Component {
         console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `)
         console.log(`Address: ${this.state.address} | International: ${this.state.international}`)
 
-        const error_found = await this.check_fields([[full_name, 3], [email, 8], [phone, 8], [this.state.address, 10]])
+        const error_found = await this.check_fields([["Full Name", full_name, 3], ["Email", email, 8], ["Phone", phone, 6], ["Address", this.state.address, 10]])
         
         if (error_found) {
             console.error(`Could not check out due to an error...`) 
@@ -298,8 +300,8 @@ class Checkout extends React.Component {
         } 
         
         // Create Stripe Checkout Session
-        console.log("Creating a Stripe Checkout Session...")
-        const stripe_response = await create_stripe_checkout_session(this.state.piece_db_id, this.state.piece_details['title'], this.state.image_url, this.state.piece_details['width'], this.state.piece_details['height'], this.state.piece_details['price'], full_name, phone, email, this.state.address, this.state.international)
+        console.log(`Creating a Stripe Checkout Session with image: ${`${baseURL}${this.state.current_piece['image_path']}`}`)
+        const stripe_response = await create_stripe_checkout_session(this.state.piece_db_id, this.state.piece_details['title'], `${baseURL}${this.state.current_piece['image_path']}`, this.state.piece_details['width'], this.state.piece_details['height'], this.state.piece_details['price'], full_name, phone, email, this.state.address, this.state.international)
         const json = await stripe_response.json();
 
         console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);
@@ -399,7 +401,7 @@ class Checkout extends React.Component {
                                 </div>
 
                                 {/* Address Autocomplete Input */}
-                                { (this.state.loaded) ? (
+                                { (!this.state.loading) ? (
                                     <PlacesAutocomplete
                                         value={this.state.address}
                                         onChange={this.address_change}
