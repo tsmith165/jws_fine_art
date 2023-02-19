@@ -4,9 +4,9 @@ import { useRouter } from 'next/router';
 import { prisma } from '../lib/prisma';
 
 import PageLayout from '../src/components/layout/PageLayout';
-import UserTree from '../src/components/pages/admin/UserTree';
+import UserTree from '../src/components/pages/users/UserTree';
 
-import styles from '../styles/pages/Admin.module.scss';
+import styles from '../styles/pages/Users.module.scss';
 
 // using client side session retrieval
 const Users = ({ user_tree_data, isLoaded, isSignedIn, user }) => {
