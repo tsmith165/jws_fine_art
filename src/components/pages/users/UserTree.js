@@ -4,7 +4,7 @@ import styles from '../../../../styles/components/UserTree.module.scss'
 
 import { demote_user, promote_user, delete_user } from '../../../../lib/api_calls'
 
-class PieceTree extends React.Component {
+class UserTree extends React.Component {
     constructor(props) {
         super(props);
 
@@ -63,11 +63,6 @@ class PieceTree extends React.Component {
             </div>
         )
     }
-}
-
-const UserTree = ({user_tree_data, refresh_data}) => {
-
-  
 }
 
 export default UserTree;
