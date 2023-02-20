@@ -1,9 +1,9 @@
 import React from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from '../../../../styles/pages/Gallery.module.scss'
+import styles from '@/styles/pages/Gallery.module.scss'
 
-const SITE_BASE_URL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
+const AWS_BUCKET_URL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 // Setting to false as we are not using yello dot for unavailable currently
 const USING_YELLOW_DOT = false;
@@ -29,7 +29,7 @@ class Piece extends React.Component {
                         <div className={styles.piece_image_container}>
                             <Image 
                                 className={styles.piece_image} 
-                                src={`${SITE_BASE_URL}${this.props.image_path}`} 
+                                src={`${AWS_BUCKET_URL}${this.props.image_path}`} 
                                 width={img_width} 
                                 height={img_height} 
                                 style={{width: img_width, height: img_height}} 
