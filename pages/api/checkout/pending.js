@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 async function create_pending_transaction(passed_json) { 
   console.log(`Attempting to craete pending transaction for piece_db_id: ${passed_json.piece_db_id}`)

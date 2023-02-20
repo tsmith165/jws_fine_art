@@ -1,7 +1,9 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import React from 'react';
 import Image from 'next/image'
 
-import styles from '../../../../styles/pages/Biography.module.scss'
+import styles from '@/styles/pages/Biography.module.scss'
 
 class BiographyPage extends React.Component {
     constructor(props) {
@@ -23,7 +25,7 @@ class BiographyPage extends React.Component {
                     <div className={styles.bio_image_border}>
                         <Image
                             className={styles.bio_image}
-                            src={`https://jwsfineartpieces.s3.us-west-1.amazonaws.com/site/bio_pic_small.jpg`}
+                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/site/bio_pic_small.jpg`}
                             alt={"Bio Pic"}
                             priority={true}
                             width={200}
@@ -67,10 +69,10 @@ class BiographyPage extends React.Component {
                 </div>
                 <div className={styles.contact_container}>
                     <div className={styles.contact_text_container}>
-                        <b className={`${styles.contact_text} ${styles.title}`}>Jill Weeks Smith</b>
+                        <b className={`${styles.contact_text} ${styles.title}`}>{PROJECT_CONSTANTS.CONTACT_FULL_NAME}</b>
                     </div>
                     <div className={styles.contact_text_container}>
-                        <a className={`${styles.contact_link} ${styles.link}`} href="mailto:jwsfineart@gmail.com">jwsfineart@gmail.com</a>
+                        <a className={`${styles.contact_link} ${styles.link}`} href={`mailto:${PROJECT_CONSTANTS.CONTACT_EMAIL}`}>{PROJECT_CONSTANTS.CONTACT_EMAIL}</a>
                     </div>
                 </div>
             </div>

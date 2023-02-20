@@ -2,12 +2,12 @@ import React from 'react';
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { create_pending_transaction, create_stripe_checkout_session } from '../../../../lib/api_calls';
+import { create_pending_transaction, create_stripe_checkout_session } from '@/lib/api_calls';
 
-import PageLayout from '../../../../src/components/layout/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 
-import styles from '../../../../styles/pages/Details.module.scss'
-import form_styles from '../../../../styles/forms/CheckoutForm.module.scss'
+import styles from '@/styles/pages/Details.module.scss'
+import form_styles from '@/styles/forms/CheckoutForm.module.scss'
 
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -15,7 +15,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import PlacesAutocomplete from "react-places-autocomplete";
 import { loadStripe } from "@stripe/stripe-js";
 
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 const stripePromise = loadStripe("pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj");
 const libraries = ["places"];
 
@@ -73,7 +72,7 @@ class Checkout extends React.Component {
             height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
             real_width =  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : ''
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
-            image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
+            image_path =  (current_piece['image_path']  !== undefined) ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
 
             for (var i=0; i < piece_list.length; i++) {
@@ -83,7 +82,7 @@ class Checkout extends React.Component {
                         <Image
                             id={`details_image_${i}`}
                             className={styles.details_image}
-                            src={`${baseURL}${piece['image_path']}`}
+                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                             alt={piece['title']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                             layout='fill'
@@ -168,7 +167,7 @@ class Checkout extends React.Component {
             height:      current_piece['height'],
             real_width:  current_piece['real_width'],
             real_height: current_piece['real_height'],
-            image_path:  `${baseURL}${current_piece['image_path']}`,
+            image_path:  `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`,
             instagram:   current_piece['instagram']
         }
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
@@ -209,7 +208,7 @@ class Checkout extends React.Component {
                     <Image
                         id={`details_image_${i}`}
                         className={styles.details_image}
-                        src={`${baseURL}${piece['image_path']}`}
+                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                         alt={piece['title']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                         layout='fill'
@@ -300,8 +299,8 @@ class Checkout extends React.Component {
         } 
         
         // Create Stripe Checkout Session
-        console.log(`Creating a Stripe Checkout Session with image: ${`${baseURL}${this.state.current_piece['image_path']}`}`)
-        const stripe_response = await create_stripe_checkout_session(this.state.piece_db_id, this.state.piece_details['title'], `${baseURL}${this.state.current_piece['image_path']}`, this.state.piece_details['width'], this.state.piece_details['height'], this.state.piece_details['price'], full_name, phone, email, this.state.address, this.state.international)
+        console.log(`Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`}`)
+        const stripe_response = await create_stripe_checkout_session(this.state.piece_db_id, this.state.piece_details['title'], `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`, this.state.piece_details['width'], this.state.piece_details['height'], this.state.piece_details['price'], full_name, phone, email, this.state.address, this.state.international)
         const json = await stripe_response.json();
 
         console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);

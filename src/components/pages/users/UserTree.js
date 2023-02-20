@@ -1,8 +1,8 @@
 import React from 'react';
 
-import styles from '../../../../styles/components/UserTree.module.scss'
+import styles from '@/styles/components/UserTree.module.scss'
 
-import { demote_user, promote_user, delete_user } from '../../../../lib/api_calls'
+import { demote_user, promote_user, delete_user } from '@/lib/api_calls'
 
 class UserTree extends React.Component {
     constructor(props) {

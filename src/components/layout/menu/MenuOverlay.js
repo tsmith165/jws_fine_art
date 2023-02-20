@@ -2,9 +2,9 @@ import React from 'react';
 
 import MenuOverlayButton from './MenuOverlayButton';
 
-import styles from "../../../../styles/layout/MenuOverlay.module.scss"
+import styles from "@/styles/layout/MenuOverlay.module.scss"
 
-import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from "../../../../lib/menu_list.js"
+import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from "@/lib/menu_list.js"
 
 class MenuOverlay extends React.Component {
     constructor(props) {

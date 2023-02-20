@@ -1,15 +1,15 @@
 import React from 'react';
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../src/components/layout/PageLayout'
-import Contact from '../src/components/pages/contact/Contact';
+import PageLayout from '@/components/layout/PageLayout'
+import Contact from '@/components/pages/contact/Contact';
 
 class ContactPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.page_title = "Contact"
+        this.page_title = `Contact ${PROJECT_CONSTANTS.SITE_FULL_NAME}`
     }
 
     async componentDidMount() { }

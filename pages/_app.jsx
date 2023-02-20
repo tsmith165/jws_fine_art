@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import * as gtag from '../lib/gtag'
-import { AppProps } from 'next/app';
-import { dark } from '@clerk/themes';
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 
-const MAPS_JAVASCRIPT_API_KEY = process.env.MAPS_JAVASCRIPT_API_KEY
-import '../styles/globals/globals.scss'
-import Layout from '../src/components/layout/Layout'
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
+
+import Layout from '@/components/layout/Layout'
+import '@/styles/globals/globals.scss'
 
 const ADMIN_PAGES = new Set(['/edit/[id]', '/manage', '/admin', '/orders'])
 

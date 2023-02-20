@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from '../../../../styles/layout/MenuOverlay.module.scss'
+import styles from '@/styles/layout/MenuOverlay.module.scss'
 
 import { withClerk } from "@clerk/clerk-react";
 import { withRouter } from 'next/router'

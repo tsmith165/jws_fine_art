@@ -1,10 +1,10 @@
 import React from 'react';
 
-import PageLayout from '../../src/components/layout/PageLayout';
+import PageLayout from '@/components/layout/PageLayout';
 
 import { UserProfile } from "@clerk/nextjs";
 
-import styles from '../../styles/components/Clerk.module.scss';
+import styles from '@/styles/components/Clerk.module.scss';
 
 class Profile extends React.Component {
     constructor(props) {

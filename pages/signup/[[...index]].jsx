@@ -1,10 +1,10 @@
 import React from "react";
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import styles from "../../styles/forms/SignIn.module.scss"
+import styles from "@/styles/forms/SignIn.module.scss"
 
-import PageLayout from '../../src/components/layout/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 
 import { SignUp } from "@clerk/nextjs";
 

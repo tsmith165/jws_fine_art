@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../src/components/layout/PageLayout'
-import Slideshow from '../src/components/pages/slideshow/Slideshow';
+import PageLayout from '@/components/layout/PageLayout'
+import Slideshow from '@/components/pages/slideshow/Slideshow';
 
-import styles from '../styles/pages/Slideshow.module.scss'
+import styles from '@/styles/pages/Slideshow.module.scss'
 
 class SlideshowPage extends React.Component {
     constructor(props) {

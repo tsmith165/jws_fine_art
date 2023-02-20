@@ -1,8 +1,8 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import React from 'react';
 
 import styles from '../../../../styles/components/OrderTree.module.scss'
-
-const AWS_BUCKET_URL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 class OrderTree extends React.Component {
     constructor(props) {
@@ -26,8 +26,8 @@ class OrderTree extends React.Component {
             console.log(verified_payment_data);
     
             var image_url = verified_payment_data['image_path']
-            if (!verified_payment_data['image_path'].includes("https://jwsfineartpieces.s3.us-west-1.amazonaws.com")) {
-                image_url = `${AWS_BUCKET_URL}/pieces/${verified_payment_data['image_path'].split('pieces/')[1]}`
+            if (!verified_payment_data['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)) {
+                image_url = `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/pieces/${verified_payment_data['image_path'].split('pieces/')[1]}`
             }
     
             const list_item_jsx = (

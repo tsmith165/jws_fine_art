@@ -1,14 +1,11 @@
 import React from 'react';
 import Image from 'next/image'
-import Link from 'next/link'
 
-import styles from '../../../../styles/pages/Details.module.scss'
+import styles from '@/styles/pages/Details.module.scss'
 
-import PageLayout from '../../../../src/components/layout/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 
 import CircularProgress from '@mui/material/CircularProgress';
-
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 class Cancel extends React.Component {
     constructor(props) {
@@ -64,7 +61,7 @@ class Cancel extends React.Component {
             height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
             real_width =  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : ''
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
-            image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
+            image_path =  (current_piece['image_path']  !== undefined) ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
 
             for (var i=0; i < piece_list.length; i++) {
@@ -74,7 +71,7 @@ class Cancel extends React.Component {
                         <Image
                             id={`details_image_${i}`}
                             className={styles.details_image}
-                            src={`${baseURL}${piece['image_path']}`}
+                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                             alt={piece['title']}
                             
                             // height={this.state.piece_details['height']}
@@ -147,7 +144,7 @@ class Cancel extends React.Component {
             height:      current_piece['height'],
             real_width:  current_piece['real_width'],
             real_height: current_piece['real_height'],
-            image_path:  `${baseURL}${current_piece['image_path']}`,
+            image_path:  `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`,
             instagram:   current_piece['instagram']
         }
 
@@ -183,7 +180,7 @@ class Cancel extends React.Component {
                     <Image
                         id={`details_image_${i}`}
                         className={styles.details_image}
-                        src={`${baseURL}${piece['image_path']}`}
+                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                         alt={piece['title']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                         layout='fill'

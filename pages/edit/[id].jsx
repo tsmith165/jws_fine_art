@@ -1,22 +1,22 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import React from 'react';
 import { withRouter } from 'next/router';
 
-import { prisma } from '../../lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 import NextImage from 'next/image'
 import Select from 'react-select'
 
-import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url } from '../../lib/api_calls';
+import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url } from '@/lib/api_calls';
 
-import PageLayout from '../../src/components/layout/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 
-import styles from '../../styles/pages/Details.module.scss'
-import form_styles from '../../styles/forms/EditDetailsForm.module.scss'
+import styles from '@/styles/pages/Details.module.scss'
+import form_styles from '@/styles/forms/EditDetailsForm.module.scss'
 
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CircularProgress from '@mui/material/CircularProgress';
-
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 class Edit extends React.Component {
     constructor(props) {
@@ -74,7 +74,7 @@ class Edit extends React.Component {
             height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
             real_width =  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : ''
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
-            image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
+            image_path =  (current_piece['image_path']  !== undefined) ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
             theme =       (current_piece['theme']       !== undefined) ? ((current_piece['theme'] == null) ? "None" : current_piece['theme']) : "None"
             available =   (current_piece['available']   !== undefined) ? current_piece['available'] : ''
@@ -98,7 +98,7 @@ class Edit extends React.Component {
                         <NextImage
                             id={`details_image_${i}`}
                             className={styles.details_image}
-                            src={(piece['image_path'].includes(baseURL)) ? piece['image_path'] : `${baseURL}${piece['image_path']}`}
+                            src={(piece['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)) ? piece['image_path'] : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                             alt={piece['title']}
                             
                             // height={this.state.piece_details['height']}
@@ -225,7 +225,7 @@ class Edit extends React.Component {
             height:      current_piece['height'],
             real_width:  current_piece['real_width'],
             real_height: current_piece['real_height'],
-            image_path:  `${baseURL}${current_piece['image_path']}`,
+            image_path:  `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`,
             instagram:   current_piece['instagram'],
             theme:       current_piece['theme'],
             available:   current_piece['available'],
@@ -294,7 +294,7 @@ class Edit extends React.Component {
                     <NextImage
                         id={`details_image_${i}`}
                         className={styles.details_image}
-                        src={(piece['image_path'].includes(baseURL)) ? piece['image_path'] : `${baseURL}${piece['image_path']}`}
+                        src={(piece['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)) ? piece['image_path'] : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                         alt={piece['title']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                         layout='fill'

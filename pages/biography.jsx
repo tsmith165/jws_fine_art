@@ -1,15 +1,17 @@
+import PROJECT_CONSTANTS from '@/lib/constants';
+
 import React from 'react';
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../src/components/layout/PageLayout'
-import Biography from '../src/components/pages/biography/Biography'
+import PageLayout from '@/components/layout/PageLayout'
+import Biography from '@/components/pages/biography/Biography'
 
 class BiographyPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.page_title = "Biography"
+        this.page_title = `Biography ${PROJECT_CONSTANTS.SITE_FULL_NAME}`
     }
 
     async componentDidMount() { }

@@ -1,3 +1,5 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import React from 'react';
 
 import { prisma } from '@/lib/prisma'
@@ -9,7 +11,7 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
 
-        this.page_title = "Gallery JWS Fine Art"
+        this.page_title = `Gallery ${PROJECT_CONSTANTS.SITE_FULL_NAME}`
     }
 
     async componentDidMount() { }
