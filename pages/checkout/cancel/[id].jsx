@@ -1,10 +1,10 @@
 import React from 'react';
 import { withRouter } from 'next/router'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../../../src/components/layout/PageLayout'
-import Cancel from '../../../src/components/pages/cancel/Cancel';
+import PageLayout from '@/components/layout/PageLayout'
+import Cancel from '@/components/pages/cancel/Cancel';
 
 class CancelPage extends React.Component {
   constructor(props) {

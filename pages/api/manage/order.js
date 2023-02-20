@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
 async function swap_o_ids(id, o_id) {

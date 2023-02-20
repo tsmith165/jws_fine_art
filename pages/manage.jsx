@@ -1,12 +1,12 @@
 import React from 'react';
 import { withRouter } from 'next/router';
 
-import { prisma } from '../lib/prisma';
+import { prisma } from '@/lib/prisma';
 
-import PageLayout from '../src/components/layout/PageLayout';
-import PieceTree from '../src/components/pages/manage/PieceTree';
+import PageLayout from '@/components/layout/PageLayout';
+import PieceTree from '@/components/pages/manage/PieceTree';
 
-import styles from '../styles/pages/Users.module.scss';
+import styles from '@/styles/pages/Users.module.scss';
 
 class Manage extends React.Component {
     constructor(props) {

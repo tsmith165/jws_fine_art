@@ -1,8 +1,10 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import Head from 'next/head'
 import Script from 'next/script'
-import styles from "../../../styles/layout/PageLayout.module.scss"
+import styles from "@/styles/layout/PageLayout.module.scss"
 
-const PageLayout = ({page_title="JWS Fine Art", use_maps_api=false, children}) => {
+const PageLayout = ({page_title=PROJECT_CONSTANTS.SITE_FULL_NAME, use_maps_api=false, children}) => {
     console.log(`Loading Page Layout With Title: ${page_title}`)
 
     return (
@@ -20,7 +22,7 @@ const PageLayout = ({page_title="JWS Fine Art", use_maps_api=false, children}) =
 
             <Head>
                 <meta charSet="UTF-8"/>
-                <meta name="description" content="JWS Fine Art Gallery - Browse and Purchase online!" />
+                <meta name="description" content={PROJECT_CONSTANTS.SITE_DESCRIPTION} />
                 <title>{page_title}</title>
                 <link rel="icon" href="/JWS_ICON.png" />
             </Head>

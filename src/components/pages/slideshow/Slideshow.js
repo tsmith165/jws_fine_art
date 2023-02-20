@@ -1,3 +1,5 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import React from 'react';
 import Image from 'next/image'
 
@@ -8,7 +10,6 @@ import Pause from '@mui/icons-material/Pause';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import SpeedIcon from '@mui/icons-material/Speed';
 
-const baseURL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 const DEFAULT_MIN = 0; const DEFAULT_MAX = 100;
 const RATIO_MIN = 0; const RATIO_MAX = 1000;
@@ -56,7 +57,7 @@ class Slideshow extends React.Component {
             height =      (current_piece['height']      !== undefined) ? current_piece['height'] : ''
             real_width =  (current_piece['real_width']  !== undefined) ? current_piece['real_width'] : ''
             real_height = (current_piece['real_height'] !== undefined) ? current_piece['real_height'] : ''
-            image_path =  (current_piece['image_path']  !== undefined) ? `${baseURL}${current_piece['image_path']}` : ''
+            image_path =  (current_piece['image_path']  !== undefined) ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}` : ''
             instagram =   (current_piece['instagram']   !== undefined) ? current_piece['instagram'] : ''
 
             for (var i=0; i < piece_list.length; i++) {
@@ -65,7 +66,7 @@ class Slideshow extends React.Component {
                     <div key={`image_${i}`} className={(i == piece_position) ? styles.slideshow_image_container : styles.slideshow_image_container_hidden}>
                         <Image                                         
                             className={styles.slideshow_image}
-                            src={`${baseURL}${piece['image_path']}`}
+                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                             alt={piece['title']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                             layout='fill'
@@ -172,7 +173,7 @@ class Slideshow extends React.Component {
             height:      current_piece['height'],
             real_width:  current_piece['real_width'],
             real_height: current_piece['real_height'],
-            image_path:  `${baseURL}${current_piece['image_path']}`,
+            image_path:  `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`,
             instagram:   current_piece['instagram']
         }
 
@@ -209,7 +210,7 @@ class Slideshow extends React.Component {
                 <div key={`image_${i}`} className={(i == piece_position) ? styles.slideshow_image_container : styles.slideshow_image_container_hidden}>
                     <Image                                         
                         className={styles.slideshow_image}
-                        src={`${baseURL}${piece['image_path']}`}
+                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                         alt={piece['title']}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
                         layout='fill'

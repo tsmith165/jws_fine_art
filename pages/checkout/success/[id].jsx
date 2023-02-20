@@ -1,10 +1,10 @@
 import React from 'react';
 import { withRouter } from 'next/router'
 
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../../../src/components/layout/PageLayout'
-import Success from '../../../src/components/pages/success/Success';
+import PageLayout from '@/components/layout/PageLayout'
+import Success from '@/components/pages/success/Success';
 
 class SuccessPage extends React.Component {
   constructor(props) {

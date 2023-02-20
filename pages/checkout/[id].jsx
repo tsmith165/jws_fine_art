@@ -1,10 +1,10 @@
 import React from 'react';
 import { withRouter } from 'next/router'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../../src/components/layout/PageLayout'
-import Checkout from '../../src/components/pages/checkout/Checkout';
+import PageLayout from '@/components/layout/PageLayout'
+import Checkout from '@/components/pages/checkout/Checkout';
 
 class CheckoutPage extends React.Component {
   constructor(props) {

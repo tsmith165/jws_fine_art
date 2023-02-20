@@ -1,5 +1,5 @@
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
-import { generate_upload_url } from "../../../lib/s3_api_calls"
+import { generate_upload_url } from "@/lib/s3_api_calls"
 
 export default async function handler(req, res) {
   if(req.method !== 'POST') {

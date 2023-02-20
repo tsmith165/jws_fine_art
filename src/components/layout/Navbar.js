@@ -1,3 +1,5 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import React  from 'react';
@@ -7,7 +9,7 @@ import { Tooltip } from 'react-tooltip'
 
 import MenuOverlay from './menu/MenuOverlay'
 
-import styles from "../../../styles/layout/Navbar.module.scss"
+import styles from "@/styles/layout/Navbar.module.scss"
 
 // Menu Hamburger Icon
 import MenuIcon from '@mui/icons-material/Menu';
@@ -75,7 +77,7 @@ class Navbar extends React.Component {
                 <div className={styles.navbar_container}>
                     <div className={styles.navbar_logo}>
                         <Link href="/">
-                            <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt='JWS Fine Art Logo' layout="fill" objectFit='contain' sizes="250px"/>
+                            <Image className={styles.navbar_logo_img} src='/jws_logo_small.png' alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`} layout="fill" objectFit='contain' sizes="250px"/>
                         </Link>
                     </div>
 

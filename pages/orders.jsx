@@ -1,18 +1,18 @@
 import React from 'react';
 import { withRouter } from 'next/router'
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../src/components/layout/PageLayout'
-import OrderTree from '../src/components/pages/orders/OrderTree';
+import PageLayout from '@/components/layout/PageLayout'
+import OrderTree from '@/components/pages/orders/OrderTree';
 
-import styles from '../styles/pages/Orders.module.scss'
+import styles from '@/styles/pages/Orders.module.scss'
 
 class Orders extends React.Component {
     constructor(props) {
         super(props);
 
-        this.page_title = "Gallery JWS Fine Art"
+        this.page_title = "Orders"
     }
 
     async componentDidMount() { }
@@ -36,8 +36,7 @@ class Orders extends React.Component {
                         <h2 className={styles.module_title}>Order Management:</h2>
                         <div className={styles.manage_main_container}>
                             <div className={styles.pieces_tree_container}>
-                                <OrderTree verified_list={verified_list} refresh_data={refresh_data}
-                                />
+                                <OrderTree verified_list={this.props.verified_list}/>
                             </div>
                         </div>
                     </div>

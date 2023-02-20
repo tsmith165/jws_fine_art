@@ -1,4 +1,3 @@
-import PROJECT_CONSTANTS from '@/lib/constants'
 import React from 'react';
 
 import styles from '@/styles/pages/Gallery.module.scss'
@@ -16,8 +15,6 @@ class Gallery extends React.Component {
     constructor(props) {
         super(props);
         const piece_list = this.props.piece_list;
-
-        console.log(PROJECT_CONSTANTS)
 
         // console.log('Passed piece list:')
         // console.log(piece_list)

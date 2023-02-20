@@ -1,16 +1,16 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image'
 
-import styles from '../../../../styles/pages/Manage.module.scss'
+import styles from '@/styles/pages/Manage.module.scss'
+
+import { change_order, delete_piece } from '@/lib/api_calls'
 
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
-
-import { change_order, delete_piece } from '../../../../lib/api_calls'
-
-const AWS_BUCKET_URL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 class PieceTree extends React.Component {
     constructor(props) {
@@ -51,7 +51,7 @@ class PieceTree extends React.Component {
             const list_item_jsx = (
                 <div className={styles.tree_list_item}>
                     <div className={styles.list_item_image_container}>
-                        <Image className={styles.list_item_image} src={`${AWS_BUCKET_URL}${piece_data['image_path']}`} layout="fill" object-fit="contain" />
+                        <Image className={styles.list_item_image} src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece_data['image_path']}`} layout="fill" object-fit="contain" />
                     </div>
     
                     <div className={styles.list_item_stacked_container}>

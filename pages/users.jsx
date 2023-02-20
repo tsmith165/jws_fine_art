@@ -1,12 +1,12 @@
 import React from 'react';
 import { withRouter } from 'next/router'
 
-import { prisma } from '../lib/prisma';
+import { prisma } from '@/lib/prisma';
 
-import PageLayout from '../src/components/layout/PageLayout';
-import UserTree from '../src/components/pages/users/UserTree';
+import PageLayout from '@/components/layout/PageLayout';
+import UserTree from '@/components/pages/users/UserTree';
 
-import styles from '../styles/pages/Users.module.scss';
+import styles from '@/styles/pages/Users.module.scss';
 
 class Users extends React.Component {
     constructor(props) {
