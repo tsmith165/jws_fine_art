@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { prisma } from '../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
-import PageLayout from '../src/components/layout/PageLayout'
-import Gallery from '../src/components/pages/gallery/Gallery';
+import PageLayout from '@/components/layout/PageLayout'
+import Gallery from '@/components/pages/gallery/Gallery';
 
 class Home extends React.Component {
     constructor(props) {

@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 import { change_order, delete_piece } from '../../../../lib/api_calls'
 
-const SITE_BASE_URL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
+const AWS_BUCKET_URL = "https://jwsfineartpieces.s3.us-west-1.amazonaws.com";
 
 class PieceTree extends React.Component {
     constructor(props) {
@@ -51,7 +51,7 @@ class PieceTree extends React.Component {
             const list_item_jsx = (
                 <div className={styles.tree_list_item}>
                     <div className={styles.list_item_image_container}>
-                        <Image className={styles.list_item_image} src={`${SITE_BASE_URL}${piece_data['image_path']}`} layout="fill" object-fit="contain" />
+                        <Image className={styles.list_item_image} src={`${AWS_BUCKET_URL}${piece_data['image_path']}`} layout="fill" object-fit="contain" />
                     </div>
     
                     <div className={styles.list_item_stacked_container}>
