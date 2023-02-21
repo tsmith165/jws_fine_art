@@ -22,7 +22,6 @@
     "@vercel/analytics": "^0.1.7",
     "aws-sdk": "^2.1105.0",
     "cross-env": "^7.0.3",
-    "fs": "^0.0.1-security",
     "global": "^4.4.0",
     "micro": "^9.3.4",
     "next": "^13.1.6",
