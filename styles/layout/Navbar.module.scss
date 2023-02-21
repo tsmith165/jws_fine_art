@@ -23,357 +23,178 @@
                 padding: 10px !important; 
             }
     
-    @media (max-width: 800px) { // mobile
-        // Menu Hamburger Button
-        .hamburger_button { 
-            position: absolute; 
-            top: 60px; 
-            right: 0; 
-            width: 40px !important; 
-            height: 40px !important; 
-            padding: 10px; 
-            background-color: $primary !important; 
-            color: $light !important; 
-            border-top-left-radius: 5px; 
-        }
-        .hamburger_button:hover { 
-            background-color: $light !important; 
-            color: $secondary !important; 
-        }
-
-        .hamburger_button_open { 
-            position: absolute; 
-            top: 60px; 
-            right: 0; 
-            width: 40px !important; 
-            height: 40px !important; 
-            padding: 10px; 
-            background-color: $light !important; 
-            color: $primary !important; 
-            border-top-left-radius: 5px; 
-        }
-        .hamburger_button:hover { 
-            background-color: $primary !important; 
-            color: $light !important; 
-        }
-        
-        .instagram_link_container { 
-            position: absolute; 
-            top: 60px; 
-            right: 80px; 
-            width: 40px !important; 
-            height: 40px !important; 
-        }
-            .instagram_logo_link_container {
-                position: relative;
-                width: 100%;
-                height: 100%;
-                padding: 0px;
-            }
-                .instagram_logo_link {  
-                    background-color: $primary !important; 
-                    border-top-left-radius: 5px; 
-                    border-top-right-radius: 5px; 
-                    padding: 7.5px !important; 
-                }
-                .instagram_logo_link:hover { 
-                    background-color: $light !important; 
-                }
-        
-        .clerk_user_button_container {
-            background-color: $primary;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-            position: absolute; 
-            top: 60px; 
-            right: 40px;
-            width: 40px;
-            height: 40px;
-            padding: 5px;
-        }
-        .clerk_user_button_container:hover {
-            background-color: $light;
-        }
-
-        .sign_in_button {
-            width: 32px !important;
-            height: 32px !important;
-            fill: $light !important;
-        }
-        .sign_in_button:hover {
-            fill: $secondary !important;
-        }
+@media (max-width: 800px) { // mobile
+    // Menu Hamburger Button
+    .hamburger_button { 
+        position: absolute; 
+        top: 60px; 
+        right: 0; 
+        width: 40px !important; 
+        height: 40px !important; 
+        padding: 10px; 
+        background-color: $primary !important; 
+        color: $light !important; 
+        border-top-left-radius: 5px; 
     }
-    @media (min-width: 799px) { // browser
-        // Menu Hamburger Button
-        .hamburger_button { 
-            position: absolute; 
-            top: 50px; 
-            right: 0; 
-            width: 50px !important; 
-            height: 50px !important; 
-            padding: 10px; 
-            background-color: $primary !important; 
-            color: $light !important; 
-            border-top-left-radius: 5px; 
-        }
-        .hamburger_button:hover { 
-            background-color: $light !important; 
-            color: $secondary !important; 
-        }
-
-        .hamburger_button_open { 
-            position: absolute; 
-            top: 50px; 
-            right: 0; 
-            width: 50px !important; 
-            height: 50px !important; 
-            padding: 10px; 
-            background-color: $light !important; 
-            color: $primary !important; 
-            border-top-left-radius: 5px; 
-        }
-        
-        .instagram_link_container { 
-            position: absolute; 
-            top: 50px; 
-            right: 100px; 
-            width: 50px !important; 
-            height: 50px !important; 
-        }
-            .instagram_logo_link_container {
-                position: relative;
-                width: 100%;
-                height: 100%;
-                padding: 0px;
-            }
-                .instagram_logo_link {  
-                    background-color: $primary !important; 
-                    border-top-left-radius: 5px; 
-                    border-top-right-radius: 5px; 
-                    padding: 10px !important; 
-                }
-                .instagram_logo_link:hover { 
-                    background-color: $light !important; 
-                }
-        
-        .clerk_user_button_container {
-            background-color: $primary;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-            position: absolute; 
-            top: 50px; 
-            right: 50px;
-            width: 50px;
-            height: 50px;
-            padding: 9px;
-        }
-        .clerk_user_button_container:hover {
-            background-color: $light;
-        }
-
-        .sign_in_button {
-            width: 32px !important;
-            height: 32px !important;
-            fill: $light !important;
-        }
-        .sign_in_button:hover {
-            fill: $secondary !important;
-        }
+    .hamburger_button:hover { 
+        background-color: $light !important; 
+        color: $secondary !important; 
     }
 
-        // Page Menu Overlay
-        .page_menu_container { 
-            position: absolute; 
-            z-index: 100; 
-            top: 100px; 
-            right: 0px; 
-            width: 200px; 
-            height: fit-content; 
-            background-color: $light; 
-            border-left: 2px solid $secondary; 
-            border-bottom: 2px solid $secondary;
-            border-bottom-left-radius: 10px; 
+    .hamburger_button_open { 
+        position: absolute; 
+        top: 60px; 
+        right: 0; 
+        width: 40px !important; 
+        height: 40px !important; 
+        padding: 10px; 
+        background-color: $light !important; 
+        color: $primary !important; 
+        border-top-left-radius: 5px; 
+    }
+    .hamburger_button:hover { 
+        background-color: $primary !important; 
+        color: $light !important; 
+    }
+    
+    .instagram_link_container { 
+        position: absolute; 
+        top: 60px; 
+        right: 80px; 
+        width: 40px !important; 
+        height: 40px !important; 
+    }
+        .instagram_logo_link_container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 0px;
         }
-            .page_menu_body { 
-                padding: 0 !important; 
+            .instagram_logo_link {  
+                background-color: $primary !important; 
+                border-top-left-radius: 5px; 
+                border-top-right-radius: 5px; 
+                padding: 7.5px !important; 
+            }
+            .instagram_logo_link:hover { 
+                background-color: $light !important; 
             }
     
-
-// Gallery Theme Selector
-@media (max-width: 450px) { // mobile
-    .gallery_filter_menu {
-        width: 100% !important;
-        border-bottom-left-radius: 0px !important;
-        border-left: None !important;
-    }
-}
-@media (max-width: 800px) { // mobile
-    .gallery_filter_menu_tooltip {
-        display: none;
-    }
-    .gallery_filter_menu_toggle {
-        position: absolute;
-        top: 60px;
-        right: 120px;
-        width: 40px;
-        height: 40px; 
-        color: $light !important;
-        background-color: $dark !important;
-        border-top-right-radius: 5px;
+    .clerk_user_button_container {
+        background-color: $primary;
         border-top-left-radius: 5px;
-        z-index: 1;
-        overflow: visible;
-    }
-        .gallery_filter_menu_toggle_icon {
-        width: 40px !important;
-        height: 40px !important;
-        padding: 5px;
         border-top-right-radius: 5px;
-        }
-
-    .gallery_filter_menu_toggle_open {
-        position: absolute;
-        top: 60px;
-        right: 120px;
-        width: 40px;
-        height: 40px; 
-        color: $dark !important;
-        background-color: $light !important;
-        border-top-right-radius: 5px;
-        border-top-left-radius: 5px;
-        z-index: 1;
-        overflow: visible;
-    }
-    .gallery_filter_menu {
         position: absolute; 
-        top: 100px; 
-        right: 0px;
-        min-height: 40px;
-        max-width: 100vw !important;
-        border-bottom-left-radius: 7px;
-        z-index: 1;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: right !important;
-        background-color: $dark !important;
-        border-bottom: 2px solid $secondary;
-        border-left: 2px solid $secondary;
+        top: 60px; 
+        right: 40px;
+        width: 40px;
+        height: 40px;
+        padding: 5px;
     }
-    .gallery_filter_menu > .gallery_filter_icon_container:first-of-type {
-        border-bottom-left-radius: 5px !important;
+    .clerk_user_button_container:hover {
+        background-color: $light;
     }
 
-    .gallery_filter_icon_container {
-        width: 40px;
-        height: 40px;
-        background-color: $dark;
-        color: $light;
+    .sign_in_button {
+        width: 32px !important;
+        height: 32px !important;
+        fill: $light !important;
     }
-    .gallery_filter_icon_container_selected {
-        width: 40px;
-        height: 40px;
-        background-color: $light !important;
-        color: $dark !important;
-    }
-    .gallery_filter_icon {
-    width: 30px !important;
-    height: 30px !important;
-    margin: 5px;
+    .sign_in_button:hover {
+        fill: $secondary !important;
     }
 }
 @media (min-width: 799px) { // browser
-    .gallery_filter_menu_toggle {
-        position: absolute;
-        top: 50px;
-        right: 150px;
-        width: fit-content;
-        height: 50px; 
-        color: $light !important;
-        background-color: $dark !important;
-        border-top-right-radius: 5px;
-        border-top-left-radius: 5px;
-        display: flex;
-        flex-direction: row;
-        overflow: visible;
-        z-index: 1;
-    }
-    .gallery_filter_menu_toggle:hover {
-        background-color: $light !important;
-        color: $dark !important;
-    }
-        .gallery_filter_menu_toggle_icon {
-        width: 50px !important;
-        height: 50px !important;
-        padding: 5px;
-        border-top-right-radius: 5px;
-        }
-    .gallery_filter_menu_toggle_open {
-        position: absolute;
-        top: 50px;
-        right: 150px;
-        width: fit-content;
-        height: 50px; 
-        color: $light !important;
-        background-color: $dark !important;
-        border-top-right-radius: 5px;
-        border-top-left-radius: 0px !important;
-        display: flex;
-        flex-direction: row;
-        z-index: 1;
-        overflow: visible;
-    }
-    .gallery_filter_menu_toggle_open > .gallery_filter_menu_toggle_icon:hover {
-        background-color: $light !important;
-        color: $dark !important;
-    }
-    .gallery_filter_menu_tooltip {
-        position: relative; 
-        width: fit-content;
-        font-size: 24px;
-        line-height: 50px;
-        margin-right: 5px;
-        margin-left: 10px;
-    }
-    .gallery_filter_menu_container { 
-        position: relative; 
-        width: fit-content; 
-    }
-    .gallery_filter_menu {
+    // Menu Hamburger Button
+    .hamburger_button { 
         position: absolute; 
-        top: 50px;
-        right: 200px;
-        width: fit-content; 
-        min-height: 50px;
-        background-color: $light; 
-        display: flex;
-        flex-direction: row;
-        border-top-left-radius: 5px !important;
+        top: 50px; 
+        right: 0; 
+        width: 50px !important; 
+        height: 50px !important; 
+        padding: 10px; 
+        background-color: $primary !important; 
+        color: $light !important; 
+        border-top-left-radius: 5px; 
     }
-    .gallery_filter_menu > .gallery_filter_icon_container:first-of-type {
-        border-top-left-radius: 4px !important;
+    .hamburger_button:hover { 
+        background-color: $light !important; 
+        color: $secondary !important; 
     }
 
-    .gallery_filter_icon_container {
+    .hamburger_button_open { 
+        position: absolute; 
+        top: 50px; 
+        right: 0; 
+        width: 50px !important; 
+        height: 50px !important; 
+        padding: 10px; 
+        background-color: $light !important; 
+        color: $primary !important; 
+        border-top-left-radius: 5px; 
+    }
+    
+    .instagram_link_container { 
+        position: absolute; 
+        top: 50px; 
+        right: 100px; 
+        width: 50px !important; 
+        height: 50px !important; 
+    }
+        .instagram_logo_link_container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 0px;
+        }
+            .instagram_logo_link {  
+                background-color: $primary !important; 
+                border-top-left-radius: 5px; 
+                border-top-right-radius: 5px; 
+                padding: 10px !important; 
+            }
+            .instagram_logo_link:hover { 
+                background-color: $light !important; 
+            }
+    
+    .clerk_user_button_container {
+        background-color: $primary;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        position: absolute; 
+        top: 50px; 
+        right: 50px;
         width: 50px;
         height: 50px;
-        color: $light;
-        background-color: $dark !important;
+        padding: 9px;
     }
-    .gallery_filter_icon_container:hover {
-        background-color: $light !important;
-        color: $dark !important;
+    .clerk_user_button_container:hover {
+        background-color: $light;
     }
-    .gallery_filter_icon_container_selected {
-        width: 50px;
-        height: 50px;
-        background-color: $light !important;
-        color: $dark;
+
+    .sign_in_button {
+        width: 32px !important;
+        height: 32px !important;
+        fill: $light !important;
     }
-    .gallery_filter_icon {
-    width: 40px !important;
-    height: 40px !important;
-    margin: 5px;
+    .sign_in_button:hover {
+        fill: $secondary !important;
     }
 }
+
+// Page Menu Overlay
+.page_menu_container { 
+    position: absolute; 
+    z-index: 100; 
+    top: 100px; 
+    right: 0px; 
+    width: 200px; 
+    height: fit-content; 
+    background-color: $light; 
+    border-left: 2px solid $secondary; 
+    border-bottom: 2px solid $secondary;
+    border-bottom-left-radius: 10px; 
+}
+    .page_menu_body { 
+        padding: 0 !important; 
+    }

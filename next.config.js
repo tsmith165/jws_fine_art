@@ -1,3 +1,5 @@
+const { AWS_BUCKET_URL } = require('./lib/constants')
+
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
@@ -7,7 +9,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   images: {
-    domains: ["jwsfineartpieces.s3.us-west-1.amazonaws.com"],
+    domains: [AWS_BUCKET_URL.replace("https://", "")],
     minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
   },
   async headers() {

@@ -1,3 +1,5 @@
+import PROJECT_CONSTANTS from '@/lib/constants'
+
 import React from 'react';
 import Image from 'next/image'
 
@@ -236,7 +238,7 @@ class Cancel extends React.Component {
                                 {`Try reloading the home page and selecting the piece again.` }
                             </div>
                             <div className={styles.checkout_return_message}>
-                                {`If problems persist, feel free to reach out at jwsfineart@gmail.com` }
+                                {`If problems persist, feel free to reach out at ${PROJECT_CONSTANTS.CONTACT_EMAIL}` }
                             </div>
                         </div>
                     </div>

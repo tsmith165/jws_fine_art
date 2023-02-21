@@ -38,9 +38,7 @@ class MenuOverlay extends React.Component {
         this.select_menu = this.select_menu.bind(this);
     }
 
-    async componentDidMount() {
-
-    }
+    async componentDidMount() { }
 
     generate_menu(menu_list) {
         var menu_items = [];
