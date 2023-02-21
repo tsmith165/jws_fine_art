@@ -6,10 +6,7 @@ import { useUser } from "@clerk/clerk-react";
 const Layout = (props) => {
     const { isLoaded, isSignedIn, user } = useUser();
 
-    console.log(`Layout props (Next Line)`)
-    console.log(props)
-
-    console.log(`Loading layout with most recent page: ${props.most_recent_page_id}`)
+    console.log(`Loading Layout with most recent page: ${props.most_recent_page_id}`)
     return (
         <>
             <Navbar 
