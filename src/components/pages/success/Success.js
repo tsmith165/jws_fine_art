@@ -1,5 +1,6 @@
-import React from 'react';
 import PROJECT_CONSTANTS from '@/lib/constants'
+
+import React from 'react';
 
 import Image from 'next/image'
 
@@ -238,7 +239,7 @@ class SuccessPage extends React.Component {
                                 {`Check your email for your reciept from Stripe.` }
                             </div>
                             <div className={styles.checkout_return_message}>
-                                {`Please E Mail at jwsfineart@gmail.com with any questions.` }
+                                {`Please E Mail at ${PROJECT_CONSTANTS.CONTACT_EMAIL} with any questions.` }
                             </div>
                         </div>
                     </div>

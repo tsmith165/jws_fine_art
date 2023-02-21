@@ -10,6 +10,7 @@ import { Tooltip } from 'react-tooltip'
 import MenuOverlay from './menu/MenuOverlay'
 
 import styles from "@/styles/layout/Navbar.module.scss"
+import theme_menu_styles from "@/styles/layout/ThemeMenu.module.scss"
 
 // Menu Hamburger Icon
 import MenuIcon from '@mui/icons-material/Menu';
@@ -31,16 +32,16 @@ import FilterBAndW from '@mui/icons-material/FilterBAndW'; // Abstract
 import ShoppingCart from '@mui/icons-material/ShoppingCart'; // Abstract
 
 const THEME_FILTERS = [
-    ['Water', <Waves className={styles.gallery_filter_icon} />], 
-    ['Snow', <AcUnit className={styles.gallery_filter_icon} />], 
-    ['Mountain', <Landscape className={styles.gallery_filter_icon} />], 
-    ['Landscape', <LocalFlorist className={styles.gallery_filter_icon} />], 
-    ['City', <LocationCity className={styles.gallery_filter_icon} />],
-    ['Portrait', <Portrait className={styles.gallery_filter_icon} />],
-    ['Black and White', <Exposure className={styles.gallery_filter_icon} />],
-    ['Abstract', <FilterBAndW className={styles.gallery_filter_icon} />],
-    ['Available', <ShoppingCart className={styles.gallery_filter_icon} />],
-    ['None', <Block className={styles.gallery_filter_icon} />]
+    ['Water', <Waves className={theme_menu_styles.gallery_filter_icon} />], 
+    ['Snow', <AcUnit className={theme_menu_styles.gallery_filter_icon} />], 
+    ['Mountain', <Landscape className={theme_menu_styles.gallery_filter_icon} />], 
+    ['Landscape', <LocalFlorist className={theme_menu_styles.gallery_filter_icon} />], 
+    ['City', <LocationCity className={theme_menu_styles.gallery_filter_icon} />],
+    ['Portrait', <Portrait className={theme_menu_styles.gallery_filter_icon} />],
+    ['Black and White', <Exposure className={theme_menu_styles.gallery_filter_icon} />],
+    ['Abstract', <FilterBAndW className={theme_menu_styles.gallery_filter_icon} />],
+    ['Available', <ShoppingCart className={theme_menu_styles.gallery_filter_icon} />],
+    ['None', <Block className={theme_menu_styles.gallery_filter_icon} />]
 ]
 
 class Navbar extends React.Component {
@@ -61,7 +62,7 @@ class Navbar extends React.Component {
             let filter = THEME_FILTERS[i][0];
             let icon = THEME_FILTERS[i][1];
             filter_menu_array.push((
-                <div className={(filter == this.props.app_state.theme) ? `${styles.gallery_filter_icon_container_selected} ${styles.gallery_filter_icon_container}` : styles.gallery_filter_icon_container} 
+                <div className={(filter == this.props.app_state.theme) ? `${theme_menu_styles.gallery_filter_icon_container_selected} ${theme_menu_styles.gallery_filter_icon_container}` : theme_menu_styles.gallery_filter_icon_container} 
                     id={filter}
                     data-tooltip-content={`${filter}`}
                     onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, theme: filter}) }}
@@ -82,18 +83,18 @@ class Navbar extends React.Component {
                     </div>
 
                     { ( this.props.app_state.pathname == '/') ? (
-                        <div className={(this.props.app_state.filter_menu_open == false) ? styles.gallery_filter_menu_toggle : `${styles.gallery_filter_menu_toggle} ${styles.gallery_filter_menu_toggle_open}` }>
+                        <div className={(this.props.app_state.filter_menu_open == false) ? theme_menu_styles.gallery_filter_menu_toggle : `${theme_menu_styles.gallery_filter_menu_toggle} ${theme_menu_styles.gallery_filter_menu_toggle_open}` }>
                             {(this.props.app_state.filter_menu_open == false) ? (
-                                <div className={styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}>
+                                <div className={theme_menu_styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}>
                                     Filters
                                 </div>
                             ) : ( null ) }
-                            <Tune className={styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}/>
+                            <Tune className={theme_menu_styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}/>
                         </div>
                     ) : ( null ) }
 
                     { ( this.props.app_state.pathname == '/' && this.props.app_state.filter_menu_open == true) ? (
-                        <div className={styles.gallery_filter_menu} >
+                        <div className={theme_menu_styles.gallery_filter_menu} >
                             { filter_menu_array }
                         </div>
                     ) : ( null ) }

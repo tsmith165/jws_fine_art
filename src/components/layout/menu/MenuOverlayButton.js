@@ -8,12 +8,9 @@ import { withRouter } from 'next/router'
 class MenuOverlayButton extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
-    async componentDidMount() {
-
-    }
+    async componentDidMount() { }
 
     render() {
         this.props.router.prefetch(this.props.url_endpoint)
