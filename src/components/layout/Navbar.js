@@ -12,11 +12,8 @@ import MenuOverlay from './menu/MenuOverlay'
 import styles from "@/styles/layout/Navbar.module.scss"
 import theme_menu_styles from "@/styles/layout/ThemeMenu.module.scss"
 
-// Menu Hamburger Icon
-import MenuIcon from '@mui/icons-material/Menu';
-
-// Account Profile Icon
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import MenuIcon from '@mui/icons-material/Menu'; // Menu Hamburger Icon
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // Account Profile Icon
 
 // Filter Menu Icons
 import Tune from '@mui/icons-material/Tune';     // Filter Menu Toggle Button
@@ -47,12 +44,9 @@ const THEME_FILTERS = [
 class Navbar extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
-    async componentDidMount() {
-
-    }
+    async componentDidMount() { }
 
     render() {
         console.log(`Rendering Navbar with app_state pathname: ${this.props.app_state.pathname} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
