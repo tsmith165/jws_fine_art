@@ -131,24 +131,20 @@ class Navbar extends React.Component {
                             <MenuIcon className={(this.props.app_state.menu_open) ? styles.hamburger_button_open : styles.hamburger_button} />
                         </div>
                         
-                        {
-                            this.props.app_state.menu_open == true ? (
-                                <div className={styles.page_menu_container}>
-                                    <div className={styles.page_menu_body}>
-                                        <MenuOverlay 
-                                            most_recent_page_id={this.props.most_recent_page_id}
-                                            app_state={this.props.app_state} 
-                                            app_set_state={this.props.app_set_state} 
-                                            isLoaded={this.props.isLoaded} 
-                                            isSignedIn={this.props.isSignedIn} 
-                                            user={this.props.user}
-                                        />
-                                    </div>
+                        { this.props.app_state.menu_open == false ? ( null ) : (
+                            <div className={styles.page_menu_container}>
+                                <div className={styles.page_menu_body}>
+                                    <MenuOverlay 
+                                        most_recent_page_id={this.props.most_recent_page_id}
+                                        app_state={this.props.app_state} 
+                                        app_set_state={this.props.app_set_state} 
+                                        isLoaded={this.props.isLoaded} 
+                                        isSignedIn={this.props.isSignedIn} 
+                                        user={this.props.user}
+                                    />
                                 </div>
-                            ) : (
-                                null
-                            )
-                        }
+                            </div>
+                        )}
 
                     </div>
                 </div>
