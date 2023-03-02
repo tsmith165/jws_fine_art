@@ -79,13 +79,13 @@ class Slideshow extends React.Component {
         }
         const base_speed = 80
         const default_ratio = (DEFAULT_MAX - base_speed) / (DEFAULT_MAX + DEFAULT_MIN)
-        console.log(`Default ratio: ${default_ratio}`)
+        // console.log(`Default ratio: ${default_ratio}`)
 
         const ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN)
-        console.log(`Ratio range: ${ratio_range}`)
+        // console.log(`Ratio range: ${ratio_range}`)
 
         const ratioed_value = default_ratio * ratio_range
-        console.log(`Ratioed Speed: ${ratioed_value}`)
+        // console.log(`Ratioed Speed: ${ratioed_value}`)
 
         this.state = {
             debug: false,
@@ -129,7 +129,13 @@ class Slideshow extends React.Component {
     async componentDidMount() {
         this.update_current_piece(this.state.piece_list, this.state.next_oid)
 
-        // this.start_timer()
+    }
+
+    // create a componentWillUnmount() method that clears the timer
+    componentWillUnmount() {
+        clearTimeout(this.state.timer);
+
+        this.setState({running: false})
     }
 
     change_speed(value) {
@@ -198,7 +204,7 @@ class Slideshow extends React.Component {
         })
 
         if (this.state.running == true || set_running == true) {
-            setTimeout( () =>  { console.log(`Speed: ${this.state.speed}`); this.update_current_piece(this.state.piece_list, this.state.next_oid) }, (this.state.speed));
+            this.state.timer = setTimeout( () =>  { this.update_current_piece(this.state.piece_list, this.state.next_oid) }, (this.state.speed));
         }
     }
 
