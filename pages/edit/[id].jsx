@@ -502,8 +502,6 @@ class Edit extends React.Component {
         console.log(`USER ROLE: ${role}`)
       
         if (role !== "ADMIN") { this.props.router.push('/') }
-      
-        if (!this.props.router.isReady) { return(<></>) }
         
         // If to this position, User is signed in with ADMIN role in clerk publicMetadata
         console.log(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`)
