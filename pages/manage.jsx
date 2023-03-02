@@ -27,8 +27,6 @@ class Manage extends React.Component {
         
         if (role !== "ADMIN") { this.props.router.push('/') }
         
-        if (!this.props.router.isReady) { return(<></>) }
-        
         return (
             <PageLayout page_title={this.page_title}>
                 <div className={styles.main_container}>

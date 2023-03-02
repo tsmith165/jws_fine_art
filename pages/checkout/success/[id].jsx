@@ -16,7 +16,6 @@ class SuccessPage extends React.Component {
   async componentDidMount() { }
 
   render() {
-    if (!this.props.router.isReady) return null
     return ( 
       <PageLayout page_title={this.page_title}>
         <Success id={this.props.router.query.id} piece_list={this.props.piece_list} router={this.props.router}/> 
