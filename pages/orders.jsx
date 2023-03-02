@@ -26,8 +26,6 @@ class Orders extends React.Component {
         console.log(`USER ROLE: ${role}`)
         
         if (role !== "ADMIN") { this.props.router.push('/') }
-        
-        if (!this.props.router.isReady) { return(<></>) }
 
         return (
             <PageLayout page_title={"Orders"}>
