@@ -2,17 +2,17 @@
 
 // Gallery Theme Selector
 @media (max-width: 450px) { // mobile
-    .gallery_filter_menu {
+    .filter_menu {
         width: 100% !important;
         border-bottom-left-radius: 0px !important;
         border-left: None !important;
     }
 }
 @media (max-width: 800px) { // mobile
-    .gallery_filter_menu_tooltip {
+    .filter_menu_tooltip {
         display: none;
     }
-    .gallery_filter_menu_toggle {
+    .filter_menu_toggle {
         position: absolute;
         top: 60px;
         right: 120px;
@@ -25,14 +25,14 @@
         z-index: 1;
         overflow: visible;
     }
-        .gallery_filter_menu_toggle_icon {
+        .filter_menu_toggle_icon {
         width: 40px !important;
         height: 40px !important;
         padding: 5px;
         border-top-right-radius: 5px;
         }
 
-    .gallery_filter_menu_toggle_open {
+    .filter_menu_toggle_open {
         position: absolute;
         top: 60px;
         right: 120px;
@@ -45,7 +45,7 @@
         z-index: 1;
         overflow: visible;
     }
-    .gallery_filter_menu {
+    .filter_menu {
         position: absolute; 
         top: 100px; 
         right: 0px;
@@ -61,30 +61,30 @@
         border-bottom: 2px solid $secondary;
         border-left: 2px solid $secondary;
     }
-    .gallery_filter_menu > .gallery_filter_icon_container:first-of-type {
+    .filter_menu > .filter_icon_container:first-of-type {
         border-bottom-left-radius: 5px !important;
     }
 
-    .gallery_filter_icon_container {
+    .filter_icon_container {
         width: 40px;
         height: 40px;
         background-color: $dark;
         color: $light;
     }
-    .gallery_filter_icon_container_selected {
+    .filter_icon_container_selected {
         width: 40px;
         height: 40px;
         background-color: $light !important;
         color: $dark !important;
     }
-    .gallery_filter_icon {
+    .filter_icon {
     width: 30px !important;
     height: 30px !important;
     margin: 5px;
     }
 }
 @media (min-width: 799px) { // browser
-    .gallery_filter_menu_toggle {
+    .filter_menu_toggle {
         position: absolute;
         top: 50px;
         right: 150px;
@@ -99,17 +99,17 @@
         overflow: visible;
         z-index: 1;
     }
-    .gallery_filter_menu_toggle:hover {
+    .filter_menu_toggle:hover {
         background-color: $light !important;
         color: $dark !important;
     }
-        .gallery_filter_menu_toggle_icon {
+        .filter_menu_toggle_icon {
         width: 50px !important;
         height: 50px !important;
         padding: 5px;
         border-top-right-radius: 5px;
         }
-    .gallery_filter_menu_toggle_open {
+    .filter_menu_toggle_open {
         position: absolute;
         top: 50px;
         right: 150px;
@@ -124,11 +124,11 @@
         z-index: 1;
         overflow: visible;
     }
-    .gallery_filter_menu_toggle_open > .gallery_filter_menu_toggle_icon:hover {
+    .filter_menu_toggle_open > .filter_menu_toggle_icon:hover {
         background-color: $light !important;
         color: $dark !important;
     }
-    .gallery_filter_menu_tooltip {
+    .filter_menu_tooltip {
         position: relative; 
         width: fit-content;
         font-size: 24px;
@@ -136,11 +136,11 @@
         margin-right: 5px;
         margin-left: 10px;
     }
-    .gallery_filter_menu_container { 
+    .filter_menu_container { 
         position: relative; 
         width: fit-content; 
     }
-    .gallery_filter_menu {
+    .filter_menu {
         position: absolute; 
         top: 50px;
         right: 200px;
@@ -151,27 +151,27 @@
         flex-direction: row;
         border-top-left-radius: 5px !important;
     }
-    .gallery_filter_menu > .gallery_filter_icon_container:first-of-type {
+    .filter_menu > .filter_icon_container:first-of-type {
         border-top-left-radius: 4px !important;
     }
 
-    .gallery_filter_icon_container {
+    .filter_icon_container {
         width: 50px;
         height: 50px;
         color: $light;
         background-color: $dark !important;
     }
-    .gallery_filter_icon_container:hover {
+    .filter_icon_container:hover {
         background-color: $light !important;
         color: $dark !important;
     }
-    .gallery_filter_icon_container_selected {
+    .filter_icon_container_selected {
         width: 50px;
         height: 50px;
         background-color: $light !important;
         color: $dark;
     }
-    .gallery_filter_icon {
+    .filter_icon {
     width: 40px !important;
     height: 40px !important;
     margin: 5px;
