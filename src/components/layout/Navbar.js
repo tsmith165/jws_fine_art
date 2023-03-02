@@ -5,41 +5,15 @@ import Image from 'next/image'
 import React  from 'react';
 
 import { SignedIn, SignedOut, UserButton, ClerkLoading } from "@clerk/nextjs";
-import { Tooltip } from 'react-tooltip'
 
 import MenuOverlay from './menu/MenuOverlay'
+import FilterMenu from './FilterMenu';
 
 import styles from "@/styles/layout/Navbar.module.scss"
-import theme_menu_styles from "@/styles/layout/ThemeMenu.module.scss"
 
 import MenuIcon from '@mui/icons-material/Menu'; // Menu Hamburger Icon
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // Account Profile Icon
 
-// Filter Menu Icons
-import Tune from '@mui/icons-material/Tune';     // Filter Menu Toggle Button
-import AcUnit from '@mui/icons-material/AcUnit'; // Snow
-import Waves from '@mui/icons-material/Waves';   // Ocean
-import Landscape from '@mui/icons-material/Landscape'; // Mountains
-import LocationCity from '@mui/icons-material/LocationCity'; // City
-import LocalFlorist from '@mui/icons-material/LocalFlorist'; // Flowers
-import Portrait from '@mui/icons-material/Portrait'; // Portrait
-import Exposure from '@mui/icons-material/Exposure'; // Black And White
-import Block from '@mui/icons-material/Block'; // None
-import FilterBAndW from '@mui/icons-material/FilterBAndW'; // Abstract
-import ShoppingCart from '@mui/icons-material/ShoppingCart'; // Abstract
-
-const THEME_FILTERS = [
-    ['Water', <Waves className={theme_menu_styles.gallery_filter_icon} />], 
-    ['Snow', <AcUnit className={theme_menu_styles.gallery_filter_icon} />], 
-    ['Mountain', <Landscape className={theme_menu_styles.gallery_filter_icon} />], 
-    ['Landscape', <LocalFlorist className={theme_menu_styles.gallery_filter_icon} />], 
-    ['City', <LocationCity className={theme_menu_styles.gallery_filter_icon} />],
-    ['Portrait', <Portrait className={theme_menu_styles.gallery_filter_icon} />],
-    ['Black and White', <Exposure className={theme_menu_styles.gallery_filter_icon} />],
-    ['Abstract', <FilterBAndW className={theme_menu_styles.gallery_filter_icon} />],
-    ['Available', <ShoppingCart className={theme_menu_styles.gallery_filter_icon} />],
-    ['None', <Block className={theme_menu_styles.gallery_filter_icon} />]
-]
 
 class Navbar extends React.Component {
     constructor(props) {
@@ -51,22 +25,6 @@ class Navbar extends React.Component {
     render() {
         console.log(`Rendering Navbar with app_state pathname: ${this.props.app_state.pathname} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
 
-        var filter_menu_array = [];
-        for (var i = 0; i < THEME_FILTERS.length; i++) {
-            let filter = THEME_FILTERS[i][0];
-            let icon = THEME_FILTERS[i][1];
-            filter_menu_array.push((
-                <div className={(filter == this.props.app_state.theme) ? `${theme_menu_styles.gallery_filter_icon_container_selected} ${theme_menu_styles.gallery_filter_icon_container}` : theme_menu_styles.gallery_filter_icon_container} 
-                    id={filter}
-                    data-tooltip-content={`${filter}`}
-                    onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, theme: filter}) }}
-                >
-                    {icon}
-                    <Tooltip anchorId={filter} />
-                </div>
-            ))
-        }
-
         return (
             <nav className={styles.navbar}>
                 <div className={styles.navbar_container}>
@@ -77,20 +35,7 @@ class Navbar extends React.Component {
                     </div>
 
                     { ( this.props.app_state.pathname == '/') ? (
-                        <div className={(this.props.app_state.filter_menu_open == false) ? theme_menu_styles.gallery_filter_menu_toggle : `${theme_menu_styles.gallery_filter_menu_toggle} ${theme_menu_styles.gallery_filter_menu_toggle_open}` }>
-                            {(this.props.app_state.filter_menu_open == false) ? (
-                                <div className={theme_menu_styles.gallery_filter_menu_tooltip} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}>
-                                    Filters
-                                </div>
-                            ) : ( null ) }
-                            <Tune className={theme_menu_styles.gallery_filter_menu_toggle_icon} onClick={(e) => { e.preventDefault(); this.props.app_set_state({...this.props.app_state, filter_menu_open: !this.props.app_state.filter_menu_open}) }}/>
-                        </div>
-                    ) : ( null ) }
-
-                    { ( this.props.app_state.pathname == '/' && this.props.app_state.filter_menu_open == true) ? (
-                        <div className={theme_menu_styles.gallery_filter_menu} >
-                            { filter_menu_array }
-                        </div>
+                        <FilterMenu app_state={this.props.app_state} app_set_state={this.props.app_set_state}/>
                     ) : ( null ) }
 
                     <Link href="https://www.instagram.com/jws_fineart/">
