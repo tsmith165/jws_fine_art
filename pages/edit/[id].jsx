@@ -723,7 +723,6 @@ class Edit extends React.Component {
                                         value={this.state.type}
                                         key={'type'}
                                         onChange={(e) => {
-                                            e.preventDefault();
                                             this.setState({ type: e.target.value });
                                         }}
                                     >
