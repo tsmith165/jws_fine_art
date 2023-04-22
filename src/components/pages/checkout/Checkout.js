@@ -110,6 +110,7 @@ class Checkout extends React.Component {
             piece_position: piece_position,
             piece_db_id: piece_db_id,
             piece_o_id: piece_o_id,
+            image_jsx: image_jsx,
             piece_details: {
                 title: title,
                 type: type,
