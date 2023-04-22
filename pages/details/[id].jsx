@@ -32,7 +32,7 @@ class Details extends React.Component {
         var image_array = [];
 
         var current_piece = null;
-        var piece_position = 0;
+        var piece_position = -1;
         for (var i = 0; i < piece_list_length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
                 piece_position = i;
@@ -54,7 +54,7 @@ class Details extends React.Component {
         var image_path = '';
         var instagram = '';
 
-        if (piece_list_length > 0) {
+        if (piece_position > 0) {
             const current_piece = piece_list[piece_position];
 
             piece_db_id = current_piece['id'] !== undefined ? current_piece['id'] : '';
@@ -62,8 +62,8 @@ class Details extends React.Component {
             title = current_piece['title'] !== undefined ? current_piece['title'] : '';
             type = current_piece['type'] !== undefined ? current_piece['type'] : 'Oil On Canvas';
             sold = current_piece['sold'] !== undefined ? current_piece['sold'] : 'False';
-            available = current_piece['available'] !== undefined ? current_piece['available'] : false;
-            description = current_piece['description'] !== undefined ? current_piece['description'] : '';
+            description =
+                current_piece['description'] !== undefined ? current_piece['description'].replace('<br>', '\n') : '';
             price = current_piece['price'] !== undefined ? current_piece['price'] : '';
             width = current_piece['width'] !== undefined ? current_piece['width'] : '';
             height = current_piece['height'] !== undefined ? current_piece['height'] : '';
@@ -75,34 +75,25 @@ class Details extends React.Component {
                     : '';
             instagram = current_piece['instagram'] !== undefined ? current_piece['instagram'] : '';
 
-            description = current_piece['description'].split('<br>').join(' \n');
-
-            for (var i = 0; i < piece_list.length; i++) {
-                let piece = piece_list[i];
-                image_array.push(
-                    <div
-                        key={`image_${i}`}
-                        className={
-                            i == piece_position ? styles.details_image_container : styles.details_image_container_hidden
-                        }
-                    >
-                        <Image
-                            id={`details_image_${i}`}
-                            className={styles.details_image}
-                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
-                            alt={piece['title']}
-                            priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
-                            layout="fill"
-                            objectFit="contain"
-                            quality={100}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                this.setState({ full_screen: !this.state.full_screen });
-                            }}
-                        />
-                    </div>,
-                );
-            }
+            image_array.push(
+                <div key={`image_${i}`} className={styles.details_image_container}>
+                    <Image
+                        id={`details_image_${i}`}
+                        className={styles.details_image}
+                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`}
+                        alt={current_piece['title']}
+                        // height={this.state.piece_details['height']}
+                        priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
+                        layout="fill"
+                        objectFit="contain"
+                        quality={100}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.setState({ full_screen: !this.state.full_screen });
+                        }}
+                    />
+                </div>,
+            );
         }
 
         this.state = {
@@ -151,8 +142,24 @@ class Details extends React.Component {
     }
 
     async componentDidMount() {
-        // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
-        this.setState({ loading: false });
+        var image_array = [];
+
+        const piece_list_length = this.state.piece_list.length;
+        if (piece_list_length > 0) {
+            image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position);
+        }
+
+        this.setState({
+            loading: false,
+            next_oid:
+                this.state.piece_position + 1 > piece_list_length - 1
+                    ? this.state.piece_list[0]['o_id']
+                    : this.state.piece_list[this.state.piece_position + 1]['o_id'],
+            last_oid:
+                this.state.piece_position - 1 < 0
+                    ? this.state.piece_list[this.state.piece_list_length - 1]['o_id']
+                    : this.state.piece_list[this.state.piece_position - 1]['o_id'],
+        });
     }
 
     async update_current_piece(piece_list, o_id) {
