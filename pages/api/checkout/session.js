@@ -57,6 +57,7 @@ export default async function handler(req, res) {
 
     // Create Stripe Session
     const piece_db_id = passed_json.piece_db_id;
+    const piece_dpiece_o_idb_id = passed_json.piece_o_id;
     const piece_title = passed_json.piece_title;
     const image_path = passed_json.image_path;
     const width = passed_json.width;
