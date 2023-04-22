@@ -184,94 +184,94 @@ class Checkout extends React.Component {
 
         console.log('Checkout Form Submit Recieved');
 
-        this.setState({ loading: true, submitted: false });
+        this.setState({ loading: true, submitted: false }, async () => {
+            // capture data from form
+            const full_name = event.target.elements.full_name.value;
+            const phone = event.target.elements.phone.value;
+            const email = event.target.elements.email.value;
 
-        // capture data from form
-        const full_name = event.target.elements.full_name.value;
-        const phone = event.target.elements.phone.value;
-        const email = event.target.elements.email.value;
+            console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
+            console.log(`Address: ${this.state.address} | International: ${this.state.international}`);
 
-        console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
-        console.log(`Address: ${this.state.address} | International: ${this.state.international}`);
+            const error_found = await this.check_fields([
+                ['Full Name', full_name, 3],
+                ['Email', email, 8],
+                ['Phone', phone, 6],
+                ['Address', this.state.address, 10],
+            ]);
 
-        const error_found = await this.check_fields([
-            ['Full Name', full_name, 3],
-            ['Email', email, 8],
-            ['Phone', phone, 6],
-            ['Address', this.state.address, 10],
-        ]);
-
-        if (error_found) {
-            console.error(`Could not check out due to an error...`);
-            return;
-        }
-
-        console.log('Attempting to Check Out...');
-
-        console.log('Creating a Pending Transaction ...');
-        const pending_response = await create_pending_transaction(
-            this.state.piece_db_id,
-            this.state.piece_details['title'],
-            full_name,
-            phone,
-            email,
-            this.state.address,
-            this.state.international,
-        );
-
-        console.log(`Pending Transaction Response (Next Line):`);
-        console.log(pending_response);
-
-        if (!pending_response) {
-            console.error('No Response From Create Pending Transaction.  Cannot check out...');
-            return;
-        }
-
-        console.log(`Creating stripe session with piece (Next Line):\n${this.state.current_piece}`);
-
-        // Create Stripe Checkout Session
-        console.log(
-            `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`}`,
-        );
-        const stripe_response = await create_stripe_checkout_session(
-            this.state.piece_db_id,
-            this.state.piece_details['title'],
-            `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`,
-            this.state.piece_details['width'],
-            this.state.piece_details['height'],
-            this.state.piece_details['price'],
-            full_name,
-            phone,
-            email,
-            this.state.address,
-            this.state.international,
-        );
-        const json = await stripe_response.json();
-
-        console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);
-        console.log(json);
-
-        const session = json;
-
-        console.log(`Session ID: ${session.id}`);
-
-        var redirect_to_stripe = true;
-        if (redirect_to_stripe) {
-            const stripe = await stripePromise;
-            console.log('Stripe (Next Line):');
-            console.log(stripe);
-
-            const result = await stripe.redirectToCheckout({
-                sessionId: session.id,
-            });
-            if (result.error) {
-                // If `redirectToCheckout` fails due to a browser or network
-                // error, display the localized error message to your customer
-                // using `result.error.message`.
+            if (error_found) {
+                console.error(`Could not check out due to an error...`);
+                return;
             }
-        }
 
-        this.setState({ loading: false, submitted: true });
+            console.log('Attempting to Check Out...');
+
+            console.log('Creating a Pending Transaction ...');
+            const pending_response = await create_pending_transaction(
+                this.state.piece_db_id,
+                this.state.piece_details['title'],
+                full_name,
+                phone,
+                email,
+                this.state.address,
+                this.state.international,
+            );
+
+            console.log(`Pending Transaction Response (Next Line):`);
+            console.log(pending_response);
+
+            if (!pending_response) {
+                console.error('No Response From Create Pending Transaction.  Cannot check out...');
+                return;
+            }
+
+            console.log(`Creating stripe session with piece (Next Line):\n${this.state.current_piece}`);
+
+            // Create Stripe Checkout Session
+            console.log(
+                `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`}`,
+            );
+            const stripe_response = await create_stripe_checkout_session(
+                this.state.piece_db_id,
+                this.state.piece_details['title'],
+                `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`,
+                this.state.piece_details['width'],
+                this.state.piece_details['height'],
+                this.state.piece_details['price'],
+                full_name,
+                phone,
+                email,
+                this.state.address,
+                this.state.international,
+            );
+            const json = await stripe_response.json();
+
+            console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);
+            console.log(json);
+
+            const session = json;
+
+            console.log(`Session ID: ${session.id}`);
+
+            var redirect_to_stripe = true;
+            if (redirect_to_stripe) {
+                const stripe = await stripePromise;
+                console.log('Stripe (Next Line):');
+                console.log(stripe);
+
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.id,
+                });
+                if (result.error) {
+                    // If `redirectToCheckout` fails due to a browser or network
+                    // error, display the localized error message to your customer
+                    // using `result.error.message`.
+                }
+            }
+
+            this.setState({ loading: false, submitted: true });
+        });
     }
 
     render() {
