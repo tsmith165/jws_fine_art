@@ -234,6 +234,7 @@ class Checkout extends React.Component {
             );
             const stripe_response = await create_stripe_checkout_session(
                 this.state.piece_db_id,
+                this.state.piece_o_id,
                 this.state.piece_details['title'],
                 `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`,
                 this.state.piece_details['width'],
