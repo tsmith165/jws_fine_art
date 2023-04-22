@@ -237,17 +237,19 @@
 .input_autocomplete::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: $light;
-    opacity: 1; /* Firefox */
+    opacity: 0.8;
 }
 
 .input_textbox:-ms-input-placeholder,
 .input_autocomplete:-ms-input-placeholder {
     /* Internet Explorer 10-11 */
     color: $light;
+    opacity: 0.8;
 }
 
 .input_textbox::-ms-input-placeholder,
 .input_autocomplete::-ms-input-placeholder {
     /* Microsoft Edge */
     color: $light;
+    opacity: 0.8;
 }
