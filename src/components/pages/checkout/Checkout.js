@@ -139,7 +139,9 @@ class Checkout extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    async componentDidMount() {}
+    async componentDidMount() {
+        this.setState({ loading: false });
+    }
 
     async address_change(updated_address) {
         console.log(updated_address);
