@@ -303,42 +303,6 @@ class Checkout extends React.Component {
                                     <div className={form_styles.title}>{title == '' ? `` : `"${title}"`}</div>
                                 </div>
 
-                                {/* Full Name Container */}
-                                <div className={form_styles.input_container}>
-                                    <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Full Name</div>
-                                    </div>
-                                    <input
-                                        id="full_name"
-                                        className={form_styles.input_textbox}
-                                        placeholder={`Enter Full Name...`}
-                                    />
-                                </div>
-
-                                {/* Phone Number Container */}
-                                <div className={form_styles.input_container}>
-                                    <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Phone #</div>
-                                    </div>
-                                    <input
-                                        id="phone"
-                                        className={form_styles.input_textbox}
-                                        placeholder={`Enter Phone Number...`}
-                                    />
-                                </div>
-
-                                {/* Email Container */}
-                                <div className={form_styles.input_container}>
-                                    <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Email</div>
-                                    </div>
-                                    <input
-                                        id="email"
-                                        className={form_styles.input_textbox}
-                                        placeholder={`Enter Email Address...`}
-                                    />
-                                </div>
-
                                 {/* Address Autocomplete Input */}
                                 {!this.state.loading ? (
                                     <PlacesAutocomplete
@@ -355,7 +319,7 @@ class Checkout extends React.Component {
                                                     <input
                                                         {...getInputProps({
                                                             placeholder: 'Enter Address...',
-                                                            className: `${form_styles.location_search_input} ${form_styles.input_autocomplete}`,
+                                                            className: `${form_styles.input_autocomplete}`,
                                                             autoComplete: 'rutjfkde',
                                                         })}
                                                     />
@@ -381,6 +345,45 @@ class Checkout extends React.Component {
                                         )}
                                     </PlacesAutocomplete>
                                 ) : null}
+
+                                {/* Full Name Container */}
+                                <div className={form_styles.input_container}>
+                                    <div className={form_styles.input_label_container}>
+                                        <div className={form_styles.input_label}>Full Name</div>
+                                    </div>
+                                    <input
+                                        id="full_name"
+                                        className={form_styles.input_textbox}
+                                        placeholder={`Enter Full Name...`}
+                                        autoComplete="off"
+                                    />
+                                </div>
+
+                                {/* Phone Number Container */}
+                                <div className={form_styles.input_container}>
+                                    <div className={form_styles.input_label_container}>
+                                        <div className={form_styles.input_label}>Phone #</div>
+                                    </div>
+                                    <input
+                                        id="phone"
+                                        className={form_styles.input_textbox}
+                                        placeholder={`Enter Phone Number...`}
+                                        autoComplete="off"
+                                    />
+                                </div>
+
+                                {/* Email Container */}
+                                <div className={form_styles.input_container}>
+                                    <div className={form_styles.input_label_container}>
+                                        <div className={form_styles.input_label}>Email</div>
+                                    </div>
+                                    <input
+                                        id="email"
+                                        className={form_styles.input_textbox}
+                                        placeholder={`Enter Email Address...`}
+                                        autoComplete="off"
+                                    />
+                                </div>
 
                                 <div className={form_styles.submit_container}>
                                     <div className={form_styles.price_label}>{`$${this.state.price}`}</div>
