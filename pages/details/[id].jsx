@@ -129,7 +129,7 @@ class Details extends React.Component {
                 piece_position - 1 < 0
                     ? piece_list[piece_list_length - 1]['o_id']
                     : piece_list[piece_position - 1]['o_id'],
-            description: description,
+            description: description.replace('<br>', '\n'),
             price: price,
             sold: sold,
             available: available,
