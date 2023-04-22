@@ -43,6 +43,9 @@ class Checkout extends React.Component {
 
         for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
+                console.log(
+                    `Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`,
+                );
                 piece_position = i;
             }
         }
@@ -59,9 +62,11 @@ class Checkout extends React.Component {
         var image_path = '';
         var instagram = '';
         var image_jsx = null;
+        var current_piece = null;
 
-        if (piece_position > 0) {
-            const current_piece = piece_list[piece_position];
+        if (piece_position < 0) {
+        } else {
+            current_piece = piece_list[piece_position];
 
             piece_db_id = current_piece['id'] !== undefined ? current_piece['id'] : '';
             piece_o_id = current_piece['o_id'] !== undefined ? current_piece['o_id'] : '';
@@ -222,6 +227,8 @@ class Checkout extends React.Component {
             return;
         }
 
+        console.log(`Creating stripe session with piece (Next Line):\n${this.state.current_piece}`);
+
         // Create Stripe Checkout Session
         console.log(
             `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`}`,
@@ -264,7 +271,7 @@ class Checkout extends React.Component {
             }
         }
 
-        this.setState({ loading: false });
+        this.setState({ loading: false, submitted: true });
     }
 
     render() {
@@ -275,15 +282,9 @@ class Checkout extends React.Component {
         if (this.state.loading == true) {
             loader_jsx = <CircularProgress color="inherit" className={form_styles.loader} />;
         } else if (this.state.submitted == true) {
-            loader_jsx = <div className={form_styles.submit_label}>Piece Details Update was successful...</div>;
+            loader_jsx = <div className={form_styles.submit_label}>Checkout submit successful.</div>;
         } else if (this.state.error == true) {
-            loader_jsx = (
-                <div className={form_styles.submit_label_failed}>Piece Details Update was NOT successful...</div>
-            );
-        } else if (this.state.uploaded == true) {
-            loader_jsx = <div className={form_styles.submit_label}>Image Upload was successful...</div>;
-        } else if (this.state.upload_error == true) {
-            loader_jsx = <div className={form_styles.submit_label_failed}>Image Upload was NOT successful...</div>;
+            loader_jsx = <div className={form_styles.submit_label_failed}>Checkout submit was not successful.</div>;
         }
 
         const title = this.state.piece_details['title'] != null ? this.state.piece_details['title'] : '';
