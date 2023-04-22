@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
     // Create Stripe Session
     const piece_db_id = passed_json.piece_db_id;
-    const piece_dpiece_o_idb_id = passed_json.piece_o_id;
+    const piece_o_id = passed_json.piece_o_id;
     const piece_title = passed_json.piece_title;
     const image_path = passed_json.image_path;
     const width = passed_json.width;
@@ -81,8 +81,8 @@ export default async function handler(req, res) {
     var full_image_url = `${image_path}`;
     console.log(`Piece Title: ${piece_title} | Price: ${converted_price} | Image Path: ${full_image_url}`);
 
-    const success_url = `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece_db_id}`;
-    const cancel_url = `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece_db_id}`;
+    const success_url = `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece_o_id}`;
+    const cancel_url = `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece_o_id}`;
 
     console.log(`Using success_url: ${success_url}`);
     console.log(`Using cancel_url: ${cancel_url}`);
