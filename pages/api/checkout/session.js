@@ -80,6 +80,12 @@ export default async function handler(req, res) {
     var full_image_url = `${image_path}`;
     console.log(`Piece Title: ${piece_title} | Price: ${converted_price} | Image Path: ${full_image_url}`);
 
+    const success_url = `http://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece_db_id}`;
+    const cancel_url = `http://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece_db_id}`;
+
+    console.log(`Using success_url: ${success_url}`);
+    console.log(`Using cancel_url: ${cancel_url}`);
+
     const params = {
         payment_method_types: ['card'],
         line_items: [
@@ -106,8 +112,8 @@ export default async function handler(req, res) {
             },
         },
         mode: 'payment',
-        success_url: `https://${PROJECT_CONSTANTS.SITE_URL}/success/${piece_db_id}`,
-        cancel_url: `https://${PROJECT_CONSTANTS.SITE_URL}/cancel/${piece_db_id}`,
+        success_url: success_url,
+        cancel_url: cancel_url,
     };
 
     console.log('Attempting to create checkout session with following params (Next Line):');
