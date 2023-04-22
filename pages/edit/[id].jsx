@@ -450,9 +450,11 @@ class Edit extends React.Component {
         var uploaded_image_path = '';
         try {
             var selected_file = event.target.files[0];
-            console.log(`Selected File: ${selected_file.name} | Size: ${selected_file.size}`);
+            const fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
 
-            const s3_upload_url = await get_upload_url(selected_file.name.toString().toLowerCase().replace(' ', '_'));
+            console.log(`Selected File: ${fileName} | Size: ${selected_file.size}`);
+
+            const s3_upload_url = await get_upload_url(fileName.toLowerCase());
             console.log(`Got Upload URL: ${s3_upload_url}`);
 
             uploaded_image_path = await upload_image(s3_upload_url, selected_file);
