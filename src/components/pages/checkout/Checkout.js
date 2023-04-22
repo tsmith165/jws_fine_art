@@ -36,8 +36,6 @@ class Checkout extends React.Component {
         console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`);
         console.log(piece_list);
 
-        var image_array = [];
-
         var current_piece = null;
         var piece_position = 0;
         var piece_db_id = null;
@@ -108,7 +106,6 @@ class Checkout extends React.Component {
             loading: true,
             url_o_id: passed_o_id,
             piece_list: piece_list,
-            image_array: image_array,
             current_piece: current_piece,
             piece_position: piece_position,
             piece_db_id: piece_db_id,
@@ -294,7 +291,7 @@ class Checkout extends React.Component {
                 <div className={styles.details_container}>
                     <div className={styles.details_container_left}>
                         <div className={styles.details_image_outer_container}>
-                            <div className={styles.details_image_container}>{this.state.image_array}</div>
+                            <div className={styles.details_image_container}>{this.state.image_jsx}</div>
                         </div>
                     </div>
                     <div className={styles.details_container_right}>
