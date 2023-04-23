@@ -7,6 +7,11 @@ import styles from '@/styles/layout/PageLayout.module.scss';
 const PageLayout = ({ page_title = PROJECT_CONSTANTS.SITE_FULL_NAME, use_maps_api = false, children }) => {
     console.log(`Loading Page Layout With Title: ${page_title}`);
 
+    function initMap() {
+        // Your code to initialize the map goes here
+        // This code will only be executed after the Google Maps API is fully loaded
+    }
+
     return (
         <div className={styles.container}>
             {use_maps_api == true ? (
