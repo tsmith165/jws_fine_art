@@ -7,13 +7,17 @@ import styles from '@/styles/layout/PageLayout.module.scss';
 const PageLayout = ({ page_title = PROJECT_CONSTANTS.SITE_FULL_NAME, use_maps_api = false, children }) => {
     console.log(`Loading Page Layout With Title: ${page_title}`);
 
+    const handleScriptLoad = () => {
+        console.log('Google Maps JavaScript API has been loaded.');
+    };
+
     return (
         <div className={styles.container}>
             {use_maps_api == true ? (
                 <Script
                     strategy="beforeInteractive"
-                    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"
-                    onLoad={() => {}}
+                    src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyCvrLDFUzjxCnKIDSuPwBYEbfnWrrIUnu4&libraries=places`}
+                    onLoad={handleScriptLoad}
                 />
             ) : null}
 
