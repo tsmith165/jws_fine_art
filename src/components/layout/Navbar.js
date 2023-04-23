@@ -46,7 +46,7 @@ class Navbar extends React.Component {
                         <FilterMenu app_state={this.props.app_state} app_set_state={this.props.app_set_state} />
                     ) : null}
 
-                    <Link href="https://www.instagram.com/jws_fineart/">
+                    <Link href="/socials">
                         <div className={styles.instagram_link_container}>
                             <div className={styles.instagram_logo_link_container}>
                                 <Image
