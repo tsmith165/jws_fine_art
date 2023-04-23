@@ -13,7 +13,6 @@ const PageLayout = ({ page_title = PROJECT_CONSTANTS.SITE_FULL_NAME, use_maps_ap
                 <Script
                     strategy="beforeInteractive"
                     src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyCvrLDFUzjxCnKIDSuPwBYEbfnWrrIUnu4&libraries=places&callback=initMap`}
-                    onLoad={handleScriptLoad}
                 />
             ) : null}
 
