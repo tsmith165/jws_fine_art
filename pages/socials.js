@@ -6,6 +6,9 @@ import styles from '@/styles/pages/Socials.module.scss';
 import Image from 'next/image';
 import React from 'react';
 
+const BLACK_AND_WHITE_QR_CODE = '/JWS_QR_CODE_WHITE_BLACK.png';
+const COLORED_QR_CODE = '/JWS_QR_CODE_GREEN_TAN.png';
+
 class SocialsPage extends React.Component {
     constructor(props) {
         super(props);
@@ -13,9 +16,11 @@ class SocialsPage extends React.Component {
         this.state = {
             window_width: null,
             window_height: null,
+            current_qr_code: BLACK_AND_WHITE_QR_CODE,
         };
 
         this.handleResize = this.handleResize.bind(this);
+        this.handleClickQRCode = this.handleClickQRCode.bind(this);
     }
 
     async componentDidMount() {
@@ -30,6 +35,13 @@ class SocialsPage extends React.Component {
         window.removeEventListener('resize', this.handleResize);
     }
 
+    handleClickQRCode() {
+        this.setState((prevState) => ({
+            current_qr_code:
+                prevState.current_qr_code === BLACK_AND_WHITE_QR_CODE ? COLORED_QR_CODE : BLACK_AND_WHITE_QR_CODE,
+        }));
+    }
+
     handleResize() {
         console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
         this.setState({
@@ -40,6 +52,7 @@ class SocialsPage extends React.Component {
 
     render() {
         const artist_name_div = <div className={styles.artist_name}>Jill Weeks Smith</div>;
+        const website_div = <div className={styles.website}>jwsfineart.com</div>;
         const bio_image_div = (
             <div className={styles.bio_image_border}>
                 <Image
@@ -53,8 +66,14 @@ class SocialsPage extends React.Component {
             </div>
         );
         const qr_code_div = (
-            <div className={styles.qr_code_wrapper}>
-                <Image className={styles.qr_code} src="/JWS_QR_CODE.png" alt="QR Code" width={200} height={200} />
+            <div className={styles.qr_code_wrapper} onClick={this.handleClickQRCode}>
+                <Image
+                    className={styles.qr_code}
+                    src={this.state.current_qr_code}
+                    alt="QR Code"
+                    width={200}
+                    height={200}
+                />
             </div>
         );
         const instagram_div = (
@@ -75,6 +94,7 @@ class SocialsPage extends React.Component {
                     {/* Right Side */}
                     <div className={styles.right_side}>
                         {artist_name_div}
+                        {website_div}
                         {qr_code_div}
                         {instagram_div}
                     </div>
