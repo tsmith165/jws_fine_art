@@ -1,3 +1,4 @@
+// styles/pages/Socials.module.scss
 @import '../../theme/colors';
 @import '../../theme/fonts';
 
@@ -12,6 +13,7 @@
 
     .left_side {
         display: flex;
+        flex-direction: column;
         justify-content: right;
         align-items: center;
         flex: 1;
@@ -100,9 +102,14 @@
 
 @media (max-width: 768px) {
     .socials_container {
+        flex-direction: row;
         padding: 10px;
         height: calc(100vh - 100px);
         min-height: unset;
+    }
+
+    .left_side {
+        margin-bottom: 20px;
     }
 
     .bio_image_border {
@@ -111,6 +118,15 @@
     }
 
     .right_side {
-        margin-left: 15px !important;
+        margin-left: 0 !important;
+    }
+
+    .artist_name {
+        font-family: $lato_300;
+        font-weight: 600;
+        font-size: 32px;
+        color: $secondary;
+        margin-bottom: 20px;
+        text-align: center;
     }
 }
