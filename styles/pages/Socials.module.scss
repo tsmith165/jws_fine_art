@@ -56,6 +56,16 @@
             text-align: center;
         }
 
+        .website {
+            font-family: $lato_300;
+            font-weight: 600;
+            font-size: 32px;
+            color: $secondary;
+            margin-bottom: 20px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
         .qr_code_wrapper {
             background-color: $primary;
             border-radius: 5px;
