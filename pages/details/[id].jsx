@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import PageLayout from '@/components/layout/PageLayout';
+import PieceSpecificationTable from '@/components/pages/details/PieceSpecificationTable';
 
 import styles from '@/styles/pages/Details.module.scss';
 
@@ -53,6 +54,8 @@ class Details extends React.Component {
         var real_height = '';
         var image_path = '';
         var instagram = '';
+        var framed = false;
+        var comments = '';
 
         if (piece_position > 0) {
             const current_piece = piece_list[piece_position];
@@ -74,6 +77,8 @@ class Details extends React.Component {
                     ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`
                     : '';
             instagram = current_piece['instagram'] !== undefined ? current_piece['instagram'] : '';
+            framed = current_piece['framed'] !== undefined ? current_piece['framed'] : '';
+            comments = current_piece['comments'] !== undefined ? current_piece['comments'] : '';
 
             image_array.push(
                 <div key={`image_${i}`} className={styles.details_image_container}>
@@ -120,6 +125,8 @@ class Details extends React.Component {
                 image_path: image_path,
                 instagram: instagram,
                 available: available,
+                framed: framed,
+                comments: comments,
             },
             next_oid:
                 piece_position + 1 > piece_list_length - 1
@@ -196,6 +203,8 @@ class Details extends React.Component {
             image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`,
             instagram: current_piece['instagram'],
             available: current_piece['available'] !== undefined ? current_piece['available'] : false,
+            framed: current_piece['framed'] !== undefined ? current_piece['framed'] : false,
+            comments: current_piece['comments'],
         };
 
         const description = current_piece['description'].split('<br>').join(' \n');
@@ -403,6 +412,13 @@ class Details extends React.Component {
                                 <div className={styles.details_description_container}>
                                     <h3 className={styles.details_description}>{this.state.description}</h3>
                                 </div>
+                                <PieceSpecificationTable
+                                    realWidth={this.state.piece_details.real_width}
+                                    realHeight={this.state.piece_details.real_height}
+                                    framed={this.state.piece_details.framed}
+                                    comments={this.state.piece_details.comments}
+                                    type={this.state.piece_details.type}
+                                />
                             </div>
                         </div>
                     </div>

@@ -17,6 +17,7 @@ import form_styles from '@/styles/forms/EditDetailsForm.module.scss';
 
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CircularProgress from '@mui/material/CircularProgress';
+import PageviewIcon from '@mui/icons-material/Pageview';
 
 class Edit extends React.Component {
     constructor(props) {
@@ -58,6 +59,8 @@ class Edit extends React.Component {
         var theme = 'None';
         var theme_options = [{ value: theme, label: theme }];
         var available = true;
+        var framed = false;
+        var comments = '';
 
         if (piece_list_length > 0) {
             const current_piece = piece_list[piece_position];
@@ -87,6 +90,9 @@ class Edit extends React.Component {
                         : current_piece['theme']
                     : 'None';
             available = current_piece['available'] !== undefined ? current_piece['available'] : '';
+            framed = current_piece['framed'] !== undefined ? current_piece['framed'] : '';
+            framed = framed == true ? 'True' : 'False';
+            comments = current_piece['comments'] !== undefined ? current_piece['comments'] : '';
 
             theme_options = [{ value: theme, label: theme }];
             if (theme != 'None' && theme.includes(', ')) {
@@ -160,6 +166,8 @@ class Edit extends React.Component {
                 instagram: instagram,
                 theme: theme,
                 available: available,
+                framed: framed,
+                comments: comments,
             },
             next_oid:
                 piece_position + 1 > piece_list_length - 1
@@ -185,6 +193,8 @@ class Edit extends React.Component {
             error: false,
             uploaded: false,
             upload_error: false,
+            framed: framed,
+            comments: comments,
         };
         this.create_image_array = this.create_image_array.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
@@ -259,6 +269,8 @@ class Edit extends React.Component {
             instagram: current_piece['instagram'],
             theme: current_piece['theme'],
             available: current_piece['available'],
+            framed: current_piece['framed'] == true ? 'True' : 'False',
+            comments: current_piece['comments'],
         };
 
         var theme =
@@ -275,6 +287,8 @@ class Edit extends React.Component {
                 }
             });
         }
+
+        console.log(`Setting framed to: ${piece_details['framed']}`);
 
         console.log(`Setting theme to: ${theme} | options (Next line):`);
         console.log(theme_options);
@@ -310,6 +324,8 @@ class Edit extends React.Component {
                 height: piece_details['height'],
                 real_width: piece_details['real_width'],
                 real_height: piece_details['real_height'],
+                framed: piece_details['framed'],
+                comments: piece_details['comments'],
             },
             async () => {
                 if (previous_url_o_id != o_id) {
@@ -376,12 +392,15 @@ class Edit extends React.Component {
         const instagram = event.target.elements.instagram.value;
         const real_width = event.target.elements.width.value;
         const real_height = event.target.elements.height.value;
-        const theme = event.target.elements.theme.value;
         const available = event.target.elements.available.value;
+        const framed = event.target.elements.framed.value;
+        const comments = event.target.elements.comments.value;
 
         if (title) {
             console.log('--------------- Attempting To Edit Piece Details ---------------');
-            console.log(`Editing Piece DB ID: ${this.state.piece_db_id} | Title: ${title} | Sold: ${sold}`);
+            console.log(
+                `Editing Piece DB ID: ${this.state.piece_db_id} | Title: ${title} | Sold: ${sold} | Framed: ${framed}`,
+            );
             if (!this.state.uploaded) {
                 const response = await edit_details(
                     this.state.piece_db_id,
@@ -397,6 +416,8 @@ class Edit extends React.Component {
                     real_height,
                     this.state.theme,
                     available,
+                    framed,
+                    comments,
                 );
 
                 console.log(`Edit Piece Response (Next Line):`);
@@ -427,6 +448,8 @@ class Edit extends React.Component {
                     this.state.piece_details['image_path'],
                     this.state.theme,
                     available,
+                    framed,
+                    comments,
                 );
 
                 console.log(`Create Piece Response (Next Line):`);
@@ -497,6 +520,8 @@ class Edit extends React.Component {
                     real_width: 0,
                     real_height: 0,
                     active: true,
+                    framed: false,
+                    comments: '',
                 });
 
                 const new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1);
@@ -514,6 +539,8 @@ class Edit extends React.Component {
                     instagram: '',
                     theme: 'None',
                     available: true,
+                    framed: false,
+                    comments: '',
                 };
                 console.log('Updating state with uploaded piece details (Next Line):');
                 console.log(uploaded_piece_details);
@@ -536,6 +563,8 @@ class Edit extends React.Component {
                     height: uploaded_piece_details['height'],
                     real_width: uploaded_piece_details['real_width'],
                     real_height: uploaded_piece_details['real_height'],
+                    framed: uploaded_piece_details['framed'],
+                    comments: uploaded_piece_details['comments'],
                 });
             };
         } catch (err) {
@@ -652,7 +681,7 @@ class Edit extends React.Component {
             this.state.theme !== undefined || this.state.theme !== null || this.state.theme !== ''
                 ? this.state.theme
                 : 'None';
-        console.log(`Theme: ${using_theme}`);
+        console.log(`Theme: ${using_theme} | Framed: ${this.state.framed}`);
 
         return (
             <PageLayout page_title={this.state.title == '' ? `Edit Details` : `Edit Details - ${this.state.title}`}>
@@ -691,6 +720,15 @@ class Edit extends React.Component {
                                             this.setState({ title: e.target.value });
                                         }}
                                     />
+                                    <div className={form_styles.back_to_details_container}>
+                                        <PageviewIcon
+                                            className={form_styles.back_to_details_icon}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                this.props.router.push(`/details/${this.state.url_o_id}`);
+                                            }}
+                                        />
+                                    </div>
                                     <ArrowForwardIosRoundedIcon
                                         className={form_styles.title_arrow}
                                         onClick={(e) => {
@@ -924,6 +962,47 @@ class Edit extends React.Component {
                                             onChange={(e) => {
                                                 e.preventDefault();
                                                 this.setState({ height: e.target.value });
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Split Container For framed / comments */}
+                                <div className={form_styles.input_container_split_container}>
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
+                                        <div
+                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
+                                        >
+                                            <div className={form_styles.input_label}>Framed</div>
+                                        </div>
+                                        <select
+                                            id="framed"
+                                            className={form_styles.input_select}
+                                            value={this.state.framed}
+                                            key={'framed'}
+                                            onChange={(e) => {
+                                                e.preventDefault();
+                                                this.setState({ framed: e.target.value });
+                                            }}
+                                        >
+                                            <option value="True">True</option>
+                                            <option value="False">False</option>
+                                        </select>
+                                    </div>
+                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
+                                        <div
+                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
+                                        >
+                                            <div className={form_styles.input_label}>Comments</div>
+                                        </div>
+                                        <textarea
+                                            className={`${form_styles.input_textbox} ${form_styles.input_split}`}
+                                            id="comments"
+                                            value={this.state.comments == null ? '' : this.state.comments}
+                                            key={'comments'}
+                                            onChange={(e) => {
+                                                e.preventDefault();
+                                                this.setState({ comments: e.target.value });
                                             }}
                                         />
                                     </div>
