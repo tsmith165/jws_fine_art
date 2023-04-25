@@ -16,7 +16,7 @@ class SocialsPage extends React.Component {
         this.state = {
             window_width: null,
             window_height: null,
-            current_qr_code: BLACK_AND_WHITE_QR_CODE,
+            current_qr_code: COLORED_QR_CODE,
         };
 
         this.handleResize = this.handleResize.bind(this);
