@@ -78,10 +78,15 @@ class SocialsPage extends React.Component {
         );
         const instagram_div = (
             <div className={styles.instagram_wrapper}>
-                <a href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer">
-                    <Image src="/instagram_icon_100.png" alt="Instagram Logo" width={100} height={100} />
+                <a
+                    href="https://www.instagram.com/jws_fineart/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.socials_picture}
+                >
+                    <Image src="/instagram_icon_512.png" alt="Instagram Logo" width={100} height={100} />
                 </a>
-                <div className={styles.follow_us}>Follow & ❤️</div>
+                <div className={styles.follow_us}></div>
             </div>
         );
 
