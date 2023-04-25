@@ -158,15 +158,64 @@
     flex-wrap: wrap;
     padding: 10px;
 
-    .price_label {
-        font-size: 2rem;
-        line-height: 50px;
-        color: $secondary;
-        margin-right: 10px;
+    .price_wrapper {
+        display: flex;
+        flex-direction: row;
+        border-radius: 5px;
+        border: none;
+        background-color: $secondary;
+        padding: 0;
+        margin-right: 15px;
+
+        &:hover {
+            background-color: $dark;
+            color: $light !important;
+            fill: $light !important;
+        }
+        &:hover > .price_text {
+            background-color: $secondary;
+            color: $light !important;
+        }
+
+        .price_label_wrapper {
+            display: flex;
+            flex-direction: row;
+            padding: 5px 10px;
+            border-radius: 5px 0px 0px 5px;
+
+            .price_label_stripe_image {
+                margin: 5px;
+            }
+        }
+
+        .price_text {
+            font-size: 1.5rem;
+            line-height: 50px;
+            color: $light;
+            background-color: $primary;
+            border-radius: 0px 5px 5px 0px;
+            padding: 5px 10px;
+        }
     }
 
     .stripe_button {
         margin-right: 10px;
+    }
+
+    .submit_button {
+        padding: 5px 10px;
+        color: $light;
+        background-color: $primary;
+        border: 2px solid $secondary;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-right: 10px;
+
+        &:hover {
+            color: $light;
+            background-color: $secondary;
+            border: 2px solid $secondary;
+        }
     }
 
     .checkout_shipping_container {
@@ -187,22 +236,6 @@
     height: 50px;
     padding: 0px;
     margin: 0px 15px;
-
-    .submit_button {
-        padding: 5px 10px;
-        color: $light;
-        background-color: $primary;
-        border: 2px solid $secondary;
-        border-radius: 5px;
-        font-weight: bold;
-        margin-right: 10px;
-
-        &:hover {
-            color: $light;
-            background-color: $secondary;
-            border: 2px solid $secondary;
-        }
-    }
 
     .submit_label {
         color: $light;
