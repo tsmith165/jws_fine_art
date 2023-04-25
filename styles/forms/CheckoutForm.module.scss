@@ -157,23 +157,24 @@
     flex-direction: row;
     flex-wrap: wrap;
     padding: 10px;
+    margin-left: 5px;
 
     .price_wrapper {
         display: flex;
         flex-direction: row;
         border-radius: 5px;
         border: none;
-        background-color: $secondary;
+        background-color: $primary;
         padding: 0;
         margin-right: 15px;
 
         &:hover {
-            background-color: $dark;
+            background-color: $secondary;
             color: $light !important;
             fill: $light !important;
         }
         &:hover > .price_text {
-            background-color: $secondary;
+            background-color: $dark;
             color: $light !important;
         }
 
@@ -190,9 +191,9 @@
 
         .price_text {
             font-size: 1.5rem;
-            line-height: 50px;
+            line-height: 45px;
             color: $light;
-            background-color: $primary;
+            background-color: $secondary;
             border-radius: 0px 5px 5px 0px;
             padding: 5px 10px;
         }

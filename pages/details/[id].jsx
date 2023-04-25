@@ -350,54 +350,43 @@ class Details extends React.Component {
                             <div className={styles.details_form_container}>
                                 <div className={styles.details_navigation_container}>
                                     <div className={styles.details_navigation_inner_container}>
-                                        {this.state.sold == false ? (
-                                            this.state.available == true ? (
-                                                <div className={styles.price_text}>{`$${this.state.price}`}</div>
-                                            ) : null
-                                        ) : null}
                                         {this.state.sold == true ? (
                                             <div className={styles.piece_sold}>Sold</div>
                                         ) : this.state.available == false ? (
                                             <div className={styles.piece_sold}>Not For Sale</div>
                                         ) : (
-                                            <Link href={`/checkout/${this.state.url_o_id}`}>
-                                                <button className={styles.buy_now_button}>Purchase</button>
-                                            </Link>
+                                            <div className={styles.price_wrapper}>
+                                                <div className={styles.price_label_wrapper}>
+                                                    <Image
+                                                        className={styles.price_label_stripe_image}
+                                                        src="/checkout_with_strip_tan-237_50.png"
+                                                        alt="View Stripe Info"
+                                                        priority={true}
+                                                        width={166}
+                                                        height={35}
+                                                    />
+                                                </div>
+                                                <div className={styles.price_text}>{`$${this.state.price}`}</div>
+                                            </div>
                                         )}
-                                        {this.state.sold == false ? (
-                                            this.state.available == true ? (
-                                                <Link href="https://stripe.com">
-                                                    <div className={styles.powered_by_stripe_container}>
-                                                        <Image
-                                                            src="/powered_by_stripe_blue_background_small.png"
-                                                            alt="View Stripe Info"
-                                                            priority={true}
-                                                            layout="fill"
-                                                            objectFit="contain"
-                                                        />
-                                                    </div>
-                                                </Link>
-                                            ) : null
-                                        ) : null}
                                         {this.state.piece_details['instagram'] != null &&
                                         this.state.piece_details['instagram'] != '' &&
                                         this.state.piece_details['instagram'].length > 5 ? (
                                             <Link
                                                 href={`https://www.instagram.com/p/${this.state.piece_details['instagram']}`}
+                                                className={styles.instagram_link_container}
                                             >
-                                                <div className={styles.instagram_link_container}>
-                                                    <div className={styles.instagram_image_container}>
-                                                        <Image
-                                                            className={styles.instagram_link_image}
-                                                            src="/instagram_icon_100.png"
-                                                            alt="Instagram Link"
-                                                            priority={true}
-                                                            layout="fill"
-                                                            objectFit="contain"
-                                                        />
-                                                    </div>
-                                                    <div className={styles.instagram_link_label}>View On Instagram</div>
+                                                <div className={styles.instagram_image_container}>
+                                                    <Image
+                                                        className={styles.instagram_link_image}
+                                                        src="/instagram_icon_100.png"
+                                                        alt="Instagram Link"
+                                                        priority={true}
+                                                        layout="fill"
+                                                        objectFit="contain"
+                                                    />
                                                 </div>
+                                                {/*<div className={styles.instagram_link_label}>View On Instagram</div>*/}
                                             </Link>
                                         ) : null}
                                         {this.state.user !== undefined &&
