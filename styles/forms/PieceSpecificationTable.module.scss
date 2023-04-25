@@ -1,0 +1,41 @@
+@import 'theme/theme';
+
+.piece_specification_table_wrapper {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+
+    .piece_specification_table_header {
+        font-family: $alegrya_300;
+        font-size: 24px;
+        color: $light;
+        background-color: $secondary;
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .piece_specification_table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: $lato_300;
+        color: $light;
+        overflow: hidden;
+        background-color: $primary;
+        border-radius: 0 0 5px 5px;
+    }
+    .piece_specification_table tr:hover {
+        background-color: $dark;
+        color: $light;
+    }
+
+    .piece_specification_table td {
+        padding: 8px;
+        border-bottom: 1px solid $light;
+        &:first-child {
+            border-right: 1px solid $light;
+            white-space: nowrap;
+            width: 1%;
+        }
+    }
+}

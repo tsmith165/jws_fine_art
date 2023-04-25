@@ -30,6 +30,8 @@ model Piece {
   active      Boolean @default(true)
   theme       String?
   available   Boolean @default(true)
+  framed      Boolean? @default(false)
+  comments    String?
 }
 
 model Pending {
