@@ -281,6 +281,8 @@ class Details extends React.Component {
     }
 
     render() {
+        console.log(`is Admin: ${this.state.user != undefined ? this.state.user.publicMetadata.role : 'NOT ADMIN'}`);
+
         var page_layout = null;
         const title = this.state.piece_details['title'] != null ? this.state.piece_details['title'] : '';
         if (this.state.full_screen == true) {
@@ -401,15 +403,19 @@ class Details extends React.Component {
                                         ) : null}
                                     </div>
                                 </div>
-                                <div className={styles.details_description_container}>
-                                    <h3 className={styles.details_description}>{this.state.description}</h3>
-                                </div>
+                                {this.state.description != null && this.state.description.length > 2 ? (
+                                    <div className={styles.details_description_container}>
+                                        <h3 className={styles.details_description}>{this.state.description}</h3>
+                                    </div>
+                                ) : null}
+
                                 <PieceSpecificationTable
                                     realWidth={this.state.piece_details.real_width}
                                     realHeight={this.state.piece_details.real_height}
                                     framed={this.state.piece_details.framed}
                                     comments={this.state.piece_details.comments}
                                     type={this.state.piece_details.type}
+                                    with_header={false}
                                 />
                             </div>
                         </div>
