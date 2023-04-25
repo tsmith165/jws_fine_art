@@ -132,7 +132,7 @@ class Checkout extends React.Component {
             description: description,
             price: price,
             address: '',
-            international: false,
+            international: null,
             error: '',
             error_found: false,
         };
@@ -288,6 +288,19 @@ class Checkout extends React.Component {
             loader_jsx = <div className={form_styles.submit_label_failed}>Checkout submit was not successful.</div>;
         }
 
+        var shipping_jsx = null;
+        if (this.state.international != null) {
+            shipping_jsx = (
+                <div className={form_styles.checkout_shipping_container}>
+                    {this.state.international == true ? (
+                        <div className={form_styles.checkout_shipping_label}>International Shipping (7-14 Days)</div>
+                    ) : (
+                        <div className={form_styles.checkout_shipping_label}>Domestic Shipping (4-7 Days)</div>
+                    )}
+                </div>
+            );
+        }
+
         const title = this.state.piece_details['title'] != null ? this.state.piece_details['title'] : '';
         return (
             <PageLayout page_title={title == '' ? `` : `Checkout - ${title}`} use_maps_api={true}>
@@ -387,25 +400,28 @@ class Checkout extends React.Component {
                                     />
                                 </div>
 
-                                <div className={form_styles.submit_container}>
+                                <div className={form_styles.price_container}>
                                     <div className={form_styles.price_label}>{`$${this.state.price}`}</div>
+                                    <div className={form_styles.stripe_button}>
+                                        <Link href="https://stripe.com">
+                                            <Image
+                                                src="/powered_by_stripe_blue_background_small.png"
+                                                alt="View Stripe Info"
+                                                priority={true}
+                                                width={150}
+                                                height={50}
+                                            />
+                                        </Link>
+                                    </div>
+                                    {shipping_jsx}
+                                </div>
 
+                                <div className={form_styles.submit_container}>
                                     <button type="submit" className={form_styles.submit_button}>
                                         Checkout
                                     </button>
 
                                     <div className={form_styles.loader_container}>{loader_jsx}</div>
-                                </div>
-                                <div className={form_styles.submit_container}>
-                                    <Link href="https://stripe.com">
-                                        <Image
-                                            src="/powered_by_stripe_blue_background_small.png"
-                                            alt="View Stripe Info"
-                                            priority={true}
-                                            width={150}
-                                            height={50}
-                                        />
-                                    </Link>
                                 </div>
                             </form>
                         </div>
