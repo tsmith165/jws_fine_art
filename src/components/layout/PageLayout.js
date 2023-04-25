@@ -4,18 +4,11 @@ import Head from 'next/head';
 import Script from 'next/script';
 import styles from '@/styles/layout/PageLayout.module.scss';
 
-const PageLayout = ({ page_title = PROJECT_CONSTANTS.SITE_FULL_NAME, use_maps_api = false, children }) => {
+const PageLayout = ({ page_title = PROJECT_CONSTANTS.SITE_FULL_NAME, children }) => {
     console.log(`Loading Page Layout With Title: ${page_title}`);
 
     return (
         <div className={styles.container}>
-            {use_maps_api == true ? (
-                <Script
-                    strategy="beforeInteractive"
-                    src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyCvrLDFUzjxCnKIDSuPwBYEbfnWrrIUnu4&libraries=places`}
-                />
-            ) : null}
-
             <Head>
                 <meta charSet="UTF-8" />
                 <meta name="description" content={PROJECT_CONSTANTS.SITE_DESCRIPTION} />
