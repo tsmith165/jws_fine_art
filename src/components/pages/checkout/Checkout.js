@@ -294,9 +294,13 @@ class Checkout extends React.Component {
             shipping_jsx = (
                 <div className={form_styles.checkout_shipping_container}>
                     {this.state.international == true ? (
-                        <div className={form_styles.checkout_shipping_label}>International Shipping (7-14 Days)</div>
+                        <div className={form_styles.checkout_shipping_label}>
+                            Pieces ship within 5 days. International shipping can take up to 1 month.
+                        </div>
                     ) : (
-                        <div className={form_styles.checkout_shipping_label}>Domestic Shipping (4-7 Days)</div>
+                        <div className={form_styles.checkout_shipping_label}>
+                            Pieces ship within 5 days. Domestic shipping can take up to a week.
+                        </div>
                     )}
                 </div>
             );

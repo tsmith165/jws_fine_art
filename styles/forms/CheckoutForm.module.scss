@@ -87,7 +87,7 @@
     .input_textbox {
         width: 70%;
         height: 100%;
-        padding: 6.5px 10px;
+        padding: 7px 10px;
         color: $light;
         background-color: $primary;
         border-radius: 0px 5px 5px 0px;
@@ -98,7 +98,7 @@
     .input_select {
         width: 70%;
         height: 100%;
-        padding: 5.5px 10px;
+        padding: 6px 10px;
         color: $light;
         background-color: $primary;
         border-radius: 0px 5px 5px 0px;
@@ -121,7 +121,7 @@
 .input_autocomplete {
     width: 70%;
     height: 100%;
-    padding: 6.5px 10px;
+    padding: 7px 10px;
     color: $light;
     background-color: $primary;
     border-radius: 0px 5px 5px 0px;
@@ -223,8 +223,9 @@
         flex-wrap: wrap;
 
         .checkout_shipping_label {
-            font-size: 1.5rem;
-            line-height: 50px;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            line-height: 1.5rem;
             color: $secondary;
             margin-right: 10px;
         }
