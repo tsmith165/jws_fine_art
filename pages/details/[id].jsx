@@ -355,7 +355,10 @@ class Details extends React.Component {
                                         ) : this.state.available == false ? (
                                             <div className={styles.piece_sold}>Not For Sale</div>
                                         ) : (
-                                            <div className={styles.price_wrapper}>
+                                            <Link
+                                                href={`/checkout/${this.state.url_o_id}`}
+                                                className={styles.price_wrapper}
+                                            >
                                                 <div className={styles.price_label_wrapper}>
                                                     <Image
                                                         className={styles.price_label_stripe_image}
@@ -367,7 +370,7 @@ class Details extends React.Component {
                                                     />
                                                 </div>
                                                 <div className={styles.price_text}>{`$${this.state.price}`}</div>
-                                            </div>
+                                            </Link>
                                         )}
                                         {this.state.piece_details['instagram'] != null &&
                                         this.state.piece_details['instagram'] != '' &&
