@@ -401,26 +401,28 @@ class Checkout extends React.Component {
                                 </div>
 
                                 <div className={form_styles.price_container}>
-                                    <div className={form_styles.price_label}>{`$${this.state.price}`}</div>
-                                    <div className={form_styles.stripe_button}>
-                                        <Link href="https://stripe.com">
+                                    <button type="submit" className={form_styles.price_wrapper}>
+                                        <div className={form_styles.price_label_wrapper}>
                                             <Image
-                                                src="/powered_by_stripe_blue_background_small.png"
+                                                className={form_styles.price_label_stripe_image}
+                                                src="/checkout_with_strip_tan-237_50.png"
                                                 alt="View Stripe Info"
                                                 priority={true}
-                                                width={150}
-                                                height={50}
+                                                width={166}
+                                                height={35}
                                             />
-                                        </Link>
-                                    </div>
+                                        </div>
+                                        <div className={form_styles.price_text}>{`$${this.state.price}`}</div>
+                                    </button>
+                                    {/*
+                                    <button type="submit" className={form_styles.submit_button}>
+                                        Checkout
+                                    </button>
+                                    */}
                                     {shipping_jsx}
                                 </div>
 
                                 <div className={form_styles.submit_container}>
-                                    <button type="submit" className={form_styles.submit_button}>
-                                        Checkout
-                                    </button>
-
                                     <div className={form_styles.loader_container}>{loader_jsx}</div>
                                 </div>
                             </form>
