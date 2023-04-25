@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { clerkClient, getAuth } from '@clerk/nextjs/server';
 
-export default async function handler(req, res) {
+export default async function (req, res) {
     if (req.method !== 'POST') {
         console.log('Request.method != POST.  Status: 402');
         res.status(402);
