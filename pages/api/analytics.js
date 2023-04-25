@@ -16,8 +16,14 @@ export default async function (req, res) {
         passed_json['metrics'] !== '' ? passed_json['metrics'] : ['ga:sessions', 'ga:pageviews', 'ga:users'];
     const dimensions = passed_json['dimensions'] !== '' ? passed_json['dimensions'] : ['ga:date'];
 
+    console.log(
+        `Using Start Date: ${startDate} | End Date: ${endDate} | Dimensions: ${dimensions} | Metrics: ${metrics}`,
+    );
+
     // Read the JSON key file
     const keyFile = JSON.parse(fs.readFileSync(GOOGLE_APPLICATION_CREDENTIALS, 'utf-8'));
+
+    console.log(`Key File (Next Line):`);
 
     // Initialize Google Analytics Reporting API v4 client
     const client = new google.auth.JWT(keyFile.client_email, null, keyFile.private_key, [
@@ -50,8 +56,14 @@ export default async function (req, res) {
         ],
     };
 
+    console.log(`Request Body (Next Line):`);
+    console.log(requestBody);
+
     // Fetch the analytics data
     const response = await analyticsReporting.reports.batchGet({ requestBody });
+
+    console.log(`Response (Next Line):`);
+    console.log(response);
 
     return response.data.reports[0].data.rows;
 }
