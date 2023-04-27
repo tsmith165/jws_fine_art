@@ -364,10 +364,10 @@ class Details extends React.Component {
                                                 <div className={styles.price_label_wrapper}>
                                                     <Image
                                                         className={styles.price_label_stripe_image}
-                                                        src="/checkout_with_strip_tan-237_50.png"
+                                                        src="/stripe_checkout_tan-221_50.png"
                                                         alt="View Stripe Info"
                                                         priority={true}
-                                                        width={166}
+                                                        width={155}
                                                         height={35}
                                                     />
                                                 </div>

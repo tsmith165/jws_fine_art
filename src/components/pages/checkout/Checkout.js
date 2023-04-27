@@ -410,7 +410,7 @@ class Checkout extends React.Component {
                                         <div className={form_styles.price_label_wrapper}>
                                             <Image
                                                 className={form_styles.price_label_stripe_image}
-                                                src="/checkout_with_strip_tan-237_50.png"
+                                                src="/stripe_checkout_tan-221_50.png"
                                                 alt="View Stripe Info"
                                                 priority={true}
                                                 width={166}

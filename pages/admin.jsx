@@ -22,34 +22,54 @@ class Admin extends React.Component {
         // Fetch the analytics data and store it in the component's state
         const response = await get_analytics_data();
         console.log(`Reporting API response: ${JSON.stringify(response)}`);
-        this.setState({ response });
+        this.setState({ analyticsData: response });
     }
 
     renderAnalyticsData() {
-        const { analyticsData } = this.state;
-        if (!analyticsData) {
+        if (this.state.analyticsData == null) {
             return <p>Loading...</p>;
         }
 
+        const rows = this.state.analyticsData[0].rows;
+
+        rows.sort((a, b) => {
+            const dateA = a.dimensionValues[0].value;
+            const dateB = b.dimensionValues[0].value;
+            if (dateA > dateB) {
+                return -1;
+            } else if (dateA < dateB) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        console.log(`Rendering analytics data rows`);
+        console.log(rows);
+
         return (
-            <table>
+            <table className={styles.analytics_table}>
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Sessions</th>
-                        <th>Pageviews</th>
-                        <th>Users</th>
+                        <th>Events</th>
+                        <th>New Users</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {analyticsData.map((row, index) => (
-                        <tr key={index}>
-                            <td>{row.dimensions[0]}</td>
-                            <td>{row.metrics[0].values[0]}</td>
-                            <td>{row.metrics[0].values[1]}</td>
-                            <td>{row.metrics[0].values[2]}</td>
-                        </tr>
-                    ))}
+                    {rows.map((row, index) => {
+                        const date = row.dimensionValues[0].value.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
+
+                        return (
+                            <tr key={index}>
+                                <td>{date}</td>
+                                <td>{row.metricValues[0].value}</td>
+                                <td>{row.metricValues[1].value}</td>
+                                <td>{row.metricValues[2].value}</td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         );
@@ -77,18 +97,18 @@ class Admin extends React.Component {
             <PageLayout page_title={this.page_title}>
                 <div className={styles.main_container}>
                     <div className={styles.main_body}>
-                        <div className={styles.panel}>
-                            <div className={styles.panel_header}>Analytics Data</div>
-                            <div className={styles.panel_body}>
-                                {this.renderAnalyticsData()} {/* Render the analytics data */}
-                            </div>
-                        </div>
-                        <div className={styles.panel}>
+                        <div className={styles.backup_panel}>
                             <div className={styles.panel_header}>Data Backup</div>
                             <div className={styles.panel_body}>
                                 <button className={styles.export_button} onClick={this.exportPiecesAsXLSX}>
                                     Export Pieces as XLSX
                                 </button>
+                            </div>
+                        </div>
+                        <div className={styles.analytics_panel}>
+                            <div className={styles.panel_header}>Analytics Data</div>
+                            <div className={styles.panel_body}>
+                                {this.renderAnalyticsData()} {/* Render the analytics data */}
                             </div>
                         </div>
                     </div>
