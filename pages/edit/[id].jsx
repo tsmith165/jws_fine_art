@@ -680,7 +680,7 @@ class Edit extends React.Component {
             this.state.theme !== undefined || this.state.theme !== null || this.state.theme !== ''
                 ? this.state.theme
                 : 'None';
-        console.log(`Theme: ${using_theme} | Framed: ${this.state.framed}`);
+        console.log(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
 
         return (
             <PageLayout page_title={this.state.title == '' ? `Edit Details` : `Edit Details - ${this.state.title}`}>
