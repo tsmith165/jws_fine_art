@@ -213,7 +213,7 @@ class Edit extends React.Component {
 
     async componentDidMount() {
         // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
-        this.setState({ loading: false });
+        this.setState({ loading: false, sold: this.state.piece_details.sold });
     }
 
     async fetch_pieces_from_api(submitted = false) {
