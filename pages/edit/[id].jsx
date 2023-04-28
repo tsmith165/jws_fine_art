@@ -69,7 +69,7 @@ class Edit extends React.Component {
             piece_o_id = current_piece['o_id'] !== undefined ? current_piece['o_id'] : '';
             title = current_piece['title'] !== undefined ? current_piece['title'] : '';
             type = current_piece['type'] !== undefined ? current_piece['type'] : 'Oil On Canvas';
-            sold = current_piece['sold'] !== undefined ? current_piece['sold'] : 'False';
+            sold = current_piece['sold'] !== 'True' ? 'True' : 'False';
             title = current_piece['title'] !== undefined ? current_piece['title'] : '';
             description =
                 current_piece['description'] !== undefined ? current_piece['description'].split('<br>').join('\n') : '';
