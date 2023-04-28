@@ -90,8 +90,7 @@ class Edit extends React.Component {
                         : current_piece['theme']
                     : 'None';
             available = current_piece['available'] !== undefined ? current_piece['available'] : '';
-            framed = current_piece['framed'] !== undefined ? current_piece['framed'] : '';
-            framed = framed == true ? 'True' : 'False';
+            framed = current_piece['framed'] !== 'True' ? 'True' : 'False';
             comments = current_piece['comments'] !== undefined ? current_piece['comments'] : '';
 
             theme_options = [{ value: theme, label: theme }];
