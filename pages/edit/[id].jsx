@@ -69,7 +69,10 @@ class Edit extends React.Component {
             piece_o_id = current_piece['o_id'] !== undefined ? current_piece['o_id'] : '';
             title = current_piece['title'] !== undefined ? current_piece['title'] : '';
             type = current_piece['type'] !== undefined ? current_piece['type'] : 'Oil On Canvas';
-            sold = current_piece['sold'] !== 'True' ? 'True' : 'False';
+            sold =
+                current_piece['sold'] == true || current_piece['sold'].toString().toLowerCase() == 'true'
+                    ? 'True'
+                    : 'False';
             title = current_piece['title'] !== undefined ? current_piece['title'] : '';
             description =
                 current_piece['description'] !== undefined ? current_piece['description'].split('<br>').join('\n') : '';
@@ -90,7 +93,10 @@ class Edit extends React.Component {
                         : current_piece['theme']
                     : 'None';
             available = current_piece['available'] !== undefined ? current_piece['available'] : '';
-            framed = current_piece['framed'] !== 'True' ? 'True' : 'False';
+            framed =
+                current_piece['framed'] == true || current_piece['framed'].toString().toLowerCase() == 'true'
+                    ? 'True'
+                    : 'False';
             comments = current_piece['comments'] !== undefined ? current_piece['comments'] : '';
 
             theme_options = [{ value: theme, label: theme }];
@@ -187,6 +193,7 @@ class Edit extends React.Component {
             height: height,
             real_width: real_width,
             real_height: real_height,
+            loader_visable: false,
             loading: false,
             submitted: false,
             error: false,
@@ -258,7 +265,10 @@ class Edit extends React.Component {
             title: current_piece['title'],
             type: current_piece['type'],
             description: current_piece['description'],
-            sold: current_piece['sold'],
+            sold:
+                current_piece['sold'] == true || current_piece['sold'].toString().toLowerCase() == 'true'
+                    ? 'True'
+                    : 'False',
             price: current_piece['price'],
             width: current_piece['width'],
             height: current_piece['height'],
@@ -268,7 +278,10 @@ class Edit extends React.Component {
             instagram: current_piece['instagram'],
             theme: current_piece['theme'],
             available: current_piece['available'],
-            framed: current_piece['framed'] == true ? 'True' : 'False',
+            framed:
+                current_piece['framed'] == true || current_piece['framed'].toString().toLowerCase() == 'true'
+                    ? 'True'
+                    : 'False',
             comments: current_piece['comments'],
         };
 
@@ -381,7 +394,7 @@ class Edit extends React.Component {
         console.log(`Submitting piece`);
         event.preventDefault();
 
-        this.setState({ loading: true, submitted: false });
+        this.setState({ loading: true, submitted: false, loader_visable: true });
 
         // capture data from form
         const title = event.target.elements.title.value;
@@ -457,11 +470,11 @@ class Edit extends React.Component {
                 if (response) {
                     await this.fetch_pieces_from_api(true);
                 } else {
-                    this.setState({ loading: false, error: true });
+                    this.setState({ loading: false, error: true, loader_visable: false });
                 }
             }
         } else {
-            this.setState({ loading: false, error: true });
+            this.setState({ loading: false, error: true, loader_visable: false });
         }
     }
 
@@ -545,6 +558,7 @@ class Edit extends React.Component {
                 console.log(uploaded_piece_details);
 
                 this.setState({
+                    loader_visable: true,
                     uploaded: true,
                     upload_error: false,
                     image_array: new_image_array,
@@ -567,7 +581,7 @@ class Edit extends React.Component {
                 });
             };
         } catch (err) {
-            this.setState({ uploaded: false, upload_error: true });
+            this.setState({ uploaded: false, upload_error: true, loader_visable: false });
             console.error(`Image Load Error: ${err.message}`);
             return;
         }
@@ -600,6 +614,55 @@ class Edit extends React.Component {
         this.setState({ theme: theme_string, theme_options: final_options });
     }
 
+    create_loader_jsx() {
+        console.log(
+            `Loading: ${this.state.loading} | Submitted: ${this.state.submitted} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`,
+        );
+
+        var loader_jsx = null;
+        var class_name = null;
+        var loader_message = '';
+
+        if (this.state.loading == true) {
+            loader_jsx = <CircularProgress color="inherit" className={form_styles.loader} />;
+        } else if (this.state.submitted == true) {
+            class_name = form_styles.submit_label;
+            loader_message = `Piece Details Update was successful...`;
+        } else if (this.state.error == true) {
+            class_name = form_styles.submit_label_failed;
+            loader_message = `Piece Details Update was NOT successful...`;
+        } else if (this.state.upload_error == true) {
+            class_name = form_styles.submit_label_failed;
+            loader_message = `Image Upload was NOT successful...`;
+        } else if (this.state.uploaded == false) {
+            class_name = form_styles.submit_label_failed;
+            loader_message = `Image Upload was NOT successful...`;
+        } else if (
+            this.state.piece_details.width != '' &&
+            this.state.piece_details.height != '' &&
+            this.state.piece_details.width > 1500 &&
+            this.state.piece_details.height > 1500
+        ) {
+            class_name = form_styles.submit_label_warning;
+            loader_message = `Image upload successful but image resolution is too high!  Re-Upload with width / height < 1500px`;
+        } else if (
+            this.state.piece_details.width != '' &&
+            this.state.piece_details.height != '' &&
+            this.state.piece_details.width < 1000 &&
+            this.state.piece_details.height < 1000
+        ) {
+            class_name = form_styles.submit_label_warning;
+            loader_message = `Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`;
+        } else if (this.state.uploaded == true) {
+            class_name = form_styles.submit_label;
+            loader_message = `Image Upload was successful...`;
+        }
+
+        loader_jsx = <div className={class_name == null ? form_styles.submit_label : class_name}>{loader_message}</div>;
+
+        return loader_jsx;
+    }
+
     render() {
         if (!this.props.isLoaded) {
             return <></>;
@@ -619,62 +682,7 @@ class Edit extends React.Component {
         }
 
         // If to this position, User is signed in with ADMIN role in clerk publicMetadata
-        console.log(
-            `Loading: ${this.state.loading} | Submitted: ${this.state.submitted} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`,
-        );
-
-        var loader_jsx = null;
-        if (this.state.loading == true) {
-            loader_jsx = <CircularProgress color="inherit" className={form_styles.loader} />;
-        } else if (this.state.submitted == true) {
-            loader_jsx = <div className={form_styles.submit_label}>Piece Details Update was successful...</div>;
-        } else if (this.state.error == true) {
-            loader_jsx = (
-                <div className={form_styles.submit_label_failed}>Piece Details Update was NOT successful...</div>
-            );
-        } else if (
-            this.state.piece_details.width != '' &&
-            this.state.piece_details.height != '' &&
-            this.state.piece_details.width > 1500 &&
-            this.state.piece_details.height > 1500
-        ) {
-            if (this.state.uploaded == true) {
-                loader_jsx = (
-                    <div
-                        className={form_styles.submit_label_warning}
-                    >{`Image upload successful but image resolution is too high!  Re-Upload with width / height < 1500px`}</div>
-                );
-            } else {
-                loader_jsx = (
-                    <div
-                        className={form_styles.submit_label_warning}
-                    >{`Uploaded image resolution is too high!  Re-Upload with width / height < 1500px`}</div>
-                );
-            }
-        } else if (
-            this.state.piece_details.width != '' &&
-            this.state.piece_details.height != '' &&
-            this.state.piece_details.width < 1000 &&
-            this.state.piece_details.height < 1000
-        ) {
-            if (this.state.uploaded == true) {
-                loader_jsx = (
-                    <div
-                        className={form_styles.submit_label_warning}
-                    >{`Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`}</div>
-                );
-            } else {
-                loader_jsx = (
-                    <div
-                        className={form_styles.submit_label_warning}
-                    >{`Uploaded image resolution is low!  Re-Upload with width / height > 1000px`}</div>
-                );
-            }
-        } else if (this.state.uploaded == true) {
-            loader_jsx = <div className={form_styles.submit_label}>Image Upload was successful...</div>;
-        } else if (this.state.upload_error == true) {
-            loader_jsx = <div className={form_styles.submit_label_failed}>Image Upload was NOT successful...</div>;
-        }
+        var loader_jsx = this.state.loader_visable == true ? this.create_loader_jsx() : null;
 
         const using_theme =
             this.state.theme !== undefined || this.state.theme !== null || this.state.theme !== ''
