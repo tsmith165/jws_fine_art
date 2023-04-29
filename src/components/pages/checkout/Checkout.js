@@ -413,8 +413,8 @@ class Checkout extends React.Component {
                                                 src="/stripe_checkout_tan-221_50.png"
                                                 alt="View Stripe Info"
                                                 priority={true}
-                                                width={166}
-                                                height={35}
+                                                width={133}
+                                                height={30}
                                             />
                                         </div>
                                         <div className={form_styles.price_text}>{`$${this.state.price}`}</div>

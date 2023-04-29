@@ -215,12 +215,9 @@ class Details extends React.Component {
         for (var i = 0; i < piece_list.length; i++) {
             let piece = piece_list[i];
             image_array.push(
-                <div
-                    key={`image_${i}`}
-                    className={
-                        i == piece_position ? styles.details_image_container : styles.details_image_container_hidden
-                    }
-                >
+                <div key={`image_${i}`} className={
+                    (i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden
+                }>
                     <Image
                         id={`details_image_${i}`}
                         className={styles.details_image}
@@ -236,7 +233,7 @@ class Details extends React.Component {
                             this.setState({ full_screen: !this.state.full_screen });
                         }}
                     />
-                </div>,
+                </div>
             );
         }
         return image_array;
@@ -315,31 +312,24 @@ class Details extends React.Component {
                             <div className={styles.details_form_container}>
                                 <div className={styles.details_navigation_container}>
                                     <div className={styles.details_navigation_inner_container}>
-                                        {this.state.sold == true ? (
-                                            <div className={styles.piece_sold}>Sold</div>
-                                        ) : this.state.available == false ? (
+                                        {this.state.sold == true ? ( <div className={styles.piece_sold}>Sold</div> ) : this.state.available == false ? (
                                             <div className={styles.piece_sold}>Not For Sale</div>
                                         ) : (
-                                            <Link
-                                                href={`/checkout/${this.state.url_o_id}`}
-                                                className={styles.price_wrapper}
-                                            >
+                                            <Link href={`/checkout/${this.state.url_o_id}`} className={styles.price_wrapper} >
                                                 <div className={styles.price_label_wrapper}>
                                                     <Image
                                                         className={styles.price_label_stripe_image}
                                                         src="/stripe_checkout_tan-221_50.png"
                                                         alt="View Stripe Info"
                                                         priority={true}
-                                                        width={155}
-                                                        height={35}
+                                                        width={133}
+                                                        height={30}
                                                     />
                                                 </div>
                                                 <div className={styles.price_text}>{`$${this.state.price}`}</div>
                                             </Link>
                                         )}
-                                        {this.state.instagram != null &&
-                                        this.state.instagram != '' &&
-                                        this.state.instagram.length > 5 ? (
+                                        {this.state.instagram != null &&  this.state.instagram != '' && this.state.instagram.length > 5 ? (
                                             <Link
                                                 href={`https://www.instagram.com/p/${this.state.instagram}`}
                                                 className={styles.instagram_link_container}

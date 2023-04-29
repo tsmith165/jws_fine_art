@@ -32,13 +32,14 @@
         width: 40px !important; 
         height: 40px !important; 
         padding: 10px; 
-        background-color: $primary !important; 
+        background-color: $dark !important; 
         color: $light !important; 
         border-top-left-radius: 5px; 
-    }
-    .hamburger_button:hover { 
-        background-color: $light !important; 
-        color: $secondary !important; 
+
+        &:hover { 
+            background-color: $primary !important; 
+            color: $light !important; 
+        }
     }
 
     .hamburger_button_open { 
@@ -48,13 +49,9 @@
         width: 40px !important; 
         height: 40px !important; 
         padding: 10px; 
-        background-color: $light !important; 
-        color: $primary !important; 
-        border-top-left-radius: 5px; 
-    }
-    .hamburger_button:hover { 
         background-color: $primary !important; 
         color: $light !important; 
+        border-top-left-radius: 5px; 
     }
     
     .instagram_link_container { 
@@ -63,22 +60,25 @@
         right: 80px; 
         width: 40px !important; 
         height: 40px !important; 
-    }
+
         .instagram_logo_link_container {
             position: relative;
             width: 100%;
             height: 100%;
             padding: 0px;
-        }
+
             .instagram_logo_link {  
                 background-color: $primary !important; 
                 border-top-left-radius: 5px; 
                 border-top-right-radius: 5px; 
                 padding: 7.5px !important; 
+
+                &:hover { 
+                    background-color: $light !important; 
+                }
             }
-            .instagram_logo_link:hover { 
-                background-color: $light !important; 
-            }
+        }
+    }
     
     .clerk_user_button_container {
         background-color: $primary;
@@ -90,18 +90,20 @@
         width: 40px;
         height: 40px;
         padding: 5px;
-    }
-    .clerk_user_button_container:hover {
-        background-color: $light;
+
+        &:hover {
+            background-color: $light;
+        }
     }
 
     .sign_in_button {
         width: 32px !important;
         height: 32px !important;
         fill: $light !important;
-    }
-    .sign_in_button:hover {
-        fill: $secondary !important;
+
+        &:hover {
+            fill: $secondary !important;
+        }
     }
 }
 @media (min-width: 799px) { // browser
@@ -113,13 +115,14 @@
         width: 50px !important; 
         height: 50px !important; 
         padding: 10px; 
-        background-color: $primary !important; 
-        color: $light !important; 
+        background-color: $navbar_button_background !important; 
+        color: $navbar_button_color !important; 
         border-top-left-radius: 5px; 
-    }
-    .hamburger_button:hover { 
-        background-color: $light !important; 
-        color: $secondary !important; 
+
+        &:hover { 
+            background-color: $navbar_button_background_hover !important; 
+            color: $navbar_button_color_hover !important; 
+        }
     }
 
     .hamburger_button_open { 
@@ -129,8 +132,8 @@
         width: 50px !important; 
         height: 50px !important; 
         padding: 10px; 
-        background-color: $light !important; 
-        color: $primary !important; 
+        background-color: $navbar_button_background_hover !important; 
+        color: $navbar_button_color_hover !important; 
         border-top-left-radius: 5px; 
     }
     
@@ -140,25 +143,28 @@
         right: 100px; 
         width: 50px !important; 
         height: 50px !important; 
-    }
+
         .instagram_logo_link_container {
             position: relative;
             width: 100%;
             height: 100%;
             padding: 0px;
-        }
+
             .instagram_logo_link {  
-                background-color: $primary !important; 
+                background-color: $navbar_button_background !important; 
                 border-top-left-radius: 5px; 
                 border-top-right-radius: 5px; 
                 padding: 10px !important; 
+
+                &:hover { 
+                    background-color: $navbar_button_background_hover !important; 
+                }
             }
-            .instagram_logo_link:hover { 
-                background-color: $light !important; 
-            }
+        }
+    }
     
     .clerk_user_button_container {
-        background-color: $primary;
+        background-color: $navbar_button_background;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
         position: absolute; 
@@ -167,18 +173,20 @@
         width: 50px;
         height: 50px;
         padding: 9px;
-    }
-    .clerk_user_button_container:hover {
-        background-color: $light;
+
+        &:hover {
+            background-color: $navbar_button_background_hover;
+        }
     }
 
     .sign_in_button {
         width: 32px !important;
         height: 32px !important;
         fill: $light !important;
-    }
-    .sign_in_button:hover {
-        fill: $secondary !important;
+
+        &:hover {
+            fill: $secondary !important;
+        }
     }
 }
 
@@ -194,7 +202,9 @@
     border-left: 2px solid $secondary; 
     border-bottom: 2px solid $secondary;
     border-bottom-left-radius: 10px; 
-}
+
     .page_menu_body { 
         padding: 0 !important; 
     }
+}
+    

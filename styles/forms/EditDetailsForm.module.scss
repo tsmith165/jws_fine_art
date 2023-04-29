@@ -16,29 +16,21 @@
     height: 70px;
     padding: 0px;
     background-color: $primary;
+
+    .title_input {
+        width: calc(100% - 100px);
+        margin: 10px 10px;
+        background-color: $secondary;
+        color: $light;
+        border: none;
+        border-radius: 5px;
+        font-family: $lato_300;
+        font-weight: bold;
+        font-size: 24px;
+        text-align: center;
+    }
 }
-.title_arrow {
-    fill: $light !important;
-    height: 100% !important;
-    width: 48px !important;
-    padding: 0px 5px !important;
-}
-.title_arrow:hover {
-    background-color: $light !important;
-    fill: $secondary !important;
-}
-.title_input {
-    width: calc(100% - 100px);
-    margin: 10px 10px;
-    background-color: $secondary;
-    color: $light;
-    border: none;
-    border-radius: 5px;
-    font-family: $lato_300;
-    font-weight: bold;
-    font-size: 24px;
-    text-align: center;
-}
+
 
 .title_input:focus {
     background-color: $light;
@@ -47,6 +39,7 @@
 
 .back_to_details_container {
     padding: 10px 0px;
+    margin-right: 10px;
 
     .back_to_details_icon {
         fill: $light !important;
