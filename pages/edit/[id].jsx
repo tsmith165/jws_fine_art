@@ -608,7 +608,7 @@ class Edit extends React.Component {
                             <form method="post" onSubmit={this.handleSubmit}>
                                 <div className={form_styles.title_container}>
                                     <ArrowForwardIosRoundedIcon
-                                        className={`${form_styles.title_arrow} ${form_styles.img_hor_vert}`}
+                                        className={`${styles.title_arrow} ${form_styles.img_hor_vert}`}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             this.update_current_piece(this.state.piece_list, this.state.next_oid);
@@ -635,7 +635,7 @@ class Edit extends React.Component {
                                         />
                                     </div>
                                     <ArrowForwardIosRoundedIcon
-                                        className={form_styles.title_arrow}
+                                        className={styles.title_arrow}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             this.update_current_piece(this.state.piece_list, this.state.last_oid);

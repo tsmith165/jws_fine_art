@@ -4,7 +4,8 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import styles from '@/styles/pages/CheckoutReturn.module.scss';
+import styles from '@/styles/pages/Details.module.scss';
+import checkout_styles from '@/styles/pages/CheckoutReturn.module.scss'
 
 import PageLayout from '@/components/layout/PageLayout';
 
@@ -133,16 +134,18 @@ class SuccessPage extends React.Component {
                     </div>
                     <div className={styles.details_container_right}>
                         <div className={styles.title_container}>
-                            <b className={styles.title}>{title == '' ? `` : `"${title}"`}</b>
+                            <div className={styles.title_inner_container}>
+                                <b className={styles.title}>{title == '' ? `` : `"${title}"`}</b>
+                            </div>
                         </div>
-                        <div className={styles.checkout_return_message_container}>
-                            <div className={styles.checkout_return_message}>
+                        <div className={checkout_styles.checkout_return_message_container}>
+                            <div className={checkout_styles.checkout_return_message}>
                                 {`Successfully purhcased ${this.state.piece_details['title']}!`}
                             </div>
-                            <div className={styles.checkout_return_message}>
+                            <div className={checkout_styles.checkout_return_message}>
                                 {`Check your email for your reciept from Stripe.`}
                             </div>
-                            <div className={styles.checkout_return_message}>
+                            <div className={checkout_styles.checkout_return_message}>
                                 {`Please E Mail at ${PROJECT_CONSTANTS.CONTACT_EMAIL} with any questions.`}
                             </div>
                         </div>

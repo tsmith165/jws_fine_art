@@ -3,7 +3,8 @@ import PROJECT_CONSTANTS from '@/lib/constants';
 import React from 'react';
 import Image from 'next/image';
 
-import styles from '@/styles/pages/CheckoutReturn.module.scss';
+import styles from '@/styles/pages/Details.module.scss';
+import checkout_styles from '@/styles/pages/CheckoutReturn.module.scss'
 
 import PageLayout from '@/components/layout/PageLayout';
 
@@ -130,14 +131,16 @@ class Cancel extends React.Component {
                     </div>
                     <div className={styles.details_container_right}>
                         <div className={styles.title_container}>
-                            <b className={styles.title}>{title == '' ? `` : `"${title}"`}</b>
+                            <div className={styles.title_inner_container}>
+                                <b className={styles.title}>{title == '' ? `` : `"${title}"`}</b>
+                            </div>
                         </div>
-                        <div className={styles.checkout_return_message_container}>
-                            <div className={styles.checkout_return_message}>{`Purchase Unsuccessful!`}</div>
-                            <div className={styles.checkout_return_message}>
+                        <div className={checkout_styles.checkout_return_message_container}>
+                            <div className={checkout_styles.checkout_return_message}>{`Purchase Unsuccessful!`}</div>
+                            <div className={checkout_styles.checkout_return_message}>
                                 {`Try reloading the home page and selecting the piece again.`}
                             </div>
-                            <div className={styles.checkout_return_message}>
+                            <div className={checkout_styles.checkout_return_message}>
                                 {`If problems persist, feel free to reach out at ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}
                             </div>
                         </div>
