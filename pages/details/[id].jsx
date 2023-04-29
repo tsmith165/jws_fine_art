@@ -28,119 +28,93 @@ class Details extends React.Component {
         const passed_o_id = this.props.router.query.id;
 
         const piece_list = this.props.piece_list;
-        const piece_list_length = piece_list == undefined || piece_list == null ? 0 : piece_list.length;
+        const num_pieces = piece_list == undefined || piece_list == null ? 0 : piece_list.length;
 
-        var image_array = [];
+        var piece_position = 0;
+        var db_id = null;
+        var o_id = null;
 
-        var current_piece = null;
-        var piece_position = -1;
-        for (var i = 0; i < piece_list_length; i++) {
+        for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
                 piece_position = i;
             }
         }
-        var piece_db_id = null;
-        var piece_o_id = null;
 
-        var title = '';
-        var type = '';
-        var description = '';
-        var sold = false;
-        var available = true;
-        var price = 9999;
-        var width = '';
-        var height = '';
-        var real_width = '';
-        var real_height = '';
-        var image_path = '';
-        var instagram = '';
-        var framed = false;
-        var comments = '';
+        var current_piece = piece_list[piece_position];
 
-        if (piece_position > 0) {
-            const current_piece = piece_list[piece_position];
+        /* prettier-ignore-start */
+        var db_id  = num_pieces < 1 ? -1 : current_piece.id    !== undefined  ? current_piece.id : -1;
+        var o_id   = num_pieces < 1 ? '' : current_piece.o_id  !== undefined  ? current_piece.o_id : '';
+        var title  = num_pieces < 1 ? '' : current_piece.title !== undefined  ? current_piece.title : '';
+        var title  = num_pieces < 1 ? '' : current_piece.title !== undefined  ? current_piece.title : '';
+        var price  = num_pieces < 1 ? '' : current_piece.price !== undefined  ? current_piece.price : '';
+        var width  = num_pieces < 1 ? '' : current_piece.width !== undefined  ? current_piece.width : '';
+        var height = num_pieces < 1 ? '' : current_piece.height !== undefined ? current_piece.height : '';
+        var type   = num_pieces < 1 ? type : current_piece.type !== undefined ? current_piece.type : type;
+        var theme  = num_pieces < 1 ? 'None' : current_piece.theme !== undefined ? current_piece.theme == null ? 'None' : current_piece.theme : 'None';
+        var framed = num_pieces < 1 ? 'False' : current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False';
+        var sold   = num_pieces < 1 ? 'False' : current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False';
+        var available   = num_pieces < 1 ? '' : current_piece.available !== undefined ? current_piece.available : '';        
+        var comments    = num_pieces < 1 ? '' : current_piece.comments !== undefined ? current_piece.comments : '';
+        var description = num_pieces < 1 ? '' : current_piece.description !== undefined ? current_piece.description.split('<br>').join('\n') : '';
+        var real_width  = num_pieces < 1 ? '' : current_piece.real_width !== undefined ? current_piece.real_width : '';
+        var real_height = num_pieces < 1 ? '' : current_piece.real_height !== undefined ? current_piece.real_height : '';
+        var image_path  = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
+        var instagram   = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
+        /* prettier-ignore-end */
 
-            piece_db_id = current_piece['id'] !== undefined ? current_piece['id'] : '';
-            piece_o_id = current_piece['o_id'] !== undefined ? current_piece['o_id'] : '';
-            title = current_piece['title'] !== undefined ? current_piece['title'] : '';
-            type = current_piece['type'] !== undefined ? current_piece['type'] : 'Oil On Canvas';
-            sold = current_piece['sold'] !== undefined ? current_piece['sold'] : 'False';
-            description =
-                current_piece['description'] !== undefined ? current_piece['description'].replace('<br>', '\n') : '';
-            price = current_piece['price'] !== undefined ? current_piece['price'] : '';
-            width = current_piece['width'] !== undefined ? current_piece['width'] : '';
-            height = current_piece['height'] !== undefined ? current_piece['height'] : '';
-            real_width = current_piece['real_width'] !== undefined ? current_piece['real_width'] : '';
-            real_height = current_piece['real_height'] !== undefined ? current_piece['real_height'] : '';
-            image_path =
-                current_piece['image_path'] !== undefined
-                    ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`
-                    : '';
-            instagram = current_piece['instagram'] !== undefined ? current_piece['instagram'] : '';
-            framed = current_piece['framed'] !== undefined ? current_piece['framed'] : '';
-            comments = current_piece['comments'] !== undefined ? current_piece['comments'] : '';
-
-            image_array.push(
-                <div key={`image_${i}`} className={styles.details_image_container}>
-                    <Image
-                        id={`details_image_${i}`}
-                        className={styles.details_image}
-                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`}
-                        alt={current_piece['title']}
-                        // height={this.state.piece_details['height']}
-                        priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
-                        layout="fill"
-                        objectFit="contain"
-                        quality={100}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            this.setState({ full_screen: !this.state.full_screen });
-                        }}
-                    />
-                </div>,
-            );
-        }
+        var image_array = [];
+        image_array.push(
+            <div key={`image_${i}`} className={styles.details_image_container}>
+                <Image
+                    id={`details_image_${i}`}
+                    className={styles.details_image}
+                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`}
+                    alt={current_piece['title']}
+                    // height={this.state.height}
+                    priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
+                    layout="fill"
+                    objectFit="contain"
+                    quality={100}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        this.setState({ full_screen: !this.state.full_screen });
+                    }}
+                />
+            </div>,
+        );
 
         this.state = {
             user: this.props.user,
             debug: false,
             loading: true,
+            full_screen: false,
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
             current_piece: current_piece,
             piece_position: piece_position,
-            piece_db_id: piece_db_id,
-            piece_o_id: piece_o_id,
-            piece_details: {
-                title: title,
-                type: type,
-                description: description,
-                sold: sold,
-                price: price,
-                width: width,
-                height: height,
-                real_width: real_width,
-                real_height: real_height,
-                image_path: image_path,
-                instagram: instagram,
-                available: available,
-                framed: framed,
-                comments: comments,
-            },
+            db_id: db_id,
+            o_id: o_id,
+            image_path: image_path,
+            description: description,
+            title: title,
+            available: available,
+            sold: sold,
+            price: price,
+            theme: theme,
+            width: width,
+            height: height,
+            real_width: real_width,
+            real_height: real_height,
             next_oid:
-                piece_position + 1 > piece_list_length - 1
+                piece_position + 1 > num_pieces - 1 // if next piece is out of bounds (greater than piece list length), set to first piece
                     ? piece_list[0]['o_id']
                     : piece_list[piece_position + 1]['o_id'],
             last_oid:
-                piece_position - 1 < 0
-                    ? piece_list[piece_list_length - 1]['o_id']
+                piece_position - 1 < 0 // if last piece is out of bounds (less than 0), set to last piece
+                    ? piece_list[num_pieces - 1]['o_id']
                     : piece_list[piece_position - 1]['o_id'],
-            description: description.replace('<br>', '\n'),
-            price: price,
-            sold: sold,
-            available: available,
-            full_screen: false,
         };
 
         this.update_current_piece = this.update_current_piece.bind(this);
@@ -151,63 +125,45 @@ class Details extends React.Component {
     async componentDidMount() {
         var image_array = [];
 
-        const piece_list_length = this.state.piece_list.length;
-        if (piece_list_length > 0) {
+        const num_pieces = this.state.piece_list.length;
+        if (num_pieces > 0) {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position);
         }
 
         this.setState({
             loading: false,
             next_oid:
-                this.state.piece_position + 1 > piece_list_length - 1
-                    ? this.state.piece_list[0]['o_id']
-                    : this.state.piece_list[this.state.piece_position + 1]['o_id'],
+                this.state.piece_position + 1 > num_pieces - 1
+                    ? this.state.piece_list[0].o_id
+                    : this.state.piece_list[this.state.piece_position + 1].o_id,
             last_oid:
                 this.state.piece_position - 1 < 0
-                    ? this.state.piece_list[this.state.piece_list_length - 1]['o_id']
-                    : this.state.piece_list[this.state.piece_position - 1]['o_id'],
+                    ? this.state.piece_list[this.state.num_pieces - 1].o_id
+                    : this.state.piece_list[this.state.piece_position - 1].o_id,
         });
     }
 
     async update_current_piece(piece_list, o_id) {
         const previous_url_o_id = this.state.url_o_id;
-        const piece_list_length = piece_list.length;
+        const num_pieces = piece_list.length;
 
-        console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`);
+        console.log(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
         const [piece_position, current_piece] = await this.get_piece_from_path_o_id(piece_list, o_id);
-        const piece_db_id = current_piece['id'];
-        const piece_o_id = current_piece['o_id'];
+        const current_db_id = current_piece['id'];
+        const current_o_id = current_piece['o_id'];
 
-        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`);
+        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Data (Next Line):`);
         console.log(current_piece);
 
         const next_oid =
-            piece_position + 1 > piece_list_length - 1 ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'];
+            piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid =
-            piece_position - 1 < 0 ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
+            piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
 
         console.log(
-            `Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`,
+            `Updating to new selected piece with Postition: ${piece_position} | ` + 
+            `DB ID: ${current_db_id} | O_ID: ${current_o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`
         );
-
-        const piece_details = {
-            title: current_piece['title'],
-            type: current_piece['type'],
-            description: current_piece['description'],
-            sold: current_piece['sold'],
-            price: current_piece['price'],
-            width: current_piece['width'],
-            height: current_piece['height'],
-            real_width: current_piece['real_width'],
-            real_height: current_piece['real_height'],
-            image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`,
-            instagram: current_piece['instagram'],
-            available: current_piece['available'] !== undefined ? current_piece['available'] : false,
-            framed: current_piece['framed'] !== undefined ? current_piece['framed'] : false,
-            comments: current_piece['comments'],
-        };
-
-        const description = current_piece['description'].split('<br>').join(' \n');
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
@@ -221,16 +177,30 @@ class Details extends React.Component {
                 piece_list: piece_list,
                 image_array: image_array,
                 piece_position: piece_position,
-                piece_db_id: piece_db_id,
-                piece_o_id: piece_o_id,
-                piece: current_piece,
-                piece_details: piece_details,
+                current_piece: current_piece,
+                db_id: current_db_id,
+                o_id: current_o_id,
+                title: current_piece.title,
+                type: current_piece.type,
+                description: current_piece['description'].split('<br>').join('\n'),
+                sold: current_piece.sold,
+                price: current_piece.price,
+                width: current_piece.width,
+                height: current_piece.height,
+                real_width: current_piece.real_width,
+                real_height: current_piece.real_height,
+                image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
+                instagram: current_piece.instagram,
+                available: current_piece.available !== undefined ? current_piece.available : false,
+                framed: current_piece.framed !== undefined ? current_piece.framed : false,
+                comments: current_piece.comments,
                 next_oid: next_oid,
                 last_oid: last_oid,
-                description: description,
-                sold: piece_details['sold'],
-                available: piece_details['available'],
-                price: piece_details['price'],
+                description: current_piece.description,
+                sold: current_piece.sold,
+                available: current_piece.available,
+                price: current_piece.price,
+                
             },
             async () => {
                 if (previous_url_o_id != o_id) {
@@ -256,7 +226,7 @@ class Details extends React.Component {
                         className={styles.details_image}
                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                         alt={piece['title']}
-                        // height={this.state.piece_details['height']}
+                        // height={this.state.height}
                         priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
                         layout="fill"
                         objectFit="contain"
@@ -284,7 +254,7 @@ class Details extends React.Component {
         console.log(`is Admin: ${this.state.user != undefined ? this.state.user.publicMetadata.role : 'NOT ADMIN'}`);
 
         var page_layout = null;
-        const title = this.state.piece_details['title'] != null ? this.state.piece_details['title'] : '';
+        const title = this.state.title != null ? this.state.title : '';
         if (this.state.full_screen == true) {
             page_layout = (
                 <PageLayout page_title={`Piece Details - ${title}`}>
@@ -301,13 +271,9 @@ class Details extends React.Component {
                                 )}
                             </div>
                         </div>
-                        <div
-                            className={styles.full_screen_close_container}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                this.setState({ full_screen: false });
-                            }}
-                        >
+                        <div className={styles.full_screen_close_container} onClick={(e) => {
+                            e.preventDefault(); this.setState({ full_screen: false });
+                        }}>
                             <CloseIcon className={`${styles.full_screen_close_icon}`} />
                         </div>
                     </div>
@@ -332,13 +298,10 @@ class Details extends React.Component {
                         <div className={styles.details_container_right}>
                             <div className={styles.title_container}>
                                 <div className={styles.title_inner_container}>
-                                    <ArrowForwardIosRoundedIcon
-                                        className={`${styles.title_arrow} ${styles.img_hor_vert}`}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            this.update_current_piece(this.state.piece_list, this.state.next_oid);
-                                        }}
-                                    />
+                                    <ArrowForwardIosRoundedIcon className={`${styles.title_arrow} ${styles.img_hor_vert}`} onClick={(e) => {
+                                        e.preventDefault(); 
+                                        this.update_current_piece(this.state.piece_list, this.state.next_oid);
+                                    }}/>
                                     <div className={styles.title}>{title == '' ? `` : `"${title}"`}</div>
                                     <ArrowForwardIosRoundedIcon
                                         className={`${styles.title_arrow}`}
@@ -374,11 +337,11 @@ class Details extends React.Component {
                                                 <div className={styles.price_text}>{`$${this.state.price}`}</div>
                                             </Link>
                                         )}
-                                        {this.state.piece_details['instagram'] != null &&
-                                        this.state.piece_details['instagram'] != '' &&
-                                        this.state.piece_details['instagram'].length > 5 ? (
+                                        {this.state.instagram != null &&
+                                        this.state.instagram != '' &&
+                                        this.state.instagram.length > 5 ? (
                                             <Link
-                                                href={`https://www.instagram.com/p/${this.state.piece_details['instagram']}`}
+                                                href={`https://www.instagram.com/p/${this.state.instagram}`}
                                                 className={styles.instagram_link_container}
                                             >
                                                 <div className={styles.instagram_image_container}>
@@ -410,11 +373,11 @@ class Details extends React.Component {
                                 ) : null}
 
                                 <PieceSpecificationTable
-                                    realWidth={this.state.piece_details.real_width}
-                                    realHeight={this.state.piece_details.real_height}
-                                    framed={this.state.piece_details.framed}
-                                    comments={this.state.piece_details.comments}
-                                    type={this.state.piece_details.type}
+                                    realWidth={this.state.real_width}
+                                    realHeight={this.state.real_height}
+                                    framed={this.state.framed}
+                                    comments={this.state.comments}
+                                    type={this.state.type}
                                     with_header={false}
                                 />
                             </div>

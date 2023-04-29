@@ -27,17 +27,14 @@ class Edit extends React.Component {
         const passed_o_id = this.props.router.query.id;
 
         const piece_list = this.props.piece_list;
-        const piece_list_length = piece_list.length;
+        const num_pieces = piece_list.length;
 
-        console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`);
+        console.log(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
         console.log(piece_list);
 
-        var image_array = [];
-
-        var current_piece = null;
         var piece_position = 0;
-        var piece_db_id = null;
-        var piece_o_id = null;
+        var db_id = null;
+        var o_id = null;
 
         for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
@@ -45,103 +42,69 @@ class Edit extends React.Component {
             }
         }
 
-        var title = '';
-        var type = 'Oil On Canvas';
-        var description = '';
-        var sold = false;
-        var price = 9999;
-        var width = 0;
-        var height = 0;
-        var real_width = '';
-        var real_height = '';
-        var image_path = '';
-        var instagram = '';
-        var theme = 'None';
+        var current_piece = piece_list[piece_position];
+
+        /* prettier-ignore-start */
+        var db_id  = num_pieces < 1 ? -1 : current_piece.id    !== undefined  ? current_piece.id : -1;
+        var o_id   = num_pieces < 1 ? '' : current_piece.o_id  !== undefined  ? current_piece.o_id : '';
+        var title  = num_pieces < 1 ? '' : current_piece.title !== undefined  ? current_piece.title : '';
+        var title  = num_pieces < 1 ? '' : current_piece.title !== undefined  ? current_piece.title : '';
+        var price  = num_pieces < 1 ? '' : current_piece.price !== undefined  ? current_piece.price : '';
+        var width  = num_pieces < 1 ? '' : current_piece.width !== undefined  ? current_piece.width : '';
+        var height = num_pieces < 1 ? '' : current_piece.height !== undefined ? current_piece.height : '';
+        var type   = num_pieces < 1 ? type : current_piece.type !== undefined ? current_piece.type : type;
+        var theme  = num_pieces < 1 ? 'None' : current_piece.theme !== undefined ? current_piece.theme == null ? 'None' : current_piece.theme : 'None';
+        var framed = num_pieces < 1 ? 'False' : current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False';
+        var sold   = num_pieces < 1 ? 'False' : current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False';
+        var available   = num_pieces < 1 ? '' : current_piece.available !== undefined ? current_piece.available : '';        
+        var comments    = num_pieces < 1 ? '' : current_piece.comments !== undefined ? current_piece.comments : '';
+        var description = num_pieces < 1 ? '' : current_piece.description !== undefined ? current_piece.description.split('<br>').join('\n') : '';
+        var real_width  = num_pieces < 1 ? '' : current_piece.real_width !== undefined ? current_piece.real_width : '';
+        var real_height = num_pieces < 1 ? '' : current_piece.real_height !== undefined ? current_piece.real_height : '';
+        var image_path  = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
+        var instagram   = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
+        /* prettier-ignore-end */
+
         var theme_options = [{ value: theme, label: theme }];
-        var available = true;
-        var framed = false;
-        var comments = '';
+        if (theme != 'None' && theme.includes(', ')) {
+            console.log(`Splitting theme string: ${theme}`);
+            theme_options = [];
+            theme.split(', ').forEach(function (theme_string) {
+                if (theme_string.length > 1) {
+                    console.log(`Adding theme string ${theme_string} to options...`);
+                    theme_options.push({ value: theme_string, label: theme_string });
+                }
+            });
+        }
 
-        if (piece_list_length > 0) {
-            const current_piece = piece_list[piece_position];
-
-            piece_db_id = current_piece['id'] !== undefined ? current_piece['id'] : '';
-            piece_o_id = current_piece['o_id'] !== undefined ? current_piece['o_id'] : '';
-            title = current_piece['title'] !== undefined ? current_piece['title'] : '';
-            type = current_piece['type'] !== undefined ? current_piece['type'] : 'Oil On Canvas';
-            sold =
-                current_piece['sold'] == true || current_piece['sold'].toString().toLowerCase() == 'true'
-                    ? 'True'
-                    : 'False';
-            title = current_piece['title'] !== undefined ? current_piece['title'] : '';
-            description =
-                current_piece['description'] !== undefined ? current_piece['description'].split('<br>').join('\n') : '';
-            price = current_piece['price'] !== undefined ? current_piece['price'] : '';
-            width = current_piece['width'] !== undefined ? current_piece['width'] : '';
-            height = current_piece['height'] !== undefined ? current_piece['height'] : '';
-            real_width = current_piece['real_width'] !== undefined ? current_piece['real_width'] : '';
-            real_height = current_piece['real_height'] !== undefined ? current_piece['real_height'] : '';
-            image_path =
-                current_piece['image_path'] !== undefined
-                    ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`
-                    : '';
-            instagram = current_piece['instagram'] !== undefined ? current_piece['instagram'] : '';
-            theme =
-                current_piece['theme'] !== undefined
-                    ? current_piece['theme'] == null
-                        ? 'None'
-                        : current_piece['theme']
-                    : 'None';
-            available = current_piece['available'] !== undefined ? current_piece['available'] : '';
-            framed =
-                current_piece['framed'] == true || current_piece['framed'].toString().toLowerCase() == 'true'
-                    ? 'True'
-                    : 'False';
-            comments = current_piece['comments'] !== undefined ? current_piece['comments'] : '';
-
-            theme_options = [{ value: theme, label: theme }];
-            if (theme != 'None' && theme.includes(', ')) {
-                console.log(`Splitting theme string: ${theme}`);
-                theme_options = [];
-                theme.split(', ').forEach(function (theme_string) {
-                    if (theme_string.length > 1) {
-                        console.log(`Adding theme string ${theme_string} to options...`);
-                        theme_options.push({ value: theme_string, label: theme_string });
-                    }
-                });
-            }
-
-            for (var i = 0; i < piece_list.length; i++) {
-                let piece = piece_list[i];
-                image_array.push(
-                    <div
-                        key={`image_${i}`}
-                        className={
-                            i == piece_position ? styles.details_image_container : styles.details_image_container_hidden
+        var image_array = [];
+        for (var i = 0; i < piece_list.length; i++) {
+            let piece = piece_list[i];
+            image_array.push(
+                <div key={`image_${i}`} className={
+                    i == piece_position ? styles.details_image_container : styles.details_image_container_hidden
+                }>
+                    <NextImage
+                        id={`details_image_${i}`}
+                        className={styles.details_image}
+                        src={
+                            piece['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
+                                ? piece['image_path']
+                                : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`
                         }
-                    >
-                        <NextImage
-                            id={`details_image_${i}`}
-                            className={styles.details_image}
-                            src={
-                                piece['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                                    ? piece['image_path']
-                                    : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`
-                            }
-                            alt={piece['title']}
-                            // height={this.state.piece_details['height']}
-                            priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
-                            layout="fill"
-                            objectFit="contain"
-                            quality={100}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                this.setState({ full_screen: !this.state.full_screen });
-                            }}
-                        />
-                    </div>,
-                );
-            }
+                        alt={piece['title']}
+                        // height={this.state.height}
+                        priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
+                        layout="fill"
+                        objectFit="contain"
+                        quality={100}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.setState({ full_screen: !this.state.full_screen });
+                        }}
+                    />
+                </div>,
+            );
         }
 
         console.log(`Setting initial state theme to: ${theme} | options (Next line):`);
@@ -155,33 +118,9 @@ class Edit extends React.Component {
             image_array: image_array,
             current_piece: current_piece,
             piece_position: piece_position,
-            piece_db_id: piece_db_id,
-            piece_o_id: piece_o_id,
-            piece_details: {
-                title: title,
-                type: type,
-                description: description,
-                sold: sold,
-                price: price,
-                width: width,
-                height: height,
-                real_width: real_width,
-                real_height: real_height,
-                image_path: image_path,
-                instagram: instagram,
-                theme: theme,
-                available: available,
-                framed: framed,
-                comments: comments,
-            },
-            next_oid:
-                piece_position + 1 > piece_list_length - 1
-                    ? piece_list[0]['o_id']
-                    : piece_list[piece_position + 1]['o_id'],
-            last_oid:
-                piece_position - 1 < 0
-                    ? piece_list[piece_list_length - 1]['o_id']
-                    : piece_list[piece_position - 1]['o_id'],
+            db_id: db_id,
+            o_id: o_id,
+            image_path: image_path,
             description: description,
             title: title,
             available: available,
@@ -193,6 +132,14 @@ class Edit extends React.Component {
             height: height,
             real_width: real_width,
             real_height: real_height,
+            next_oid:
+                piece_position + 1 > num_pieces - 1 // if next piece is out of bounds (greater than piece list length), set to first piece
+                    ? piece_list[0]['o_id']
+                    : piece_list[piece_position + 1]['o_id'],
+            last_oid:
+                piece_position - 1 < 0 // if last piece is out of bounds (less than 0), set to last piece
+                    ? piece_list[num_pieces - 1]['o_id']
+                    : piece_list[piece_position - 1]['o_id'],
             loader_visable: false,
             loading: false,
             submitted: false,
@@ -200,7 +147,7 @@ class Edit extends React.Component {
             uploaded: false,
             upload_error: false,
             framed: framed,
-            comments: comments,
+            comments: comments
         };
         this.create_image_array = this.create_image_array.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
@@ -241,52 +188,21 @@ class Edit extends React.Component {
     }
 
     async update_current_piece(piece_list, o_id) {
-        const piece_list_length = piece_list.length;
+        const num_pieces = piece_list.length;
 
-        console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`);
+        console.log(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
         const piece_from_path_o_id = await this.get_piece_from_path_o_id(piece_list, o_id);
         const [piece_position, current_piece] = piece_from_path_o_id;
-        const piece_db_id = current_piece['id'];
-        const piece_o_id = current_piece['o_id'];
+        const current_db_id = current_piece.id;
+        const current_o_id = current_piece.o_id;
 
-        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`);
+        console.log(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
         console.log(current_piece);
 
-        const next_oid =
-            piece_position + 1 > piece_list_length - 1 ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'];
-        const last_oid =
-            piece_position - 1 < 0 ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
+        const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
+        const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
 
-        // console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
-        console.log('CURRENT PIECE (Next Line):');
-        console.log(current_piece);
-
-        const piece_details = {
-            title: current_piece['title'],
-            type: current_piece['type'],
-            description: current_piece['description'],
-            sold:
-                current_piece['sold'] == true || current_piece['sold'].toString().toLowerCase() == 'true'
-                    ? 'True'
-                    : 'False',
-            price: current_piece['price'],
-            width: current_piece['width'],
-            height: current_piece['height'],
-            real_width: current_piece['real_width'],
-            real_height: current_piece['real_height'],
-            image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece['image_path']}`,
-            instagram: current_piece['instagram'],
-            theme: current_piece['theme'],
-            available: current_piece['available'],
-            framed:
-                current_piece['framed'] == true || current_piece['framed'].toString().toLowerCase() == 'true'
-                    ? 'True'
-                    : 'False',
-            comments: current_piece['comments'],
-        };
-
-        var theme =
-            piece_details['theme'] == null || piece_details['theme'] == undefined ? 'None' : piece_details['theme'];
+        var theme = current_piece.theme == null || current_piece.theme == undefined ? 'None' : current_piece.theme;
         var theme_options = [{ value: theme, label: theme }];
 
         if (theme != 'None' && theme.includes(', ')) {
@@ -300,12 +216,8 @@ class Edit extends React.Component {
             });
         }
 
-        console.log(`Setting framed to: ${piece_details['framed']}`);
-
-        console.log(`Setting theme to: ${theme} | options (Next line):`);
+        console.log(`Setting theme to: ${theme} | framed: ${current_piece.framed} | options (Next line):`);
         console.log(theme_options);
-
-        const description = current_piece['description'].split('<br>').join('\n');
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
@@ -313,31 +225,31 @@ class Edit extends React.Component {
         this.setState(
             {
                 loading: false,
-                url_o_id: o_id,
+                url_o_id: current_o_id,
                 piece_list: piece_list,
                 image_array: image_array,
                 piece_position: piece_position,
-                piece_db_id: piece_db_id,
-                piece_o_id: piece_o_id,
+                db_id: current_db_id,
+                o_id: current_o_id,
                 piece: current_piece,
-                piece_details: piece_details,
                 next_oid: next_oid,
                 last_oid: last_oid,
-                description: description,
-                title: piece_details['title'],
-                price: piece_details['price'],
-                sold: piece_details['sold'] == true ? 'True' : 'False',
-                type: piece_details['type'],
+                title: current_piece.title,
+                type: current_piece.type,
+                description: current_piece.description.split('<br>').join('\n'),
+                price: current_piece.price,
+                width: current_piece.width,
+                height: current_piece.height,
+                real_width: current_piece.real_width,
+                real_height: current_piece.real_height,
+                image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
+                instagram: current_piece.instagram,
+                available: current_piece.available,
+                sold: current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False',
+                framed: current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False',
+                comments: current_piece.comments,
                 theme: theme,
-                theme_options: theme_options,
-                available: piece_details['available'] == true ? 'True' : 'False',
-                instagram: piece_details['instagram'],
-                width: piece_details['width'],
-                height: piece_details['height'],
-                real_width: piece_details['real_width'],
-                real_height: piece_details['real_height'],
-                framed: piece_details['framed'],
-                comments: piece_details['comments'],
+                theme_options: theme_options
             },
             async () => {
                 if (previous_url_o_id != o_id) {
@@ -397,40 +309,40 @@ class Edit extends React.Component {
         this.setState({ loading: true, submitted: false, loader_visable: true });
 
         // capture data from form
-        const title = event.target.elements.title.value;
-        const type = event.target.elements.type.value;
-        const sold = event.target.elements.sold.value;
-        const price = event.target.elements.price.value;
-        const instagram = event.target.elements.instagram.value;
-        const real_width = event.target.elements.width.value;
-        const real_height = event.target.elements.height.value;
-        const available = event.target.elements.available.value;
-        const framed = event.target.elements.framed.value;
-        const comments = event.target.elements.comments.value;
+        const title_input_val = event.target.elements.title.value;
+        const type_input_val = event.target.elements.type.value;
+        const sold_input_val = event.target.elements.sold.value;
+        const price_input_val = event.target.elements.price.value;
+        const instagram_input_val = event.target.elements.instagram.value;
+        const real_width_input_val = event.target.elements.width.value;
+        const real_height_input_val = event.target.elements.height.value;
+        const available_input_val = event.target.elements.available.value;
+        const framed_input_val = event.target.elements.framed.value;
+        const comments_input_val = event.target.elements.comments.value;
 
         if (title) {
             console.log('--------------- Attempting To Edit Piece Details ---------------');
             console.log(
-                `Editing Piece DB ID: ${this.state.piece_db_id} | Title: ${title} | Sold: ${sold} | Framed: ${framed}`,
+                `Editing Piece DB ID: ${this.state.db_id} | Title: ${title} | Sold: ${sold} | Framed: ${framed}`,
             );
             if (!this.state.uploaded) {
-                const response = await edit_details(
-                    this.state.piece_db_id,
-                    title,
-                    this.state.description,
-                    type,
-                    sold,
-                    price,
-                    instagram,
-                    this.state.piece_details['width'],
-                    this.state.piece_details['height'],
-                    real_width,
-                    real_height,
-                    this.state.theme,
-                    available,
-                    framed,
-                    comments,
-                );
+                const response = await edit_details({
+                    id: this.state.db_id,
+                    title: title_input_val,
+                    description: this.state.description,
+                    type: type_input_val,
+                    sold: sold_input_val,
+                    price: price_input_val,
+                    instagram: instagram_input_val,
+                    width: this.state.width,
+                    height: this.state.height,
+                    real_width: real_width_input_val,
+                    real_height: real_height_input_val,
+                    theme: this.state.theme,
+                    available: available_input_val,
+                    framed: framed_input_val,
+                    comments: comments_input_val,
+                });
 
                 console.log(`Edit Piece Response (Next Line):`);
                 console.log(response);
@@ -444,25 +356,26 @@ class Edit extends React.Component {
             } else {
                 console.log('--------------- Attempting To Create New Piece ---------------');
                 console.log(
-                    `Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.piece_details['image_path']}`,
+                    `Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.image_path}`,
                 );
-                const response = await create_piece(
-                    title,
-                    this.state.description,
-                    type,
-                    sold,
-                    price,
-                    instagram,
-                    this.state.piece_details['width'],
-                    this.state.piece_details['height'],
-                    real_width,
-                    real_height,
-                    this.state.piece_details['image_path'],
-                    this.state.theme,
-                    available,
-                    framed,
-                    comments,
-                );
+                const response = await create_piece({
+                    title: title_input_val,
+                    description: this.state.description,
+                    type: type_input_val,
+                    sold: sold_input_val,
+                    price: price_input_val,
+                    instagram: instagram_input_val,
+                    width: this.state.width,
+                    height: this.state.height,
+                    real_width: real_width_input_val,
+                    real_height: real_height_input_val,
+                    image_path: this.state.image_path,
+                    theme: this.state.theme,
+                    available: available_input_val,
+                    framed: framed_input_val,
+                    comments: comments_input_val,
+                  });
+                  
 
                 console.log(`Create Piece Response (Next Line):`);
                 console.log(response);
@@ -538,7 +451,13 @@ class Edit extends React.Component {
 
                 const new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1);
 
-                const uploaded_piece_details = {
+                const uploaded_piece_state = {
+                    loader_visable: true,
+                    uploaded: true,
+                    upload_error: false,
+                    image_array: new_image_array,
+                    piece_list: new_piece_list,
+                    piece_position: new_piece_list.length - 1,
                     title: 'Enter Title...',
                     description: 'Enter Description...',
                     sold: false,
@@ -557,28 +476,7 @@ class Edit extends React.Component {
                 console.log('Updating state with uploaded piece details (Next Line):');
                 console.log(uploaded_piece_details);
 
-                this.setState({
-                    loader_visable: true,
-                    uploaded: true,
-                    upload_error: false,
-                    image_array: new_image_array,
-                    piece_list: new_piece_list,
-                    piece_position: new_piece_list.length - 1,
-                    piece_details: uploaded_piece_details,
-                    description: uploaded_piece_details['description'],
-                    title: uploaded_piece_details['title'],
-                    available: uploaded_piece_details['available'],
-                    sold: uploaded_piece_details['sold'],
-                    price: uploaded_piece_details['price'],
-                    theme: uploaded_piece_details['theme'],
-                    instagram: uploaded_piece_details['instagram'],
-                    width: uploaded_piece_details['width'],
-                    height: uploaded_piece_details['height'],
-                    real_width: uploaded_piece_details['real_width'],
-                    real_height: uploaded_piece_details['real_height'],
-                    framed: uploaded_piece_details['framed'],
-                    comments: uploaded_piece_details['comments'],
-                });
+                this.setState({uploaded_piece_state});
             };
         } catch (err) {
             this.setState({ uploaded: false, upload_error: true, loader_visable: false });
@@ -638,18 +536,18 @@ class Edit extends React.Component {
             class_name = form_styles.submit_label_failed;
             loader_message = `Image Upload was NOT successful...`;
         } else if (
-            this.state.piece_details.width != '' &&
-            this.state.piece_details.height != '' &&
-            this.state.piece_details.width > 1500 &&
-            this.state.piece_details.height > 1500
+            this.state.width != '' &&
+            this.state.height != '' &&
+            this.state.width > 1500 &&
+            this.state.height > 1500
         ) {
             class_name = form_styles.submit_label_warning;
             loader_message = `Image upload successful but image resolution is too high!  Re-Upload with width / height < 1500px`;
         } else if (
-            this.state.piece_details.width != '' &&
-            this.state.piece_details.height != '' &&
-            this.state.piece_details.width < 1000 &&
-            this.state.piece_details.height < 1000
+            this.state.width != '' &&
+            this.state.height != '' &&
+            this.state.width < 1000 &&
+            this.state.height < 1000
         ) {
             class_name = form_styles.submit_label_warning;
             loader_message = `Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`;
