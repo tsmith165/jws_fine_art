@@ -171,7 +171,7 @@ class Slideshow extends React.Component {
 
         const piece_details = {
             title:       current_piece['title'],
-            type:        current_piece['type'],
+            piece_type:  current_piece['piece_type'],
             description: current_piece['description'],
             sold:        current_piece['sold'],
             price:       current_piece['price'],

@@ -71,7 +71,7 @@ export default async function (req, res) {
             width: parseInt(passed_json.width),
             height: parseInt(passed_json.height),
             description: passed_json.description.split('\n').join('<br>'),
-            type: passed_json.type,
+            piece_type: passed_json.piece_type,
             sold: passed_json.sold == 'Sold' ? true : false,
             price: parseInt(passed_json.price),
             real_width: parseFloat(passed_json.real_width),

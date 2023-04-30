@@ -241,12 +241,12 @@ class Gallery extends React.Component {
         // console.log(`Render gallery Filter menu open: ${this.props.app_state.filter_menu_open} | window width: ${this.state.window_width}`)
 
         const page_layout = (
-            <div className={ (this.state.window_width !== undefined && this.state.window_width < 800 && this.props.app_state.filter_menu_open == true) ? 
+            <div className={ (this.state.window_width !== undefined && this.state.window_width < 768 && this.props.app_state.filter_menu_open == true) ? 
                 ( `${styles.gallery_container} ${styles.gallery_container_open}` ) : ( styles.gallery_container  ) }
             >
                 <div className={styles.gallery_main_container}>
                     <div className={styles.gallery_inner_container} 
-                        onClick={(e) => { if ( this.props.app_state.filter_menu_open == true && this.state.window_width < 800) { this.props.app_set_state({...app_state, filter_menu_open: false}) } }}
+                        onClick={(e) => { if ( this.props.app_state.filter_menu_open == true && this.state.window_width < 768) { this.props.app_set_state({...app_state, filter_menu_open: false}) } }}
                     >
                         <div className={styles.gallery_body} style={{height: this.state.lowest_height}}>
                             {this.state.gallery_pieces}

@@ -38,7 +38,7 @@ export default async function (req, res) {
                 width: piece.width,
                 height: piece.height,
                 description: piece.description,
-                type: piece.type,
+                piece_type: piece.piece_type,
                 sold: piece.sold ? 'Yes' : 'No',
                 price: piece.price,
                 instagram: piece.instagram,

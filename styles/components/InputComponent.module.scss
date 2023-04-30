@@ -1,0 +1,199 @@
+@import 'theme/theme';
+
+
+
+.input_split_container {
+    display: flex !important;
+    flex-direction: row;
+    width: 50%;
+
+    &:first-child {
+        padding-right: 7.5px;
+    }
+    &:last-child {
+        padding-left: 7.5px;
+    }
+}
+
+.input_full_container {
+    width: 100% !important;
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    flex-direction: row;
+}
+
+.input_label_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    background-color: $secondary;
+    border-radius: 5px 0px 0px 5px;
+    font-weight: 600;
+}
+
+.input_split {
+    width: calc(100% - 90px) !important;
+}
+
+.input_textbox {
+    height: 100%;
+    color: $light;
+    background-color: $primary;
+    border-radius: 0px 5px 5px 0px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none !important;
+}
+
+.input_select {
+    color: $light;
+    background-color: $primary;
+    border-radius: 0px 5px 5px 0px;
+    border: none !important;
+    font-size: 14px;
+    font-weight: bold;
+    height: 100%;
+}
+
+.input_multi_select {
+    height: 100%;
+    color: $light;
+    background-color: $primary;
+    border-radius: 0px 5px 5px 0px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.input_textarea {
+    height: 100%;
+    color: $light;
+    background-color: $primary;
+    border-radius: 0px 5px 5px 0px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none !important;
+    padding: 6px 10px; // Customize as per your need
+}
+
+.autocomplete_container {
+    width: 100% !important;
+    margin: 0px !important;
+    padding: 0px !important;
+}
+.input_container_autocomplete {
+    display: flex;
+    width: 100%;
+}
+.input_autocomplete {
+    width: 70%;
+    height: 100%;
+    padding: 7px 10px;
+    color: $light;
+    background-color: $primary;
+    border-radius: 0px 5px 5px 0px;
+    border: none;
+    padding-left: 5px;
+    font-weight: bold;
+}
+
+.input_autocomplete:-webkit-autofill {
+    border-bottom-right-radius: none;
+}
+.input_autocomplete:autofill {
+    border-bottom-right-radius: none;
+}
+
+.autocomplete_dropdown_container {
+    width: calc(70% - 20px);
+    margin-left: calc(30% + 5px);
+}
+.input_suggestion {
+    background-color: $secondary !important;
+    color: $light;
+    padding: 10px 10px 0px 10px;
+}
+.input_suggestion:last-of-type {
+    padding-bottom: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    // Mobile
+    .input_label_container {
+        width: 90px !important;
+        font-weight: 600;
+    }
+    .input_label_split {
+        width: 90px !important;
+        padding: 5px 10px;
+    }
+    .input_textbox {
+        width: calc(100% - 90px) !important;
+        padding: 5px 10px;
+    }
+    .input_select {
+        width: calc(100% - 90px) !important;
+        padding: 6px 10px;
+    }
+    .input_multi_select {
+        width: calc(100% - 90px) !important;
+        padding: 6px 10px;
+    }
+    .input_textarea {
+        width: calc(100% - 90px) !important;
+        padding: 6px 10px;
+    }
+    .input_autocomplete {
+        width: calc(100% - 90px) !important;
+        padding: 6px 10px;
+    }
+}
+@media (min-width: 769px) {
+    // browser
+    .input_label_container {
+        width: 120px !important;
+        font-weight: 500;
+    }
+    .input_label_split {
+        width: 120px !important;
+        padding: 5px 10px;
+    }
+    .input_textbox {
+        width: calc(100% - 120px) !important;
+        padding: 6px 10px;
+    }
+    .input_select {
+        width: calc(100% - 120px) !important;
+        padding: 6px 10px;
+    }
+    .input_select > option {
+        font-weight: bold;
+    }
+    .input_multi_select {
+        width: calc(100% - 120px) !important;
+        padding: 6px 10px;
+    }
+    .input_textarea {
+        width: calc(100% - 120px) !important;
+        padding: 6px 10px;
+    }
+    .input_autocomplete {
+        width: calc(100% - 120px) !important;
+        padding: 6px 10px;
+    }
+}
+
+.input_label {
+    color: $light;
+}
+
+.split_left {
+    padding-right: 7.5px;
+}
+.split_right {
+    padding-left: 7.5px;
+}

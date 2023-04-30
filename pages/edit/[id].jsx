@@ -6,18 +6,22 @@ import { withRouter } from 'next/router';
 import { prisma } from '@/lib/prisma';
 
 import NextImage from 'next/image';
-import Select from 'react-select';
 
 import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url } from '@/lib/api_calls';
 
 import PageLayout from '@/components/layout/PageLayout';
 
-import styles from '@/styles/pages/Details.module.scss';
-import form_styles from '@/styles/forms/EditDetailsForm.module.scss';
+import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
+import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
+
+import edit_details_styles from '@/styles/pages/EditDetails.module.scss';
+import form_styles from '@/styles/forms/Form.module.scss';
+import title_styles from '@/styles/components/TitleInputTextbox.module.scss';
 
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CircularProgress from '@mui/material/CircularProgress';
 import PageviewIcon from '@mui/icons-material/Pageview';
+import InputComponent from '@/components/components/InputComponent';
 
 class Edit extends React.Component {
     constructor(props) {
@@ -33,8 +37,6 @@ class Edit extends React.Component {
         console.log(piece_list);
 
         var piece_position = 0;
-        var db_id = null;
-        var o_id = null;
 
         for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
@@ -48,15 +50,14 @@ class Edit extends React.Component {
         var db_id  = num_pieces < 1 ? -1 : current_piece.id    !== undefined  ? current_piece.id : -1;
         var o_id   = num_pieces < 1 ? '' : current_piece.o_id  !== undefined  ? current_piece.o_id : '';
         var title  = num_pieces < 1 ? '' : current_piece.title !== undefined  ? current_piece.title : '';
-        var title  = num_pieces < 1 ? '' : current_piece.title !== undefined  ? current_piece.title : '';
         var price  = num_pieces < 1 ? '' : current_piece.price !== undefined  ? current_piece.price : '';
         var width  = num_pieces < 1 ? '' : current_piece.width !== undefined  ? current_piece.width : '';
         var height = num_pieces < 1 ? '' : current_piece.height !== undefined ? current_piece.height : '';
-        var type   = num_pieces < 1 ? type : current_piece.type !== undefined ? current_piece.type : type;
         var theme  = num_pieces < 1 ? 'None' : current_piece.theme !== undefined ? current_piece.theme == null ? 'None' : current_piece.theme : 'None';
         var framed = num_pieces < 1 ? 'False' : current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False';
         var sold   = num_pieces < 1 ? 'False' : current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False';
-        var available   = num_pieces < 1 ? '' : current_piece.available !== undefined ? current_piece.available : '';        
+        var available   = num_pieces < 1 ? '' : current_piece.available == true || current_piece.available.toString().toLowerCase() == 'true' ? 'True' : 'False';
+        var piece_type  = num_pieces < 1 ? '' : current_piece.piece_type !== undefined ? current_piece.piece_type : piece_type;
         var comments    = num_pieces < 1 ? '' : current_piece.comments !== undefined ? current_piece.comments : '';
         var description = num_pieces < 1 ? '' : current_piece.description !== undefined ? current_piece.description.split('<br>').join('\n') : '';
         var real_width  = num_pieces < 1 ? '' : current_piece.real_width !== undefined ? current_piece.real_width : '';
@@ -78,39 +79,14 @@ class Edit extends React.Component {
         }
 
         var image_array = [];
-        for (var i = 0; i < piece_list.length; i++) {
-            let piece = piece_list[i];
-            image_array.push(
-                <div key={`image_${i}`} className={
-                    i == piece_position ? styles.details_image_container : styles.details_image_container_hidden
-                }>
-                    <NextImage
-                        id={`details_image_${i}`}
-                        className={styles.details_image}
-                        src={
-                            piece['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                                ? piece['image_path']
-                                : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`
-                        }
-                        alt={piece['title']}
-                        // height={this.state.height}
-                        priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
-                        layout="fill"
-                        objectFit="contain"
-                        quality={100}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            this.setState({ full_screen: !this.state.full_screen });
-                        }}
-                    />
-                </div>,
-            );
-        }
 
         console.log(`Setting initial state theme to: ${theme} | options (Next line):`);
         console.log(theme_options);
 
         this.state = {
+            window_width: null,
+            window_height: null,
+            styles: desktop_styles,
             debug: false,
             loading: true,
             url_o_id: passed_o_id,
@@ -121,17 +97,21 @@ class Edit extends React.Component {
             db_id: db_id,
             o_id: o_id,
             image_path: image_path,
+            piece_type: piece_type,
             description: description,
             title: title,
             available: available,
             sold: sold,
             price: price,
+            instagram: instagram,
             theme: theme,
             theme_options: theme_options,
             width: width,
             height: height,
             real_width: real_width,
             real_height: real_height,
+            framed: framed,
+            comments: comments,
             next_oid:
                 piece_position + 1 > num_pieces - 1 // if next piece is out of bounds (greater than piece list length), set to first piece
                     ? piece_list[0]['o_id']
@@ -146,12 +126,12 @@ class Edit extends React.Component {
             error: false,
             uploaded: false,
             upload_error: false,
-            framed: framed,
-            comments: comments
         };
         this.create_image_array = this.create_image_array.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
         this.handle_multi_select_change = this.handle_multi_select_change.bind(this);
+        this.update_field_value = this.update_field_value.bind(this);
+        this.handleResize = this.handleResize.bind(this);
 
         // File Upload
         this.showFileUpload = this.showFileUpload.bind(this);
@@ -164,10 +144,45 @@ class Edit extends React.Component {
         this.text_area_ref = React.createRef(null);
     }
 
-    async componentDidMount() {
-        // await this.update_current_piece(this.state.piece_list, this.state.url_o_id)
-        this.setState({ loading: false });
+
+    async componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
     }
+
+    async componentDidMount() {
+        var image_array = [];
+        const num_pieces = this.state.piece_list.length;
+        if (num_pieces > 0) {
+            image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position);
+        }
+       
+        console.log(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
+        this.setState({
+            loading: false,
+            window_width: window.innerWidth,
+            window_height: window.innerHeight,
+            image_array: image_array,
+            next_oid:
+                this.state.piece_position + 1 > num_pieces - 1
+                    ? this.state.piece_list[0]['o_id']
+                    : this.state.piece_list[this.state.piece_position + 1]['o_id'],
+            last_oid:
+                this.state.piece_position - 1 < 0
+                    ? this.state.piece_list[num_pieces - 1]['o_id']
+                    : this.state.piece_list[this.state.piece_position - 1]['o_id']
+        });
+
+        window.addEventListener("resize", this.handleResize); // Add event listener
+    }
+
+    handleResize() {
+        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+        this.setState({
+            window_width: window.innerWidth,
+            window_height: window.innerHeight
+        });
+    }
+
 
     async fetch_pieces_from_api(submitted = false) {
         console.log(`-------------- Fetching Initial Server List --------------`);
@@ -235,7 +250,7 @@ class Edit extends React.Component {
                 next_oid: next_oid,
                 last_oid: last_oid,
                 title: current_piece.title,
-                type: current_piece.type,
+                piece_type: current_piece.piece_type,
                 description: current_piece.description.split('<br>').join('\n'),
                 price: current_piece.price,
                 width: current_piece.width,
@@ -244,7 +259,7 @@ class Edit extends React.Component {
                 real_height: current_piece.real_height,
                 image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
                 instagram: current_piece.instagram,
-                available: current_piece.available,
+                available: current_piece.available == true || current_piece.available.toString().toLowerCase() == 'true' ? 'True' : 'False',
                 sold: current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False',
                 framed: current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False',
                 comments: current_piece.comments,
@@ -260,6 +275,8 @@ class Edit extends React.Component {
     }
 
     async create_image_array(piece_list, piece_position) {
+        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 768 ? desktop_styles : mobile_styles;
+
         var image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
             let piece = piece_list[i];
@@ -274,19 +291,15 @@ class Edit extends React.Component {
                         id={`details_image_${i}`}
                         className={styles.details_image}
                         src={
-                            piece['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                                ? piece['image_path']
-                                : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`
+                            piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
+                                ? piece.image_path
+                                : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`
                         }
                         alt={piece['title']}
                         priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
                         layout="fill"
                         objectFit="contain"
                         quality={100}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            this.setState({ full_screen: !this.state.full_screen });
-                        }}
                     />
                 </div>,
             );
@@ -303,45 +316,33 @@ class Edit extends React.Component {
     }
 
     async handleSubmit(event) {
-        console.log(`Submitting piece`);
         event.preventDefault();
+        console.log(`Submitting piece`);
 
         this.setState({ loading: true, submitted: false, loader_visable: true });
-
-        // capture data from form
-        const title_input_val = event.target.elements.title.value;
-        const type_input_val = event.target.elements.type.value;
-        const sold_input_val = event.target.elements.sold.value;
-        const price_input_val = event.target.elements.price.value;
-        const instagram_input_val = event.target.elements.instagram.value;
-        const real_width_input_val = event.target.elements.width.value;
-        const real_height_input_val = event.target.elements.height.value;
-        const available_input_val = event.target.elements.available.value;
-        const framed_input_val = event.target.elements.framed.value;
-        const comments_input_val = event.target.elements.comments.value;
 
         if (title) {
             console.log('--------------- Attempting To Edit Piece Details ---------------');
             console.log(
-                `Editing Piece DB ID: ${this.state.db_id} | Title: ${title} | Sold: ${sold} | Framed: ${framed}`,
+                `Editing Piece DB ID: ${this.state.db_id} | Title: ${this.state.title} | Sold: ${this.state.sold} | Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} | Image Path: ${this.state.image_path}`,
             );
             if (!this.state.uploaded) {
                 const response = await edit_details({
                     id: this.state.db_id,
-                    title: title_input_val,
+                    title: this.state.title,
                     description: this.state.description,
-                    type: type_input_val,
-                    sold: sold_input_val,
-                    price: price_input_val,
-                    instagram: instagram_input_val,
+                    piece_type: this.state.piece_type,
+                    sold: this.state.sold,
+                    price: this.state.price,
+                    instagram: this.state.instagram,
                     width: this.state.width,
                     height: this.state.height,
-                    real_width: real_width_input_val,
-                    real_height: real_height_input_val,
+                    real_width: this.state.real_width,
+                    real_height: this.state.real_height,
                     theme: this.state.theme,
-                    available: available_input_val,
-                    framed: framed_input_val,
-                    comments: comments_input_val,
+                    available: this.state.available,
+                    framed: this.state.framed,
+                    comments: this.state.comments,
                 });
 
                 console.log(`Edit Piece Response (Next Line):`);
@@ -359,21 +360,21 @@ class Edit extends React.Component {
                     `Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.image_path}`,
                 );
                 const response = await create_piece({
-                    title: title_input_val,
+                    title: this.state.title,
                     description: this.state.description,
-                    type: type_input_val,
-                    sold: sold_input_val,
-                    price: price_input_val,
-                    instagram: instagram_input_val,
+                    piece_type: this.state.piece_type,
+                    sold: this.state.sold,
+                    price: this.state.price,
+                    instagram: this.state.instagram,
                     width: this.state.width,
                     height: this.state.height,
-                    real_width: real_width_input_val,
-                    real_height: real_height_input_val,
+                    real_width: this.state.real_width,
+                    real_height: this.state.real_height,
                     image_path: this.state.image_path,
                     theme: this.state.theme,
-                    available: available_input_val,
-                    framed: framed_input_val,
-                    comments: comments_input_val,
+                    available: this.state.available,
+                    framed: this.state.framed,
+                    comments: this.state.comments,
                   });
                   
 
@@ -438,14 +439,14 @@ class Edit extends React.Component {
                     width: 0,
                     height: 0,
                     description: '',
-                    type: 'Intaglio On Paper',
+                    piece_type: 'Intaglio On Paper',
                     sold: 'True',
                     price: 0,
                     instagram: '',
                     real_width: 0,
                     real_height: 0,
-                    active: true,
-                    framed: false,
+                    active: 'True',
+                    framed: 'False',
                     comments: '',
                 });
 
@@ -460,7 +461,7 @@ class Edit extends React.Component {
                     piece_position: new_piece_list.length - 1,
                     title: 'Enter Title...',
                     description: 'Enter Description...',
-                    sold: false,
+                    sold: 'False',
                     price: 9999,
                     width: image.width,
                     height: image.height,
@@ -469,8 +470,8 @@ class Edit extends React.Component {
                     image_path: uploaded_image_path,
                     instagram: '',
                     theme: 'None',
-                    available: true,
-                    framed: false,
+                    available: 'True',
+                    framed: 'False',
                     comments: '',
                 };
                 console.log('Updating state with uploaded piece details (Next Line):');
@@ -561,6 +562,14 @@ class Edit extends React.Component {
         return loader_jsx;
     }
 
+    async update_field_value(field, new_value_object) {
+        const key_name = field.toLowerCase();
+        const new_value = new_value_object.value;
+        console.log(`Setting state on key: ${key_name} | Value: ${new_value}`);
+
+        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => console.log(`Updated key value: ${this.state[key_name]}`));
+    }
+
     render() {
         if (!this.props.isLoaded) {
             return <></>;
@@ -579,6 +588,9 @@ class Edit extends React.Component {
             this.props.router.push('/');
         }
 
+        console.log(`Using window width: ${this.state.window_width}`)
+        const styles = this.state.window_width > 768 ? desktop_styles : mobile_styles;
+
         // If to this position, User is signed in with ADMIN role in clerk publicMetadata
         var loader_jsx = this.state.loader_visable == true ? this.create_loader_jsx() : null;
 
@@ -588,353 +600,220 @@ class Edit extends React.Component {
                 : 'None';
         console.log(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
 
+        // Gallery Loader Container JSX
+        const loader_container_jsx = (
+            <div className={styles.loader_container}>
+                <div>Loading Gallery</div>
+                <CircularProgress color="inherit" className={styles.loader} />
+            </div>
+        );
+        
+        // Main Image Container JSX
+        const image_container_jsx = (
+            <div className={styles.details_image_outer_container}>
+                {this.state.loading == true ? ( loader_container_jsx ) : ( this.state.image_array )}
+            </div>
+        );
+
+        const backward_arrow_jsx = (
+            <ArrowForwardIosRoundedIcon className={`${title_styles.title_arrow} ${title_styles.img_hor_vert}`}
+                onClick={(e) => {
+                    e.preventDefault();
+                    this.update_current_piece(this.state.piece_list, this.state.next_oid);
+                }}
+            />  
+        );
+        const forward_arrow_jsx = (
+            <ArrowForwardIosRoundedIcon className={title_styles.title_arrow}
+                onClick={(e) => {
+                    e.preventDefault();
+                    this.update_current_piece(this.state.piece_list, this.state.last_oid);
+                }}
+            />
+        );
+        const title_input_jsx = (
+            <input
+                type="text"
+                className={title_styles.title_input}
+                id="title"
+                value={this.state.title}
+                key={'title'}
+                onChange={(e) => {
+                    e.preventDefault();
+                    this.setState({ title: e.target.value });
+                }}
+            />
+        );        
+        const back_to_details_button_jsx = (
+            <div className={title_styles.back_to_details_container}>
+                <PageviewIcon className={title_styles.back_to_details_icon}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        this.props.router.push(`/details/${this.state.url_o_id}`);
+                    }}
+                />
+            </div>
+        );
+        const title_container_jsx = (
+            <div className={title_styles.title_container}>
+                {backward_arrow_jsx}
+                {title_input_jsx}
+                {back_to_details_button_jsx}
+                {forward_arrow_jsx}
+            </div>
+        );
+
+        const description_text_area_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_textarea'} split={false} value={this.state.description} name={"Description"} update_field_value={this.update_field_value}/>
+            </div>
+        )
+
+        const theme_multiselect_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type="input_multiselect" name="Theme" value={this.state.theme_options} handle_multi_select_change={this.handle_multi_select_change} select_options={[
+                        ["Water", "Water"],
+                        ["Snow", "Snow"],
+                        ["Mountains", "Mountains"],
+                        ["Landscape", "Landscape"],
+                        ["City", "City"],
+                        ["Portrait", "Portrait"],
+                        ["Black and White", "Black and White"],
+                        ["Abstract", "Abstract"],
+                        ["None", "None"]
+                    ]}
+                />
+            </div>
+        )
+        
+        const piece_type_select_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_select'} split={false} value={this.state.piece_type} name={"Type"} id={"piece_type"} update_field_value={this.update_field_value} select_options={[
+                    ["Oil On Canvas", "Oil On Canvas"],
+                    ["Oil On Cradled Panel", "Oil On Cradled Panel"],
+                    ["Intaglio On Paper", "Intaglio On Paper"],
+                    ["Linocut On Paper", "Linocut On Paper"],
+                    ["Pastel On Paper", "Pastel On Paper"]
+                ]}/>
+            </div>
+        );
+
+        const available_and_sold_container_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_select'} split={true} value={this.state.available} name={"Available"} update_field_value={this.update_field_value} select_options={[
+                    ["True", "True"],
+                    ["False", "False"]
+                ]}/>
+                <InputComponent input_type={'input_select'} split={true} value={this.state.sold} name={"Sold"} update_field_value={this.update_field_value} select_options={[
+                    ["True", "Sold"],
+                    ["False", "Not Sold"]
+                ]}/>
+            </div>
+        );
+
+        const instagram_and_price_container_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.instagram} name={"Instagram"} update_field_value={this.update_field_value}/>
+
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.price} name={"Price"} update_field_value={this.update_field_value}/>
+            </div>
+        );
+
+        const real_width_and_height_container_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.real_width} name={"Width"} update_field_value={this.update_field_value}/>
+
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.real_height} name={"Height"} update_field_value={this.update_field_value}/>
+            </div>
+        );
+        
+        const px_width_and_height_container_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.width} name={"PX Width"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.height} name={"PX Height"} update_field_value={this.update_field_value}/>
+            </div>
+        );
+
+        const framed_and_comments_container_jsx = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.framed} name={"Framed"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_textarea'} split={true} value={this.state.comments} name={"Comments"} update_field_value={this.update_field_value}/>
+            </div>
+        );
+
+        const submit_container_jsx = (
+            <div className={form_styles.submit_container}>
+                <button type="button" className={form_styles.upload_button} onClick={this.showFileUpload}>Upload</button>
+                <input type="file" className={form_styles.upload_file_input} onChange={this.onFileChange} ref={this.file_input_ref}/>
+                <button type="button" className={form_styles.submit_button} onClick={this.handleSubmit}>Submit</button>
+                <div className={form_styles.loader_container}>{loader_jsx}</div>
+            </div>
+        );
+        
+        if (this.state.window_width > 768) {
+            return (
+                <PageLayout page_title={this.state.title == '' ? `Edit Details` : `Edit Details - ${this.state.title}`}>
+                    <div className={styles.details_container}>
+                        <div className={styles.details_container_left}>
+                            {image_container_jsx}
+                        </div>
+                        <div className={styles.details_container_right}>
+                            <div className={edit_details_styles.edit_details_form_container}>
+                                <form>
+
+                                    {title_container_jsx /* Title Container */}
+
+                                    {description_text_area_jsx /* Description Text Area */}
+
+                                    {piece_type_select_jsx /* Piece Type Select */}
+                                
+                                    {theme_multiselect_jsx /* Theme Multiselect */}
+
+                                    {available_and_sold_container_jsx /* Split Container For Available / sold */}
+
+                                    {instagram_and_price_container_jsx /* Split Container For Instagram Link / Available */}
+                                    
+                                    {real_width_and_height_container_jsx /* Split Container For real_width / real_height */}
+
+                                    {px_width_and_height_container_jsx /* Split Container For image pixel width / pixel height */}
+
+                                    {framed_and_comments_container_jsx /* Split Container For framed / comments */}
+
+                                    {submit_container_jsx}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </PageLayout>
+            );
+        }
         return (
             <PageLayout page_title={this.state.title == '' ? `Edit Details` : `Edit Details - ${this.state.title}`}>
                 <div className={styles.details_container}>
-                    <div className={styles.details_container_left}>
-                        <div className={styles.details_image_outer_container}>
-                            {this.state.loading == true ? (
-                                <div className={styles.loader_container}>
-                                    <div>Loading Gallery</div>
-                                    <CircularProgress color="inherit" className={styles.loader} />
-                                </div>
-                            ) : (
-                                this.state.image_array
-                            )}
-                        </div>
-                    </div>
-                    <div className={styles.details_container_right}>
-                        <div className={form_styles.edit_details_form_container}>
-                            <form method="post" onSubmit={this.handleSubmit}>
-                                <div className={form_styles.title_container}>
-                                    <ArrowForwardIosRoundedIcon
-                                        className={`${styles.title_arrow} ${form_styles.img_hor_vert}`}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            this.update_current_piece(this.state.piece_list, this.state.next_oid);
-                                        }}
-                                    />
-                                    <input
-                                        type="text"
-                                        className={form_styles.title_input}
-                                        id="title"
-                                        value={this.state.title}
-                                        key={'title'}
-                                        onChange={(e) => {
-                                            e.preventDefault();
-                                            this.setState({ title: e.target.value });
-                                        }}
-                                    />
-                                    <div className={form_styles.back_to_details_container}>
-                                        <PageviewIcon
-                                            className={form_styles.back_to_details_icon}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                this.props.router.push(`/details/${this.state.url_o_id}`);
-                                            }}
-                                        />
-                                    </div>
-                                    <ArrowForwardIosRoundedIcon
-                                        className={styles.title_arrow}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            this.update_current_piece(this.state.piece_list, this.state.last_oid);
-                                        }}
-                                    />
-                                </div>
+                    {image_container_jsx}
+                    <div className={edit_details_styles.edit_details_form_container}>
+                        <form>
 
-                                <div className={form_styles.edit_details_description_container}>
-                                    <textarea
-                                        className={form_styles.edit_details_description_textarea}
-                                        ref={this.text_area_ref}
-                                        id="description"
-                                        value={this.state.description}
-                                        key={'description'}
-                                        onChange={(e) => {
-                                            e.preventDefault();
-                                            this.setState({ description: e.target.value.split('<br>').join('\n') });
-                                        }}
-                                    />
-                                </div>
+                            {title_container_jsx /* Title Container */}
 
-                                {/* Piece Type Select */}
-                                <div className={form_styles.input_container}>
-                                    <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Type</div>
-                                    </div>
-                                    <select
-                                        id="type"
-                                        className={form_styles.input_select}
-                                        value={this.state.type}
-                                        key={'type'}
-                                        onChange={(e) => {
-                                            this.setState({ type: e.target.value });
-                                        }}
-                                    >
-                                        <option value="Oil On Canvas">Oil On Canvas</option>
-                                        <option value="Oil On Cradled Panel">Oil On Cradled Panel</option>
-                                        <option value="Intaglio On Paper">Intaglio On Paper</option>
-                                        <option value="Linocut On Paper">Linocut On Paper</option>
-                                        <option value="Pastel On Paper">Pastel On Paper</option>
-                                    </select>
-                                </div>
+                            {description_text_area_jsx /* Description Text Area */}
 
-                                {/* Theme Multiselect */}
-                                <div className={form_styles.input_multi_select_container}>
-                                    <div className={form_styles.input_label_container}>
-                                        <div className={form_styles.input_label}>Theme</div>
-                                    </div>
-                                    <Select
-                                        value={this.state.theme_options}
-                                        isMulti
-                                        id="theme"
-                                        name="theme"
-                                        className={form_styles.input_multi_select}
-                                        classNamePrefix="select"
-                                        onChange={(new_selected_options) =>
-                                            this.handle_multi_select_change(new_selected_options)
-                                        }
-                                        styles={{
-                                            control: (baseStyles, state) => ({
-                                                ...baseStyles,
-                                                borderColor: '',
-                                                backgroundColor: '#45544d',
-                                            }),
-                                        }}
-                                        options={[
-                                            { value: 'Water', label: 'Water' },
-                                            { value: 'Snow', label: 'Snow' },
-                                            { value: 'Mountains', label: 'Mountains' },
-                                            { value: 'Landscape', label: 'Landscape' },
-                                            { value: 'City', label: 'City' },
-                                            { value: 'Portrait', label: 'Portrait' },
-                                            { value: 'Black and White', label: 'Black and White' },
-                                            { value: 'Abstract', label: 'Abstract' },
-                                            { value: 'None', label: 'None' },
-                                        ]}
-                                    />
-                                </div>
+                            {piece_type_select_jsx /* Piece Type Select */}
+                        
+                            {theme_multiselect_jsx /* Theme Multiselect */}
 
-                                {/* Split Container For Available / sold */}
-                                <div className={form_styles.input_container_split_container}>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Available</div>
-                                        </div>
-                                        <select
-                                            id="available"
-                                            className={form_styles.input_select}
-                                            value={this.state.available}
-                                            key={'available'}
-                                            onChange={(e) => {
-                                                this.setState({ available: e.target.value });
-                                            }}
-                                        >
-                                            <option value="True">True</option>
-                                            <option value="False">False</option>
-                                        </select>
-                                    </div>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Sold</div>
-                                        </div>
-                                        <select
-                                            id="sold"
-                                            className={form_styles.input_select}
-                                            value={this.state.sold}
-                                            key={'sold'}
-                                            onChange={(e) => {
-                                                this.setState({ sold: e.target.value });
-                                            }}
-                                        >
-                                            <option value="True">Sold</option>
-                                            <option value="False">Not Sold</option>
-                                            {/*<option defaultValue="NFS">Not For Sale</option>*/}
-                                        </select>
-                                    </div>
-                                </div>
+                            {available_and_sold_container_jsx /* Split Container For Available / sold */}
 
-                                {/* Split Container For Instagram Link / Available */}
-                                <div className={form_styles.input_container_split_container}>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Instagram</div>
-                                        </div>
-                                        <input
-                                            id="instagram"
-                                            className={form_styles.input_textbox}
-                                            value={this.state.instagram}
-                                            key={'instagram'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ instagram: e.target.value });
-                                            }}
-                                        />
-                                    </div>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Price</div>
-                                        </div>
-                                        <input
-                                            id="price"
-                                            className={form_styles.input_textbox}
-                                            value={this.state.price}
-                                            key={'price'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ price: e.target.value });
-                                            }}
-                                        />
-                                    </div>
-                                </div>
+                            {instagram_and_price_container_jsx /* Split Container For Instagram Link / Available */}
+                            
+                            {real_width_and_height_container_jsx /* Split Container For real_width / real_height */}
 
-                                {/* Split Container For real_width / real_height */}
-                                <div className={form_styles.input_container_split_container}>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Width</div>
-                                        </div>
-                                        <input
-                                            className={`${form_styles.input_textbox} ${form_styles.input_split}`}
-                                            id="width"
-                                            value={this.state.real_width}
-                                            key={'real_width'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ real_width: e.target.value });
-                                            }}
-                                        />
-                                    </div>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Height</div>
-                                        </div>
-                                        <input
-                                            className={`${form_styles.input_textbox} ${form_styles.input_split}`}
-                                            id="height"
-                                            value={this.state.real_height}
-                                            key={'real_height'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ real_height: e.target.value });
-                                            }}
-                                        />
-                                    </div>
-                                </div>
+                            {px_width_and_height_container_jsx /* Split Container For image pixel width / pixel height */}
 
-                                {/* Split Container For image pixel width / pixel height */}
-                                <div className={form_styles.input_container_split_container}>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>PX Width</div>
-                                        </div>
-                                        <input
-                                            className={`${form_styles.input_textbox} ${form_styles.input_split}`}
-                                            id="pixel_width"
-                                            value={this.state.width}
-                                            key={'width'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ width: e.target.value });
-                                            }}
-                                        />
-                                    </div>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>PX Height</div>
-                                        </div>
-                                        <input
-                                            className={`${form_styles.input_textbox} ${form_styles.input_split}`}
-                                            id="pixel_height"
-                                            value={this.state.height}
-                                            key={'height'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ height: e.target.value });
-                                            }}
-                                        />
-                                    </div>
-                                </div>
+                            {framed_and_comments_container_jsx /* Split Container For framed / comments */}
 
-                                {/* Split Container For framed / comments */}
-                                <div className={form_styles.input_container_split_container}>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_left}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Framed</div>
-                                        </div>
-                                        <select
-                                            id="framed"
-                                            className={form_styles.input_select}
-                                            value={this.state.framed}
-                                            key={'framed'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ framed: e.target.value });
-                                            }}
-                                        >
-                                            <option value="True">True</option>
-                                            <option value="False">False</option>
-                                        </select>
-                                    </div>
-                                    <div className={`${form_styles.input_container_split} ${form_styles.split_right}`}>
-                                        <div
-                                            className={`${form_styles.input_label_container} ${form_styles.input_label_split}`}
-                                        >
-                                            <div className={form_styles.input_label}>Comments</div>
-                                        </div>
-                                        <textarea
-                                            className={`${form_styles.input_textbox} ${form_styles.input_split}`}
-                                            id="comments"
-                                            value={this.state.comments == null ? '' : this.state.comments}
-                                            key={'comments'}
-                                            onChange={(e) => {
-                                                e.preventDefault();
-                                                this.setState({ comments: e.target.value });
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className={form_styles.submit_container}>
-                                    <button
-                                        type="button"
-                                        className={form_styles.upload_button}
-                                        onClick={this.showFileUpload}
-                                    >
-                                        Upload
-                                    </button>
-                                    <input
-                                        type="file"
-                                        ref={this.file_input_ref}
-                                        className={form_styles.upload_file_input}
-                                        onChange={this.onFileChange}
-                                    />
-
-                                    <button type="submit" className={form_styles.submit_button}>
-                                        Submit
-                                    </button>
-                                    <div className={form_styles.loader_container}>{loader_jsx}</div>
-                                </div>
-                            </form>
-                        </div>
+                            {submit_container_jsx}
+                        </form>
                     </div>
                 </div>
             </PageLayout>

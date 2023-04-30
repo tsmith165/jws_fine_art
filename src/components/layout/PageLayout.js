@@ -1,7 +1,6 @@
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import Head from 'next/head';
-import Script from 'next/script';
 import styles from '@/styles/layout/PageLayout.module.scss';
 
 const PageLayout = ({ page_title = PROJECT_CONSTANTS.SITE_FULL_NAME, children }) => {

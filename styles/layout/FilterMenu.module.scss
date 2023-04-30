@@ -8,7 +8,7 @@
         border-left: None !important;
     }
 }
-@media (max-width: 800px) { // mobile
+@media (max-width: 768px) { // mobile
     .filter_menu_tooltip {
         display: none;
     }
@@ -83,7 +83,7 @@
     margin: 5px;
     }
 }
-@media (min-width: 799px) { // browser
+@media (min-width: 769px) { // browser
     .filter_menu_toggle {
         position: absolute;
         top: 50px;

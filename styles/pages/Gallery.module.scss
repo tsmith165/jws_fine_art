@@ -1,6 +1,6 @@
 @import "../../theme/theme";
 
-@media (max-width: 800px) { // mobile
+@media (max-width: 768px) { // mobile
   .gallery_container { 
     position: absolute;
     height: calc(100vh - 100px) !important;
@@ -30,7 +30,7 @@
       height: 100%;
     }
 }
-@media (min-width: 799px) { // browser
+@media (min-width: 769px) { // browser
   .gallery_container { 
     position: absolute;
     min-height: calc(100vh - 100px) !important; 
