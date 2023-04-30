@@ -87,6 +87,7 @@ class Checkout extends React.Component {
         this.check_fields = this.check_fields.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleResize = this.handleResize.bind(this);
+        this.update_field_value = this.update_field_value.bind(this);
     }
 
     async componentDidMount() {
@@ -258,6 +259,14 @@ class Checkout extends React.Component {
         });
     }
 
+    async update_field_value(field, new_value_object) {
+        const key_name = field.toLowerCase();
+        const new_value = new_value_object.value;
+        console.log(`Setting state on key: ${key_name} | Value: ${new_value}`);
+
+        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => console.log(`Updated key value: ${this.state[key_name]}`));
+    }
+
     render() {
 
         console.log(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted}`)
@@ -334,18 +343,18 @@ class Checkout extends React.Component {
 
         const full_name_textbox_jsx = (
             <div className={form_styles.input_container}>
-                <InputComponent input_type="input_textbox" name="Full Name" id="full_name" placeholder="Enter Full Name..." />
+                <InputComponent input_type="input_textbox" name="Full Name" id="full_name" placeholder="Enter Full Name..." update_field_value={this.update_field_value}/>
             </div>
         )
         
         const phone_number_textbox_jsx = (
             <div className={form_styles.input_container}>
-            <InputComponent input_type="input_textbox" name="Phone #" id="phone" placeholder="Enter Phone Number..." />
+            <InputComponent input_type="input_textbox" name="Phone #" id="phone" placeholder="Enter Phone Number..." update_field_value={this.update_field_value}/>
             </div>
         );
         const email_textbox_jsx = (
             <div className={form_styles.input_container}>
-                <InputComponent input_type="input_textbox" name="Email" id="email" placeholder="Enter Email Address..." />
+                <InputComponent input_type="input_textbox" name="Email" id="email" placeholder="Enter Email Address..." update_field_value={this.update_field_value}/>
             </div>
         );
 
