@@ -34,13 +34,11 @@ export default async function handler(req, res) {
 
   const passed_json = req.body
 
-  console.log(`Passed JSON (Next Line):`)
+  console.log(`Passed JSON Piece Type: ${passed_json.piece_type} | Full JSON (Next Line):`)
   console.log(passed_json);
   
   const update_output = await prisma.piece.update({
-    where: {
-      id: parseInt(id)
-    },
+    where: { id: parseInt(id) },
     data: passed_json
   });
 

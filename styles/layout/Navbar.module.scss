@@ -23,7 +23,7 @@
                 padding: 10px !important; 
             }
     
-@media (max-width: 800px) { // mobile
+@media (max-width: 768px) { // mobile
     // Menu Hamburger Button
     .hamburger_button { 
         position: absolute; 
@@ -106,7 +106,7 @@
         }
     }
 }
-@media (min-width: 799px) { // browser
+@media (min-width: 769px) { // browser
     // Menu Hamburger Button
     .hamburger_button { 
         position: absolute; 

@@ -33,7 +33,7 @@ class Piece extends React.Component {
                                 width={img_width} 
                                 height={img_height} 
                                 style={{width: img_width, height: img_height}} 
-                                sizes="(min-width: 799px) 30vw, (max-width: 800px) 45vw"
+                                sizes="(min-width: 768px) 30vw, (max-width: 769px) 45vw"
                                 alt={this.props.title} 
                             />
                         </div>

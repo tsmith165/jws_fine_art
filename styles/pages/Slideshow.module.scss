@@ -1,6 +1,6 @@
 @import "../../theme/theme";
 
-@media (min-width: 799px) {
+@media (min-width: 769px) {
 .slideshow_container { 
   position: absolute;
   height: calc(100% - 100px); 
@@ -120,7 +120,7 @@
       }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
   .slideshow_container { 
     position: absolute;
     height: calc(100% - 100px); 

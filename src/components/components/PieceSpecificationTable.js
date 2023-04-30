@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '@/styles/forms/PieceSpecificationTable.module.scss';
+import styles from '@/styles/components/PieceSpecificationTable.module.scss';
 
 const PieceSpecificationTable = ({ realWidth, realHeight, framed, comments, type, with_header }) => {
     console.log('with header: ' + with_header);

@@ -20,16 +20,16 @@ model Piece {
   image_path  String
   width       Int
   height      Int
-  description String @db.VarChar(500)
-  type        String
-  sold        Boolean @default(false)
   price       Int
+  sold        Boolean? @default(false)
+  available   Boolean? @default(true)
+  description String? @db.VarChar(500)
+  piece_type  String?
   instagram   String?
-  real_width  Float
-  real_height Float
-  active      Boolean @default(true)
+  real_width  Float?
+  real_height Float?
+  active      Boolean? @default(true)
   theme       String?
-  available   Boolean @default(true)
   framed      Boolean? @default(false)
   comments    String?
 }

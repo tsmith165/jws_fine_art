@@ -112,9 +112,9 @@
         padding: 10px; 
         line-height: 70px; 
     }
-    @media (max-width: 800px) {
+    @media (max-width: 768px) {
         .list_item_title_container { font-size: 4vw; }
     }
-    @media (min-width: 799px) {
+    @media (min-width: 769px) {
         .list_item_title_container { font-size: 2vw; }
     }
