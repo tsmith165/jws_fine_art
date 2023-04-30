@@ -73,6 +73,8 @@ class Checkout extends React.Component {
             db_id: db_id,
             o_id: o_id,
             image_jsx: null,
+            width: width,
+            height: height,
             title: title,
             price: price,
             instagram: instagram,
@@ -193,7 +195,7 @@ class Checkout extends React.Component {
 
             console.log('Creating a Pending Transaction ...');
             const pending_response = await create_pending_transaction(
-                this.state.piece_db_id,
+                this.state.db_id,
                 this.state.title,
                 full_name,
                 phone,
@@ -217,8 +219,8 @@ class Checkout extends React.Component {
                 `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`}`,
             );
             const stripe_response = await create_stripe_checkout_session(
-                this.state.piece_db_id,
-                this.state.piece_o_id,
+                this.state.db_id,
+                this.state.o_id,
                 this.state.title,
                 `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`,
                 this.state.width,
