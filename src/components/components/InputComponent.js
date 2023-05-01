@@ -63,7 +63,7 @@ class InputComponent extends React.Component {
                 </div>
             )
         }
-        else if (input_type == 'input_datepicker') {
+        else if (input_type == 'input_textarea') {
             return (
                 <div className={class_name}>
                     <Tooltip title={full_name} placement="top-start">
@@ -71,16 +71,19 @@ class InputComponent extends React.Component {
                             <div className={styles.input_label}>{name}</div>
                         </div>
                     </Tooltip>
-                    <DatePicker
+                    <textarea 
                         id={id}
-                        className={styles.date_picker}
-                        selected={this.props.state.date} 
-                        onChange= { (date) => {
-                            console.log(`NEW DATE SELECTED: ${date}`); 
-                            this.props.update_field_value(id, date)
-                            }
-                        } 
-                    />
+                        className={styles.input_textarea} 
+                        value={this.props.value} 
+                        rows={5}
+                        onChange={(e) => {
+                            e.preventDefault();
+                            var changed_value = document.getElementById(id).value;
+                            changed_value = changed_value.split('<br>').join('\n');
+                            console.log(`NEW VALUE FOR ${id}: ${changed_value}`); 
+                            this.props.update_field_value(id, changed_value)
+                        }
+                    }/>
                 </div>
             )
         }
@@ -159,7 +162,7 @@ class InputComponent extends React.Component {
                 </div>
             );
         }
-        else if (input_type == 'input_textarea') {
+        else if (input_type == 'input_datepicker') {
             return (
                 <div className={class_name}>
                     <Tooltip title={full_name} placement="top-start">
@@ -167,18 +170,16 @@ class InputComponent extends React.Component {
                             <div className={styles.input_label}>{name}</div>
                         </div>
                     </Tooltip>
-                    <textarea 
+                    <DatePicker
                         id={id}
-                        className={styles.input_textarea} 
-                        value={this.props.value} 
-                        rows={5}
-                        onChange={(e) => {
-                            e.preventDefault();
-                            const changed_value = document.getElementById(id).value; 
-                            console.log(`NEW VALUE FOR ${id}: ${changed_value}`); 
-                            this.props.update_field_value(id, changed_value)
-                        }
-                    }/>
+                        className={styles.date_picker}
+                        selected={this.props.state.date} 
+                        onChange= { (date) => {
+                            console.log(`NEW DATE SELECTED: ${date}`); 
+                            this.props.update_field_value(id, date)
+                            }
+                        } 
+                    />
                 </div>
             )
         }

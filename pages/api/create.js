@@ -61,6 +61,8 @@ export default async function (req, res) {
     console.log(`Final JSON (Next Line):`);
     console.log(passed_json);
 
+    const passed_json_description = passed_json.description === undefined ? '' : passed_json.includes('\n') ? passed_json.split('\n').join('<br>') : ''
+    
     const create_output = await prisma.piece.create({
         data: {
             id: next_id,
@@ -70,7 +72,7 @@ export default async function (req, res) {
             image_path: passed_json.image_path,
             width: parseInt(passed_json.width),
             height: parseInt(passed_json.height),
-            description: passed_json.description.split('\n').join('<br>'),
+            description: passed_json_description,
             piece_type: passed_json.piece_type,
             sold: passed_json.sold == 'Sold' ? true : false,
             price: parseInt(passed_json.price),
