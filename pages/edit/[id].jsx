@@ -324,7 +324,9 @@ class Edit extends React.Component {
         if (title) {
             console.log('--------------- Attempting To Edit Piece Details ---------------');
             console.log(
-                `Editing Piece DB ID: ${this.state.db_id} | Title: ${this.state.title} | Sold: ${this.state.sold} | Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} | Image Path: ${this.state.image_path}`,
+                `Editing Piece DB ID: ${this.state.db_id} | Title: ${this.state.title} | Sold: ${this.state.sold} |` + 
+                `Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} |` + 
+                `Image Path: ${this.state.image_path} | Description: ${this.state.description} | Instagram: ${this.state.instagram}`,
             );
             if (!this.state.uploaded) {
                 const response = await edit_details({
@@ -564,7 +566,7 @@ class Edit extends React.Component {
 
     async update_field_value(field, new_value_object) {
         const key_name = field.toLowerCase();
-        const new_value = new_value_object.value;
+        const new_value = typeof new_value_object === "string" ? new_value_object : new_value_object.value;
         console.log(`Setting state on key: ${key_name} | Value: ${new_value}`);
 
         this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => console.log(`Updated key value: ${this.state[key_name]}`));
@@ -740,7 +742,7 @@ class Edit extends React.Component {
                     ["True", "True"],
                     ["False", "False"]
                 ]}/>
-                <InputComponent input_type={'input_textarea'} split={true} value={this.state.comments} name={"Comments"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_textarea'} split={true} value={this.state.comments} name={"Comments"} update_field_value={this.update_field_value} rows={2}/>
             </div>
         );
 

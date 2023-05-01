@@ -35,6 +35,7 @@ class InputComponent extends React.Component {
         const id = (this.props.id !== undefined) ? (this.props.id) : name !== undefined ? (`${name.toLowerCase().replace(' ', '_')}`) : 'None';
         const split = this.props.split !== undefined ? this.props.split : false;
         const placeholder = this.props.placeholder !== undefined ? this.props.placeholder : '';
+        const rows = this.props.rows !== undefined ? this.props.rows : 5;
 
         console.log(`---------------------------------------------------------`)
         console.log(`Generating ${INPUT_TYPE_MASTER[input_type].name} | Name: ${id} | Split: ${split}`)
@@ -75,7 +76,7 @@ class InputComponent extends React.Component {
                         id={id}
                         className={styles.input_textarea} 
                         value={this.props.value} 
-                        rows={5}
+                        rows={rows}
                         onChange={(e) => {
                             e.preventDefault();
                             var changed_value = document.getElementById(id).value;
