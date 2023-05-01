@@ -736,7 +736,10 @@ class Edit extends React.Component {
 
         const framed_and_comments_container_jsx = (
             <div className={form_styles.input_container}>
-                <InputComponent input_type={'input_textbox'} split={true} value={this.state.framed} name={"Framed"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_select'} split={true} value={this.state.framed} name={"Framed"} update_field_value={this.update_field_value} select_options={[
+                    ["True", "True"],
+                    ["False", "False"]
+                ]}/>
                 <InputComponent input_type={'input_textarea'} split={true} value={this.state.comments} name={"Comments"} update_field_value={this.update_field_value}/>
             </div>
         );
