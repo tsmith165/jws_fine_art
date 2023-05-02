@@ -39,7 +39,7 @@ class Details extends React.Component {
 
         var current_piece = piece_list[piece_position];
 
-        const description_raw = current_piece.description == undefined ? '' : current_piece.description.length > 2 ? current_piece.description : '';
+        var description_raw = current_piece.description == undefined ? '' : current_piece.description.length > 2 ? current_piece.description : '';
 
         /* prettier-ignore-start */
         var db_id  = num_pieces < 1 ? -1 : current_piece.id    !== undefined  ? current_piece.id : -1;
@@ -60,6 +60,10 @@ class Details extends React.Component {
         var image_path  = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
         var instagram   = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
         /* prettier-ignore-end */
+
+        description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
+        description = description.replace('<br>', '');
+        console.log(`Description (Next Line):\n ${description}`)
 
         var image_array = [];
 
@@ -167,6 +171,11 @@ class Details extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
+        var description = current_piece.description
+        description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
+        description = description.replace('<br>', '');
+        console.log(`Description (Next Line):\n ${description}`)
+
         this.setState(
             {
                 loading: false,
@@ -179,7 +188,7 @@ class Details extends React.Component {
                 o_id: current_o_id,
                 title: current_piece.title,
                 piece_type: current_piece.piece_type,
-                description: current_piece['description'].split('<br>').join('\n'),
+                description: description,
                 sold: current_piece.sold,
                 price: current_piece.price,
                 width: current_piece.width,
