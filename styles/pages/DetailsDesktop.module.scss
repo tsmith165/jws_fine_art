@@ -1,3 +1,4 @@
+@import '../../theme/common';
 @import '../../theme/theme';
 
 @media (max-width: 768px) {
@@ -23,36 +24,10 @@
         align-items: center;
         background-color: $dark;
 
-        .details_image_outer_container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-
-            .details_image_container {
-                width: 100%;
-                height: 100%;
-                position: relative;
-
-                .details_image {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain;
-                    object-position: center;
-                    display: block;
-                }
-            }
-
-            .details_image_container_hidden {
-                width: 0px;
-                height: 0px;
-                position: relative;
-                display: none;
-            }
+        .centered_image_outer_container {
+            width: 100% !important;
+            height: 100% !important;
+            position: relative !important;
         }
     }
 }
