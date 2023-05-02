@@ -302,8 +302,8 @@ class Edit extends React.Component {
                         }
                         alt={piece['title']}
                         priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
-                        layout="fill"
-                        objectFit="contain"
+                        width={this.state.width}
+                        height={this.state.height}
                         quality={100}
                     />
                 </div>,

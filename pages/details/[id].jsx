@@ -6,7 +6,7 @@ import { withRouter } from 'next/router';
 
 import { prisma } from '@/lib/prisma';
 
-import Image from 'next/image';
+import NextImage from 'next/image';
 import Link from 'next/link';
 
 import PageLayout from '@/components/layout/PageLayout';
@@ -219,16 +219,15 @@ class Details extends React.Component {
                 <div key={`image_${i}`} className={
                     (i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden
                 }>
-                    <Image
+                    <NextImage
                         id={`details_image_${i}`}
                         className={styles.details_image}
                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
                         alt={piece.title}
-                        // height={this.state.height}
                         priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
                         quality={100}
-                        layout="fill"
-                        objectFit='contain'
+                        width={this.state.width}
+                        height={this.state.height}
                     />
                 </div>
             );
@@ -286,7 +285,7 @@ class Details extends React.Component {
         const price_label = (
             <Link href={`/checkout/${this.state.url_o_id}`} className={styles.price_wrapper} >
                 <div className={styles.price_label_wrapper}>
-                    <Image
+                    <NextImage
                         className={styles.price_label_stripe_image}
                         src="/stripe_checkout_tan-221_50.png"
                         alt="View Stripe Info"
@@ -308,13 +307,13 @@ class Details extends React.Component {
         const instagram_jsx = (this.state.instagram != null &&  this.state.instagram != '' && this.state.instagram.length > 5) ? (
             <Link className={styles.instagram_link_container} href={`https://www.instagram.com/p/${this.state.instagram}`}>
                 <div className={styles.instagram_image_container}>
-                    <Image
+                    <NextImage
                         className={styles.instagram_link_image}
                         src="/instagram_icon_100.png"
                         alt="Instagram Link"
                         priority={true}
-                        layout="fill"
-                        objectFit="contain"
+                        width={50}
+                        height={50}
                     />
                 </div>
             </Link>

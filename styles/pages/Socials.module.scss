@@ -27,14 +27,16 @@
 
             .bio_image {
                 position: absolute;
-                padding: 5px !important;
-                object-fit: contain;
-                max-height: 100%;
-                max-width: 100%;
                 top: 0;
                 left: 0;
+                right: 0;
+                bottom: 0;
                 width: 100%;
                 height: 100%;
+                object-fit: contain;
+                object-position: center;
+                display: block;
+                padding: 5px !important;
             }
         }
     }

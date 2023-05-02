@@ -37,8 +37,8 @@ class Navbar extends React.Component {
                                 className={styles.navbar_logo_img}
                                 src="/jws_logo_small.png"
                                 alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
-                                layout="fill"
-                                objectFit="contain"
+                                width={274}
+                                height={80}
                                 sizes="250px"
                             />
                         </Link>
@@ -55,8 +55,8 @@ class Navbar extends React.Component {
                                     className={styles.instagram_logo_link}
                                     src="/instagram_icon_50.png"
                                     alt="Instagram Link"
-                                    layout="fill"
-                                    objectFit="contain"
+                                    width={40}
+                                    height={40}
                                 />
                             </div>
                         </div>
