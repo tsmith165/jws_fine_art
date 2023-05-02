@@ -299,8 +299,10 @@ class Details extends React.Component {
             </Link>
         );
         
+        const sold_value = this.state.sold.toString().toLowerCase();
         // Uses sold label if piece sold, unavailable label if piece not for sale, or price label if piece is for sale
-        const price_jsx = (this.state.sold == true) ? ( sold_label ) : this.state.available == false ? ( unavailable_label ) : ( price_label )
+        const price_jsx = sold_value == 'true' ? sold_label : 
+            this.state.available == false ? unavailable_label : price_label
         
         // Instagram Button JSX
         const instagram_jsx = (this.state.instagram != null &&  this.state.instagram != '' && this.state.instagram.length > 5) ? (
