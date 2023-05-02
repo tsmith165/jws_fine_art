@@ -86,7 +86,7 @@ class SocialsPage extends React.Component {
                     rel="noreferrer"
                     className={styles.socials_picture}
                 >
-                    <Image src="/instagram_icon_512.png" alt="Instagram Logo" width={100} height={100} />
+                    <Image src="/Instagram_icon_512.png" alt="Instagram Logo" width={100} height={100} />
                 </a>
                 <div className={styles.follow_us}></div>
             </div>
