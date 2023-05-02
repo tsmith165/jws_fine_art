@@ -70,9 +70,9 @@ class Slideshow extends React.Component {
                             src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                             alt={piece['title']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                            layout='fill'
-                            objectFit='contain'
                             quality={100} 
+                            width={width}
+                            height={height}
                         />
                     </div>
                 ))
@@ -217,12 +217,12 @@ class Slideshow extends React.Component {
                 <div key={`image_${i}`} className={(i == piece_position) ? styles.slideshow_image_container : styles.slideshow_image_container_hidden}>
                     <Image                                         
                         className={styles.slideshow_image}
-                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
-                        alt={piece['title']}
+                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
+                        alt={piece.title}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
-                        layout='fill'
-                        objectFit='contain'
                         quality={100} 
+                        width={piece.width}
+                        height={piece.height}
                     />
                 </div>
             ))
@@ -232,7 +232,7 @@ class Slideshow extends React.Component {
 
     async get_piece_from_path_o_id(piece_list, o_id) {
         for (var i=0; i < piece_list.length; i++) {
-            if (piece_list[i]['o_id'].toString() == o_id.toString()) {
+            if (piece_list[i].o_id.toString() == o_id.toString()) {
                 return [i, piece_list[i]]
             }
         }

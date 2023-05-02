@@ -34,9 +34,16 @@
           visibility: hidden;
       }
         .slideshow_image {
-          position: relative;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
           width: 100%;
-          height: calc(100% - 80px);
+          height: 100%;
+          object-fit: contain;
+          object-position: center;
+          display: block;
         }
 
     .slideshow_menu_container {
@@ -154,9 +161,16 @@
           visibility: hidden;
       }
         .slideshow_image {
-          position: relative;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
           width: 100%;
-          height: calc(100% - 80px);
+          height: 100%;
+          object-fit: contain;
+          object-position: center;
+          display: block;
         }
         
     .slideshow_menu_container {

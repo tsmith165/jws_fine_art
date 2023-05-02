@@ -2,7 +2,7 @@ import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React from 'react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 
 import { create_pending_transaction, create_stripe_checkout_session } from '@/lib/api_calls';
 
@@ -101,14 +101,14 @@ class Checkout extends React.Component {
 
         var image_jsx = piece_position < 0 ? null : (
             <div key={`image_${piece_position}`} className={styles.details_image_container}>
-                <Image
+                <NextImage
                     id={`details_image_${piece_position}`}
                     className={styles.details_image}
                     src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece.image_path}`}
                     alt={this.state.title}
                     priority={true}
-                    layout="fill"
-                    objectFit="contain"
+                    width={this.state.width}
+                    height={this.state.height}
                     quality={100}
                 />
             </div>
@@ -292,7 +292,7 @@ class Checkout extends React.Component {
         const price_label = (
             <button type="submit" className={checkout_styles.price_wrapper}>
                 <div className={checkout_styles.price_label_wrapper}>
-                    <Image
+                    <NextImage
                         className={checkout_styles.price_label_stripe_image}
                         src="/stripe_checkout_tan-221_50.png"
                         alt="View Stripe Info"

@@ -89,9 +89,9 @@ class SuccessPage extends React.Component {
                     src={image_path}
                     alt={this.state.title}
                     priority={true}
-                    layout="fill"
-                    objectFit="contain"
                     quality={100}
+                    width={this.state.width}
+                    height={this.state.height}
                 />
             </div>
         )
