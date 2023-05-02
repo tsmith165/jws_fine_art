@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import Navbar from './Navbar'
 
 import React from 'react';
@@ -6,7 +8,7 @@ import { useUser } from "@clerk/clerk-react";
 const Layout = (props) => {
     const { isLoaded, isSignedIn, user } = useUser();
 
-    console.log(`Loading Layout with most recent page: ${props.most_recent_page_id}`)
+    logger.debug(`Loading Layout with most recent page: ${props.most_recent_page_id}`)
     return (
         <>
             <Navbar 

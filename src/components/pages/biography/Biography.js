@@ -1,3 +1,4 @@
+import logger from "@/lib/logger";
 import PROJECT_CONSTANTS from '@/lib/constants'
 
 import React from 'react';
@@ -17,7 +18,7 @@ class BiographyPage extends React.Component {
     }
 
     render() {
-        console.log(`Loading ${this.page_name} Page`)
+        logger.debug(`Loading ${this.page_name} Page`)
 
         return (
             <div className={styles.bio_container}>

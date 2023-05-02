@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants'
 
 import React from 'react';
@@ -7,23 +8,20 @@ import styles from '../../../../styles/components/OrderTree.module.scss'
 class OrderTree extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
-    async componentDidMount() {
-
-    }
+    async componentDidMount() { }
 
     render() {
-        console.log("Generating Order Tree - Data Next Line")
-        console.log(this.props.verified_list)
+        logger.debug("Generating Order Tree - Data Next Line")
+        logger.debug(this.props.verified_list)
     
         var list_items = [];
     
         for (var i = 0; i < this.props.verified_list.length; i++) {
             const verified_payment_data = this.props.verified_list[i];
-            console.log(`Verified Payment Data (Next Line):`);
-            console.log(verified_payment_data);
+            logger.debug(`Verified Payment Data (Next Line):`);
+            logger.debug(verified_payment_data);
     
             var image_url = verified_payment_data['image_path']
             if (!verified_payment_data['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)) {

@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import React from 'react';
 
 import styles from '@/styles/layout/MenuOverlay.module.scss'

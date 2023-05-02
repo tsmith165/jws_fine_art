@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import React from 'react';
 import { withRouter } from 'next/router';
 
@@ -29,7 +30,7 @@ class Manage extends React.Component {
         }
 
         const role = this.props.user.publicMetadata.role !== undefined ? this.props.user.publicMetadata.role : null;
-        console.log(`USER ROLE: ${role}`);
+        logger.debug(`USER ROLE: ${role}`);
 
         if (role !== 'ADMIN') {
             this.props.router.push('/');
@@ -56,7 +57,7 @@ class Manage extends React.Component {
 }
 
 async function fetchPieces() {
-    console.log(`Fetching pieces with prisma`);
+    logger.debug(`Fetching pieces with prisma`);
     const piece_list = await prisma.piece.findMany({
         orderBy: {
             o_id: 'desc',
@@ -67,7 +68,7 @@ async function fetchPieces() {
 }
 
 export const getServerSideProps = async (context) => {
-    console.log('Getting Server Side Props');
+    logger.debug('Getting Server Side Props');
     const piece_list = await fetchPieces();
 
     return {

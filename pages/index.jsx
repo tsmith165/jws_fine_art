@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants'
 
 import React from 'react';
@@ -28,7 +29,7 @@ class Home extends React.Component {
 export default Home
 
 async function fetchPieces() {
-    console.log(`Fetching pieces with prisma`)
+    logger.debug(`Fetching pieces with prisma`)
     const piece_list = await prisma.piece.findMany({
         orderBy: {
             o_id: 'desc',
@@ -38,7 +39,7 @@ async function fetchPieces() {
 }
 
 export const getServerSideProps = async (context) => {
-    console.log("Getting Server Side Props")
+    logger.debug("Getting Server Side Props")
     const piece_list = await fetchPieces()
 
     return { 

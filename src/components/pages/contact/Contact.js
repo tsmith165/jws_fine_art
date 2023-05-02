@@ -1,3 +1,5 @@
+import logger from '@/lib/logger';
+
 import PROJECT_CONSTANTS from '@/lib/constants'
 
 import React from 'react';
@@ -12,12 +14,10 @@ class Contact extends React.Component {
         this.page_name = 'Contact'
     }
 
-    async componentDidMount() {
-
-    }
+    async componentDidMount() { }
 
     render() {
-        console.log(`Loading ${this.page_name} Page`)
+        logger.section({message: `LOADING CONTACT PAGE`});
 
         return (
             <div className={styles.contact_container}>

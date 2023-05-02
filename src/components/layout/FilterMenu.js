@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import React  from 'react';
 
 import { Tooltip } from 'react-tooltip'
@@ -38,7 +40,7 @@ class FilterMenu extends React.Component {
     async componentDidMount() { }
 
     render() {
-        console.log(`Rendering Filter Menu with app_state Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
+        logger.debug(`Rendering Filter Menu with app_state Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`)
 
         var filter_menu_array = [];
         for (var i = 0; i < THEME_FILTERS.length; i++) {

@@ -1,10 +1,12 @@
 // pages/socials.js
-
-import PageLayout from '@/components/layout/PageLayout';
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
-import styles from '@/styles/pages/Socials.module.scss';
+
 import Image from 'next/image';
 import React from 'react';
+
+import PageLayout from '@/components/layout/PageLayout';
+import styles from '@/styles/pages/Socials.module.scss';
 
 const BLACK_AND_WHITE_QR_CODE = '/JWS_QR_CODE_WHITE_BLACK.png';
 const COLORED_QR_CODE = '/JWS_QR_CODE_GREEN_TAN.png';
@@ -43,7 +45,7 @@ class SocialsPage extends React.Component {
     }
 
     handleResize() {
-        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
         this.setState({
             window_width: window.innerWidth,
             window_height: window.innerHeight,

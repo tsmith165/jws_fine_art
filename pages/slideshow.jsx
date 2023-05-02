@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import React from 'react';
 
 import { prisma } from '@/lib/prisma'
@@ -28,7 +29,7 @@ class SlideshowPage extends React.Component {
 }
 
 async function fetchPieces() {
-    console.log(`Fetching pieces with prisma`)
+    logger.debug(`Fetching pieces with prisma`)
     const piece_list = await prisma.piece.findMany({
         orderBy: {
             o_id: 'desc',
@@ -39,10 +40,10 @@ async function fetchPieces() {
 }
 
 export const getServerSideProps = async (context) => {
-    console.log("Getting Server Side Props")
+    logger.debug("Getting Server Side Props")
     const piece_list = await fetchPieces()
 
-    //console.log(context)
+    //logger.debug(context)
     return { 
         props: {
             "piece_list": piece_list,

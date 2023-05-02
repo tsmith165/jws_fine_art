@@ -1,3 +1,4 @@
+import logger from "@/lib/logger";
 import React from 'react';
 
 import PageLayout from '@/components/layout/PageLayout';

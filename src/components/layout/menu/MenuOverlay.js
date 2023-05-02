@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import React from 'react';
 
 import MenuOverlayButton from './MenuOverlayButton';
@@ -25,8 +27,8 @@ class MenuOverlay extends React.Component {
             }
         }
     
-        console.log("Menu List (Next Line):");
-        console.log(using_menu);
+        logger.debug("Menu List (Next Line):");
+        logger.debug(using_menu);
             
         var menu_items = this.generate_menu(using_menu);
 
@@ -48,7 +50,7 @@ class MenuOverlay extends React.Component {
             let menu_item_string = menu_list[i][1];
             let url_endpoint = menu_list[i][3];
     
-            console.log(`Creating Menu Item for: ${menu_item_string}`);
+            logger.debug(`Creating Menu Item for: ${menu_item_string}`);
     
             const menu_item = <MenuOverlayButton
                                 key={i}
@@ -67,30 +69,30 @@ class MenuOverlay extends React.Component {
     
     select_menu(isLoaded, isSignedIn, user) {
         if (!isLoaded) {
-            console.log('User not loaded - returning signed out menu...')
+            logger.debug('User not loaded - returning signed out menu...')
             return SIGNED_OUT_MENU_LIST
         }
         if (!isSignedIn) {
-            console.log('User not signed in - returning signed out menu...')
+            logger.debug('User not signed in - returning signed out menu...')
             return SIGNED_OUT_MENU_LIST
         }
         if (user == null) {
-            console.log('User equals null - returning signed out menu...')
+            logger.debug('User equals null - returning signed out menu...')
             return SIGNED_OUT_MENU_LIST
         }
         if (!'publicMetadata' in user) {
-            console.log('User does not contain publicMetadata - returning signed out menu...')
+            logger.debug('User does not contain publicMetadata - returning signed out menu...')
             return SIGNED_OUT_MENU_LIST
         }
         if (!'role' in user.publicMetadata) {
-            console.log('User does not contain role - returning signed out menu...')
+            logger.debug('User does not contain role - returning signed out menu...')
             return SIGNED_OUT_MENU_LIST
         }
         if (user.publicMetadata.role === 'ADMIN') {
-            console.log('User has role Admin - returning signed in admin menu...')
+            logger.debug('User has role Admin - returning signed in admin menu...')
             return ADMIN_MENU_LIST
         }
-        console.log('User does not have role Admin - returning signed in non-admin menu...')
+        logger.debug('User does not have role Admin - returning signed in non-admin menu...')
         return SIGNED_IN_MENU_LIST
     }
 

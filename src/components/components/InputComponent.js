@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import React from 'react';
 
 import styles from '@/styles/components/InputComponent.module.scss';
@@ -6,7 +8,6 @@ import Tooltip from '@mui/material/Tooltip';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { useLoadScript } from '@react-google-maps/api';
 import PlacesAutocomplete from 'react-places-autocomplete';
 
 import Select from 'react-select';
@@ -27,7 +28,7 @@ class InputComponent extends React.Component {
     }
 
     render() {
-        console.log(`Creating Input Component with name: ${this.props.name}`)
+        logger.debug(`Creating Input Component with name: ${this.props.name}`)
 
         const input_type = this.props.input_type;
         var name = this.props.name;
@@ -37,8 +38,8 @@ class InputComponent extends React.Component {
         const placeholder = this.props.placeholder !== undefined ? this.props.placeholder : '';
         const rows = this.props.rows !== undefined ? this.props.rows : 5;
 
-        console.log(`---------------------------------------------------------`)
-        console.log(`Generating ${INPUT_TYPE_MASTER[input_type].name} | Name: ${id} | Split: ${split}`)
+        logger.debug(`---------------------------------------------------------`)
+        logger.debug(`Generating ${INPUT_TYPE_MASTER[input_type].name} | Name: ${id} | Split: ${split}`)
 
         const class_name = split ? (styles.input_split_container) : (styles.input_full_container)
         if (input_type == 'input_textbox') {
@@ -57,7 +58,7 @@ class InputComponent extends React.Component {
                         onChange={(e) => {
                             e.preventDefault();
                             const changed_value = document.getElementById(id).value; 
-                            console.log(`NEW VALUE FOR ${id}: ${changed_value}`); 
+                            logger.debug(`NEW VALUE FOR ${id}: ${changed_value}`); 
                             this.props.update_field_value(id, changed_value)
                         }
                     }/>
@@ -81,7 +82,7 @@ class InputComponent extends React.Component {
                             e.preventDefault();
                             var changed_value = document.getElementById(id).value;
                             changed_value = changed_value.split('<br>').join('\n');
-                            console.log(`NEW VALUE FOR ${id}: ${changed_value}`); 
+                            logger.debug(`NEW VALUE FOR ${id}: ${changed_value}`); 
                             this.props.update_field_value(id, changed_value)
                         }
                     }/>
@@ -89,14 +90,14 @@ class InputComponent extends React.Component {
             )
         }
         else if (input_type === 'input_select') {
-            console.log(`Possible Select Options (Next Line):`);
-            console.log(this.props.select_options)
+            logger.debug(`Possible Select Options (Next Line):`);
+            logger.debug(this.props.select_options)
 
             const react_select_options = this.props.select_options.map(option => ({ value: option[0], label: option[1] }));
-            console.log(`React Select Formatted Options (Next Line):`);
-            console.log(react_select_options)
+            logger.debug(`React Select Formatted Options (Next Line):`);
+            logger.debug(react_select_options)
 
-            console.log(`Selected Option type: ${(typeof this.props.value)} | Value: ${this.props.value}`)
+            logger.debug(`Selected Option type: ${(typeof this.props.value)} | Value: ${this.props.value}`)
         
             return (
                 <div className={class_name}>
@@ -126,15 +127,15 @@ class InputComponent extends React.Component {
             );
         }
         else if (input_type === 'input_multiselect') {
-            console.log(`Possible Multi-Select Options (Next Line):`);
-            console.log(this.props.select_options)
+            logger.debug(`Possible Multi-Select Options (Next Line):`);
+            logger.debug(this.props.select_options)
 
             const react_select_options = this.props.select_options.map(option => ({ value: option[0], label: option[1] }));
-            console.log(`React Multi-Select Options (Next Line):`);
-            console.log(react_select_options)
+            logger.debug(`React Multi-Select Options (Next Line):`);
+            logger.debug(react_select_options)
 
-            console.log(`Selected Options (Next Line):`);
-            console.log(this.props.value);
+            logger.debug(`Selected Options (Next Line):`);
+            logger.debug(this.props.value);
         
             return (
                 <div className={class_name}>
@@ -176,7 +177,7 @@ class InputComponent extends React.Component {
                         className={styles.date_picker}
                         selected={this.props.state.date} 
                         onChange= { (date) => {
-                            console.log(`NEW DATE SELECTED: ${date}`); 
+                            logger.debug(`NEW DATE SELECTED: ${date}`); 
                             this.props.update_field_value(id, date)
                             }
                         } 
@@ -228,27 +229,4 @@ class InputComponent extends React.Component {
     }
 }
 
-function useGoogleMapsLoader() {
-    return useLoadScript({
-        googleMapsApiKey: 'AIzaSyAQTCNGxtlglxAOC-CjqhKc2nroYKmPS7s',
-        libraries: ['places'],
-    });
-}
-
-function withLoadScript(WrappedComponent) {
-    return function (props) {
-        const { isLoaded, loadError } = useGoogleMapsLoader();
-
-        if (loadError) {
-            return <div>Error loading Google Maps API: {loadError.message}</div>;
-        }
-
-        if (!isLoaded) {
-            return <div>Loading Google Maps API...</div>;
-        }
-
-        return <WrappedComponent {...props} />;
-    };
-}
-
-export default withLoadScript(InputComponent);
+export default InputComponent;

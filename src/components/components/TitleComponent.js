@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import React, { Component } from 'react';
 import styles from '@/styles/components/TitleComponent.module.scss';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';

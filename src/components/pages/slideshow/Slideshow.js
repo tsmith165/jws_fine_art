@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants'
 
 import React from 'react';
@@ -21,8 +22,8 @@ class Slideshow extends React.Component {
         const piece_list = this.props.piece_list;
         const piece_list_length = piece_list.length
 
-        console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
-        console.log(piece_list)
+        logger.debug(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
+        logger.debug(piece_list)
 
         var image_array = [];
         
@@ -79,13 +80,13 @@ class Slideshow extends React.Component {
         }
         const base_speed = 80
         const default_ratio = (DEFAULT_MAX - base_speed) / (DEFAULT_MAX + DEFAULT_MIN)
-        // console.log(`Default ratio: ${default_ratio}`)
+        // logger.debug(`Default ratio: ${default_ratio}`)
 
         const ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN)
-        // console.log(`Ratio range: ${ratio_range}`)
+        // logger.debug(`Ratio range: ${ratio_range}`)
 
         const ratioed_value = default_ratio * ratio_range
-        // console.log(`Ratioed Speed: ${ratioed_value}`)
+        // logger.debug(`Ratioed Speed: ${ratioed_value}`)
 
         this.state = {
             debug: false,
@@ -139,16 +140,16 @@ class Slideshow extends React.Component {
     }
 
     change_speed(value) {
-        console.log(`Changing speed with value ${value}`)
+        logger.debug(`Changing speed with value ${value}`)
 
         var default_ratio = (DEFAULT_MAX - value) / (DEFAULT_MAX - DEFAULT_MIN)
-        console.log(`Default ratio: ${default_ratio}`)
+        logger.debug(`Default ratio: ${default_ratio}`)
 
         var ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN)
-        console.log(`Ratio range: ${ratio_range}`)
+        logger.debug(`Ratio range: ${ratio_range}`)
 
         var ratioed_value = default_ratio * ratio_range
-        console.log(`Ratioed Speed: ${ratioed_value}`)
+        logger.debug(`Ratioed Speed: ${ratioed_value}`)
 
         this.setState({base_speed: value, speed: ratioed_value * 10})
     }
@@ -156,18 +157,18 @@ class Slideshow extends React.Component {
     async update_current_piece(piece_list, o_id, set_running=false) {
         const piece_list_length = piece_list.length;
 
-        // console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
+        // logger.debug(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
         const [piece_position, current_piece] = await this.get_piece_from_path_o_id(piece_list, o_id);
         const piece_db_id = current_piece['id']
         const piece_o_id = current_piece['0_id']
 
-        // console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
-        console.log(current_piece)
+        // logger.debug(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
+        logger.debug(current_piece)
 
         const next_oid = (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id']                 : piece_list[piece_position + 1]['o_id'];
         const last_oid = (piece_position - 1 < 0)                 ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
 
-        // console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
+        // logger.debug(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
         const piece_details = {
             title:       current_piece['title'],
@@ -185,8 +186,8 @@ class Slideshow extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
-        // console.log("CURRENT PIECE DETAILS (Next Line):")
-        // console.log(piece_details)
+        // logger.debug("CURRENT PIECE DETAILS (Next Line):")
+        // logger.debug(piece_details)
 
         this.setState({
             loading: false,
@@ -238,8 +239,8 @@ class Slideshow extends React.Component {
     }
 
     render() {
-        // console.log("CURRENT PIECE DETAILS (Next Line):")
-        // console.log(this.state.piece_details)
+        // logger.debug("CURRENT PIECE DETAILS (Next Line):")
+        // logger.debug(this.state.piece_details)
 
         return (
             <div className={styles.slideshow_body}>

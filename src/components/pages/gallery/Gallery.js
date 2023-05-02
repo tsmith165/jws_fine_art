@@ -1,11 +1,11 @@
+import logger from '@/lib/logger';
+
 import React from 'react';
 
 import styles from '@/styles/pages/Gallery.module.scss'
 import 'react-tooltip/dist/react-tooltip.css'
 
 import Piece from './Piece';
-
-const DEBUG = false;
 
 const DEFAULT_PIECE_WIDTH = 250;
 const INNER_MARGIN_WIDTH = 30;
@@ -16,8 +16,8 @@ class Gallery extends React.Component {
         super(props);
         const piece_list = this.props.piece_list;
 
-        // console.log('Passed piece list:')
-        // console.log(piece_list)
+        // logger.debug('Passed piece list:')
+        // logger.debug(piece_list)
         
         this.state = {
             loading: true,
@@ -31,7 +31,6 @@ class Gallery extends React.Component {
         }
 
         this.create_gallery = this.create_gallery.bind(this);
-        this.log_debug_message = this.log_debug_message.bind(this);
         this.handleResize = this.handleResize.bind(this);
     }
 
@@ -53,12 +52,8 @@ class Gallery extends React.Component {
         }
     }
 
-    log_debug_message(message) {
-        if (DEBUG) { console.log(message) }
-    }
-
     handleResize() {
-        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`)
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`)
         this.setState({
           window_width: window.innerWidth,
           window_height: window.innerHeight,
@@ -69,17 +64,17 @@ class Gallery extends React.Component {
         const piece_list_length = piece_list.length
 
         if (piece_list == null || piece_list.length < 1) {
-            console.error(`Cannot create gallery, passed piece_list invalid.  Width: ${(this.state.window_width == undefined) ? null : this.state.window_width}`)
+            logger.error(`Cannot create gallery, passed piece_list invalid.  Width: ${(this.state.window_width == undefined) ? null : this.state.window_width}`)
         }
-        this.log_debug_message(`Passed piece_list length: ${piece_list_length}`)
+        logger.debug(`Passed piece_list length: ${piece_list_length}`)
 
         if (this.state.window_width == undefined) {
-            console.error(`Cannot create gallery, state.window_width invalid.  Value: ${(this.state.window_width == undefined) ? null : this.state.window_width}`)
+            logger.error(`Cannot create gallery, state.window_width invalid.  Value: ${(this.state.window_width == undefined) ? null : this.state.window_width}`)
         }
         if (this.state.window_height == undefined) {
-            console.error(`Cannot create gallery, state.window_height invalid.  Value: ${(this.state.window_width == undefined) ? null : this.state.window_width}`)
+            logger.error(`Cannot create gallery, state.window_height invalid.  Value: ${(this.state.window_width == undefined) ? null : this.state.window_width}`)
         }
-        this.log_debug_message(`Window Width: ${this.state.window_width} | Window height: ${this.state.window_height}`)
+        logger.debug(`Window Width: ${this.state.window_width} | Window height: ${this.state.window_height}`)
 
         var gallery_pieces = [];
         var column_bottom_list = [];
@@ -89,19 +84,19 @@ class Gallery extends React.Component {
         if (this.state.window_width < 500 + 40 + 60 + 30) {
             piece_width = (this.state.window_width - 40 - 60 - 20) / 2;
         }
-        this.log_debug_message(`Using Piece Width: ${piece_width}`)
+        logger.debug(`Using Piece Width: ${piece_width}`)
         
         var max_columns = Math.trunc(this.state.window_width / (piece_width + (BORDER_MARGIN_WIDTH * 2) + INNER_MARGIN_WIDTH));
-        this.log_debug_message(`COLUMNS: ${max_columns}`);
+        logger.debug(`COLUMNS: ${max_columns}`);
         
         var gallery_width = ((piece_width + (BORDER_MARGIN_WIDTH * 2)) * max_columns) + (10 * max_columns);
         if (max_columns < 3) gallery_width -= 20;
         
         var leftover_width = this.state.window_width - gallery_width;
-        this.log_debug_message(`GALLERY WIDTH: ${gallery_width} | LEFTOVER: ${leftover_width}`);
+        logger.debug(`GALLERY WIDTH: ${gallery_width} | LEFTOVER: ${leftover_width}`);
         
         var margin = leftover_width / 2;
-        this.log_debug_message(`LEFT MARGIN: ${margin} | MAIN: ${gallery_width} | RIGHT MARGIN: ${this.state.window_width - gallery_width - margin}`)
+        logger.debug(`LEFT MARGIN: ${margin} | MAIN: ${gallery_width} | RIGHT MARGIN: ${this.state.window_width - gallery_width - margin}`)
         
         var [cur_x, cur_y] = [margin, INNER_MARGIN_WIDTH];
         var [row, col] = [0, 0];
@@ -109,33 +104,33 @@ class Gallery extends React.Component {
         var row_starting_height = INNER_MARGIN_WIDTH;
         var skip_col = false;
 
-        // console.log(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
-        // console.log(piece_list)
+        // logger.debug(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
+        // logger.debug(piece_list)
         
         var i = 0; var real_i = 0;
         while (i < piece_list_length) {
             var current_piece_json =  piece_list[i];
-            // console.log(current_piece_json)
+            // logger.debug(current_piece_json)
             
             var piece_theme = (current_piece_json['theme'] !== undefined ) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
             var piece_sold = (current_piece_json['sold'] !== undefined ) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
             var piece_available = (current_piece_json['available'] !== undefined ) ? ((current_piece_json['available'] != null) ? current_piece_json['available'] : false) : false;
-            // console.log(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
+            // logger.debug(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
             if (theme != 'None' && theme != undefined && theme != null) {
                 if (theme == 'Available') {
                     if (piece_sold) {
-                        console.log('Skipping piece as it is sold')
+                        logger.debug('Skipping piece as it is sold')
                         i += 1;
                         continue;
                     }
                     if (!piece_available) {
-                        console.log('Skipping piece as it is not available')
+                        logger.debug('Skipping piece as it is not available')
                         i += 1;
                         continue;
                     }
                 } else {
                     if ((piece_theme !== undefined) && (!piece_theme.includes(this.props.app_state.theme))) {
-                        console.log('Skipping piece as it does not match theme')
+                        logger.debug('Skipping piece as it does not match theme')
                         i += 1;
                         continue;
                     }
@@ -151,19 +146,19 @@ class Gallery extends React.Component {
             var available   = (current_piece_json['available'] !== undefined) ? current_piece_json['available'] : 'None';
             var [width, height] = (current_piece_json['width'] !== undefined && current_piece_json['height'] !== undefined) ? [current_piece_json['width'], current_piece_json['height']] : 'None';
     
-            this.log_debug_message(`Width: ${width} | Height: ${height}`);
+            logger.debug(`Width: ${width} | Height: ${height}`);
             
             var [scaled_width, scaled_height] = [piece_width, height];
             scaled_height = (piece_width / width) * height;
     
-            this.log_debug_message(`Scaled Width: ${scaled_width} | Scaled Height: ${scaled_height}`);
+            logger.debug(`Scaled Width: ${scaled_width} | Scaled Height: ${scaled_height}`);
     
             real_i = (row * max_columns) + col;
             var index = real_i % max_columns;
-            this.log_debug_message(`CURRENT INDEX: ${index} | COL: ${col} | ROW: ${row}`);
+            logger.debug(`CURRENT INDEX: ${index} | COL: ${col} | ROW: ${row}`);
             
-            this.log_debug_message(column_bottom_list);
-            this.log_debug_message(`LAST COLUMN BOTTOM: ${column_bottom_list[index]}`);
+            logger.debug(column_bottom_list);
+            logger.debug(`LAST COLUMN BOTTOM: ${column_bottom_list[index]}`);
     
             if (row > 0) cur_y = column_bottom_list[index];
             else         column_bottom_list.push(INNER_MARGIN_WIDTH);
@@ -174,7 +169,7 @@ class Gallery extends React.Component {
             }
             else {
                 skip_col = (cur_y > row_starting_height) ? true : false
-                if (skip_col) { this.log_debug_message("Y from last row intercepts current row.  Skipping column..."); }
+                if (skip_col) { logger.debug("Y from last row intercepts current row.  Skipping column..."); }
             }
     
             if (skip_col == true) {
@@ -188,13 +183,13 @@ class Gallery extends React.Component {
                 }
             }
             else if (skip_col == false) {
-                this.log_debug_message(`Current X: ${cur_x} | Current Y: ${cur_y}`);
+                logger.debug(`Current X: ${cur_x} | Current Y: ${cur_y}`);
     
                 column_bottom_list[index] = column_bottom_list[index] + scaled_height + INNER_MARGIN_WIDTH;
-                this.log_debug_message(`CURRENT BOTTOM (${index}): ${column_bottom_list[index]}` );
+                logger.debug(`CURRENT BOTTOM (${index}): ${column_bottom_list[index]}` );
     
                 var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
-                //console.log(`Dimensions: ${dimensions}`)
+                //logger.debug(`Dimensions: ${dimensions}`)
     
                 gallery_pieces.push(
                     <Piece 
@@ -211,7 +206,7 @@ class Gallery extends React.Component {
                     />
                 );
                 
-                this.log_debug_message(`CUR COL: ${col} | MAX COL: ${max_columns}`)
+                logger.debug(`CUR COL: ${col} | MAX COL: ${max_columns}`)
                 if ( col < max_columns - 1 ) {
                     cur_x += scaled_width + INNER_MARGIN_WIDTH;
                     col += 1;
@@ -220,13 +215,13 @@ class Gallery extends React.Component {
                     [row, col] = [(row + 1), 0];
                     [cur_x, cur_y] = [margin, 0];
     
-                    this.log_debug_message('####################################################################');
-                    this.log_debug_message("GOING TO NEXT ROW");
+                    logger.debug('####################################################################');
+                    logger.debug("GOING TO NEXT ROW");
                 }
     
                 i += 1;
             } 
-            this.log_debug_message('--------------------------------------------------------------------');
+            logger.debug('--------------------------------------------------------------------');
         }
 
         for (var i = 0; i < column_bottom_list.length; i++) {
@@ -238,7 +233,7 @@ class Gallery extends React.Component {
     }
 
     render() {
-        // console.log(`Render gallery Filter menu open: ${this.props.app_state.filter_menu_open} | window width: ${this.state.window_width}`)
+        // logger.debug(`Render gallery Filter menu open: ${this.props.app_state.filter_menu_open} | window width: ${this.state.window_width}`)
 
         const page_layout = (
             <div className={ (this.state.window_width !== undefined && this.state.window_width < 768 && this.props.app_state.filter_menu_open == true) ? 
