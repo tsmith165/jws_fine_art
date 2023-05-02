@@ -217,11 +217,11 @@ class Details extends React.Component {
             let piece = piece_list[i];
             image_array.push(
                 <div key={`image_${i}`} className={
-                    (i == piece_position) ? styles.details_image_container : styles.details_image_container_hidden
+                    (i == piece_position) ? styles.centered_image_container : styles.centered_image_container_hidden
                 }>
                     <NextImage
-                        id={`details_image_${i}`}
-                        className={styles.details_image}
+                        id={`centered_image_${i}`}
+                        className={styles.centered_image}
                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
                         alt={piece.title}
                         priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
@@ -259,7 +259,7 @@ class Details extends React.Component {
         
         // Main Image Container JSX
         const image_container = (
-            <div className={styles.details_image_outer_container}>
+            <div className={styles.centered_image_outer_container}>
                 {this.state.loading == true ? ( loader_container ) : ( this.state.image_array )}
             </div>
         );

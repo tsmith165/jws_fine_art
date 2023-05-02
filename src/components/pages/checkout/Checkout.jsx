@@ -100,10 +100,10 @@ class Checkout extends React.Component {
         const piece_position = this.state.piece_position;
 
         var image_jsx = piece_position < 0 ? null : (
-            <div key={`image_${piece_position}`} className={styles.details_image_container}>
+            <div key={`image_${piece_position}`} className={styles.centered_image_container}>
                 <NextImage
-                    id={`details_image_${piece_position}`}
-                    className={styles.details_image}
+                    id={`centered_image_${piece_position}`}
+                    className={styles.centered_image}
                     src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece.image_path}`}
                     alt={this.state.title}
                     priority={true}
@@ -276,8 +276,8 @@ class Checkout extends React.Component {
 
         // Main Image Container JSX
         const image_container = (
-            <div className={styles.details_image_outer_container}>
-                <div className={styles.details_image_container}>{this.state.image_jsx}</div>
+            <div className={styles.centered_image_outer_container}>
+                <div className={styles.centered_image_container}>{this.state.image_jsx}</div>
             </div>
         );
         

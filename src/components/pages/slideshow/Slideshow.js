@@ -64,9 +64,9 @@ class Slideshow extends React.Component {
             for (var i=0; i < piece_list.length; i++) {
                 let piece = piece_list[i];
                 image_array.push((
-                    <div key={`image_${i}`} className={(i == piece_position) ? styles.slideshow_image_container : styles.slideshow_image_container_hidden}>
+                    <div key={`image_${i}`} className={(i == piece_position) ? styles.centered_image_container : styles.centered_image_container_hidden}>
                         <Image                                         
-                            className={styles.slideshow_image}
+                            className={styles.centered_image}
                             src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece['image_path']}`}
                             alt={piece['title']}
                             priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
@@ -214,9 +214,9 @@ class Slideshow extends React.Component {
         for (var i=0; i < piece_list.length; i++) {
             let piece = piece_list[i];
             image_array.push((
-                <div key={`image_${i}`} className={(i == piece_position) ? styles.slideshow_image_container : styles.slideshow_image_container_hidden}>
+                <div key={`image_${i}`} className={(i == piece_position) ? styles.centered_image_container : styles.centered_image_container_hidden}>
                     <Image                                         
-                        className={styles.slideshow_image}
+                        className={styles.centered_image}
                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
                         alt={piece.title}
                         priority={(i > piece_position - 3 && i < piece_position + 3) ? true : false}
@@ -244,7 +244,7 @@ class Slideshow extends React.Component {
 
         return (
             <div className={styles.slideshow_body}>
-                <div className={styles.slideshow_image_outer_container} onClick={(e) => { 
+                <div className={styles.centered_image_outer_container} onClick={(e) => { 
                     e.preventDefault(); 
                     {(this.state.running == false) ? ( 
                         this.update_current_piece(this.state.piece_list, this.state.next_oid, true)

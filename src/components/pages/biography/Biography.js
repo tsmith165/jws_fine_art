@@ -23,9 +23,9 @@ class BiographyPage extends React.Component {
         return (
             <div className={styles.bio_container}>
                 <div className={styles.bio_image_container}>
-                    <div className={styles.bio_image_border}>
+                    <div className={`${styles.bio_image_border} ${styles.centered_image_container}`}>
                         <Image
-                            className={styles.bio_image}
+                            className={`${styles.bio_image} ${styles.centered_image}`}
                             src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/site/bio_pic_small.jpg`}
                             alt={"Bio Pic"}
                             priority={true}

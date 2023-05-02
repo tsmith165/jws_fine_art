@@ -31,10 +31,10 @@ class Navbar extends React.Component {
         return (
             <nav className={styles.navbar}>
                 <div className={styles.navbar_container}>
-                    <div className={styles.navbar_logo}>
+                    <div className={`${styles.navbar_logo} ${styles.centered_image_container}`}>
                         <Link href="/">
                             <Image
-                                className={styles.navbar_logo_img}
+                                className={`${styles.navbar_logo_image} ${styles.centered_image}`}
                                 src="/jws_logo_small.png"
                                 alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
                                 width={274}
@@ -55,8 +55,8 @@ class Navbar extends React.Component {
                                     className={styles.instagram_logo_link}
                                     src="/instagram_icon_50.png"
                                     alt="Instagram Link"
-                                    width={40}
-                                    height={40}
+                                    width={50}
+                                    height={50}
                                 />
                             </div>
                         </div>

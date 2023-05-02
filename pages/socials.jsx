@@ -56,13 +56,11 @@ class SocialsPage extends React.Component {
         const artist_name_div = <div className={styles.artist_name}>Jill Weeks Smith</div>;
         const website_div = <div className={styles.website}>jwsfineart.com</div>;
         const bio_image_div = (
-            <div className={styles.bio_image_border}>
+            <div className={`${styles.bio_image_border} ${styles.centered_image_container}`}>
                 <Image
-                    className={styles.bio_image}
+                    className={`${styles.bio_image} ${styles.centered_image}`}
                     src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/site/bio_pic.jpg`}
                     alt="Bio Pic"
-                    layout="fill"
-                    objectFit="contain"
                     quality={100}
                 />
             </div>

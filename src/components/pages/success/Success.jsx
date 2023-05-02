@@ -82,10 +82,10 @@ class SuccessPage extends React.Component {
         const image_path  = this.state.current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece.image_path}` : '';
 
         var image_jsx = piece_position < 0 ? null : (
-            <div key={`image_${piece_position}`} className={styles.details_image_container}>
+            <div key={`image_${piece_position}`} className={styles.centered_image_container}>
                 <Image
-                    id={`details_image_${piece_position}`}
-                    className={styles.details_image}
+                    id={`centered_image_${piece_position}`}
+                    className={styles.centered_image}
                     src={image_path}
                     alt={this.state.title}
                     priority={true}
@@ -119,8 +119,8 @@ class SuccessPage extends React.Component {
         const styles = this.state.window_width < 769 ? mobile_styles : desktop_styles;
 
         const image_container = (
-            <div className={styles.details_image_outer_container}>
-                <div className={styles.details_image_container}>{this.state.image_jsx}</div>
+            <div className={styles.centered_image_outer_container}>
+                <div className={styles.centered_image_container}>{this.state.image_jsx}</div>
             </div>
         )
 

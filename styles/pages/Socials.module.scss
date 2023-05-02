@@ -1,6 +1,5 @@
-// styles/pages/Socials.module.scss
-@import '../../theme/colors';
-@import '../../theme/fonts';
+@import '../../theme/common';
+@import '../../theme/theme';
 
 .socials_container {
     display: flex;
@@ -19,25 +18,14 @@
         flex: 1;
 
         .bio_image_border {
-            position: relative;
             border-radius: 5px;
             background-color: $secondary;
-            height: 667px;
-            width: 500px;
+            height: 667px !important;
+            width: 500px !important;
+        }
 
-            .bio_image {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                object-position: center;
-                display: block;
-                padding: 5px !important;
-            }
+        .bio_image {
+            padding: 5px !important;
         }
     }
 
