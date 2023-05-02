@@ -68,20 +68,20 @@
             padding: 0px;
 
             .instagram_logo_link {  
-                background-color: $primary !important; 
+                background-color: $navbar_button_background !important; 
                 border-top-left-radius: 5px; 
                 border-top-right-radius: 5px; 
                 padding: 7.5px !important; 
 
                 &:hover { 
-                    background-color: $light !important; 
+                    background-color: $navbar_button_background_hover !important; 
                 }
             }
         }
     }
     
     .clerk_user_button_container {
-        background-color: $primary;
+        background-color: $navbar_button_background;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
         position: absolute; 
@@ -92,7 +92,7 @@
         padding: 5px;
 
         &:hover {
-            background-color: $light;
+            background-color: $navbar_button_background_hover;
         }
     }
 
