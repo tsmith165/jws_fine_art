@@ -3,14 +3,14 @@
 @media (max-width: 768px) { // mobile
   .gallery_container { 
     position: absolute;
-    height: calc(100vh - 100px) !important;
+    height: calc(100% - 100px) !important;
     width: 100vw; 
     background-color: $light;
   }
   .gallery_container_open { 
     position: absolute;
     top: 170px;
-    height: calc(100vh - 170px); 
+    height: calc(100% - 170px); 
     width: 100vw; 
     background-color: $light;
   }
@@ -33,15 +33,15 @@
 @media (min-width: 769px) { // browser
   .gallery_container { 
     position: absolute;
-    min-height: calc(100vh - 100px) !important; 
+    min-height: calc(100% - 100px) !important; 
     width: 100vw; 
     background-color: $light;
   }
     
     .gallery_main_container { 
       position: relative;
-      height: calc(100vh - 100px); 
-      min-height: calc(100vh - 100px) !important; 
+      height: calc(100% - 100px); 
+      min-height: calc(100% - 100px) !important; 
       width: 100vw; 
       overflow-y: scroll; 
       overflow-x: hidden; 
