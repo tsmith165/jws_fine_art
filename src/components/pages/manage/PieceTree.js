@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants'
 
 import React from 'react';
@@ -15,24 +16,21 @@ import EditIcon from '@mui/icons-material/Edit';
 class PieceTree extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
-    async componentDidMount() {
-
-    }
+    async componentDidMount() { }
 
     render() {
-        console.log("Generating Piece Tree - Data Next Line")
-        console.log(this.props.piece_tree_data)
+        logger.debug("Generating Piece Tree - Data Next Line")
+        logger.debug(this.props.piece_tree_data)
     
         var list_items = [];
     
         for (var i = 0; i < this.props.piece_tree_data.length; i++) {
             const piece_data = this.props.piece_tree_data[i];
             const pieces_length = this.props.piece_tree_data.length;
-            console.log(`Piece Data Length ${pieces_length} | Output (Next Line):`);
-            console.log(piece_data);
+            logger.debug(`Piece Data Length ${pieces_length} | Output (Next Line):`);
+            logger.debug(piece_data);
             
             const curr_id = piece_data['id']
             const last_id = (i + 1 > pieces_length - 1) ? this.props.piece_tree_data[0]['id']                 : this.props.piece_tree_data[i + 1]['id'];
@@ -46,7 +44,7 @@ class PieceTree extends React.Component {
             const last_id_list = [last_id, last_o_id]
             const curr_id_list = [curr_id, curr_o_id]
     
-            console.log(`Curr o_d: ${curr_o_id} | Next o_id: ${next_o_id} | Last o_id: ${last_o_id}`)
+            logger.debug(`Curr o_d: ${curr_o_id} | Next o_id: ${next_o_id} | Last o_id: ${last_o_id}`)
     
             const list_item_jsx = (
                 <div className={styles.tree_list_item}>

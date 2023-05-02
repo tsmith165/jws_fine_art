@@ -1,3 +1,4 @@
+import logger from "@/lib/logger";
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React from 'react';
@@ -16,20 +17,20 @@ class Cancel extends React.Component {
 
         this.router = props.router;
 
-        console.log(`ID PROP: ${this.props.id}`);
-        console.log(`ID PROP: ${this.props.id}`);
+        logger.debug(`ID PROP: ${this.props.id}`);
+        logger.debug(`ID PROP: ${this.props.id}`);
         const passed_o_id = this.props.id;
 
         const piece_list = this.props.piece_list;
         const num_pieces = piece_list.length;
 
-        console.log(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
-        console.log(piece_list);
+        logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
+        logger.debug(piece_list);
 
         var piece_position = 0;
         for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
-                console.log(
+                logger.debug(
                     `Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`,
                 );
                 piece_position = i;
@@ -94,7 +95,7 @@ class Cancel extends React.Component {
             </div>
         )
        
-        console.log(`Setting state with Piece Position: ${this.state.piece_position}`);
+        logger.debug(`Setting state with Piece Position: ${this.state.piece_position}`);
         this.setState({
             loading: false,
             window_width: window.innerWidth,
@@ -106,7 +107,7 @@ class Cancel extends React.Component {
     }
 
     handleResize() {
-        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
         this.setState({
             window_width: window.innerWidth,
             window_height: window.innerHeight

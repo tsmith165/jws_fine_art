@@ -1,3 +1,4 @@
+import logger from "@/lib/logger";
 import React from "react";
 
 import { prisma } from '@/lib/prisma'
@@ -33,7 +34,7 @@ class SignUpPage extends React.Component {
 export default SignUpPage;
 
 export const getServerSideProps = async (context) => {
-    console.log("Getting Server Side Props")
+    logger.debug("Getting Server Side Props")
     const piece = await prisma.piece.findFirst({
         orderBy: {
             o_id: 'desc',

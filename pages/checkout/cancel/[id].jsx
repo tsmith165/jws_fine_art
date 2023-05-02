@@ -1,3 +1,5 @@
+import logger from '@/lib/logger';
+
 import React from 'react';
 import { withRouter } from 'next/router'
 
@@ -27,11 +29,14 @@ class CancelPage extends React.Component {
 export default withRouter(CancelPage)
 
 export const getServerSideProps = async (context) => {
-    console.log(`-------------- Fetching Initial Server List --------------`)
-    var piece_list = await prisma.piece.findMany()
-    piece_list.sort((a, b) => a['o_id'] - b['o_id']);
-  
-    return {
-      props: {piece_list: piece_list, most_recent_id: piece_list[piece_list.length - 1]['id']}, // will be passed to the page component as props
-    }
+  logger.section({message: `Fetching Initial Server List`})
+
+  var piece_list = await prisma.piece.findMany()
+  piece_list.sort((a, b) => a['o_id'] - b['o_id']);
+
+  return {
+    props: { // will be passed to the page component as props
+      piece_list: piece_list, 
+      most_recent_id: piece_list[piece_list.length - 1]['id']}, 
+  }
 }

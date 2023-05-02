@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import React from 'react';
 import { withRouter } from 'next/router'
 
@@ -23,7 +24,7 @@ class Orders extends React.Component {
         if (this.props.user == null) { this.props.router.push('/') }
         
         const role = (this.props.user.publicMetadata.role !== undefined) ? this.props.user.publicMetadata.role : null;
-        console.log(`USER ROLE: ${role}`)
+        logger.debug(`USER ROLE: ${role}`)
         
         if (role !== "ADMIN") { this.props.router.push('/') }
 
@@ -45,26 +46,26 @@ class Orders extends React.Component {
 }
 
 async function fetchVerfiedPayments() {
-    console.log(`Fetching pieces with prisma`)
+    logger.debug(`Fetching pieces with prisma`)
     var verified_list = await prisma.verified.findMany()
 
-    console.log("Verified Payments List (Next Line):")
-    console.log(verified_list)
+    logger.debug("Verified Payments List (Next Line):")
+    logger.debug(verified_list)
 
     for (var i = 0; i < verified_list.length; i++) {
         const date_string = new Date(verified_list[i]['date']).toUTCString();
-        console.log(`Current Date: ${date_string}`)
+        logger.debug(`Current Date: ${date_string}`)
         verified_list[i]['date'] = date_string
     }
 
-    console.log("Verified Payments List (Next Line):")
-    console.log(verified_list)
+    logger.debug("Verified Payments List (Next Line):")
+    logger.debug(verified_list)
 
     return verified_list
 }
 
 export const getServerSideProps = async (context) => {
-    console.log("Getting Server Side Props")
+    logger.debug("Getting Server Side Props")
     const verified_list = await fetchVerfiedPayments()
 
     const piece = await prisma.piece.findFirst({

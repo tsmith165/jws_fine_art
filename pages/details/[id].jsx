@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React from 'react';
@@ -15,17 +16,13 @@ import TitleComponent from '@/components/components/TitleComponent';
 import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
 import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
 
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import CircularProgress from '@mui/material/CircularProgress';
-import CloseIcon from '@mui/icons-material/Close';
 
 class Details extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log(`------------------------- LOADING DETAILS PAGE -------------------------`);
-        // console.log(`Props (Next Line):`)
-        // console.log(this.props)
+        logger.section({message: `LOADING DETAILS PAGE`});
 
         const passed_o_id = this.props.router.query.id;
 
@@ -120,7 +117,7 @@ class Details extends React.Component {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position);
         }
        
-        console.log(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
+        logger.debug(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
         this.setState({
             loading: false,
             window_width: window.innerWidth,
@@ -140,7 +137,7 @@ class Details extends React.Component {
     }
 
     handleResize() {
-        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight} | Setting Styles ${window.innerWidth < 769 ? 'Mobile' : 'Desktop'}`);
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight} | Setting Styles ${window.innerWidth < 769 ? 'Mobile' : 'Desktop'}`);
         this.setState({
             window_width: window.innerWidth,
             window_height: window.innerHeight,
@@ -152,18 +149,18 @@ class Details extends React.Component {
         const previous_url_o_id = this.state.url_o_id;
         const num_pieces = piece_list.length;
 
-        console.log(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
+        logger.debug(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
         const [piece_position, current_piece] = await this.get_piece_from_path_o_id(piece_list, o_id);
         const current_db_id = current_piece['id'];
         const current_o_id = current_piece['o_id'];
 
-        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Data (Next Line):`);
-        console.log(current_piece);
+        logger.debug(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Data (Next Line):`);
+        logger.debug(current_piece);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
 
-        console.log(
+        logger.debug(
             `Updating to new selected piece with Postition: ${piece_position} | ` + 
             `DB ID: ${current_db_id} | O_ID: ${current_o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`
         );
@@ -211,7 +208,7 @@ class Details extends React.Component {
     }
 
     async create_image_array(piece_list, piece_position) {
-        console.log(`Current window width: ${ window.innerWidth} | piece position: ${piece_position}`)
+        logger.debug(`Current window width: ${ window.innerWidth} | piece position: ${piece_position}`)
 
         const styles = window.innerWidth < 769 ? mobile_styles : desktop_styles;
 
@@ -248,7 +245,7 @@ class Details extends React.Component {
     }
 
     render() {
-        console.log(`is Admin: ${this.state.user != undefined ? this.state.user.publicMetadata.role : 'NOT ADMIN'}`);
+        logger.debug(`is Admin: ${this.state.user != undefined ? this.state.user.publicMetadata.role : 'NOT ADMIN'}`);
 
         const title = this.state.title != null ? this.state.title : '';
         const styles = this.state.window_width < 769 ? mobile_styles : desktop_styles;
@@ -393,13 +390,18 @@ class Details extends React.Component {
 export default withRouter(Details);
 
 export const getServerSideProps = async (context) => {
+    logger.section({message: `Fetching Initial Details Page Server List`});
+
     var piece_list = await prisma.piece.findMany();
     piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
-    // console.log(`Passing piece list (Next Line):`)
-    // console.log(piece_list)
+    // logger.debug(`Passing piece list (Next Line):`)
+    // logger.debug(piece_list)
 
     return {
-        props: { piece_list: piece_list, most_recent_id: piece_list[piece_list.length - 1]['id'] }, // will be passed to the page component as props
+        props: { // will be passed to the page component as props
+            piece_list: piece_list, 
+            most_recent_id: piece_list[piece_list.length - 1]['id'] 
+        }, 
     };
 };

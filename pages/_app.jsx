@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
@@ -18,11 +20,11 @@ const App = ({ Component, pageProps }) => {
     const { pathname } = useRouter();
     const isPrivatePath = ADMIN_PAGES.has(pathname);
 
-    console.log(`pathname: ${pathname}`);
+    logger.debug(`pathname: ${pathname}`);
 
     useEffect(() => {
         const handleRouteChange = (url) => {
-            console.log(`Sending analytics call with url: ${url}`);
+            logger.debug(`Sending analytics call with url: ${url}`);
             gtag.pageview(url);
             app_set_state({ ...app_state, pathname: url, filter_menu_open: false });
         };
@@ -41,11 +43,11 @@ const App = ({ Component, pageProps }) => {
         theme: 'None',
     });
 
-    // console.log(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
-    // console.log(`Using Page Props (Next Line)`)
-    // console.log(pageProps)
+    // logger.debug(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
+    // logger.debug(`Using Page Props (Next Line)`)
+    // logger.debug(pageProps)
 
-    // console.log(`Rendering APP with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
+    // logger.debug(`Rendering APP with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
 
     return (
         <ClerkProvider appearance={{ baseTheme: dark }}>

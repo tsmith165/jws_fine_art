@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React from 'react';
@@ -26,7 +27,7 @@ class ContactPage extends React.Component {
 }
 
 export const getServerSideProps = async (context) => {
-    console.log('Getting Server Side Props');
+    logger.debug('Getting Server Side Props');
     const piece = await prisma.piece.findFirst({
         orderBy: {
             o_id: 'desc',

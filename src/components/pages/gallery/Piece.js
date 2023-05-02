@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants'
 
 import React from 'react';

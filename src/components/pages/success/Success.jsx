@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React from 'react';
@@ -11,28 +12,26 @@ import checkout_styles from '@/styles/pages/CheckoutReturn.module.scss'
 
 import PageLayout from '@/components/layout/PageLayout';
 
-import CircularProgress from '@mui/material/CircularProgress';
-
 class SuccessPage extends React.Component {
     constructor(props) {
         super(props);
 
         this.router = props.router;
 
-        console.log(`ID PROP: ${this.props.id}`);
-        console.log(`ID PROP: ${this.props.id}`);
+        logger.debug(`ID PROP: ${this.props.id}`);
+        logger.debug(`ID PROP: ${this.props.id}`);
         const passed_o_id = this.props.id;
 
         const piece_list = this.props.piece_list;
         const num_pieces = piece_list.length;
 
-        console.log(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
-        console.log(piece_list);
+        logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
+        logger.debug(piece_list);
 
         var piece_position = 0;
         for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
-                console.log(
+                logger.debug(
                     `Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`,
                 );
                 piece_position = i;
@@ -97,7 +96,7 @@ class SuccessPage extends React.Component {
             </div>
         )
        
-        console.log(`Setting state with Piece Position: ${this.state.piece_position}`);
+        logger.debug(`Setting state with Piece Position: ${this.state.piece_position}`);
         this.setState({
             loading: false,
             window_width: window.innerWidth,
@@ -109,7 +108,7 @@ class SuccessPage extends React.Component {
     }
 
     handleResize() {
-        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
         this.setState({
             window_width: window.innerWidth,
             window_height: window.innerHeight

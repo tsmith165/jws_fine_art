@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React from 'react';
@@ -27,14 +28,16 @@ class Edit extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log(`ID PROP: ${this.props.id}`);
+        logger.section({message: `LOADING EDIT DETAILS PAGE`});
+
+        logger.debug(`ID PROP: ${this.props.id}`);
         const passed_o_id = this.props.router.query.id;
 
         const piece_list = this.props.piece_list;
         const num_pieces = piece_list.length;
 
-        console.log(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
-        console.log(piece_list);
+        logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
+        logger.debug(piece_list);
 
         var piece_position = 0;
 
@@ -68,11 +71,11 @@ class Edit extends React.Component {
 
         var theme_options = [{ value: theme, label: theme }];
         if (theme != 'None' && theme.includes(', ')) {
-            console.log(`Splitting theme string: ${theme}`);
+            logger.debug(`Splitting theme string: ${theme}`);
             theme_options = [];
             theme.split(', ').forEach(function (theme_string) {
                 if (theme_string.length > 1) {
-                    console.log(`Adding theme string ${theme_string} to options...`);
+                    logger.debug(`Adding theme string ${theme_string} to options...`);
                     theme_options.push({ value: theme_string, label: theme_string });
                 }
             });
@@ -80,8 +83,8 @@ class Edit extends React.Component {
 
         var image_array = [];
 
-        console.log(`Setting initial state theme to: ${theme} | options (Next line):`);
-        console.log(theme_options);
+        logger.debug(`Setting initial state theme to: ${theme} | options (Next line):`);
+        logger.debug(theme_options);
 
         this.state = {
             window_width: null,
@@ -156,7 +159,7 @@ class Edit extends React.Component {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position);
         }
        
-        console.log(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
+        logger.debug(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
         this.setState({
             loading: false,
             window_width: window.innerWidth,
@@ -176,7 +179,7 @@ class Edit extends React.Component {
     }
 
     handleResize() {
-        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
         this.setState({
             window_width: window.innerWidth,
             window_height: window.innerHeight
@@ -185,18 +188,20 @@ class Edit extends React.Component {
 
 
     async fetch_pieces_from_api(submitted = false) {
-        console.log(`-------------- Fetching Initial Server List --------------`);
+        logger.section({message: `Fetching Initial Server List`});
+
         const piece_list = await fetch_pieces();
         piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
-        console.log('Pieces fetched in state (Next Line):');
-        console.log(piece_list);
+        logger.debug('Pieces fetched in state (Next Line):');
+        logger.debug(piece_list);
 
-        var state = { piece_list: piece_list };
-        if (submitted) {
-            state = { piece_list: piece_list, loading: false, error: false, submitted: true };
-        }
-        console.log(`URL o_id: ${this.state.url_o_id}`);
+        const state = submitted == true ?  { piece_list: piece_list } : { 
+            piece_list: piece_list, 
+            loading: false, 
+            error: false, 
+            submitted: true 
+        };
         this.setState(state, async () => {
             await this.update_current_piece(this.state.piece_list, this.state.url_o_id);
         });
@@ -205,14 +210,14 @@ class Edit extends React.Component {
     async update_current_piece(piece_list, o_id) {
         const num_pieces = piece_list.length;
 
-        console.log(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
+        logger.debug(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
         const piece_from_path_o_id = await this.get_piece_from_path_o_id(piece_list, o_id);
         const [piece_position, current_piece] = piece_from_path_o_id;
         const current_db_id = current_piece.id;
         const current_o_id = current_piece.o_id;
 
-        console.log(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
-        console.log(current_piece);
+        logger.debug(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
+        logger.debug(current_piece);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
@@ -221,18 +226,18 @@ class Edit extends React.Component {
         var theme_options = [{ value: theme, label: theme }];
 
         if (theme != 'None' && theme.includes(', ')) {
-            console.log(`Splitting theme string: ${theme}`);
+            logger.debug(`Splitting theme string: ${theme}`);
             theme_options = [];
             theme.split(', ').forEach(function (theme_string) {
                 if (theme_string.length > 1) {
-                    console.log(`Adding theme string ${theme_string} to options...`);
+                    logger.debug(`Adding theme string ${theme_string} to options...`);
                     theme_options.push({ value: theme_string, label: theme_string });
                 }
             });
         }
 
-        console.log(`Setting theme to: ${theme} | framed: ${current_piece.framed} | options (Next line):`);
-        console.log(theme_options);
+        logger.debug(`Setting theme to: ${theme} | framed: ${current_piece.framed} | options (Next line):`);
+        logger.debug(theme_options);
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
@@ -317,13 +322,11 @@ class Edit extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        console.log(`Submitting piece`);
-
         this.setState({ loading: true, submitted: false, loader_visable: true });
 
         if (title) {
-            console.log('--------------- Attempting To Edit Piece Details ---------------');
-            console.log(
+            logger.section({message: 'Attempting To Edit Piece Details'});
+            logger.debug(
                 `Editing Piece DB ID: ${this.state.db_id} | Title: ${this.state.title} | Sold: ${this.state.sold} |` + 
                 `Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} |` + 
                 `Image Path: ${this.state.image_path} | Description: ${this.state.description} | Instagram: ${this.state.instagram}`,
@@ -347,20 +350,18 @@ class Edit extends React.Component {
                     comments: this.state.comments,
                 });
 
-                console.log(`Edit Piece Response (Next Line):`);
-                console.log(response);
+                logger.debug(`Edit Piece Response (Next Line):`);
+                logger.debug(response);
 
                 if (response) {
                     await this.fetch_pieces_from_api(true);
                 } else {
-                    console.log('Edit Piece - No Response - Setting error = true');
+                    logger.debug('Edit Piece - No Response - Setting error = true');
                     this.setState({ loading: false, error: true });
                 }
             } else {
-                console.log('--------------- Attempting To Create New Piece ---------------');
-                console.log(
-                    `Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.image_path}`,
-                );
+                logger.section({message: 'Attempting To Create New Piece'});
+                logger.debug(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.image_path}`);
                 const response = await create_piece({
                     title: this.state.title,
                     description: this.state.description,
@@ -380,8 +381,8 @@ class Edit extends React.Component {
                   });
                   
 
-                console.log(`Create Piece Response (Next Line):`);
-                console.log(response);
+                logger.debug(`Create Piece Response (Next Line):`);
+                logger.debug(response);
 
                 if (response) {
                     await this.fetch_pieces_from_api(true);
@@ -396,28 +397,28 @@ class Edit extends React.Component {
 
     async onFileChange(event) {
         event.preventDefault();
-        console.log('FILE INPUT CHANGED....');
+        logger.section({message: 'File Input Change Event Triggered'});
 
         var uploaded_image_path = '';
         try {
             var selected_file = event.target.files[0];
             const fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
 
-            console.log(`Selected File: ${fileName} | Size: ${selected_file.size}`);
+            logger.debug(`Selected File: ${fileName} | Size: ${selected_file.size}`);
 
             const s3_upload_url = await get_upload_url(fileName.toLowerCase());
-            console.log(`Got Upload URL: ${s3_upload_url}`);
+            logger.debug(`Got Upload URL: ${s3_upload_url}`);
 
             uploaded_image_path = await upload_image(s3_upload_url, selected_file);
-            console.log(`Got Upload Reponse: ${uploaded_image_path}`);
+            logger.debug(`Got Upload Reponse: ${uploaded_image_path}`);
         } catch (err) {
             this.setState({ uploaded: false, upload_error: true });
-            console.error(`S3 Image Upload Error: ${err.message}`);
+            logger.error(`S3 Image Upload Error: ${err.message}`);
             return;
         }
 
         if (uploaded_image_path == '') {
-            console.error(`Failed to upload image.  Cannot load file...`);
+            logger.error(`Failed to upload image.  Cannot load file...`);
             return;
         }
 
@@ -427,9 +428,9 @@ class Edit extends React.Component {
 
             //Validate the File Height and Width.
             image.onload = async () => {
-                console.log(`WIDTH: ${image.width} | HEIGHT: ${image.height}`);
+                logger.debug(`WIDTH: ${image.width} | HEIGHT: ${image.height}`);
 
-                console.log(`Creating piece with image path: ${uploaded_image_path}`);
+                logger.debug(`Creating piece with image path: ${uploaded_image_path}`);
 
                 var new_piece_list = this.state.piece_list;
                 new_piece_list.push({
@@ -476,14 +477,14 @@ class Edit extends React.Component {
                     framed: 'False',
                     comments: '',
                 };
-                console.log('Updating state with uploaded piece details (Next Line):');
-                console.log(uploaded_piece_details);
+                logger.debug('Updating state with uploaded piece details (Next Line):');
+                logger.debug(uploaded_piece_details);
 
                 this.setState({uploaded_piece_state});
             };
         } catch (err) {
             this.setState({ uploaded: false, upload_error: true, loader_visable: false });
-            console.error(`Image Load Error: ${err.message}`);
+            logger.error(`Image Load Error: ${err.message}`);
             return;
         }
     }
@@ -498,25 +499,25 @@ class Edit extends React.Component {
     }
 
     handle_multi_select_change(new_selected_options) {
-        console.log(`New theme passed (Next Lines):`);
-        //console.log(new_selected_options)
+        logger.debug(`New theme passed (Next Lines):`);
+        //logger.debug(new_selected_options)
         var theme_string = '';
         var final_options = [];
         for (var option_index in new_selected_options) {
             let options = new_selected_options[option_index];
-            console.log(options);
+            logger.debug(options);
             if (options.value != 'None') {
                 theme_string += `${options.value}, `;
                 final_options.push(options);
             }
         }
         theme_string = theme_string == '' ? 'None' : theme_string;
-        console.log(`Setting theme: ${theme_string}`);
+        logger.debug(`Setting theme: ${theme_string}`);
         this.setState({ theme: theme_string, theme_options: final_options });
     }
 
     create_loader_jsx() {
-        console.log(
+        logger.debug(
             `Loading: ${this.state.loading} | Submitted: ${this.state.submitted} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`,
         );
 
@@ -567,9 +568,9 @@ class Edit extends React.Component {
     async update_field_value(field, new_value_object) {
         const key_name = field.toLowerCase();
         const new_value = typeof new_value_object === "string" ? new_value_object : new_value_object.value;
-        console.log(`Setting state on key: ${key_name} | Value: ${new_value}`);
+        logger.debug(`Setting state on key: ${key_name} | Value: ${new_value}`);
 
-        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => console.log(`Updated key value: ${this.state[key_name]}`));
+        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => logger.debug(`Updated key value: ${this.state[key_name]}`));
     }
 
     render() {
@@ -584,13 +585,13 @@ class Edit extends React.Component {
         }
 
         const role = this.props.user.publicMetadata.role !== undefined ? this.props.user.publicMetadata.role : null;
-        console.log(`USER ROLE: ${role}`);
+        logger.debug(`USER ROLE: ${role}`);
 
         if (role !== 'ADMIN') {
             this.props.router.push('/');
         }
 
-        console.log(`Using window width: ${this.state.window_width}`)
+        logger.debug(`Using window width: ${this.state.window_width}`)
         const styles = this.state.window_width > 768 ? desktop_styles : mobile_styles;
 
         // If to this position, User is signed in with ADMIN role in clerk publicMetadata
@@ -600,7 +601,7 @@ class Edit extends React.Component {
             this.state.theme !== undefined || this.state.theme !== null || this.state.theme !== ''
                 ? this.state.theme
                 : 'None';
-        console.log(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
+        logger.debug(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
 
         // Gallery Loader Container JSX
         const loader_container_jsx = (
@@ -829,11 +830,18 @@ class Edit extends React.Component {
 export default withRouter(Edit);
 
 export const getServerSideProps = async (context) => {
-    console.log(`-------------- Fetching Initial Server List --------------`);
+    logger.section({message: `Fetching Initial Edit Details Page  Server List`});
+
     var piece_list = await prisma.piece.findMany();
     piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
+    // logger.debug(`Passing piece list (Next Line):`)
+    // logger.debug(piece_list)
+
     return {
-        props: { piece_list: piece_list, most_recent_id: piece_list[piece_list.length - 1]['id'] }, // will be passed to the page component as props
+        props: { // will be passed to the page component as props
+            piece_list: piece_list, 
+            most_recent_id: piece_list[piece_list.length - 1]['id'] 
+        }, 
     };
 };

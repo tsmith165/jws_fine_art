@@ -1,3 +1,5 @@
+import logger from "@/lib/logger";
+
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import Link from 'next/link';
@@ -22,7 +24,7 @@ class Navbar extends React.Component {
     async componentDidMount() {}
 
     render() {
-        console.log(
+        logger.debug(
             `Rendering Navbar with app_state pathname: ${this.props.app_state.pathname} | Theme: ${this.props.app_state.theme} | Filter Menu Open: ${this.props.app_state.filter_menu_open}`,
         );
 

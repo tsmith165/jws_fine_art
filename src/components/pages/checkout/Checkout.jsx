@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React from 'react';
@@ -16,7 +17,9 @@ import form_styles from '@/styles/forms/Form.module.scss';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { loadStripe } from '@stripe/stripe-js';
+import { useLoadScript } from '@react-google-maps/api'; // Google Maps API
+
+import { loadStripe } from '@stripe/stripe-js'; // Stripe API
 const stripePromise = loadStripe(
     'pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj',
 );
@@ -27,19 +30,19 @@ class Checkout extends React.Component {
 
         this.router = props.router;
 
-        console.log(`ID PROP: ${this.props.id}`);
+        logger.debug(`ID PROP: ${this.props.id}`);
         const passed_o_id = this.props.id;
 
         const piece_list = this.props.piece_list;
         const num_pieces = piece_list.length;
 
-        console.log(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
-        console.log(piece_list);
+        logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
+        logger.debug(piece_list);
 
         var piece_position = 0;
         for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
-                console.log(
+                logger.debug(
                     `Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`,
                 );
                 piece_position = i;
@@ -111,7 +114,7 @@ class Checkout extends React.Component {
             </div>
         )
        
-        console.log(`Setting state with Piece Position: ${this.state.piece_position}`);
+        logger.debug(`Setting state with Piece Position: ${this.state.piece_position}`);
         this.setState({
             loading: false,
             window_width: window.innerWidth,
@@ -123,7 +126,7 @@ class Checkout extends React.Component {
     }
 
     handleResize() {
-        console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
         this.setState({
             window_width: window.innerWidth,
             window_height: window.innerHeight
@@ -132,15 +135,11 @@ class Checkout extends React.Component {
 
 
     async address_change(updated_address) {
-        console.log(updated_address);
-        console.log(typeof updated_address);
         if (typeof updated_address === 'string') {
             var is_international = true;
             if (updated_address.toString().includes('USA')) is_international = false;
 
-            console.log(`Address: ${updated_address}`);
-            console.log(`International: ${is_international}`);
-
+            logger.debug(`Updating Address: ${updated_address} | International: ${is_international}`);
             this.setState({ address: updated_address, international: is_international });
         }
     }
@@ -156,7 +155,7 @@ class Checkout extends React.Component {
 
             if (field_lenth < min_length) {
                 error_reason = `${field_name} requirement not met.  Please enter valid ${field_name} with length > ${min_length}...`;
-                console.error(error_reason);
+                logger.error(error_reason);
                 error_found = true;
             }
         }
@@ -167,7 +166,7 @@ class Checkout extends React.Component {
     async handleSubmit(event) {
         event.preventDefault();
 
-        console.log('Checkout Form Submit Recieved');
+        logger.debug('Checkout Form Submit Recieved');
 
         this.setState({ loading: true, submitted: false }, async () => {
             // capture data from form
@@ -175,8 +174,8 @@ class Checkout extends React.Component {
             const phone = event.target.elements.phone.value;
             const email = event.target.elements.email.value;
 
-            console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
-            console.log(`Address: ${this.state.address} | International: ${this.state.international}`);
+            logger.debug(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
+            logger.debug(`Address: ${this.state.address} | International: ${this.state.international}`);
 
             const error_found = await this.check_fields([
                 ['Full Name', full_name, 3],
@@ -186,14 +185,14 @@ class Checkout extends React.Component {
             ]);
 
             if (error_found) {
-                console.error(`Could not check out due to an error...`);
+                logger.error(`Could not check out due to an error...`);
                 this.setState({ loading: false, submitted: false, error_found: true });
                 return;
             }
 
-            console.log('Attempting to Check Out...');
+            logger.debug('Attempting to Check Out...');
 
-            console.log('Creating a Pending Transaction ...');
+            logger.debug('Creating a Pending Transaction ...');
             const pending_response = await create_pending_transaction(
                 this.state.db_id,
                 this.state.title,
@@ -204,18 +203,18 @@ class Checkout extends React.Component {
                 this.state.international,
             );
 
-            console.log(`Pending Transaction Response (Next Line):`);
-            console.log(pending_response);
+            logger.debug(`Pending Transaction Response (Next Line):`);
+            logger.debug(pending_response);
 
             if (!pending_response) {
-                console.error('No Response From Create Pending Transaction.  Cannot check out...');
+                logger.error('No Response From Create Pending Transaction.  Cannot check out...');
                 return;
             }
 
-            console.log(`Creating stripe session with piece (Next Line):\n${this.state.current_piece}`);
+            logger.debug(`Creating stripe session with piece (Next Line):\n${this.state.current_piece}`);
 
             // Create Stripe Checkout Session
-            console.log(
+            logger.debug(
                 `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`}`,
             );
             const stripe_response = await create_stripe_checkout_session(
@@ -234,18 +233,18 @@ class Checkout extends React.Component {
             );
             const json = await stripe_response.json();
 
-            console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);
-            console.log(json);
+            logger.debug(`Creating Stripe Checkout Session Response JSON (Next Line):`);
+            logger.debug(json);
 
             const session = json;
 
-            console.log(`Session ID: ${session.id}`);
+            logger.debug(`Session ID: ${session.id}`);
 
             var redirect_to_stripe = true;
             if (redirect_to_stripe) {
                 const stripe = await stripePromise;
-                console.log('Stripe (Next Line):');
-                console.log(stripe);
+                logger.debug('Stripe (Next Line):');
+                logger.debug(stripe);
 
                 const result = await stripe.redirectToCheckout({
                     sessionId: session.id,
@@ -264,14 +263,14 @@ class Checkout extends React.Component {
     async update_field_value(field, new_value_object) {
         const key_name = field.toLowerCase();
         const new_value = new_value_object.value;
-        console.log(`Setting state on key: ${key_name} | Value: ${new_value}`);
+        logger.debug(`Setting state on key: ${key_name} | Value: ${new_value}`);
 
-        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => console.log(`Updated key value: ${this.state[key_name]}`));
+        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => logger.debug(`Updated key value: ${this.state[key_name]}`));
     }
 
     render() {
 
-        console.log(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted}`)
+        logger.debug(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted}`)
 
         const styles = this.state.window_width < 769 ? mobile_styles : desktop_styles;
 
@@ -330,7 +329,7 @@ class Checkout extends React.Component {
             (this.state.error_found == true ) ? submit_unsuccessful_jsx : 
             null 
         );
-        console.log(`Loader Container: ${loader_container}`)
+        logger.debug(`Loader Container: ${loader_container}`)
         const submit_container = loader_container != null ? (
             <div className={form_styles.submit_container}>
                 {loader_container}
@@ -429,4 +428,27 @@ class Checkout extends React.Component {
     }
 }
 
-export default Checkout;
+function useGoogleMapsLoader() {
+    return useLoadScript({
+        googleMapsApiKey: 'AIzaSyAQTCNGxtlglxAOC-CjqhKc2nroYKmPS7s',
+        libraries: ['places'],
+    });
+}
+
+function withLoadScript(WrappedComponent) {
+    return function (props) {
+        const { isLoaded, loadError } = useGoogleMapsLoader();
+
+        if (loadError) {
+            return <div>Error loading Google Maps API: {loadError.message}</div>;
+        }
+
+        if (!isLoaded) {
+            return <div>Loading Google Maps API...</div>;
+        }
+
+        return <WrappedComponent {...props} />;
+    };
+}
+
+export default withLoadScript(Checkout);

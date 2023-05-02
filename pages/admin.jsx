@@ -1,3 +1,5 @@
+import logger from '@/lib/logger';
+
 import React from 'react';
 import { withRouter } from 'next/router';
 
@@ -21,7 +23,7 @@ class Admin extends React.Component {
     async componentDidMount() {
         // Fetch the analytics data and store it in the component's state
         const response = await get_analytics_data();
-        console.log(`Reporting API response: ${JSON.stringify(response)}`);
+        logger.debug(`Reporting API response: ${JSON.stringify(response)}`);
         this.setState({ analyticsData: response });
     }
 
@@ -44,8 +46,8 @@ class Admin extends React.Component {
             }
         });
 
-        console.log(`Rendering analytics data rows`);
-        console.log(rows);
+        logger.debug(`Rendering analytics data rows`);
+        logger.debug(rows);
 
         return (
             <table className={styles.analytics_table}>
@@ -87,7 +89,7 @@ class Admin extends React.Component {
         }
 
         const role = this.props.user.publicMetadata.role !== undefined ? this.props.user.publicMetadata.role : null;
-        console.log(`USER ROLE: ${role}`);
+        logger.debug(`USER ROLE: ${role}`);
 
         if (role !== 'ADMIN') {
             this.props.router.push('/');
@@ -122,12 +124,12 @@ class Admin extends React.Component {
             const response = await fetch_pieces('None', 'xlsx');
 
             if (response == true) {
-                console.log('Successfully exported pieces as XLSX');
+                logger.info('Successfully exported pieces as XLSX');
             } else {
-                console.error('Failed to export pieces:', response.statusText);
+                logger.error('Failed to export pieces:', response.statusText);
             }
         } catch (error) {
-            console.error('Failed to export pieces:', error);
+            logger.error('Failed to export pieces:', error);
         }
     };
 }
