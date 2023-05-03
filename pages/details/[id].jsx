@@ -9,6 +9,8 @@ import { prisma } from '@/lib/prisma';
 import NextImage from 'next/image';
 import Link from 'next/link';
 
+import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
+
 import PageLayout from '@/components/layout/PageLayout';
 import PieceSpecificationTable from '@/components/components/PieceSpecificationTable';
 import TitleComponent from '@/components/components/TitleComponent';
@@ -291,7 +293,9 @@ class Details extends React.Component {
 
         // Price Label JSX
         const price_label = (
-            <Link href={`/checkout/${this.state.url_o_id}`} className={styles.price_wrapper} >
+            <Link href={`/checkout/${this.state.url_o_id}`} className={styles.price_wrapper} onClick={() => handleButtonLabelClickGTagEvent(
+                'details_checkout_button_click', 'Details Checkout Button', 'Details Checkout Button Clicked')
+            }>
                 <div className={styles.price_label_wrapper}>
                     <NextImage
                         className={styles.price_label_stripe_image}
