@@ -298,7 +298,7 @@ class Checkout extends React.Component {
                 <div className={checkout_styles.price_label_wrapper}>
                     <NextImage
                         className={checkout_styles.price_label_stripe_image}
-                        src="/stripe_checkout_tan-221_50.png"
+                        src="/stripe_purchase_tan-221_50.png"
                         alt="View Stripe Info"
                         priority={true}
                         width={133}
