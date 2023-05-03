@@ -72,6 +72,11 @@
 .loader {
     height: 25px !important;
     width: 25px !important;
+    margin-right: 10px;
+}
+.loader_and_label_container {
+    display: flex;
+    flex-direction: row;
 }
 
 .submit_label {

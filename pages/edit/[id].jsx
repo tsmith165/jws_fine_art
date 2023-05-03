@@ -90,8 +90,6 @@ class Edit extends React.Component {
             window_width: null,
             window_height: null,
             styles: desktop_styles,
-            debug: false,
-            loading: true,
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
@@ -123,8 +121,9 @@ class Edit extends React.Component {
                 piece_position - 1 < 0 // if last piece is out of bounds (less than 0), set to last piece
                     ? piece_list[num_pieces - 1]['o_id']
                     : piece_list[piece_position - 1]['o_id'],
-            loader_visable: false,
-            loading: false,
+            loading: true,
+            updating: false,
+            uploading: false,
             submitted: false,
             error: false,
             uploaded: false,
@@ -189,6 +188,7 @@ class Edit extends React.Component {
 
     async fetch_pieces_from_api(submitted = false) {
         logger.section({message: `Fetching Initial Server List`});
+        this.setState({ loading: true, submitted: false });
 
         const piece_list = await fetch_pieces();
         piece_list.sort((a, b) => a['o_id'] - b['o_id']);
@@ -196,9 +196,11 @@ class Edit extends React.Component {
         logger.debug('Pieces fetched in state (Next Line):');
         logger.debug(piece_list);
 
-        const state = submitted == true ?  { piece_list: piece_list } : { 
+        const state = submitted == false ?  { piece_list: piece_list, loading: false } : { 
             piece_list: piece_list, 
             loading: false, 
+            updating: false, 
+            uploading: false,
             error: false, 
             submitted: true 
         };
@@ -322,76 +324,77 @@ class Edit extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        this.setState({ loading: true, submitted: false, loader_visable: true });
+        this.setState({ updating: true, submitted: false, loader_visable: true });
 
-        if (title) {
-            logger.section({message: 'Attempting To Edit Piece Details'});
-            logger.debug(
-                `Editing Piece DB ID: ${this.state.db_id} | Title: ${this.state.title} | Sold: ${this.state.sold} |` + 
-                `Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} |` + 
-                `Image Path: ${this.state.image_path} | Description: ${this.state.description} | Instagram: ${this.state.instagram}`,
-            );
-            if (!this.state.uploaded) {
-                const response = await edit_details({
-                    id: this.state.db_id,
-                    title: this.state.title,
-                    description: this.state.description,
-                    piece_type: this.state.piece_type,
-                    sold: this.state.sold,
-                    price: this.state.price,
-                    instagram: this.state.instagram,
-                    width: this.state.width,
-                    height: this.state.height,
-                    real_width: this.state.real_width,
-                    real_height: this.state.real_height,
-                    theme: this.state.theme,
-                    available: this.state.available,
-                    framed: this.state.framed,
-                    comments: this.state.comments,
-                });
+        if (!title) {
+            this.setState({ updating: false, error: true, loader_visable: true });
+            return
+        }
 
-                logger.debug(`Edit Piece Response (Next Line):`);
-                logger.debug(response);
+        logger.section({message: 'Attempting To Edit Piece Details'});
+        logger.debug(
+            `Editing Piece DB ID: ${this.state.db_id} | Title: ${this.state.title} | Sold: ${this.state.sold} |` + 
+            `Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} |` + 
+            `Image Path: ${this.state.image_path} | Description: ${this.state.description} | Instagram: ${this.state.instagram}`,
+        );
+        if (!this.state.uploaded) {
+            const response = await edit_details({
+                id: this.state.db_id,
+                title: this.state.title,
+                description: this.state.description,
+                piece_type: this.state.piece_type,
+                sold: this.state.sold,
+                price: this.state.price,
+                instagram: this.state.instagram,
+                width: this.state.width,
+                height: this.state.height,
+                real_width: this.state.real_width,
+                real_height: this.state.real_height,
+                theme: this.state.theme,
+                available: this.state.available,
+                framed: this.state.framed,
+                comments: this.state.comments,
+            });
 
-                if (response) {
-                    await this.fetch_pieces_from_api(true);
-                } else {
-                    logger.debug('Edit Piece - No Response - Setting error = true');
-                    this.setState({ loading: false, error: true });
-                }
+            logger.debug(`Edit Piece Response (Next Line):`);
+            logger.debug(response);
+
+            if (response) {
+                await this.fetch_pieces_from_api(true);
             } else {
-                logger.section({message: 'Attempting To Create New Piece'});
-                logger.debug(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.image_path}`);
-                const response = await create_piece({
-                    title: this.state.title,
-                    description: this.state.description,
-                    piece_type: this.state.piece_type,
-                    sold: this.state.sold,
-                    price: this.state.price,
-                    instagram: this.state.instagram,
-                    width: this.state.width,
-                    height: this.state.height,
-                    real_width: this.state.real_width,
-                    real_height: this.state.real_height,
-                    image_path: this.state.image_path,
-                    theme: this.state.theme,
-                    available: this.state.available,
-                    framed: this.state.framed,
-                    comments: this.state.comments,
-                  });
-                  
-
-                logger.debug(`Create Piece Response (Next Line):`);
-                logger.debug(response);
-
-                if (response) {
-                    await this.fetch_pieces_from_api(true);
-                } else {
-                    this.setState({ loading: false, error: true, loader_visable: false });
-                }
+                logger.debug('Edit Piece - No Response - Setting error = true');
+                this.setState({ loading: false, error: true });
             }
         } else {
-            this.setState({ loading: false, error: true, loader_visable: false });
+            logger.section({message: 'Attempting To Create New Piece'});
+            logger.debug(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.image_path}`);
+            const response = await create_piece({
+                title: this.state.title,
+                description: this.state.description,
+                piece_type: this.state.piece_type,
+                sold: this.state.sold,
+                price: this.state.price,
+                instagram: this.state.instagram,
+                width: this.state.width,
+                height: this.state.height,
+                real_width: this.state.real_width,
+                real_height: this.state.real_height,
+                image_path: this.state.image_path,
+                theme: this.state.theme,
+                available: this.state.available,
+                framed: this.state.framed,
+                comments: this.state.comments,
+            });
+                
+
+            logger.debug(`Create Piece Response (Next Line):`);
+            logger.debug(response);
+
+            if (response) {
+                await this.fetch_pieces_from_api(true);
+            } else {
+                this.setState({ updating: false, error: true });
+            }
         }
     }
 
@@ -456,7 +459,6 @@ class Edit extends React.Component {
                 const new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1);
 
                 const uploaded_piece_state = {
-                    loader_visable: true,
                     uploaded: true,
                     upload_error: false,
                     image_array: new_image_array,
@@ -483,7 +485,7 @@ class Edit extends React.Component {
                 this.setState({uploaded_piece_state});
             };
         } catch (err) {
-            this.setState({ uploaded: false, upload_error: true, loader_visable: false });
+            this.setState({ uploaded: false, upload_error: true });
             logger.error(`Image Load Error: ${err.message}`);
             return;
         }
@@ -526,7 +528,26 @@ class Edit extends React.Component {
         var loader_message = '';
 
         if (this.state.loading == true) {
-            loader_jsx = <CircularProgress color="inherit" className={form_styles.loader} />;
+            loader_jsx = (
+                <div className={form_styles.loader_and_label_container}>
+                    <CircularProgress color="inherit" className={form_styles.loader}/>
+                    <div className={form_styles.submit_label}>{'Re-Loading piece list...'}</div>
+                </div>
+            );
+        } else if (this.state.updating == true) {
+            loader_jsx = (
+                <div className={form_styles.loader_and_label_container}>
+                    <CircularProgress color="inherit" className={form_styles.loader}/>
+                    <div className={form_styles.submit_label}>{'Updating piece info in DB...'}</div>
+                </div>
+            );
+        } else if (this.state.uploading == true) {
+            loader_jsx = (
+                <div className={form_styles.loader_and_label_container}>
+                    <CircularProgress color="inherit" className={form_styles.loader}/>
+                    <div className={form_styles.submit_label}>{'Uploading piece to Amazon S3 Bucket...'}</div>
+                </div>
+            );
         } else if (this.state.submitted == true) {
             class_name = form_styles.submit_label;
             loader_message = `Piece Details Update was successful...`;
@@ -535,10 +556,7 @@ class Edit extends React.Component {
             loader_message = `Piece Details Update was NOT successful...`;
         } else if (this.state.upload_error == true) {
             class_name = form_styles.submit_label_failed;
-            loader_message = `Image Upload was NOT successful...`;
-        } else if (this.state.uploaded == false) {
-            class_name = form_styles.submit_label_failed;
-            loader_message = `Image Upload was NOT successful...`;
+            loader_message = `Error reached while uploading image...`;
         } else if (
             this.state.width != '' &&
             this.state.height != '' &&
@@ -560,7 +578,11 @@ class Edit extends React.Component {
             loader_message = `Image Upload was successful...`;
         }
 
-        loader_jsx = <div className={class_name == null ? form_styles.submit_label : class_name}>{loader_message}</div>;
+        loader_jsx = loader_jsx !== null ? loader_jsx : (
+            <div className={class_name == null ? form_styles.submit_label : class_name}>
+                {loader_message}
+            </div>
+        );
 
         return loader_jsx;
     }
@@ -595,7 +617,7 @@ class Edit extends React.Component {
         const styles = this.state.window_width > 768 ? desktop_styles : mobile_styles;
 
         // If to this position, User is signed in with ADMIN role in clerk publicMetadata
-        var loader_jsx = this.state.loader_visable == true ? this.create_loader_jsx() : null;
+        var loader_jsx = this.create_loader_jsx()
 
         const using_theme =
             this.state.theme !== undefined || this.state.theme !== null || this.state.theme !== ''
