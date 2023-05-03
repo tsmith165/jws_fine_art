@@ -32,6 +32,8 @@ model Piece {
   theme       String?
   framed      Boolean? @default(false)
   comments    String?
+  extra_images    String?
+  progress_images String?
 }
 
 model Pending {
