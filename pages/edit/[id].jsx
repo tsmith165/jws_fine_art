@@ -124,7 +124,8 @@ class Edit extends React.Component {
             loading: true,
             updating: false,
             uploading: false,
-            submitted: false,
+            updated: false,
+            uploaded: false,
             error: false,
             uploaded: false,
             upload_error: false,
@@ -186,9 +187,9 @@ class Edit extends React.Component {
     }
 
 
-    async fetch_pieces_from_api(submitted = false) {
+    async fetch_pieces_from_api(type = 'none') {
         logger.section({message: `Fetching Initial Server List`});
-        this.setState({ loading: true, submitted: false });
+        this.setState({ loading: true, updated: false });
 
         const piece_list = await fetch_pieces();
         piece_list.sort((a, b) => a['o_id'] - b['o_id']);
@@ -196,20 +197,22 @@ class Edit extends React.Component {
         logger.debug('Pieces fetched in state (Next Line):');
         logger.debug(piece_list);
 
-        const state = submitted == false ?  { piece_list: piece_list, loading: false } : { 
+        const state = type == 'none' ?  { piece_list: piece_list, loading: false } : { 
             piece_list: piece_list, 
             loading: false, 
             updating: false, 
             uploading: false,
-            error: false, 
-            submitted: true 
+            updated: type == 'updated' ? true : false,
+            uploaded: type == 'uploaded' ? true : false,
         };
+        console.log(`Setting state with type: ${type} (Next Line):`);
+        console.log(state)
         this.setState(state, async () => {
-            await this.update_current_piece(this.state.piece_list, this.state.url_o_id);
+            await this.update_current_piece(this.state.piece_list, this.state.url_o_id, type == 'none' ? false : true);
         });
     }
 
-    async update_current_piece(piece_list, o_id) {
+    async update_current_piece(piece_list, o_id, preserve_submit_state = false) {
         const num_pieces = piece_list.length;
 
         logger.debug(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
@@ -246,7 +249,6 @@ class Edit extends React.Component {
         const previous_url_o_id = this.state.url_o_id;
         this.setState(
             {
-                loading: false,
                 url_o_id: current_o_id,
                 piece_list: piece_list,
                 image_array: image_array,
@@ -271,7 +273,15 @@ class Edit extends React.Component {
                 framed: current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False',
                 comments: current_piece.comments,
                 theme: theme,
-                theme_options: theme_options
+                theme_options: theme_options,
+                loading: false,
+                updating: false,
+                uploading: false,
+                updated: false,
+                error: false,
+                updated: preserve_submit_state == true ? this.state.updated : false,
+                uploaded: preserve_submit_state == true ? this.state.uploaded : false,
+                upload_error: false,
             },
             async () => {
                 if (previous_url_o_id != o_id) {
@@ -324,7 +334,7 @@ class Edit extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        this.setState({ updating: true, submitted: false, loader_visable: true });
+        this.setState({ updating: true, updated: false, loader_visable: true });
 
         if (!title) {
             this.setState({ updating: false, error: true, loader_visable: true });
@@ -360,7 +370,7 @@ class Edit extends React.Component {
             logger.debug(response);
 
             if (response) {
-                await this.fetch_pieces_from_api(true);
+                await this.fetch_pieces_from_api('updated');
             } else {
                 logger.debug('Edit Piece - No Response - Setting error = true');
                 this.setState({ loading: false, error: true });
@@ -391,7 +401,7 @@ class Edit extends React.Component {
             logger.debug(response);
 
             if (response) {
-                await this.fetch_pieces_from_api(true);
+                await this.fetch_pieces_from_api('uploaded');
             } else {
                 this.setState({ updating: false, error: true });
             }
@@ -520,7 +530,7 @@ class Edit extends React.Component {
 
     create_loader_jsx() {
         logger.debug(
-            `Loading: ${this.state.loading} | Submitted: ${this.state.submitted} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`,
+            `Loading: ${this.state.loading} | updated: ${this.state.updated} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`,
         );
 
         var loader_jsx = null;
@@ -548,9 +558,12 @@ class Edit extends React.Component {
                     <div className={form_styles.submit_label}>{'Uploading piece to Amazon S3 Bucket...'}</div>
                 </div>
             );
-        } else if (this.state.submitted == true) {
+        } else if (this.state.updated == true) {
             class_name = form_styles.submit_label;
-            loader_message = `Piece Details Update was successful...`;
+            loader_message = `Piece Details Update was successful!`;
+        } else if (this.state.uploaded == true) {
+            class_name = form_styles.submit_label;
+            loader_message = `Piece Details Upload was successful!`;
         } else if (this.state.error == true) {
             class_name = form_styles.submit_label_failed;
             loader_message = `Piece Details Update was NOT successful...`;
