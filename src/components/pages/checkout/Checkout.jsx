@@ -6,6 +6,8 @@ import NextImage from 'next/image';
 
 import { create_pending_transaction, create_stripe_checkout_session } from '@/lib/api_calls';
 
+import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
+
 import PageLayout from '@/components/layout/PageLayout';
 import InputComponent from '@/components/components/InputComponent';
 
@@ -290,7 +292,9 @@ class Checkout extends React.Component {
         
         // Price Label JSX
         const price_label = (
-            <button type="submit" className={checkout_styles.price_wrapper}>
+            <button type="submit" className={checkout_styles.price_wrapper} onClick={() => handleButtonLabelClickGTagEvent(
+                'checkout_purchase_button_click', 'Checkout Purchase Button', 'Checkout Purchase Button Clicked')
+            }>
                 <div className={checkout_styles.price_label_wrapper}>
                     <NextImage
                         className={checkout_styles.price_label_stripe_image}
