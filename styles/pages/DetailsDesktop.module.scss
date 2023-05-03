@@ -1,15 +1,6 @@
 @import '../../theme/common';
 @import '../../theme/theme';
 
-@media (max-width: 768px) {
-    .details_container {
-        overflow-y: scroll;
-
-        .details_container_left {
-            max-height: 100% !important;
-        }
-    }
-}
 
 .details_container {
     position: absolute;
@@ -19,7 +10,7 @@
     width: 100%;
 
     .details_container_left {
-        flex: 1 1 65%;
+        width: 65%;
         justify-content: center;
         align-items: center;
         background-color: $dark;
@@ -35,8 +26,7 @@
 
 
 .details_container_right {
-    flex: 1 1 35%;
-    min-width: 320px;
+    width: 35%;
     background-color: $light;
 
     .details_form_container {
