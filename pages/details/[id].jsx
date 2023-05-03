@@ -62,8 +62,7 @@ class Details extends React.Component {
         /* prettier-ignore-end */
 
         description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
-        description = description.replace('<br>', '');
-        console.log(`Description (Next Line):\n ${description}`)
+        console.log(`Description (Next Line):\n${description}`)
 
         var image_array = [];
 
@@ -158,8 +157,8 @@ class Details extends React.Component {
         const current_db_id = current_piece['id'];
         const current_o_id = current_piece['o_id'];
 
-        logger.debug(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Data (Next Line):`);
-        logger.debug(current_piece);
+        logger.debug(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Piece O ID: ${current_o_id} | Description (Next Line):`);
+        console.log(current_piece.description);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
@@ -171,10 +170,11 @@ class Details extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
+        console.log(`Description type: ${typeof description} | Value (Next Line):\n ${description}`)
+
         var description = current_piece.description
         description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
-        description = description.replace('<br>', '');
-        console.log(`Description (Next Line):\n ${description}`)
+        console.log(`Description (Next Line):\n${description}`)
 
         this.setState(
             {
@@ -202,7 +202,6 @@ class Details extends React.Component {
                 comments: current_piece.comments,
                 next_oid: next_oid,
                 last_oid: last_oid,
-                description: current_piece.description,
                 sold: current_piece.sold,
                 available: current_piece.available,
                 price: current_piece.price,
