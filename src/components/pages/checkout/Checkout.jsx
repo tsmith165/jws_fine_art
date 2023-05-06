@@ -25,6 +25,7 @@ import { loadStripe } from '@stripe/stripe-js'; // Stripe API
 const stripePromise = loadStripe(
     'pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj',
 );
+const INTERNATIONAL_SHIPPING_RATE = 25;
 
 class Checkout extends React.Component {
     constructor(props) {
@@ -219,6 +220,8 @@ class Checkout extends React.Component {
             logger.debug(
                 `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`}`,
             );
+            const price_with_shipping = this.state.price + (this.state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0)
+
             const stripe_response = await create_stripe_checkout_session(
                 this.state.db_id,
                 this.state.o_id,
@@ -226,7 +229,7 @@ class Checkout extends React.Component {
                 `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${this.state.current_piece['image_path']}`,
                 this.state.width,
                 this.state.height,
-                this.state.price,
+                price_with_shipping,
                 full_name,
                 phone,
                 email,
@@ -291,6 +294,7 @@ class Checkout extends React.Component {
         );
         
         // Price Label JSX
+        const price_with_shipping = this.state.price + (this.state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0)
         const price_label = (
             <button type="submit" className={checkout_styles.price_wrapper} onClick={() => handleButtonLabelClickGTagEvent(
                 'checkout_purchase_button_click', 'Checkout Purchase Button', 'Checkout Purchase Button Clicked')
@@ -305,7 +309,7 @@ class Checkout extends React.Component {
                         height={30}
                     />
                 </div>
-                <div className={checkout_styles.price_text}>{`$${this.state.price}`}</div>
+                <div className={checkout_styles.price_text}>{`$${price_with_shipping}`}</div>
             </button>
         );
         
@@ -314,7 +318,7 @@ class Checkout extends React.Component {
             <div className={checkout_styles.checkout_shipping_container}>
                 {this.state.international == true ? (
                     <div className={checkout_styles.checkout_shipping_label}>
-                        Pieces ship within 5 days. International shipping can take up to 1 month.
+                        Pieces ship within 5 days. International shipping costs $25 and can take up to 1 month.
                     </div>
                 ) : (
                     <div className={checkout_styles.checkout_shipping_label}>
