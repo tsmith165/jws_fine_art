@@ -23,8 +23,8 @@ const PieceSpecificationTable = ({ realWidth, realHeight, framed, comments, type
                     )}
                     {framed !== null && (
                         <tr>
-                            <td>Framed</td>
-                            <td>{framed == true ? 'Yes' : 'No'}</td>
+                            <td>Framed</td>0
+                            <td>{(framed == true || framed.toString().toLowerCase() == 'true') ? 'Yes' : 'No'}</td>
                         </tr>
                     )}
                     {type && (

@@ -67,6 +67,10 @@ class Edit extends React.Component {
         var real_height = num_pieces < 1 ? '' : current_piece.real_height !== undefined ? current_piece.real_height : '';
         var image_path  = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
         var instagram   = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
+        var extra_images  = num_pieces < 1 ? '' : current_piece.extra_images !== undefined ? current_piece.extra_images : [];
+        var progress_images  = num_pieces < 1 ? '' : current_piece.progress_images !== undefined ? current_piece.progress_images : '';
+        extra_images = extra_images == null ? [] : extra_images;
+        progress_images = progress_images == null ? [] : progress_images;
         /* prettier-ignore-end */
 
         var theme_options = [{ value: theme, label: theme }];
@@ -93,6 +97,8 @@ class Edit extends React.Component {
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
+            extra_images: extra_images,
+            progress_images: progress_images,
             current_piece: current_piece,
             piece_position: piece_position,
             db_id: db_id,
@@ -126,9 +132,10 @@ class Edit extends React.Component {
             uploading: false,
             updated: false,
             uploaded: false,
+            uploade_error: false,
+            uploaded_image_path: '',
+            file_upload_type: 'Cover Image',
             error: false,
-            uploaded: false,
-            upload_error: false,
         };
         this.create_image_array = this.create_image_array.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
@@ -141,6 +148,8 @@ class Edit extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.onFileChange = this.onFileChange.bind(this);
         this.refresh_data = this.refresh_data.bind(this);
+        this.upload_image = this.upload_image.bind(this);
+
 
         // Refrences
         this.file_input_ref = React.createRef(null);
@@ -160,7 +169,8 @@ class Edit extends React.Component {
         }
        
         logger.debug(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
-        this.setState({
+        this.setState(prevState => ({
+            ...prevState,
             loading: false,
             window_width: window.innerWidth,
             window_height: window.innerHeight,
@@ -173,14 +183,41 @@ class Edit extends React.Component {
                 this.state.piece_position - 1 < 0
                     ? this.state.piece_list[num_pieces - 1]['o_id']
                     : this.state.piece_list[this.state.piece_position - 1]['o_id']
-        });
+        }));
 
         window.addEventListener("resize", this.handleResize); // Add event listener
     }
 
+    async update_state_with_callback(state, callback) {
+        logger.debug(`Updating state with object (Next Line):`);
+        console.log(state);
+
+        this.setState(prevState => ({ ...prevState, state }), callback);
+    }
+
+    async update_state(state) {
+        logger.debug(`Updating state with object (Next Line):`);
+        console.log(state);
+
+        this.setState(prevState => ({ ...prevState, state }), () => { 
+            logger.debug(`Updated state (Next Line):`);
+            console.log(this.state);
+        });
+    }
+
+    async update_field_value(field, new_value_object) {
+        const key_name = field.toLowerCase();
+        const new_value = typeof new_value_object === "string" ? new_value_object : new_value_object.value;
+        logger.debug(`Setting state on key: ${key_name} | Value: ${new_value}`);
+
+        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => { 
+            logger.debug(`Updated key value: ${this.state[key_name]}`) 
+        });
+    }
+
     handleResize() {
         logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
-        this.setState({
+        this.update_state({
             window_width: window.innerWidth,
             window_height: window.innerHeight
         });
@@ -189,7 +226,7 @@ class Edit extends React.Component {
 
     async fetch_pieces_from_api(type = 'none') {
         logger.section({message: `Fetching Initial Server List`});
-        this.setState({ loading: true, updated: false });
+        this.update_state({ loading: true, updated: false });
 
         const piece_list = await fetch_pieces();
         piece_list.sort((a, b) => a['o_id'] - b['o_id']);
@@ -207,9 +244,43 @@ class Edit extends React.Component {
         };
         console.log(`Setting state with type: ${type} (Next Line):`);
         console.log(state)
-        this.setState(state, async () => {
+        this.update_state_with_callback(state, async () => {
             await this.update_current_piece(this.state.piece_list, this.state.url_o_id, type == 'none' ? false : true);
         });
+    }
+
+    // show blank piece but keep current piece_list - used for when a new piece is added - add blank piece to end of list
+    async show_blank_piece() {
+        logger.section({message: `Showing Blank Piece`});
+        const blank_piece = {
+            id: -1,
+            o_id: '',
+            title: '',
+            price: '',
+            width: '',
+            height: '',
+            theme: 'None',
+            framed: 'False',
+            sold: 'False',
+            available: 'True',
+            piece_type: '',
+            comments: '',
+            description: '',
+            real_width: '',
+            real_height: '',
+            image_path: '',
+            instagram: '',
+            extra_images: [],
+            progress_images: [],
+        };
+
+        var piece_list = this.state.piece_list;
+        piece_list.push(blank_piece);
+
+        logger.debug(`Setting state with blank piece (Next Line):`);
+        logger.debug(piece_list);
+
+
     }
 
     async update_current_piece(piece_list, o_id, preserve_submit_state = false) {
@@ -222,7 +293,7 @@ class Edit extends React.Component {
         const current_o_id = current_piece.o_id;
 
         logger.debug(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
-        logger.debug(current_piece);
+        console.log(current_piece);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
@@ -247,7 +318,7 @@ class Edit extends React.Component {
         const image_array = await this.create_image_array(this.state.piece_list, piece_position);
 
         const previous_url_o_id = this.state.url_o_id;
-        this.setState(
+        this.update_state(
             {
                 url_o_id: current_o_id,
                 piece_list: piece_list,
@@ -334,10 +405,10 @@ class Edit extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        this.setState({ updating: true, updated: false, loader_visable: true });
+        this.update_state({ updating: true, updated: false, loader_visable: true });
 
         if (!title) {
-            this.setState({ updating: false, error: true, loader_visable: true });
+            this.update_state({ updating: false, error: true, loader_visable: true });
             return
         }
 
@@ -373,7 +444,7 @@ class Edit extends React.Component {
                 await this.fetch_pieces_from_api('updated');
             } else {
                 logger.debug('Edit Piece - No Response - Setting error = true');
-                this.setState({ loading: false, error: true });
+                this.update_state({ loading: false, error: true });
             }
         } else {
             logger.section({message: 'Attempting To Create New Piece'});
@@ -403,7 +474,7 @@ class Edit extends React.Component {
             if (response) {
                 await this.fetch_pieces_from_api('uploaded');
             } else {
-                this.setState({ updating: false, error: true });
+                this.update_state({ updating: false, error: true });
             }
         }
     }
@@ -413,92 +484,26 @@ class Edit extends React.Component {
         logger.section({message: 'File Input Change Event Triggered'});
 
         var uploaded_image_path = '';
+        var fileName = ''
         try {
             var selected_file = event.target.files[0];
-            const fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
+            fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
 
             logger.debug(`Selected File: ${fileName} | Size: ${selected_file.size}`);
 
-            const s3_upload_url = await get_upload_url(fileName.toLowerCase());
+            const s3_upload_url = await get_upload_url(fileName.toLowerCase(), this.state.file_upload_type);
             logger.debug(`Got Upload URL: ${s3_upload_url}`);
 
             uploaded_image_path = await upload_image(s3_upload_url, selected_file);
             logger.debug(`Got Upload Reponse: ${uploaded_image_path}`);
+
         } catch (err) {
-            this.setState({ uploaded: false, upload_error: true });
+            this.update_state({ uploaded: false, upload_error: true });
             logger.error(`S3 Image Upload Error: ${err.message}`);
-            return;
+            return false
         }
 
-        if (uploaded_image_path == '') {
-            logger.error(`Failed to upload image.  Cannot load file...`);
-            return;
-        }
-
-        try {
-            var image = new Image();
-            image.src = uploaded_image_path;
-
-            //Validate the File Height and Width.
-            image.onload = async () => {
-                logger.debug(`WIDTH: ${image.width} | HEIGHT: ${image.height}`);
-
-                logger.debug(`Creating piece with image path: ${uploaded_image_path}`);
-
-                var new_piece_list = this.state.piece_list;
-                new_piece_list.push({
-                    id: -1,
-                    o_id: -1,
-                    class_name: 'temp',
-                    title: 'temp',
-                    image_path: uploaded_image_path,
-                    width: 0,
-                    height: 0,
-                    description: '',
-                    piece_type: 'Intaglio On Paper',
-                    sold: 'True',
-                    price: 0,
-                    instagram: '',
-                    real_width: 0,
-                    real_height: 0,
-                    active: 'True',
-                    framed: 'False',
-                    comments: '',
-                });
-
-                const new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1);
-
-                const uploaded_piece_state = {
-                    uploaded: true,
-                    upload_error: false,
-                    image_array: new_image_array,
-                    piece_list: new_piece_list,
-                    piece_position: new_piece_list.length - 1,
-                    title: 'Enter Title...',
-                    description: 'Enter Description...',
-                    sold: 'False',
-                    price: 9999,
-                    width: image.width,
-                    height: image.height,
-                    real_width: 0,
-                    real_height: 0,
-                    image_path: uploaded_image_path,
-                    instagram: '',
-                    theme: 'None',
-                    available: 'True',
-                    framed: 'False',
-                    comments: '',
-                };
-                logger.debug('Updating state with uploaded piece details (Next Line):');
-                logger.debug(uploaded_piece_details);
-
-                this.setState({uploaded_piece_state});
-            };
-        } catch (err) {
-            this.setState({ uploaded: false, upload_error: true });
-            logger.error(`Image Load Error: ${err.message}`);
-            return;
-        }
+        this.update_state_with_callback({uploaded_image_path: uploaded_image_path}, this.upload_image(uploaded_image_path, fileName));
     }
 
     showFileUpload(event) {
@@ -508,6 +513,134 @@ class Edit extends React.Component {
 
     refresh_data() {
         this.props.router.replace(this.props.router.asPath);
+    }
+
+    async upload_image(uploaded_image_path, fileName) {
+        if (uploaded_image_path == '') {
+            logger.error(`Failed to upload image.  Cannot load file...`);
+            return false
+        }
+
+        console.log(`Current State (Next Line):`);
+        console.log(this.state);
+
+        var width = -1; 
+        var height = -1;
+
+        try {
+            var image = new Image();
+            image.src = uploaded_image_path;
+
+            //Validate the File Height and Width.
+            image.onload = async () => {
+                logger.debug(`WIDTH: ${image.width} | HEIGHT: ${image.height}`);
+                width = image.width;
+                height = image.height;
+            };
+        } catch (err) {
+            this.update_state({ uploaded: false, upload_error: true });
+            logger.error(`Image Load Error: ${err.message}`);
+            return false
+        }
+
+        if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
+            var new_progress_images = this.state.progress_images;
+            new_progress_images.push({
+                image_path: uploaded_image_path,
+                width: width,
+                height: height,
+            });
+            this.update_state({
+                progress_images: new_progress_images, 
+                uploaded_image_path: uploaded_image_path
+            });
+            console.log(`Progress Pictures (Next Line):`);
+            console.log(this.state.current_piece.progress_images);
+            return true
+        }
+
+        if ( this.state.file_upload_type.toString().toLowerCase().includes('extra') ) {
+            var new_extra_images = this.state.extra_images;
+            console.log(`Extra Pictures (Next Line):`);
+            console.log(this.state.extra_images);
+            
+            new_extra_images.push({
+                image_path: uploaded_image_path,
+                width: width,
+                height: height,
+            });
+            this.update_state({
+                extra_images: new_extra_images, 
+                uploaded_image_path: uploaded_image_path
+            });
+            console.log(`Extra Pictures (Next Line):`);
+            console.log(this.state.current_piece.extra_images);
+            return true
+        }
+        
+        if ( this.state.file_upload_type.toString().toLowerCase().includes('piece') ||
+            this.state.file_upload_type.toString().toLowerCase().includes('cover') ) {
+
+            logger.debug(`Creating piece with image path: ${uploaded_image_path}`);
+
+            var new_piece_list = this.state.piece_list;
+            new_piece_list.push({
+                id: -1,
+                o_id: -1,
+                class_name: 'temp',
+                title: 'temp',
+                image_path: uploaded_image_path,
+                width: 0,
+                height: 0,
+                description: '',
+                piece_type: 'Intaglio On Paper',
+                sold: 'True',
+                price: 0,
+                instagram: '',
+                real_width: 0,
+                real_height: 0,
+                active: 'True',
+                framed: 'False',
+                comments: '',
+                uploaded_image_path: fileName,
+                extra_images: [],
+                progress_images: [],
+            });
+    
+            var new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1);
+
+            var uploaded_piece_state = {
+                uploaded: true,
+                upload_error: false,
+                uploaded_image_path: uploaded_image_path,
+                image_array: new_image_array,
+                piece_list: new_piece_list,
+                piece_position: new_piece_list.length - 1,
+                title: 'Enter Title...',
+                description: 'Enter Description...',
+                sold: 'False',
+                price: 9999,
+                width: image.width,
+                height: image.height,
+                real_width: 0,
+                real_height: 0,
+                image_path: uploaded_image_path,
+                instagram: '',
+                theme: 'None',
+                available: 'True',
+                framed: 'False',
+                comments: '',
+            };
+            
+            logger.debug('0000000000000000000000000000000000000000')
+            logger.debug('Updating state with uploaded piece details (Next Line):');
+            console.log(uploaded_piece_state);
+    
+            this.update_state({uploaded_piece_state});
+            return true
+        }
+        logger.errpr(`Unknown file upload type: "${this.state.file_upload_type}"`)
+        return false
     }
 
     handle_multi_select_change(new_selected_options) {
@@ -525,7 +658,7 @@ class Edit extends React.Component {
         }
         theme_string = theme_string == '' ? 'None' : theme_string;
         logger.debug(`Setting theme: ${theme_string}`);
-        this.setState({ theme: theme_string, theme_options: final_options });
+        this.update_state({ theme: theme_string, theme_options: final_options });
     }
 
     create_loader_jsx() {
@@ -600,14 +733,6 @@ class Edit extends React.Component {
         return loader_jsx;
     }
 
-    async update_field_value(field, new_value_object) {
-        const key_name = field.toLowerCase();
-        const new_value = typeof new_value_object === "string" ? new_value_object : new_value_object.value;
-        logger.debug(`Setting state on key: ${key_name} | Value: ${new_value}`);
-
-        this.setState(prevState => ({ ...prevState, [key_name]: new_value }), () => logger.debug(`Updated key value: ${this.state[key_name]}`));
-    }
-
     render() {
         if (!this.props.isLoaded) {
             return <></>;
@@ -678,7 +803,7 @@ class Edit extends React.Component {
                 key={'title'}
                 onChange={(e) => {
                     e.preventDefault();
-                    this.setState({ title: e.target.value });
+                    this.update_state({ title: e.target.value });
                 }}
             />
         );        
@@ -782,6 +907,23 @@ class Edit extends React.Component {
             </div>
         );
 
+        const file_input_continer = (
+            <div className={form_styles.input_container}>
+                <InputComponent input_type={'input_file'} split={false} value={this.state.framed} name={"Upload"} id={"upload_type"}
+                    update_field_value={this.update_field_value}
+                    file_upload_type={this.state.file_upload_type}
+                    uploaded_image_path={this.state.uploaded_image_path} 
+                    showFileUpload={this.showFileUpload} 
+                    onFileChange={this.onFileChange} 
+                    file_types={[
+                        { value: 'Cover Image', label: 'Cover Image' },
+                        { value: 'Extra Image', label: 'Extra Image' },
+                        { value: 'Progress Image', label: 'Progress Image' },
+                    ]}
+                 />
+            </div>
+        );
+
         const submit_container_jsx = (
             <div className={form_styles.submit_container}>
                 <button type="button" className={form_styles.upload_button} onClick={this.showFileUpload}>Upload</button>
@@ -819,6 +961,8 @@ class Edit extends React.Component {
                                     {px_width_and_height_container_jsx /* Split Container For image pixel width / pixel height */}
 
                                     {framed_and_comments_container_jsx /* Split Container For framed / comments */}
+
+                                    {file_input_continer /* File Input Container */}
 
                                     {submit_container_jsx}
                                 </form>
