@@ -37,8 +37,9 @@ export default async function handler(req, res) {
   console.log(passed_json);
 
   const image_name = passed_json.image_name
+  const image_type = passed_json.image_type
 
-  const url = await generate_upload_url(image_name)
+  const url = await generate_upload_url(image_name, image_type)
 
   console.log(`Upload URL (Next Line): ${url}`);
   res.json({url})
