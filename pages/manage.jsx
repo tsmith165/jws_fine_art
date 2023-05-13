@@ -30,7 +30,7 @@ class Manage extends React.Component {
         }
 
         const role = this.props.user.publicMetadata.role !== undefined ? this.props.user.publicMetadata.role : null;
-        logger.debug(`USER ROLE: ${role}`);
+        logger.extra(`USER ROLE: ${role}`);
 
         if (role !== 'ADMIN') {
             this.props.router.push('/');

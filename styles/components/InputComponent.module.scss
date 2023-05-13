@@ -6,12 +6,25 @@
     display: flex !important;
     flex-direction: row;
     width: 50%;
+    min-width: 250px;
 
     &:first-child {
         padding-right: 7.5px;
     }
     &:last-child {
         padding-left: 7.5px;
+    }
+}
+
+@media screen and (max-width: 1515px) {
+    .input_split_container {
+        width: 100%;
+        min-width: unset;
+        padding: 0 !important;
+
+        &:last-child {
+            padding-top: 10px !important;
+        }
     }
 }
 

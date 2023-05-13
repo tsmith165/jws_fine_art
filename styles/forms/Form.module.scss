@@ -4,7 +4,12 @@
     display: flex;
     width: 100%;
     height: fit-content;
-    padding: 10px 15px;
+    padding: 5px 15px;
+    flex-wrap: wrap; // allow for wrapping
+}
+
+.input_container:first-child {
+    padding-top: 15px !important;
 }
 
 .input_multi_select_container {
