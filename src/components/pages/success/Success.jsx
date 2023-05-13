@@ -18,9 +18,8 @@ class SuccessPage extends React.Component {
 
         this.router = props.router;
 
-        logger.debug(`ID PROP: ${this.props.id}`);
-        logger.debug(`ID PROP: ${this.props.id}`);
-        const passed_o_id = this.props.id;
+        const passed_o_id = this.props.router.query.id;
+        logger.section({message: `LOADING SUCCESS PAGE - Piece ID: ${passed_o_id}`});
 
         const piece_list = this.props.piece_list;
         const num_pieces = piece_list.length;

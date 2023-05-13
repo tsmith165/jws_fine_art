@@ -33,8 +33,8 @@ class Checkout extends React.Component {
 
         this.router = props.router;
 
-        logger.debug(`ID PROP: ${this.props.id}`);
-        const passed_o_id = this.props.id;
+        const passed_o_id = this.props.router.query.id;
+        logger.section({message: `LOADING CHECKOUT PAGE - Piece ID: ${passed_o_id}`});
 
         const piece_list = this.props.piece_list;
         const num_pieces = piece_list.length;
@@ -275,7 +275,7 @@ class Checkout extends React.Component {
 
     render() {
 
-        logger.debug(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted}`)
+        logger.extra(`Loading: ${this.state.loading} | Submitted: ${this.state.submitted}`)
 
         const styles = this.state.window_width < 769 ? mobile_styles : desktop_styles;
 
@@ -331,13 +331,14 @@ class Checkout extends React.Component {
         const submit_loader_spinner = ( <CircularProgress color="inherit" className={form_styles.loader} /> );
         const submit_successful_jsx = ( <div className={form_styles.submit_label}>Checkout submit successful.</div> );
         const submit_unsuccessful_jsx = ( <div className={form_styles.submit_label_failed}>Checkout submit was not successful.</div>);
+
         const loader_container = (
             ( this.state.loading == true ) ? submit_loader_spinner : 
             ( this.state.submitted == true ) ? submit_successful_jsx : 
             (this.state.error_found == true ) ? submit_unsuccessful_jsx : 
             null 
         );
-        logger.debug(`Loader Container: ${loader_container}`)
+
         const submit_container = loader_container != null ? (
             <div className={form_styles.submit_container}>
                 {loader_container}
