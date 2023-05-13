@@ -24,7 +24,7 @@ class Orders extends React.Component {
         if (this.props.user == null) { this.props.router.push('/') }
         
         const role = (this.props.user.publicMetadata.role !== undefined) ? this.props.user.publicMetadata.role : null;
-        logger.debug(`USER ROLE: ${role}`)
+        logger.extra(`USER ROLE: ${role}`)
         
         if (role !== "ADMIN") { this.props.router.push('/') }
 

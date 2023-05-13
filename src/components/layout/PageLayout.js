@@ -6,7 +6,7 @@ import Head from 'next/head';
 import styles from '@/styles/layout/PageLayout.module.scss';
 
 const PageLayout = ({ page_title = PROJECT_CONSTANTS.SITE_FULL_NAME, children }) => {
-    logger.debug(`Loading Page Layout With Title: ${page_title}`);
+    logger.extra(`Loading Page Layout With Title: ${page_title}`);
 
     return (
         <div className={styles.container}>

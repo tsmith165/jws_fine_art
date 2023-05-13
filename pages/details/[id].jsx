@@ -24,9 +24,8 @@ class Details extends React.Component {
     constructor(props) {
         super(props);
 
-        logger.section({message: `LOADING DETAILS PAGE`});
-
         const passed_o_id = this.props.router.query.id;
+        logger.section({message: `LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`});
 
         const piece_list = this.props.piece_list;
         const num_pieces = piece_list == undefined || piece_list == null ? 0 : piece_list.length;
