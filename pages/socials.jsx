@@ -62,6 +62,8 @@ class SocialsPage extends React.Component {
                     src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/site/bio_pic.jpg`}
                     alt="Bio Pic"
                     quality={100}
+                    width={500}
+                    height={667}
                 />
             </div>
         );

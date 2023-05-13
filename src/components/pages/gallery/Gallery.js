@@ -115,7 +115,7 @@ class Gallery extends React.Component {
             var piece_theme = (current_piece_json['theme'] !== undefined ) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
             var piece_sold = (current_piece_json['sold'] !== undefined ) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
             var piece_available = (current_piece_json['available'] !== undefined ) ? ((current_piece_json['available'] != null) ? current_piece_json['available'] : false) : false;
-            // logger.debug(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
+            // logger.extra(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
             if (theme != 'None' && theme != undefined && theme != null) {
                 if (theme == 'Available') {
                     if (piece_sold) {
