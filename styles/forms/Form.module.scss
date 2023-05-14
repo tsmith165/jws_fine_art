@@ -68,39 +68,48 @@
     border: 2px solid $secondary;
 }
 
-.loader_container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-.loader {
-    height: 25px !important;
-    width: 25px !important;
-    margin-right: 10px;
-}
-.loader_and_label_container {
+.error_message_and_label_container {
+    height: fit-content;
+    width: fit-content;
+    margin: 5px 15px;
+    border-radius: 5px;
     display: flex;
     flex-direction: row;
+
+    .error_message_label {
+        padding: 5px 15px;
+        line-height: 32px;
+        font-size: 22px;
+        font-weight: bold;
+        background-color: $secondary;
+        border-radius: 5px 0px 0px 5px !important;
+    }
+
+    .error_message {
+        padding: 5px 10px;
+        background-color: $primary;
+        border-radius: 0px 5px 5px 0px !important;
+    }
+
 }
 
-.submit_label {
+.submit_label_update {
     color: $secondary;
     font-size: 16px;
     font-weight: bold;
-    line-height: 25px;
+    line-height: 32px;
 }
 .submit_label_failed {
     color: $error;
     font-size: 16px;
     font-weight: bold;
-    line-height: 25px;
+    line-height: 32px;
 }
 .submit_label_warning {
     color: $warning;
     font-size: 16px;
     font-weight: bold;
-    line-height: 25px;
+    line-height: 32px;
 }
 
 .upload_button {

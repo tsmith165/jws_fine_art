@@ -218,7 +218,7 @@ class Details extends React.Component {
     async create_image_array(piece_list, piece_position) {
         logger.debug(`Current window width: ${ window.innerWidth} | piece position: ${piece_position}`)
 
-        const styles = window.innerWidth < 769 ? mobile_styles : desktop_styles;
+        const styles = window.innerWidth > 1800 ? desktop_styles : mobile_styles;
 
         var image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
@@ -255,7 +255,7 @@ class Details extends React.Component {
         logger.debug(`is Admin: ${this.props.user != undefined ? this.props.user.publicMetadata.role : 'NOT ADMIN'}`);
 
         const title = this.state.title != null ? this.state.title : '';
-        const styles = this.state.window_width < 769 ? mobile_styles : desktop_styles;
+        const styles = this.state.window_width > 1800 ? desktop_styles : mobile_styles;
 
         // Gallery Loader Container JSX
         const loader_container = (
@@ -370,14 +370,17 @@ class Details extends React.Component {
             </div>
         )
 
-        if (this.state.window_width < 769) {
+        if (this.state.window_width > 1800) {
             return (
                 <PageLayout page_title={title == '' ? `` : `Piece Details - ${title}`}>
                     <div className={styles.details_container}>
-
-                        {image_container /* Image Container */}
-                        {title_container /* Title Container */}
-                        {details_form /* Details Form Container */}
+                        <div className={styles.details_container_left}>
+                            {image_container}
+                        </div>
+                        <div className={styles.details_container_right}>
+                            {title_container}
+                            {details_form}
+                        </div>
                     </div>
                 </PageLayout>
             );
@@ -386,16 +389,15 @@ class Details extends React.Component {
         return (
             <PageLayout page_title={title == '' ? `` : `Piece Details - ${title}`}>
                 <div className={styles.details_container}>
-                    <div className={styles.details_container_left}>
-                        {image_container}
-                    </div>
-                    <div className={styles.details_container_right}>
-                        {title_container}
-                        {details_form}
-                    </div>
+
+                    {image_container /* Image Container */}
+                    {title_container /* Title Container */}
+                    {details_form /* Details Form Container */}
                 </div>
             </PageLayout>
         );
+
+
     }
 }
 export default withRouter(Details);
