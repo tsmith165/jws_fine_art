@@ -70,7 +70,6 @@ class Details extends React.Component {
         this.state = {
             window_width: null,
             window_height: null,
-            user: this.props.user,
             debug: false,
             loading: true,
             url_o_id: passed_o_id,
@@ -253,7 +252,7 @@ class Details extends React.Component {
     }
 
     render() {
-        logger.debug(`is Admin: ${this.state.user != undefined ? this.state.user.publicMetadata.role : 'NOT ADMIN'}`);
+        logger.debug(`is Admin: ${this.props.user != undefined ? this.props.user.publicMetadata.role : 'NOT ADMIN'}`);
 
         const title = this.state.title != null ? this.state.title : '';
         const styles = this.state.window_width < 769 ? mobile_styles : desktop_styles;
@@ -331,7 +330,7 @@ class Details extends React.Component {
         ) : null;
         
         // Edit Piece Button JSX
-        const edit_piece_button_jsx = (this.state.user !== undefined && this.state.user !== null && this.state.user.publicMetadata.role == 'ADMIN') ? (
+        const edit_piece_button_jsx = (this.props.user !== undefined && this.props.user !== null && this.props.user.publicMetadata.role == 'ADMIN') ? (
             <Link href={`/edit/${this.state.url_o_id}`}>
                 <div className={styles.edit_piece_button}>Edit Piece</div>
             </Link>
