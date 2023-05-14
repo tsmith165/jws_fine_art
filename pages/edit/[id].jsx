@@ -72,10 +72,14 @@ class Edit extends React.Component {
                                                 current_piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ?  current_piece.image_path : 
                                                 `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`;
 
-        var extra_images  = num_pieces < 1 ? '' : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images
-        var progress_images  = num_pieces < 1 ? '' : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images
-        extra_images = extra_images == null ? [] : extra_images;
-        progress_images = progress_images == null ? [] : progress_images;
+
+        logger.debug(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`)
+        var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
+        logger.debug(`Using Extra Images: "${extra_images}"`)
+
+        logger.debug(`Edit Page ${passed_o_id} Progress Images: "${current_piece.extra_images}"`)
+        var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
+        logger.debug(`Using Progress Images: "${progress_images}"`)
         /* prettier-ignore-end */
 
         var theme_options = [{ value: theme, label: theme }];
@@ -251,8 +255,8 @@ class Edit extends React.Component {
             piece.image_path = piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? piece.image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`;
         });
 
-        logger.debug('Pieces fetched in state (Next Line):');
-        logger.debug(piece_list);
+        logger.extra('Pieces fetched in state (Next Line):');
+        logger.extra(piece_list);
 
         const state = type == 'none' ?  { piece_list: piece_list, loading: false } : { 
             piece_list: piece_list, 
@@ -262,8 +266,8 @@ class Edit extends React.Component {
             updated: type == 'updated' ? true : false,
             uploaded: type == 'uploaded' ? true : false,
         };
-        logger.debug(`Setting state with type: ${type} (Next Line):`);
-        logger.debug(state)
+        logger.extra(`Setting state with type: ${type} (Next Line):`);
+        logger.extra(state)
         this.update_state_with_callback(state, async () => {
             await this.update_current_piece(this.state.piece_list, this.state.url_o_id, type == 'none' ? false : true);
         });
@@ -278,8 +282,8 @@ class Edit extends React.Component {
         const current_db_id = current_piece.id;
         const current_o_id = current_piece.o_id;
 
-        logger.debug(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
-        logger.debug(current_piece);
+        logger.extra(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
+        logger.extra(current_piece);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
@@ -301,6 +305,9 @@ class Edit extends React.Component {
         logger.extra(theme_options);
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position, this.state.staging_db_id);
+
+        var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
+        var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
 
         const previous_url_o_id = this.state.url_o_id;
         this.update_state(
@@ -338,8 +345,8 @@ class Edit extends React.Component {
                 updated: preserve_submit_state == true ? this.state.updated : false,
                 uploaded: preserve_submit_state == true ? this.state.uploaded : false,
                 upload_error: false,
-                extra_images: typeof current_piece.extra_images === 'string' ? current_piece.extra_images.split(', ') : current_piece.extra_images,
-                progress_images: current_piece.progress_images,
+                extra_images: extra_images,
+                progress_images: progress_images,
             },
             async () => {
                 if (previous_url_o_id != o_id) {
@@ -983,7 +990,7 @@ class Edit extends React.Component {
         console.log(`using_extra_images type: ${typeof this.state.extra_images} | data (next line):`);
         console.log(using_extra_images)
 
-        const extra_images_text_jsx = [undefined, null, ''].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
+        const extra_images_text_jsx = [undefined, null, '', [], ['']].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
             <div className={edit_details_styles.extra_images_container}>
                 <div className={edit_details_styles.extra_image_table_header}>Extra Images:</div>
 
@@ -1025,7 +1032,7 @@ class Edit extends React.Component {
             using_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
         } catch (error) { }
 
-        const progress_images_test_jsx = [undefined, null, ''].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
+        const progress_images_test_jsx = [undefined, null, '', [], ['']].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
             <div className={edit_details_styles.extra_images_container}>
                 <div className={edit_details_styles.extra_image_table_header}>Progress Images:</div>
 
