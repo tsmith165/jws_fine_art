@@ -712,74 +712,84 @@ class Edit extends React.Component {
         await updateExtraImagesOrder(this.state.db_id, newExtraImages, image_type_to_edit);
     };
 
-    create_loader_jsx() {
+    create_error_message_jsx() {
         logger.extra( `Loading: ${this.state.loading} | updated: ${this.state.updated} | Error: ${this.state.error} | Uploaded: ${this.state.uploaded}`);
 
-        var loader_jsx = null;
-        var class_name = null;
-        var loader_message = '';
+        var message_jsx = null;
+        var message = '';
+        var message_type = null;
 
         if (this.state.loading == true) {
-            loader_jsx = (
-                <div className={form_styles.loader_and_label_container}>
+            message_type = 'Update'
+            message_jsx = (
+                <div className={form_styles.error_message_container}>
                     <CircularProgress color="inherit" className={form_styles.loader}/>
-                    <div className={form_styles.submit_label}>{'Re-Loading piece list...'}</div>
+                    <div className={form_styles.error_message}>{'Re-Loading piece list...'}</div>
                 </div>
             );
         } else if (this.state.updating == true) {
-            loader_jsx = (
-                <div className={form_styles.loader_and_label_container}>
+            message_type = 'Update'
+            message_jsx = (
+                <div className={form_styles.error_message_container}>
                     <CircularProgress color="inherit" className={form_styles.loader}/>
-                    <div className={form_styles.submit_label}>{'Updating piece info in DB...'}</div>
+                    <div className={form_styles.error_message}>{'Updating piece info in DB...'}</div>
                 </div>
             );
         } else if (this.state.uploading == true) {
-            loader_jsx = (
-                <div className={form_styles.loader_and_label_container}>
+            message_type = 'Update'
+            message_jsx = (
+                <div className={form_styles.error_message_container}>
                     <CircularProgress color="inherit" className={form_styles.loader}/>
-                    <div className={form_styles.submit_label}>{'Uploading piece to Amazon S3 Bucket...'}</div>
+                    <div className={form_styles.error_message}>{'Uploading piece to Amazon S3 Bucket...'}</div>
                 </div>
             );
         } else if (this.state.updated == true) {
-            class_name = form_styles.submit_label;
-            loader_message = `Piece Details Update was successful!`;
+            message_type = 'Update'
+            message = `Piece Details Update was successful!`;
         } else if (this.state.uploaded == true) {
-            class_name = form_styles.submit_label;
-            loader_message = `Piece Details Upload was successful!`;
+            message_type = 'Update'
+            message = `Piece Details Upload was successful!`;
         } else if (this.state.error == true) {
-            class_name = form_styles.submit_label_failed;
-            loader_message = `Piece Details Update was NOT successful...`;
+            message_type = 'Error'
+            message = `Piece Details Update was NOT successful...`;
         } else if (this.state.upload_error == true) {
-            class_name = form_styles.submit_label_failed;
-            loader_message = `Error reached while uploading image...`;
+            message_type = 'Error'
+            message = `Error reached while uploading image...`;
         } else if (
             this.state.width != '' &&
             this.state.height != '' &&
             this.state.width > 1500 &&
             this.state.height > 1500
         ) {
-            class_name = form_styles.submit_label_warning;
-            loader_message = `Image upload successful but image resolution is too high!  Re-Upload with width / height < 1500px`;
+            message_type = 'Warning'
+            message = `Image upload successful but image resolution is too high!  Re-Upload with width / height < 1500px`;
         } else if (
             this.state.width != '' &&
             this.state.height != '' &&
             this.state.width < 1000 &&
             this.state.height < 1000
         ) {
-            class_name = form_styles.submit_label_warning;
-            loader_message = `Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`;
+            message_type = 'Warning'
+            message = `Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`;
         } else if (this.state.uploaded == true) {
-            class_name = form_styles.submit_label;
-            loader_message = `Image Upload was successful...`;
+            message_type = 'Update'
+            message = `Image Upload was successful...`;
         }
 
-        loader_jsx = loader_jsx !== null ? loader_jsx : (
-            <div className={class_name == null ? form_styles.submit_label : class_name}>
-                {loader_message}
+        var message_class = message_type == 'Update' ? form_styles.submit_label_update : message_type == 'Warning' ? form_styles.submit_label_warning : form_styles.submit_label_failed
+
+        var error_message_and_label_jsx = message_type == null ? null : (
+            <div className={form_styles.error_message_and_label_container}>
+                <div className={`${form_styles.error_message_label} ${message_class}`}>
+                    {`${message_type}:`}
+                </div>
+                <div className={`${form_styles.error_message} ${message_class}`}>
+                    {message_jsx == null ? message : message_jsx}
+                </div>
             </div>
         );
 
-        return loader_jsx;
+        return error_message_and_label_jsx;
     }
 
     render() {
@@ -791,9 +801,7 @@ class Edit extends React.Component {
         if (role !== 'ADMIN') { this.props.router.push('/'); }
 
         // If to this position, User is signed in with ADMIN role in clerk publicMetadata
-        const styles = this.state.window_width > 768 ? desktop_styles : mobile_styles;
-
-        var loader_jsx = this.create_loader_jsx()
+        const styles = this.state.window_width > 1800 ? desktop_styles : mobile_styles;
 
         const using_theme = [undefined, null, ''].includes(this.state.theme) == false ? this.state.theme : 'None';
         logger.extra(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
@@ -977,9 +985,7 @@ class Edit extends React.Component {
             </div>
         );
 
-        const error_message_jsx = (
-            <div className={form_styles.loader_container}>{loader_jsx}</div>
-        )
+        const error_message_jsx = this.create_error_message_jsx();
         
         console.log(`this.state.extra_images type: ${typeof this.state.extra_images} | length: ${this.state.extra_images.length} | Data: ${this.state.extra_images}`)
         let using_extra_images = null;
@@ -1065,7 +1071,7 @@ class Edit extends React.Component {
             </div>
         );
         
-        if (this.state.window_width > 768) {
+        if (this.state.window_width > 1800) {
             return (
                 <PageLayout page_title={this.state.title == '' ? `Edit Details` : `Edit Details - ${this.state.title}`}>
                     <div className={styles.details_container}>
