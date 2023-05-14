@@ -792,7 +792,7 @@ class Edit extends React.Component {
         logger.extra(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
 
         // Gallery Loader Container JSX
-        const loader_container_jsx = (
+        const image_loader_container_jsx = (
             <div className={styles.loader_container}>
                 <div>Loading Gallery</div>
                 <CircularProgress color="inherit" className={styles.loader} />
@@ -802,7 +802,7 @@ class Edit extends React.Component {
         // Main Image Container JSX
         const image_container_jsx = (
             <div className={styles.centered_image_outer_container}>
-                {this.state.loading == true ? ( loader_container_jsx ) : ( this.state.image_array )}
+                {this.state.loading == true ? ( image_loader_container_jsx ) : ( this.state.image_array )}
             </div>
         );
         
@@ -967,9 +967,12 @@ class Edit extends React.Component {
                 {/* <input type="file" className={form_styles.upload_file_input} onChange={this.onFileChange} ref={this.file_input_ref}/> */}
                 <button type="button" className={form_styles.submit_button} onClick={this.handleSubmit}>Submit Changes</button>
                 <button type="button" className={form_styles.submit_button} onClick={this.create_blank_piece}>Create New Piece</button>
-                <div className={form_styles.loader_container}>{loader_jsx}</div>
             </div>
         );
+
+        const error_message_jsx = (
+            <div className={form_styles.loader_container}>{loader_jsx}</div>
+        )
         
         console.log(`this.state.extra_images type: ${typeof this.state.extra_images} | length: ${this.state.extra_images.length} | Data: ${this.state.extra_images}`)
         let using_extra_images = null;
@@ -1088,6 +1091,8 @@ class Edit extends React.Component {
 
                                     {submit_container_jsx}
 
+                                    {error_message_jsx}
+
                                     {extra_images_text_jsx}
 
                                     {progress_images_test_jsx}
@@ -1126,6 +1131,8 @@ class Edit extends React.Component {
                             {file_input_continer /* File Input Container */}
 
                             {submit_container_jsx}
+
+                            {error_message_jsx}
 
                             {extra_images_text_jsx}
 
