@@ -544,8 +544,12 @@ class Edit extends React.Component {
 
     async upload_image(uploaded_image_path, width, height) {
         if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
-            var new_progress_images = this.state.progress_images;
-            new_progress_images.push({
+            var using_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
+
+            console.log(`New Extra Images Type: ${typeof using_progress_images} | Data (Next Line):`);
+            console.log(using_progress_images);
+
+            using_progress_images.push({
                 image_path: uploaded_image_path,
                 width: width,
                 height: height,
@@ -554,15 +558,19 @@ class Edit extends React.Component {
             logger.debug(`Pre-Update Progress Images State (Next Line):`);
             console.log(this.state);
             this.update_state({
-                progress_images: new_progress_images, 
+                progress_images: using_progress_images, 
                 uploaded_image_path: uploaded_image_path,
             });
             return true
         }
 
         if ( this.state.file_upload_type.toString().toLowerCase().includes('extra') ) {
-            var new_extra_images = this.state.extra_images;
-            new_extra_images.push({
+            var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+
+            console.log(`New Extra Images Type: ${typeof using_extra_images} | Data (Next Line):`);
+            console.log(using_extra_images);
+
+            using_extra_images.push({
                 image_path: uploaded_image_path,
                 width: width,
                 height: height,
@@ -571,7 +579,7 @@ class Edit extends React.Component {
             logger.debug(`Pre-Update Extra Images State  (Next Line):`);
             console.log(this.state);
             this.update_state({
-                extra_images: new_extra_images, 
+                extra_images: using_extra_images, 
                 uploaded_image_path: uploaded_image_path
             });
             return true
@@ -681,7 +689,8 @@ class Edit extends React.Component {
     }
 
     handleImageReorder = async (index, direction, image_type_to_edit) => {
-        let newExtraImages = [...this.state.extra_images];
+        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+        let newExtraImages = [...using_extra_images];
         let newIndex;
       
         if (direction === 'up') {
@@ -703,8 +712,9 @@ class Edit extends React.Component {
     };
     
     handleImageDelete = async (index, image_type_to_edit) => {
-        let newExtraImages = this.state.extra_images.filter((_, i) => i !== index);
-        this.setState({ [image_type_to_edit]: new_images });
+        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+        let newExtraImages = using_extra_images.filter((_, i) => i !== index);
+        this.setState({ [image_type_to_edit]: newExtraImages });
     
         console.log(`Updating DB with Extra Images: ${newExtraImages}`)
 
@@ -806,6 +816,22 @@ class Edit extends React.Component {
         const using_theme = [undefined, null, ''].includes(this.state.theme) == false ? this.state.theme : 'None';
         logger.extra(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
 
+        let using_extra_images = null;
+        try {
+            using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+        } catch (error) { }
+
+        logger.debug(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
+        logger.debug(using_extra_images)
+            
+        let using_progress_images = null;
+        try {
+            using_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
+        } catch (error) { }
+
+        logger.debug(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
+        logger.debug(using_progress_images)
+
         // Gallery Loader Container JSX
         const image_loader_container_jsx = (
             <div className={styles.loader_container}>
@@ -820,6 +846,43 @@ class Edit extends React.Component {
                 {this.state.loading == true ? ( image_loader_container_jsx ) : ( this.state.image_array )}
             </div>
         );
+
+        const extra_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
+            <div className={styles.extra_images_gallery_container}>
+                {this.state.loading == true ? ( null ) : ( 
+                    using_extra_images.map((image, index) => {
+                        console.log(image)
+                        var image_path = image.image_path.split('/').slice(-2).join('/')
+                        console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                        return (
+                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`}>
+                                <NextImage
+                                    className={styles.centered_image}
+                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                    alt={``}
+                                    width={image.width}
+                                    height={image.height}
+                                    quality={100}
+                                />
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+        )
+
+        const final_image_container_jsx = extra_images_gallery_container_jsx == null ? ( 
+            <div className={styles.main_image_only_container}>
+                {image_container_jsx}
+            </div>
+            
+        ) : (
+            <div className={styles.main_image_and_extra_images_container}>
+                {image_container_jsx}
+
+                {extra_images_gallery_container_jsx}
+            </div>
+        )
         
         // Backwards Title Arrow JSX
         const backward_title_arrow_jsx = (
@@ -986,57 +1049,43 @@ class Edit extends React.Component {
         );
 
         const error_message_jsx = this.create_error_message_jsx();
-        
-        console.log(`this.state.extra_images type: ${typeof this.state.extra_images} | length: ${this.state.extra_images.length} | Data: ${this.state.extra_images}`)
-        let using_extra_images = null;
-        try {
-            using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
-        } catch (error) { }
 
-        console.log(`using_extra_images type: ${typeof this.state.extra_images} | data (next line):`);
-        console.log(using_extra_images)
 
         const extra_images_text_jsx = [undefined, null, '', [], ['']].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
             <div className={edit_details_styles.extra_images_container}>
                 <div className={edit_details_styles.extra_image_table_header}>Extra Images:</div>
 
                 <div className={edit_details_styles.extra_image_table} id={'extra-images'}>
-                    {
-                        using_extra_images.map((image, index) => {
-                            console.log(image)
-                            console.log(`Image Path: ${image.image_path}`)
-                            var image_path = image.image_path.split('/').slice(-2).join('/')
-                            return (
-                                <div key={index} className={edit_details_styles.image_row}>
-                                    <div className={edit_details_styles.image_filename}>
-                                        {image_path}
-                                    </div>
-                                    <div className={edit_details_styles.button_container}>
-                                        <ArrowForwardIosRoundedIcon
-                                            className={edit_details_styles.up_arrow}
-                                            onClick={() => this.handleImageReorder(index, 'up', 'extra_images')}
-                                        />
-                                        <ArrowForwardIosRoundedIcon
-                                            className={edit_details_styles.down_arrow}
-                                            onClick={() => this.handleImageReorder(index, 'down', 'extra_images')}
-                                        />
-                                        <DeleteForeverIcon
-                                            className={edit_details_styles.delete_icon}
-                                            onClick={() => this.handleImageDelete(index, 'extra_images')}
-                                        />
-                                    </div>
+                    {using_extra_images.map((image, index) => {
+                        // console.log(image)
+                        // console.log(`Image Path: ${image.image_path}`)
+                        var image_path = image.image_path.split('/').slice(-2).join('/')
+                        return (
+                            <div key={index} className={edit_details_styles.image_row}>
+                                <div className={edit_details_styles.image_filename}>
+                                    {image_path}
                                 </div>
-                            );
-                        }
-                    )}
+                                <div className={edit_details_styles.button_container}>
+                                    <ArrowForwardIosRoundedIcon
+                                        className={edit_details_styles.up_arrow}
+                                        onClick={() => this.handleImageReorder(index, 'up', 'extra_images')}
+                                    />
+                                    <ArrowForwardIosRoundedIcon
+                                        className={edit_details_styles.down_arrow}
+                                        onClick={() => this.handleImageReorder(index, 'down', 'extra_images')}
+                                    />
+                                    <DeleteForeverIcon
+                                        className={edit_details_styles.delete_icon}
+                                        onClick={() => this.handleImageDelete(index, 'extra_images')}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         );
         
-        let using_progress_images = null;
-        try {
-            using_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
-        } catch (error) { }
 
         const progress_images_test_jsx = [undefined, null, '', [], ['']].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
             <div className={edit_details_styles.extra_images_container}>
@@ -1076,7 +1125,7 @@ class Edit extends React.Component {
                 <PageLayout page_title={this.state.title == '' ? `Edit Details` : `Edit Details - ${this.state.title}`}>
                     <div className={styles.details_container}>
                         <div className={styles.details_container_left}>
-                            {image_container_jsx}
+                            {final_image_container_jsx}
                         </div>
                         <div className={styles.details_container_right}>
                             <div className={edit_details_styles.edit_details_form_container}>
@@ -1119,7 +1168,9 @@ class Edit extends React.Component {
         return (
             <PageLayout page_title={this.state.title == '' ? `Edit Details` : `Edit Details - ${this.state.title}`}>
                 <div className={styles.details_container}>
-                    {image_container_jsx}
+
+                    {final_image_container_jsx}
+
                     <div className={edit_details_styles.edit_details_form_container}>
                         <form>
 

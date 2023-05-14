@@ -11,6 +11,42 @@
     }
 }
 
+.main_image_only_container {
+    width: 100%;
+    height: calc(100% - 70px) !important;
+    background-color: $dark;
+
+    .centered_image_outer_container {
+        width: 100% !important;
+        height: 100% !important;
+        position: relative !important;
+    }
+}
+
+.main_image_and_extra_images_container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100% - 70px) !important;
+    background-color: $dark;
+
+    .extra_images_gallery_container {
+        height: 120px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        padding: 10px 0px;
+
+        .extra_images_gallery_image {
+            width: 100px !important;
+            height: 100px !important;
+
+            margin-left: 10px;
+        }
+    }
+} 
+
 .details_container {
     position: absolute;
     height: calc(100% - 100px) !important;

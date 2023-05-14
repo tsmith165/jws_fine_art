@@ -60,6 +60,14 @@ class Details extends React.Component {
         var real_height = num_pieces < 1 ? '' : current_piece.real_height !== undefined ? current_piece.real_height : '';
         var image_path  = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
         var instagram   = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
+
+        logger.debug(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`)
+        var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
+        logger.debug(`Using Extra Images: "${extra_images}"`)
+
+        logger.debug(`Edit Page ${passed_o_id} Progress Images: "${current_piece.extra_images}"`)
+        var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
+        logger.debug(`Using Progress Images: "${progress_images}"`)
         /* prettier-ignore-end */
 
         description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
@@ -75,6 +83,8 @@ class Details extends React.Component {
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
+            extra_images: extra_images,
+            progress_images: progress_images,
             current_piece: current_piece,
             piece_position: piece_position,
             db_id: db_id,
@@ -176,6 +186,9 @@ class Details extends React.Component {
         description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
         console.log(`Description (Next Line):\n${description}`)
 
+        var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
+        var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
+
         this.setState(
             {
                 loading: false,
@@ -205,7 +218,8 @@ class Details extends React.Component {
                 sold: current_piece.sold,
                 available: current_piece.available,
                 price: current_piece.price,
-                
+                extra_images: extra_images,
+                progress_images: progress_images,
             },
             async () => {
                 if (previous_url_o_id != o_id) {
@@ -257,8 +271,16 @@ class Details extends React.Component {
         const title = this.state.title != null ? this.state.title : '';
         const styles = this.state.window_width > 1800 ? desktop_styles : mobile_styles;
 
+        let using_extra_images = null;
+        try {
+            using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+        } catch (error) { }
+
+        logger.debug(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
+        logger.debug(using_extra_images)
+
         // Gallery Loader Container JSX
-        const loader_container = (
+        const image_loader_container_jsx = (
             <div className={styles.loader_container}>
                 <div>Loading Gallery</div>
                 <CircularProgress color="inherit" className={styles.loader} />
@@ -266,11 +288,48 @@ class Details extends React.Component {
         );
         
         // Main Image Container JSX
-        const image_container = (
+        const image_container_jsx = (
             <div className={styles.centered_image_outer_container}>
-                {this.state.loading == true ? ( loader_container ) : ( this.state.image_array )}
+                {this.state.loading == true ? ( image_loader_container_jsx ) : ( this.state.image_array )}
             </div>
         );
+
+        const extra_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
+            <div className={styles.extra_images_gallery_container}>
+                {this.state.loading == true ? ( null ) : ( 
+                    using_extra_images.map((image, index) => {
+                        console.log(image)
+                        var image_path = image.image_path.split('/').slice(-2).join('/')
+                        console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                        return (
+                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`}>
+                                <NextImage
+                                    className={styles.centered_image}
+                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                    alt={``}
+                                    width={image.width}
+                                    height={image.height}
+                                    quality={100}
+                                />
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+        )
+
+        const final_image_container_jsx = extra_images_gallery_container_jsx == null ? ( 
+            <div className={styles.main_image_only_container}>
+                {image_container_jsx}
+            </div>
+            
+        ) : (
+            <div className={styles.main_image_and_extra_images_container}>
+                {image_container_jsx}
+
+                {extra_images_gallery_container_jsx}
+            </div>
+        )
         
         // Title Container JSX
         const title_container = (
@@ -375,7 +434,7 @@ class Details extends React.Component {
                 <PageLayout page_title={title == '' ? `` : `Piece Details - ${title}`}>
                     <div className={styles.details_container}>
                         <div className={styles.details_container_left}>
-                            {image_container}
+                            {final_image_container_jsx}
                         </div>
                         <div className={styles.details_container_right}>
                             {title_container}
@@ -390,7 +449,7 @@ class Details extends React.Component {
             <PageLayout page_title={title == '' ? `` : `Piece Details - ${title}`}>
                 <div className={styles.details_container}>
 
-                    {image_container /* Image Container */}
+                    {final_image_container_jsx /* Image Container */}
                     {title_container /* Title Container */}
                     {details_form /* Details Form Container */}
                 </div>
