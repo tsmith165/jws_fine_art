@@ -23,29 +23,39 @@
     }
 }
 
+
 .main_image_and_extra_images_container {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: calc(100% - 70px) !important;
-    background-color: $dark;
-
-    .extra_images_gallery_container {
-        height: 120px;
+    background-color: $secondary;
+    
+    .full_gallery_container {
         display: flex;
         flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: flex-start;
-        padding: 10px 0px;
+        padding: 0px;
+        margin: 5px;
 
-        .extra_images_gallery_image {
-            width: 100px !important;
-            height: 100px !important;
-
-            margin-left: 10px;
+        .extra_images_gallery_container {
+            height: 120px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: flex-start;
+    
+            .extra_images_gallery_image {
+                width: 100px !important;
+                height: 100px !important;
+                margin: 10px;
+            }
         }
     }
 } 
+
+.selected_gallery_image {
+    background-color: $dark !important;
+}
 
 .details_container {
     position: absolute;

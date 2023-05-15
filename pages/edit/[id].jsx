@@ -146,6 +146,7 @@ class Edit extends React.Component {
             file_upload_type: 'Cover Image',
             error: false,
             staging_db_id: 2,
+            selected_gallery_image: 0
         };
         this.create_image_array = this.create_image_array.bind(this);
         this.get_piece_from_path_o_id = this.get_piece_from_path_o_id.bind(this);
@@ -179,9 +180,12 @@ class Edit extends React.Component {
 
     async componentDidMount() {
         var image_array = [];
+        var extra_image_array = [];
         const num_pieces = this.state.piece_list.length;
         if (num_pieces > 0) {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position, this.state.staging_db_id);
+
+            extra_image_array = await this.create_extra_image_array(this.state.selected_gallery_image);
         }
        
         logger.extra(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
@@ -190,6 +194,7 @@ class Edit extends React.Component {
             window_width: window.innerWidth,
             window_height: window.innerHeight,
             image_array: image_array,
+            extra_image_array: extra_image_array,
             next_oid:
                 this.state.piece_position + 1 > num_pieces - 1
                     ? this.state.piece_list[0]['o_id']
@@ -215,7 +220,7 @@ class Edit extends React.Component {
         });
     }
 
-    async update_state(state) {
+    update_state(state) {
         logger.debug(`Updating state with object (Next Line):`);
         logger.debug(state);
     
@@ -306,6 +311,8 @@ class Edit extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position, this.state.staging_db_id);
 
+        const extra_image_array = await this.create_extra_image_array(this.state.selected_gallery_image);
+
         var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
         var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
 
@@ -315,6 +322,7 @@ class Edit extends React.Component {
                 url_o_id: current_o_id,
                 piece_list: piece_list,
                 image_array: image_array,
+                extra_image_array: extra_image_array,
                 piece_position: piece_position,
                 db_id: current_db_id,
                 o_id: current_o_id,
@@ -357,7 +365,7 @@ class Edit extends React.Component {
     }
 
     async create_image_array(piece_list, piece_position, db_id) {
-        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 768 ? desktop_styles : mobile_styles;
+        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
 
         var image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
@@ -367,12 +375,7 @@ class Edit extends React.Component {
             }
 
             image_array.push(
-                <div
-                    key={`image_${i}`}
-                    className={
-                        i == piece_position ? styles.centered_image_container : styles.centered_image_container_hidden
-                    }
-                >
+                <div key={`image_${i}`} className={i == piece_position ? styles.centered_image_container : styles.centered_image_container_hidden}>
                     { (db_id == -1) ? (null) : (db_id != piece.id) ? null : (
                         <div className={styles.centered_image_staging}>Staging</div>
                     )}
@@ -390,6 +393,35 @@ class Edit extends React.Component {
             );
         }
         return image_array;
+    }
+
+    async create_extra_image_array(selected_image) {
+        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
+
+        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+        console.log(`Using Extra Images HERE LENGTH: ${using_extra_images.length} | TYPE: ${typeof using_extra_images} | DATA (NEXT LINE):`)
+        console.log(using_extra_images)
+
+        var extra_image_array = [];
+        using_extra_images.map((image, index) => {
+            console.log(`Path: ${image.image_path} | Width: ${image.width} | Height: ${image.height}`)
+            extra_image_array.push(
+                <div key={`extra_image_${index}`} className={index == (selected_image) ? styles.centered_image_container : styles.centered_image_container_hidden}>
+                    <NextImage
+                        id={`extra_image_${index}`}
+                        className={styles.centered_image}
+                        src={image.image_path}
+                        alt={image.image_path}
+                        priority={true}
+                        width={300}
+                        height={300}
+                        quality={100}
+                    />
+                </div>
+            );
+        });
+        
+        return extra_image_array;
     }
 
     async get_piece_from_path_o_id(piece_list, o_id) {
@@ -843,10 +875,10 @@ class Edit extends React.Component {
         // Main Image Container JSX
         const image_container_jsx = (
             <div className={styles.centered_image_outer_container}>
-                {this.state.loading == true ? ( image_loader_container_jsx ) : ( this.state.image_array )}
+                {this.state.loading == true ? ( image_loader_container_jsx ) : this.state.selected_gallery_image === 0 ? this.state.image_array : this.state.extra_image_array}
             </div>
         );
-
+        
         const extra_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
             <div className={styles.extra_images_gallery_container}>
                 {this.state.loading == true ? ( null ) : ( 
@@ -855,21 +887,59 @@ class Edit extends React.Component {
                         var image_path = image.image_path.split('/').slice(-2).join('/')
                         console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                         return (
-                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`}>
-                                <NextImage
-                                    className={styles.centered_image}
-                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
-                                    alt={``}
-                                    width={image.width}
-                                    height={image.height}
-                                    quality={100}
-                                />
+                            <div className={(this.state.selected_gallery_image === (index + 1)) ? 
+                                `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
+                                `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                            }>
+                                <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
+                                    const extra_image_array = await this.create_extra_image_array(index)
+                                    this.update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
+                                }}>
+                                    <NextImage
+                                        className={styles.centered_image}
+                                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                        alt={``}
+                                        width={image.width}
+                                        height={image.height}
+                                        quality={100}
+                                    />
+                                </div>
                             </div>
                         );
                     })
                 )}
             </div>
+        );
+
+        const main_image_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
+            <div className={styles.extra_images_gallery_container}>
+                <div className={(this.state.selected_gallery_image === 0) ? 
+                    `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
+                    `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                }>
+                    <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
+                        this.update_state({'selected_gallery_image': 0})
+                    }}>
+                        <NextImage
+                            className={styles.centered_image}
+                            src={this.state.image_path}
+                            alt={``}
+                            width={this.state.width}
+                            height={this.state.height}
+                            quality={100}
+                        />
+                    </div>
+                </div>
+            </div>
         )
+
+        const main_image_and_extra_images_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
+            <div className={styles.full_gallery_container}>
+                {main_image_gallery_container_jsx}
+
+                {extra_images_gallery_container_jsx}
+            </div>
+        );
 
         const final_image_container_jsx = extra_images_gallery_container_jsx == null ? ( 
             <div className={styles.main_image_only_container}>
@@ -880,7 +950,7 @@ class Edit extends React.Component {
             <div className={styles.main_image_and_extra_images_container}>
                 {image_container_jsx}
 
-                {extra_images_gallery_container_jsx}
+                {main_image_and_extra_images_gallery_container_jsx}
             </div>
         )
         
