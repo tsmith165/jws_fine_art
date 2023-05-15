@@ -355,6 +355,7 @@ class Edit extends React.Component {
                 upload_error: false,
                 extra_images: extra_images,
                 progress_images: progress_images,
+                selected_gallery_image: 0,
             },
             async () => {
                 if (previous_url_o_id != o_id) {
