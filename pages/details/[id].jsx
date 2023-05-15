@@ -126,9 +126,12 @@ class Details extends React.Component {
 
     async componentDidMount() {
         var image_array = [];
+        var extra_image_array = [];
         const num_pieces = this.state.piece_list.length;
         if (num_pieces > 0) {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position);
+
+            extra_image_array = await this.create_extra_image_array(this.state.selected_gallery_image);
         }
        
         logger.debug(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
@@ -137,6 +140,7 @@ class Details extends React.Component {
             window_width: window.innerWidth,
             window_height: window.innerHeight,
             image_array: image_array,
+            extra_image_array: extra_image_array,
             next_oid:
                 this.state.piece_position + 1 > num_pieces - 1
                     ? this.state.piece_list[0]['o_id']
@@ -230,6 +234,7 @@ class Details extends React.Component {
                 price: current_piece.price,
                 extra_images: extra_images,
                 progress_images: progress_images,
+                selected_gallery_image: 0,
             },
             async () => {
                 if (previous_url_o_id != o_id) {
@@ -267,6 +272,35 @@ class Details extends React.Component {
         return image_array;
     }
 
+    async create_extra_image_array(selected_image) {
+        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
+
+        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+        console.log(`Using Extra Images HERE LENGTH: ${using_extra_images.length} | TYPE: ${typeof using_extra_images} | DATA (NEXT LINE):`)
+        console.log(using_extra_images)
+
+        var extra_image_array = [];
+        using_extra_images.map((image, index) => {
+            console.log(`Path: ${image.image_path} | Width: ${image.width} | Height: ${image.height}`)
+            extra_image_array.push(
+                <div key={`extra_image_${index}`} className={index == (selected_image) ? styles.centered_image_container : styles.centered_image_container_hidden}>
+                    <NextImage
+                        id={`extra_image_${index}`}
+                        className={styles.centered_image}
+                        src={image.image_path}
+                        alt={image.image_path}
+                        priority={true}
+                        width={300}
+                        height={300}
+                        quality={100}
+                    />
+                </div>
+            );
+        });
+        
+        return extra_image_array;
+    }
+
     async get_piece_from_path_o_id(piece_list, o_id) {
         for (var i = 0; i < piece_list.length; i++) {
             if (piece_list[i]['o_id'].toString() == o_id.toString()) {
@@ -300,7 +334,7 @@ class Details extends React.Component {
         // Main Image Container JSX
         const image_container_jsx = (
             <div className={styles.centered_image_outer_container}>
-                {this.state.loading == true ? ( image_loader_container_jsx ) : ( this.state.image_array )}
+                {this.state.loading == true ? ( image_loader_container_jsx ) : this.state.selected_gallery_image === 0 ? this.state.image_array : this.state.extra_image_array}
             </div>
         );
 
@@ -316,8 +350,9 @@ class Details extends React.Component {
                                 `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
                                 `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
                             }>
-                                <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
-                                    this.update_state({'selected_gallery_image': index + 1})
+                                <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
+                                    const extra_image_array = await this.create_extra_image_array(index)
+                                    this.update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
                                 }}>
                                     <NextImage
                                         className={styles.centered_image}
