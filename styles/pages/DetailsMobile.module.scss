@@ -36,6 +36,9 @@
         flex-direction: row;
         padding: 0px;
         margin: 5px;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        height: 130px;
 
         .extra_images_gallery_container {
             height: 120px;
