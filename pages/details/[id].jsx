@@ -61,6 +61,8 @@ class Details extends React.Component {
         var image_path  = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
         var instagram   = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
 
+        logger.debug(`Piece Type: "${piece_type}"`)
+
         logger.debug(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`)
         var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
         logger.debug(`Using Extra Images: "${extra_images}"`)
@@ -92,6 +94,7 @@ class Details extends React.Component {
             image_path: image_path,
             description: description,
             title: title,
+            piece_type: piece_type,
             available: available,
             sold: sold,
             price: price,
@@ -135,7 +138,7 @@ class Details extends React.Component {
         }
        
         logger.debug(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
-        this.setState({
+        this.update_state({
             loading: false,
             window_width: window.innerWidth,
             window_height: window.innerHeight,
@@ -156,7 +159,7 @@ class Details extends React.Component {
 
     handleResize() {
         logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight} | Setting Styles ${window.innerWidth < 1800 ? 'Desktop' : 'Mobile'}`);
-        this.setState({
+        this.update_state({
             window_width: window.innerWidth,
             window_height: window.innerHeight,
         });
@@ -203,45 +206,42 @@ class Details extends React.Component {
         var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
         var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
 
-        this.setState(
-            {
-                loading: false,
-                url_o_id: o_id,
-                piece_list: piece_list,
-                image_array: image_array,
-                piece_position: piece_position,
-                current_piece: current_piece,
-                db_id: current_db_id,
-                o_id: current_o_id,
-                title: current_piece.title,
-                piece_type: current_piece.piece_type,
-                description: description,
-                sold: current_piece.sold,
-                price: current_piece.price,
-                width: current_piece.width,
-                height: current_piece.height,
-                real_width: current_piece.real_width,
-                real_height: current_piece.real_height,
-                image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
-                instagram: current_piece.instagram,
-                available: current_piece.available !== undefined ? current_piece.available : false,
-                framed: current_piece.framed !== undefined ? current_piece.framed : false,
-                comments: current_piece.comments,
-                next_oid: next_oid,
-                last_oid: last_oid,
-                sold: current_piece.sold,
-                available: current_piece.available,
-                price: current_piece.price,
-                extra_images: extra_images,
-                progress_images: progress_images,
-                selected_gallery_image: 0,
-            },
-            async () => {
-                if (previous_url_o_id != o_id) {
-                    this.props.router.push(`/details/${o_id}`);
-                }
-            },
-        );
+        this.update_state({
+            loading: false,
+            url_o_id: o_id,
+            piece_list: piece_list,
+            image_array: image_array,
+            piece_position: piece_position,
+            current_piece: current_piece,
+            db_id: current_db_id,
+            o_id: current_o_id,
+            title: current_piece.title,
+            piece_type: current_piece.piece_type,
+            description: description,
+            sold: current_piece.sold,
+            price: current_piece.price,
+            width: current_piece.width,
+            height: current_piece.height,
+            real_width: current_piece.real_width,
+            real_height: current_piece.real_height,
+            image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
+            instagram: current_piece.instagram,
+            available: current_piece.available !== undefined ? current_piece.available : false,
+            framed: current_piece.framed !== undefined ? current_piece.framed : false,
+            comments: current_piece.comments,
+            next_oid: next_oid,
+            last_oid: last_oid,
+            sold: current_piece.sold,
+            available: current_piece.available,
+            price: current_piece.price,
+            extra_images: extra_images,
+            progress_images: progress_images,
+            selected_gallery_image: 0,
+        }, async () => {
+            if (previous_url_o_id != o_id) {
+                this.props.router.push(`/details/${o_id}`);
+            }
+        });
     }
 
     async create_image_array(piece_list, piece_position) {

@@ -3,7 +3,8 @@ import logger from "@/lib/logger";
 import React from 'react';
 import styles from '@/styles/components/PieceSpecificationTable.module.scss';
 
-const PieceSpecificationTable = ({ realWidth, realHeight, framed, comments, type, with_header }) => {
+const PieceSpecificationTable = ({ realWidth, realHeight, framed, comments, piece_type, with_header }) => {
+    console.log(`PieceSpecificationTable TYPE: ${piece_type}`)
     return (
         <div className={styles.piece_specification_table_wrapper}>
             {with_header == true ? (
@@ -27,10 +28,10 @@ const PieceSpecificationTable = ({ realWidth, realHeight, framed, comments, type
                             <td>{(framed == true || framed.toString().toLowerCase() == 'true') ? 'Yes' : 'No'}</td>
                         </tr>
                     )}
-                    {type && (
+                    {piece_type && (
                         <tr>
                             <td>Type</td>
-                            <td>{type}</td>
+                            <td>{piece_type}</td>
                         </tr>
                     )}
                     {comments && (
