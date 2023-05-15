@@ -279,6 +279,8 @@ class Edit extends React.Component {
     }
 
     async update_current_piece(piece_list, o_id, preserve_submit_state = false) {
+        this.update_state({ loading: true });
+
         const num_pieces = piece_list.length;
 
         logger.section(`Updating Current Piece to o_id: ${o_id}`);

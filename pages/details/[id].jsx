@@ -176,6 +176,8 @@ class Details extends React.Component {
     }
 
     async update_current_piece(piece_list, o_id) {
+        this.update_state({ loading: true });
+
         const previous_url_o_id = this.state.url_o_id;
         const num_pieces = piece_list.length;
 
@@ -325,7 +327,7 @@ class Details extends React.Component {
 
         // Gallery Loader Container JSX
         const image_loader_container_jsx = (
-            <div className={styles.loader_container}>
+            <div className={`${styles.loader_container}`}>
                 <div>Loading Gallery</div>
                 <CircularProgress color="inherit" className={styles.loader} />
             </div>
@@ -333,7 +335,7 @@ class Details extends React.Component {
         
         // Main Image Container JSX
         const image_container_jsx = (
-            <div className={styles.centered_image_outer_container}>
+            <div className={styles.centered_image_container}>
                 {this.state.loading == true ? ( image_loader_container_jsx ) : this.state.selected_gallery_image === 0 ? this.state.image_array : this.state.extra_image_array}
             </div>
         );
