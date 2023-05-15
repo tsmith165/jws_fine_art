@@ -111,6 +111,7 @@ class Details extends React.Component {
                 piece_position - 1 < 0 // if last piece is out of bounds (less than 0), set to last piece
                     ? piece_list[num_pieces - 1]['o_id']
                     : piece_list[piece_position - 1]['o_id'],
+            selected_gallery_image: 0,
         };
 
         this.update_current_piece = this.update_current_piece.bind(this);
@@ -150,13 +151,22 @@ class Details extends React.Component {
     }
 
     handleResize() {
-        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight} | Setting Styles ${window.innerWidth < 769 ? 'Mobile' : 'Desktop'}`);
+        logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight} | Setting Styles ${window.innerWidth < 1800 ? 'Desktop' : 'Mobile'}`);
         this.setState({
             window_width: window.innerWidth,
             window_height: window.innerHeight,
         });
     }
 
+    async update_state(state) {
+        logger.debug(`Updating state with object (Next Line):`);
+        logger.debug(state);
+    
+        this.setState(prevState => ({ ...prevState, ...state }), () => { 
+            logger.debug(`Updated state (Next Line):`);
+            logger.debug(this.state);
+        });
+    }
 
     async update_current_piece(piece_list, o_id) {
         const previous_url_o_id = this.state.url_o_id;
@@ -302,21 +312,58 @@ class Details extends React.Component {
                         var image_path = image.image_path.split('/').slice(-2).join('/')
                         console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                         return (
-                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`}>
-                                <NextImage
-                                    className={styles.centered_image}
-                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
-                                    alt={``}
-                                    width={image.width}
-                                    height={image.height}
-                                    quality={100}
-                                />
+                            <div className={(this.state.selected_gallery_image === (index + 1)) ? 
+                                `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
+                                `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                            }>
+                                <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
+                                    this.update_state({'selected_gallery_image': index + 1})
+                                }}>
+                                    <NextImage
+                                        className={styles.centered_image}
+                                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                        alt={``}
+                                        width={image.width}
+                                        height={image.height}
+                                        quality={100}
+                                    />
+                                </div>
                             </div>
                         );
                     })
                 )}
             </div>
+        );
+
+        const main_image_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
+            <div className={styles.extra_images_gallery_container}>
+                <div className={(this.state.selected_gallery_image === 0) ? 
+                    `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
+                    `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                }>
+                    <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
+                        this.update_state({'selected_gallery_image': 0})
+                    }}>
+                        <NextImage
+                            className={styles.centered_image}
+                            src={this.state.image_path}
+                            alt={``}
+                            width={this.state.width}
+                            height={this.state.height}
+                            quality={100}
+                        />
+                    </div>
+                </div>
+            </div>
         )
+
+        const main_image_and_extra_images_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
+            <div className={styles.full_gallery_container}>
+                {main_image_gallery_container_jsx}
+
+                {extra_images_gallery_container_jsx}
+            </div>
+        );
 
         const final_image_container_jsx = extra_images_gallery_container_jsx == null ? ( 
             <div className={styles.main_image_only_container}>
@@ -327,7 +374,7 @@ class Details extends React.Component {
             <div className={styles.main_image_and_extra_images_container}>
                 {image_container_jsx}
 
-                {extra_images_gallery_container_jsx}
+                {main_image_and_extra_images_gallery_container_jsx}
             </div>
         )
         
