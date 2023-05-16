@@ -40,7 +40,7 @@
     flex-direction: column;
     width: 100%;
     height: calc(100% - 70px) !important;
-    background-color: $secondary;
+    background-color: $dark;
     
     .full_gallery_container {
         display: flex;
@@ -50,6 +50,7 @@
         overflow-x: auto;
         overflow-y: hidden;
         height: 130px;
+        background-color: $secondary;
 
         .extra_images_gallery_container {
             height: 120px;
@@ -57,7 +58,7 @@
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: flex-start;
-    
+
             .extra_images_gallery_image_container {
                 width: 100% !important;
                 height: 100% !important;
@@ -73,7 +74,6 @@
         }
     }
 } 
-
 .selected_gallery_image {
     background-color: $dark !important;
 }
