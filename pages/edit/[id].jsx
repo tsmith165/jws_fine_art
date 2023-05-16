@@ -73,12 +73,20 @@ class Edit extends React.Component {
                                                 `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`;
 
 
-        logger.debug(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`)
-        var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
+        // Extra Images
+        var extra_images = current_piece.extra_images === undefined ? [] : current_piece.extra_images;
+        logger.debug(`Edit Page ${passed_o_id} Extra Images: "${extra_images}"`)
+
+        extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
+        extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(extra_images) ? [] : extra_images
         logger.debug(`Using Extra Images: "${extra_images}"`)
 
-        logger.debug(`Edit Page ${passed_o_id} Progress Images: "${current_piece.extra_images}"`)
-        var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
+        // Progress Images
+        var progress_images = current_piece.progress_images === undefined ? [] : current_piece.progress_images;
+        logger.debug(`Edit Page ${passed_o_id} Progress Images: "${current_piece.progress_images}"`)
+        
+        progress_images = typeof progress_images === 'string' ? JSON.parse(progress_images) : progress_images;
+        progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(progress_images) ? [] : progress_images
         logger.debug(`Using Progress Images: "${progress_images}"`)
         /* prettier-ignore-end */
 
@@ -522,6 +530,16 @@ class Edit extends React.Component {
         try {
             var selected_file = event.target.files[0];
             fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
+            title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
+
+            if (this.state.file_upload_type == 'extra') {
+                var current_index = this.state.extra_images.length < 1 ? 1 : (this.state.extra_images.length + 1);
+                fileName = `${title}_extra_${current_index}`;
+            }
+            if (this.state.file_upload_type == 'progress') {
+                var current_index = this.state.progress_images.length < 1 ? 1 : (this.state.progress_images.length + 1);
+                fileName = `${title}_progress_${current_index}`;
+            }
 
             logger.debug(`Selected File: ${fileName} | Size: ${selected_file.size}`);
 
