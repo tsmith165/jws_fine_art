@@ -146,6 +146,7 @@ class Edit extends React.Component {
                     : piece_list[piece_position - 1]['o_id'],
             loading: true,
             updating: false,
+            resizing: false,
             uploading: false,
             updated: false,
             uploaded: false,
@@ -536,7 +537,7 @@ class Edit extends React.Component {
 
     async onFileChange(event) {
         event.preventDefault();
-        this.update_state({ loading: false, uploading: true })
+        this.update_state({ loading: false, uploading: false, resizing: true })
 
         logger.section({message: 'File Input Change Event Triggered'});
 
@@ -556,6 +557,8 @@ class Edit extends React.Component {
                 logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
 
+            this.update_state({ loading: false, uploading: true, resizing: false })
+
             if (this.state.file_upload_type === 'extra') {
                 var current_index = this.state.extra_images.length < 1 ? 1 : (this.state.extra_images.length + 1);
                 fileName = `${title}_extra_${current_index}`;
@@ -571,14 +574,14 @@ class Edit extends React.Component {
             uploaded_image_path = await upload_image(s3_upload_url, selected_file);
             logger.debug(`Got Upload Reponse: ${uploaded_image_path}`);
 
+            this.update_state({ loading: true, uploading: false, resizing: false })
+            this.load_changed_images(uploaded_image_path)
+
         } catch (err) {
-            this.update_state({ uploaded: false, upload_error: true });
+            this.update_state({ uploaded: false, upload_error: true, loading: true, uploading: false, resizing: false });
             logger.error(`S3 Image Upload Error: ${err.message}`);
             return false
         }
-
-        this.update_state({ loading: true, uploading: false })
-        this.load_changed_images(uploaded_image_path)
     }
 
     async resizeImage(file, maxWidth, maxHeight) {
@@ -655,6 +658,7 @@ class Edit extends React.Component {
                 uploaded_image_path: uploaded_image_path,
                 loading: false,
                 uploading: false,
+                resizing: false,
             });
             return true
         }
@@ -678,6 +682,7 @@ class Edit extends React.Component {
                 uploaded_image_path: uploaded_image_path,
                 loading: false,
                 uploading: false,
+                resizing: false,
             });
             return true
         }
@@ -703,6 +708,7 @@ class Edit extends React.Component {
                 staging_db_id: this.state.db_id,
                 loading: false,
                 uploading: false,
+                resizing: false,
             });
             return true
         }
@@ -842,6 +848,14 @@ class Edit extends React.Component {
                 <div className={form_styles.error_message_container}>
                     <CircularProgress color="inherit" className={form_styles.loader}/>
                     <div className={form_styles.error_message}>{'Updating piece info in DB...'}</div>
+                </div>
+            );
+        } else if (this.state.resizing == true) {
+            message_type = 'Update'
+            message_jsx = (
+                <div className={form_styles.error_message_container}>
+                    <CircularProgress color="inherit" className={form_styles.loader}/>
+                    <div className={form_styles.error_message}>{'Resizing Image...'}</div>
                 </div>
             );
         } else if (this.state.uploading == true) {
