@@ -527,13 +527,14 @@ class Edit extends React.Component {
 
         var uploaded_image_path = '';
         var fileName = ''
+        var title = ''
         try {
             var selected_file = event.target.files[0];
             fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
             title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
 
             if (this.state.file_upload_type === 'extra' || this.state.file_upload_type === 'progress') {
-                selected_file = await resizeImage(selected_file, 200, 200); // resize the image
+                selected_file = await resizeImage(selected_file, 800, 800); // resize the image
             }
 
             if (this.state.file_upload_type === 'extra') {
