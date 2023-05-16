@@ -360,7 +360,7 @@ class Edit extends React.Component {
                 height: current_piece.height,
                 real_width: current_piece.real_width,
                 real_height: current_piece.real_height,
-                image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
+                image_path: current_piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? current_piece.image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
                 instagram: current_piece.instagram,
                 available: current_piece.available == true || current_piece.available.toString().toLowerCase() == 'true' ? 'True' : 'False',
                 sold: current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False',
