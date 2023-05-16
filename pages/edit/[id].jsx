@@ -458,10 +458,10 @@ class Edit extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        this.update_state({ updating: true, updated: false, loader_visable: true });
+        this.update_state({ updating: true, updated: false });
 
         if (!title) {
-            this.update_state({ updating: false, error: true, loader_visable: true });
+            this.update_state({ updating: false, error: true });
             return
         }
 
@@ -536,6 +536,8 @@ class Edit extends React.Component {
 
     async onFileChange(event) {
         event.preventDefault();
+        this.update_state({loading: true, uploading: true, })
+
         logger.section({message: 'File Input Change Event Triggered'});
 
         var uploaded_image_path = '';
