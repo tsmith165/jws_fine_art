@@ -29,7 +29,7 @@
     flex-direction: column;
     width: 100%;
     height: calc(100% - 70px) !important;
-    background-color: $secondary;
+    background-color: $dark;
     
     .full_gallery_container {
         display: flex;
@@ -39,6 +39,7 @@
         overflow-x: auto;
         overflow-y: hidden;
         height: 130px;
+        background-color: $secondary;
 
         .extra_images_gallery_container {
             height: 120px;
@@ -52,7 +53,6 @@
                 height: 100% !important;
                 position: relative;
                 overflow: hidden;
-                background-color: $dark;
 
                 .extra_images_gallery_image {
                     width: 100px !important;
