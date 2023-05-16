@@ -532,11 +532,15 @@ class Edit extends React.Component {
             fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
             title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
 
-            if (this.state.file_upload_type == 'extra') {
+            if (this.state.file_upload_type === 'extra' || this.state.file_upload_type === 'progress') {
+                selected_file = await resizeImage(selected_file, 200, 200); // resize the image
+            }
+
+            if (this.state.file_upload_type === 'extra') {
                 var current_index = this.state.extra_images.length < 1 ? 1 : (this.state.extra_images.length + 1);
                 fileName = `${title}_extra_${current_index}`;
             }
-            if (this.state.file_upload_type == 'progress') {
+            if (this.state.file_upload_type === 'progress') {
                 var current_index = this.state.progress_images.length < 1 ? 1 : (this.state.progress_images.length + 1);
                 fileName = `${title}_progress_${current_index}`;
             }
