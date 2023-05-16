@@ -999,8 +999,8 @@ class Edit extends React.Component {
         const main_image_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
             <div className={styles.extra_images_gallery_container}>
                 <div className={(this.state.selected_gallery_image === 0) ? 
-                    `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
-                    `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                    `${styles.extra_images_gallery_image_container} ${styles.selected_gallery_image}` : 
+                    `${styles.extra_images_gallery_image_container}`
                 }>
                     <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
                         this.update_state({'selected_gallery_image': 0})

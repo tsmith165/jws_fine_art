@@ -46,11 +46,19 @@
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: flex-start;
-    
-            .extra_images_gallery_image {
-                width: 100px !important;
-                height: 100px !important;
-                margin: 5px 0px;
+
+            .extra_images_gallery_image_container {
+                width: 100% !important;
+                height: 100% !important;
+                position: relative;
+                overflow: hidden;
+                background-color: $dark;
+
+                .extra_images_gallery_image {
+                    width: 100px !important;
+                    height: 100px !important;
+                    margin: 5px 0px;
+                }
             }
         }
     }
