@@ -83,7 +83,7 @@ class Edit extends React.Component {
 
         // Progress Images
         var progress_images = current_piece.progress_images === undefined ? [] : current_piece.progress_images;
-        logger.debug(`Edit Page ${passed_o_id} Progress Images: "${current_piece.progress_images}"`)
+        logger.debug(`Edit Page ${passed_o_id} Progress Images: "${progress_images}"`)
         
         progress_images = typeof progress_images === 'string' ? JSON.parse(progress_images) : progress_images;
         progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(progress_images) ? [] : progress_images
@@ -533,11 +533,12 @@ class Edit extends React.Component {
             fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
             title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
 
-            if (this.state.file_upload_type === 'extra' || this.state.file_upload_type === 'progress') {
-                selected_file = await this.resizeImage(selected_file, 800, 800); // resize the image
-                logger.debug(`Resized Image: ${selected_file} | Resized Size: ${selected_file.size}`)
+            if (this.state.file_upload_type === 'cover') {
+                selected_file = await this.resizeImage(selected_file, 1920, 1920); // resize the cover image to 1920x1920 max
+                logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             } else {
-                logger.debug(`Selected File: ${fileName} | Size: ${selected_file.size}`);
+                selected_file = await this.resizeImage(selected_file, 1200, 1200); //resize the non-cover image to 1200x1200 max
+                logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
 
             if (this.state.file_upload_type === 'extra') {
@@ -907,6 +908,8 @@ class Edit extends React.Component {
 
         logger.debug(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
         logger.debug(using_progress_images)
+
+        logger.debug(`Cover Image Path: ${this.state.image_path}`)
 
         // Gallery Loader Container JSX
         const image_loader_container_jsx = (
