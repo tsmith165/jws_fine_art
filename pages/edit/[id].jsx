@@ -321,9 +321,8 @@ class Edit extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position, this.state.staging_db_id);
 
-
         // Extra Images
-        var extra_images = current_piece.extra_images === undefined ? [] : current_piece.extra_images;
+        var extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images;
         logger.debug(`Current Piece Extra Images: "${extra_images}"`)
 
         extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
@@ -331,7 +330,7 @@ class Edit extends React.Component {
         logger.debug(`Using Extra Images: "${extra_images}"`)
 
         // Progress Images
-        var progress_images = current_piece.progress_images === undefined ? [] : current_piece.progress_images;
+        var progress_images = [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images;
         logger.debug(`Current Piece Progress Images: "${progress_images}"`)
         
         progress_images = typeof progress_images === 'string' ? JSON.parse(progress_images) : progress_images;
