@@ -544,11 +544,12 @@ class Edit extends React.Component {
         logger.section({message: 'File Input Change Event Triggered'});
 
         var uploaded_image_path = '';
-        var fileName = ''
+        var file_name = ''
         var title = ''
         try {
             var selected_file = event.target.files[0];
-            fileName = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
+            file_name = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
+            var file_extension = file_name.split(".").pop().toLowerCase();
             title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
 
             if (this.state.file_upload_type === 'cover') {
@@ -563,14 +564,17 @@ class Edit extends React.Component {
 
             if (this.state.file_upload_type === 'extra') {
                 var current_index = this.state.extra_images.length < 1 ? 1 : (this.state.extra_images.length + 1);
-                fileName = `${title}_extra_${current_index}`;
+                file_name = `${title}_extra_${current_index}.${file_extension}`;
             }
             if (this.state.file_upload_type === 'progress') {
                 var current_index = this.state.progress_images.length < 1 ? 1 : (this.state.progress_images.length + 1);
-                fileName = `${title}_progress_${current_index}`;
+                file_name = `${title}_progress_${current_index}.${file_extension}`;
+            }
+            if (this.state.file_upload_type === 'cover') {
+                file_name = `${title}.${file_extension}`;
             }
 
-            const s3_upload_url = await get_upload_url(title.toLowerCase(), this.state.file_upload_type);
+            const s3_upload_url = await get_upload_url(file_name.toLowerCase(), this.state.file_upload_type);
             logger.debug(`Got Upload URL: ${s3_upload_url}`);
 
             uploaded_image_path = await upload_image(s3_upload_url, selected_file);
