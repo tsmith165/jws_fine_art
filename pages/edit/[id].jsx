@@ -193,7 +193,7 @@ class Edit extends React.Component {
         if (num_pieces > 0) {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position, this.state.staging_db_id);
 
-            extra_image_array = await this.create_extra_image_array(this.state.selected_gallery_image);
+            extra_image_array = await this.create_extra_image_array(this.state.extra_images, this.state.selected_gallery_image);
         }
        
         logger.extra(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
@@ -321,10 +321,24 @@ class Edit extends React.Component {
 
         const image_array = await this.create_image_array(this.state.piece_list, piece_position, this.state.staging_db_id);
 
-        const extra_image_array = await this.create_extra_image_array(this.state.selected_gallery_image);
 
-        var extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
-        var progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
+        // Extra Images
+        var extra_images = current_piece.extra_images === undefined ? [] : current_piece.extra_images;
+        logger.debug(`Current Piece Extra Images: "${extra_images}"`)
+
+        extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
+        extra_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(extra_images) ? [] : extra_images
+        logger.debug(`Using Extra Images: "${extra_images}"`)
+
+        // Progress Images
+        var progress_images = current_piece.progress_images === undefined ? [] : current_piece.progress_images;
+        logger.debug(`Current Piece Progress Images: "${progress_images}"`)
+        
+        progress_images = typeof progress_images === 'string' ? JSON.parse(progress_images) : progress_images;
+        progress_images  = num_pieces < 1 ? [] : [undefined, null, ''].includes(progress_images) ? [] : progress_images
+        logger.debug(`Using Progress Images: "${progress_images}"`)
+
+        const extra_image_array = await this.create_extra_image_array(extra_images, this.state.selected_gallery_image);
 
         const previous_url_o_id = this.state.url_o_id;
         this.update_state(
@@ -406,10 +420,10 @@ class Edit extends React.Component {
         return image_array;
     }
 
-    async create_extra_image_array(selected_image) {
+    async create_extra_image_array(extra_images, selected_image_index) {
         const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
 
-        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+        var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
         console.log(`Using Extra Images HERE LENGTH: ${using_extra_images.length} | TYPE: ${typeof using_extra_images} | DATA (NEXT LINE):`)
         console.log(using_extra_images)
 
@@ -417,7 +431,7 @@ class Edit extends React.Component {
         using_extra_images.map((image, index) => {
             console.log(`Path: ${image.image_path} | Width: ${image.width} | Height: ${image.height}`)
             extra_image_array.push(
-                <div key={`extra_image_${index}`} className={index == (selected_image) ? styles.centered_image_container : styles.centered_image_container_hidden}>
+                <div key={`extra_image_${index}`} className={index == (selected_image_index) ? styles.centered_image_container : styles.centered_image_container_hidden}>
                     <NextImage
                         id={`extra_image_${index}`}
                         className={styles.centered_image}
@@ -939,7 +953,7 @@ class Edit extends React.Component {
                                 `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
                             }>
                                 <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
-                                    const extra_image_array = await this.create_extra_image_array(index)
+                                    const extra_image_array = await this.create_extra_image_array(this.state.extra_images, index)
                                     this.update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
                                 }}>
                                     <NextImage
