@@ -576,7 +576,8 @@ class Edit extends React.Component {
             logger.error(`S3 Image Upload Error: ${err.message}`);
             return false
         }
-        
+
+        this.update_state({ loading: true, uploading: false })
         this.load_changed_images(uploaded_image_path)
     }
 
