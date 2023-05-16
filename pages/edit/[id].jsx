@@ -653,6 +653,8 @@ class Edit extends React.Component {
             this.update_state({
                 progress_images: using_progress_images, 
                 uploaded_image_path: uploaded_image_path,
+                loading: false,
+                uploading: false,
             });
             return true
         }
@@ -673,7 +675,9 @@ class Edit extends React.Component {
             console.log(this.state);
             this.update_state({
                 extra_images: using_extra_images, 
-                uploaded_image_path: uploaded_image_path
+                uploaded_image_path: uploaded_image_path,
+                loading: false,
+                uploading: false,
             });
             return true
         }
@@ -696,7 +700,9 @@ class Edit extends React.Component {
                 uploaded_image_path: uploaded_image_path,
                 image_path: uploaded_image_path,
                 image_array: image_array,
-                staging_db_id: this.state.db_id
+                staging_db_id: this.state.db_id,
+                loading: false,
+                uploading: false,
             });
             return true
         }
