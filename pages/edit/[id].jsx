@@ -168,7 +168,7 @@ class Edit extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.onFileChange = this.onFileChange.bind(this);
         this.refresh_data = this.refresh_data.bind(this);
-        this.load_image_and_upload = this.load_image_and_upload.bind(this);
+        this.load_changed_images = this.load_changed_images.bind(this);
         this.upload_image = this.upload_image.bind(this);
         this.resizeImage = this.resizeImage.bind(this);
 
@@ -536,7 +536,7 @@ class Edit extends React.Component {
 
     async onFileChange(event) {
         event.preventDefault();
-        this.update_state({loading: true, uploading: true, })
+        this.update_state({ loading: false, uploading: true })
 
         logger.section({message: 'File Input Change Event Triggered'});
 
@@ -577,7 +577,7 @@ class Edit extends React.Component {
             return false
         }
         
-        this.load_image_and_upload(uploaded_image_path, fileName)
+        this.load_changed_images(uploaded_image_path)
     }
 
     async resizeImage(file, maxWidth, maxHeight) {
@@ -606,7 +606,7 @@ class Edit extends React.Component {
         this.props.router.replace(this.props.router.asPath);
     }
 
-    async load_image_and_upload(uploaded_image_path, fileName) {
+    async load_changed_images(uploaded_image_path) {
         if (uploaded_image_path == '') {
             logger.error(`Failed to upload image.  Cannot load file...`);
             return false
@@ -625,7 +625,7 @@ class Edit extends React.Component {
                 width = image.width;
                 height = image.height;
 
-                this.upload_image(uploaded_image_path, width, height);
+                this.load_image_arrays(uploaded_image_path, width, height);
             };
         } catch (err) {
             this.update_state({ uploaded: false, upload_error: true });
@@ -634,7 +634,7 @@ class Edit extends React.Component {
         }
     }
 
-    async upload_image(uploaded_image_path, width, height) {
+    async load_image_arrays(uploaded_image_path, width, height) {
         if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
             var using_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
 
