@@ -570,7 +570,7 @@ class Edit extends React.Component {
                 fileName = `${title}_progress_${current_index}`;
             }
 
-            const s3_upload_url = await get_upload_url(fileName.toLowerCase(), this.state.file_upload_type);
+            const s3_upload_url = await get_upload_url(title.toLowerCase(), this.state.file_upload_type);
             logger.debug(`Got Upload URL: ${s3_upload_url}`);
 
             uploaded_image_path = await upload_image(s3_upload_url, selected_file);
