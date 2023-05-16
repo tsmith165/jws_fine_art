@@ -943,7 +943,7 @@ class Edit extends React.Component {
         
         // Main Image Container JSX
         const image_container_jsx = (
-            <div className={styles.centered_image_outer_container}>
+            <div className={styles.centered_image_container}>
                 {this.state.loading == true ? ( image_loader_container_jsx ) : this.state.selected_gallery_image === 0 ? this.state.image_array : this.state.extra_image_array}
             </div>
         );
