@@ -151,7 +151,7 @@ class Edit extends React.Component {
             uploaded: false,
             upload_error: false,
             uploaded_image_path: '',
-            file_upload_type: 'Cover Image',
+            file_upload_type: 'cover',
             error: false,
             staging_db_id: 2,
             selected_gallery_image: 0
@@ -1145,9 +1145,9 @@ class Edit extends React.Component {
                     showFileUpload={this.showFileUpload} 
                     onFileChange={this.onFileChange} 
                     file_types={[
-                        { value: 'Cover Image', label: 'Cover Image' },
-                        { value: 'Extra Image', label: 'Extra Image' },
-                        { value: 'Progress Image', label: 'Progress Image' },
+                        { value: 'cover', label: 'Cover Image' },
+                        { value: 'extra', label: 'Extra Image' },
+                        { value: 'progress', label: 'Progress Image' },
                     ]}
                  />
             </div>
