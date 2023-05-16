@@ -279,6 +279,7 @@ class Edit extends React.Component {
             uploading: false,
             updated: type == 'updated' ? true : false,
             uploaded: type == 'uploaded' ? true : false,
+            staging_db_id: type == 'updated' ? -2 : this.state.staging_db_id,
         };
         logger.extra(`Setting state with type: ${type} (Next Line):`);
         logger.extra(state)
