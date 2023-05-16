@@ -490,7 +490,7 @@ class Edit extends React.Component {
                 available: this.state.available,
                 framed: this.state.framed,
                 comments: this.state.comments,
-                image_path: `/${this.state.image_path.split('/').slice(-2).join('/')}`,
+                image_path: `/${this.state.uploaded_image_path.split('/').slice(-2).join('/')}}`,
                 extra_images: JSON.stringify(this.state.extra_images),
                 progress_images: JSON.stringify(this.state.progress_images),
             });
