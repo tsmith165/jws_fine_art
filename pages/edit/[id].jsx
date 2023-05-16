@@ -170,7 +170,7 @@ class Edit extends React.Component {
         this.onFileChange = this.onFileChange.bind(this);
         this.refresh_data = this.refresh_data.bind(this);
         this.load_changed_images = this.load_changed_images.bind(this);
-        this.upload_image = this.upload_image.bind(this);
+        this.load_image_arrays = this.load_image_arrays.bind(this);
         this.resizeImage = this.resizeImage.bind(this);
 
         // Refrences
