@@ -535,6 +535,9 @@ class Edit extends React.Component {
 
             if (this.state.file_upload_type === 'extra' || this.state.file_upload_type === 'progress') {
                 selected_file = await resizeImage(selected_file, 800, 800); // resize the image
+                logger.debug(`Resized Image: ${selected_file} | Resized Size: ${selected_file.size}`)
+            } else {
+                logger.debug(`Selected File: ${fileName} | Size: ${selected_file.size}`);
             }
 
             if (this.state.file_upload_type === 'extra') {
@@ -546,7 +549,7 @@ class Edit extends React.Component {
                 fileName = `${title}_progress_${current_index}`;
             }
 
-            logger.debug(`Selected File: ${fileName} | Size: ${selected_file.size}`);
+            
 
             const s3_upload_url = await get_upload_url(fileName.toLowerCase(), this.state.file_upload_type);
             logger.debug(`Got Upload URL: ${s3_upload_url}`);
