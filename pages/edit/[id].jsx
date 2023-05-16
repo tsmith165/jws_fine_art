@@ -170,7 +170,7 @@ class Edit extends React.Component {
         this.refresh_data = this.refresh_data.bind(this);
         this.load_image_and_upload = this.load_image_and_upload.bind(this);
         this.upload_image = this.upload_image.bind(this);
-
+        this.resizeImage = this.resizeImage.bind(this);
 
         // Refrences
         this.file_input_ref = React.createRef(null);
@@ -534,7 +534,7 @@ class Edit extends React.Component {
             title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
 
             if (this.state.file_upload_type === 'extra' || this.state.file_upload_type === 'progress') {
-                selected_file = await resizeImage(selected_file, 800, 800); // resize the image
+                selected_file = await this.resizeImage(selected_file, 800, 800); // resize the image
                 logger.debug(`Resized Image: ${selected_file} | Resized Size: ${selected_file.size}`)
             } else {
                 logger.debug(`Selected File: ${fileName} | Size: ${selected_file.size}`);
@@ -549,8 +549,6 @@ class Edit extends React.Component {
                 fileName = `${title}_progress_${current_index}`;
             }
 
-            
-
             const s3_upload_url = await get_upload_url(fileName.toLowerCase(), this.state.file_upload_type);
             logger.debug(`Got Upload URL: ${s3_upload_url}`);
 
@@ -564,6 +562,23 @@ class Edit extends React.Component {
         }
         
         this.load_image_and_upload(uploaded_image_path, fileName)
+    }
+
+    async resizeImage(file, maxWidth, maxHeight) {
+        return new Promise((resolve, reject) => {
+            let img = new Image();
+            img.onload = function() {
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+                let scale = Math.min(maxWidth / this.width, maxHeight / this.height);
+                canvas.width = this.width * scale;
+                canvas.height = this.height * scale;
+                ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob(resolve, 'image/jpeg', 1);
+            };
+            img.onerror = reject;
+            img.src = URL.createObjectURL(file);
+        });
     }
 
     showFileUpload(event) {
