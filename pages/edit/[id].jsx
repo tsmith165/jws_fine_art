@@ -154,7 +154,7 @@ class Edit extends React.Component {
             uploaded_image_path: '',
             file_upload_type: 'cover',
             error: false,
-            staging_db_id: 2,
+            staging_db_id: -2,
             selected_gallery_image: 0
         };
         this.create_image_array = this.create_image_array.bind(this);
@@ -501,7 +501,7 @@ class Edit extends React.Component {
                 await this.fetch_pieces_from_api('updated');
             } else {
                 logger.debug('Edit Piece - No Response - Setting error = true');
-                this.update_state({ loading: false, error: true });
+                this.update_state({ loading: false, error: true, staging_db_id: -2 });
             }
         } else {
             logger.section({message: 'Attempting To Create New Piece'});
@@ -531,7 +531,7 @@ class Edit extends React.Component {
             if (response) {
                 await this.fetch_pieces_from_api('uploaded');
             } else {
-                this.update_state({ updating: false, error: true });
+                this.update_state({ loading: false, updating: false, error: true, staging_db_id: -2 });
             }
         }
     }
