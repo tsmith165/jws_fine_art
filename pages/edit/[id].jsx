@@ -397,7 +397,7 @@ class Edit extends React.Component {
         for (var i = 0; i < piece_list.length; i++) {
             let piece = piece_list[i];
             if (i == piece_position) {
-                console.log(`Staging DB ID: ${db_id} | Current index: ${piece.id}`)
+                logger.debug(`Staging DB ID: ${db_id} | Current index: ${piece.id}`)
             }
 
             image_array.push(
@@ -425,12 +425,9 @@ class Edit extends React.Component {
         const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
 
         var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
-        console.log(`Using Extra Images HERE LENGTH: ${using_extra_images.length} | TYPE: ${typeof using_extra_images} | DATA (NEXT LINE):`)
-        console.log(using_extra_images)
 
         var extra_image_array = [];
         using_extra_images.map((image, index) => {
-            console.log(`Path: ${image.image_path} | Width: ${image.width} | Height: ${image.height}`)
             extra_image_array.push(
                 <div key={`extra_image_${index}`} className={index == (selected_image_index) ? styles.centered_image_container : styles.centered_image_container_hidden}>
                     <NextImage
@@ -646,49 +643,49 @@ class Edit extends React.Component {
 
     async load_image_arrays(uploaded_image_path, width, height) {
         if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
-            var using_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
-
-            console.log(`New Extra Images Type: ${typeof using_progress_images} | Data (Next Line):`);
-            console.log(using_progress_images);
-
-            using_progress_images.push({
+            const current_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
+            const updated_progress_images = [...current_progress_images, ...{
                 image_path: uploaded_image_path,
                 width: width,
                 height: height,
-            });
+            }];
 
-            logger.debug(`Pre-Update Progress Images State (Next Line):`);
-            console.log(this.state);
-            this.update_state({
-                progress_images: using_progress_images, 
+            logger.debug(`Pre-Update Progress Images (Next Line):`);
+            logger.debug(current_progress_images);
+
+            this.update_state_with_callback({
+                progress_images: updated_progress_images, 
                 uploaded_image_path: uploaded_image_path,
                 loading: false,
                 uploading: false,
                 resizing: false,
+            }, async () => {
+                logger.debug(`Post-Update Progress Images State (Next Line):`);
+                logger.debug(typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images);
             });
             return true
         }
 
         if ( this.state.file_upload_type.toString().toLowerCase().includes('extra') ) {
-            var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
-
-            console.log(`New Extra Images Type: ${typeof using_extra_images} | Data (Next Line):`);
-            console.log(using_extra_images);
-
-            using_extra_images.push({
+            const current_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+            const updated_extra_images = [...current_extra_images, ...{
                 image_path: uploaded_image_path,
                 width: width,
                 height: height,
-            });
+            }];
 
-            logger.debug(`Pre-Update Extra Images State  (Next Line):`);
-            console.log(this.state);
-            this.update_state({
-                extra_images: using_extra_images, 
+            logger.debug(`Pre-Update Extra Images (Next Line):`);
+            logger.debug(current_extra_images);
+
+            this.update_state_with_callback({
+                extra_images: updated_extra_images, 
                 uploaded_image_path: uploaded_image_path,
                 loading: false,
                 uploading: false,
                 resizing: false,
+            }, async () => {
+                logger.debug(`Post-Update Extra Images State (Next Line):`);
+                logger.debug(typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images);
             });
             return true
         }
@@ -702,8 +699,8 @@ class Edit extends React.Component {
             updated_piece_list[this.state.piece_position] = updated_piece;
             const image_array = await this.create_image_array(updated_piece_list, this.state.piece_position, this.state.db_id);
             
-            logger.debug(`Pre-Update Cover Image State (Next Line):`);
-            console.log(this.state);
+            logger.debug(`Pre-Update Cover Image (Next Line):`);
+            logger.debug(this.state.image_path);
             this.update_state({
                 piece_list: updated_piece_list, 
                 width: width,
@@ -816,7 +813,7 @@ class Edit extends React.Component {
       
         this.setState({ [image_type_to_edit]: newExtraImages });
 
-        console.log(`Updating DB with Extra Images: ${newExtraImages}`)
+        logger.debug(`Updating DB with Extra Images: ${newExtraImages}`)
         
         // Call API to update the extra images order for the specific piece id.
         await updateExtraImagesOrder(this.state.db_id, newExtraImages, image_type_to_edit);
@@ -827,7 +824,7 @@ class Edit extends React.Component {
         let newExtraImages = using_extra_images.filter((_, i) => i !== index);
         this.setState({ [image_type_to_edit]: newExtraImages });
     
-        console.log(`Updating DB with Extra Images: ${newExtraImages}`)
+        logger.debug(`Updating DB with Extra Images: ${newExtraImages}`)
 
         // Call API to delete the extra image for the specific piece id.
         await updateExtraImagesOrder(this.state.db_id, newExtraImages, image_type_to_edit);
@@ -935,6 +932,9 @@ class Edit extends React.Component {
         const using_theme = [undefined, null, ''].includes(this.state.theme) == false ? this.state.theme : 'None';
         logger.extra(`Theme: ${using_theme} | Framed: ${this.state.framed} | Sold: ${this.state.sold}`);
 
+        logger.section(`Creating Initial Image arrays`)
+        logger.debug(`Cover Image Path: ${this.state.image_path}`)
+
         let using_extra_images = null;
         try {
             using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
@@ -951,8 +951,8 @@ class Edit extends React.Component {
         logger.debug(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
         logger.debug(using_progress_images)
 
-        logger.debug(`Cover Image Path: ${this.state.image_path}`)
-
+        logger.section(`Creating JSX Elements`)
+        
         // Gallery Loader Container JSX
         const image_loader_container_jsx = (
             <div className={styles.loader_container}>
@@ -972,9 +972,8 @@ class Edit extends React.Component {
             <div className={styles.extra_images_gallery_container}>
                 {this.state.loading == true ? ( null ) : ( 
                     using_extra_images.map((image, index) => {
-                        console.log(image)
                         var image_path = image.image_path.split('/').slice(-2).join('/')
-                        console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                        logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                         return (
                             <div className={(this.state.selected_gallery_image === (index + 1)) ? 
                                 `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
