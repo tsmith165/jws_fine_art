@@ -502,7 +502,7 @@ class Edit extends React.Component {
                 await this.fetch_pieces_from_api('updated');
             } else {
                 logger.debug('Edit Piece - No Response - Setting error = true');
-                this.update_state({ loading: false, error: true, staging_db_id: -2 });
+                this.update_state({ loading: false, error: true });
             }
         } else {
             logger.section({message: 'Attempting To Create New Piece'});
@@ -532,7 +532,7 @@ class Edit extends React.Component {
             if (response) {
                 await this.fetch_pieces_from_api('uploaded');
             } else {
-                this.update_state({ loading: false, updating: false, error: true, staging_db_id: -2 });
+                this.update_state({ loading: false, updating: false, error: true });
             }
         }
     }
