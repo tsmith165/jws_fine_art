@@ -1091,35 +1091,40 @@ class Edit extends React.Component {
         )
 
         const progress_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
-            <div className={styles.full_gallery_padding_container}>
-                <div className={styles.full_gallery_container}>
-                    <div className={styles.extra_images_gallery_container}>
-                        {this.state.loading == true ? ( null ) : ( 
-                            using_progress_images.map((image, index) => {
-                                var image_path = image.image_path.split('/').slice(-2).join('/')
-                                logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
-                                return (
-                                    <div className={(this.state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ? 
-                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
-                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
-                                    }>
-                                        <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
-                                            const progress_image_array = await this.create_extra_image_array(this.state.progress_images, index)
-                                            this.update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
-                                        }}>
-                                            <CustomNextImage
-                                                className={styles.centered_image}
-                                                src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
-                                                alt={``}
-                                                width={image.width}
-                                                height={image.height}
-                                                quality={100}
-                                            />
+            <div className={styles.full_gallery_panel}>
+                <div className={styles.full_gallery_panel_header}>
+                    Progress Images:
+                </div>
+                <div className={styles.full_gallery_panel_body}>
+                    <div className={styles.full_gallery_container}>
+                        <div className={styles.extra_images_gallery_container}>
+                            {this.state.loading == true ? ( null ) : ( 
+                                using_progress_images.map((image, index) => {
+                                    var image_path = image.image_path.split('/').slice(-2).join('/')
+                                    logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                                    return (
+                                        <div className={(this.state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ? 
+                                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
+                                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                                        }>
+                                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
+                                                const progress_image_array = await this.create_extra_image_array(this.state.progress_images, index)
+                                                this.update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
+                                            }}>
+                                                <CustomNextImage
+                                                    className={styles.centered_image}
+                                                    src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                                    alt={``}
+                                                    width={image.width}
+                                                    height={image.height}
+                                                    quality={100}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })
-                        )}
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1407,6 +1412,8 @@ class Edit extends React.Component {
                                     {framed_and_comments_container_jsx /* Split Container For framed / comments */}
 
                                     {description_text_area_jsx /* Description Text Area */}
+
+                                    {progress_images_gallery_container_jsx}
 
                                     {extra_images_text_jsx}
 

@@ -42,7 +42,21 @@
     height: calc(100% - 70px) !important;
     background-color: $dark;
 }
-.full_gallery_padding_container {
+
+.full_gallery_panel {
+    display: flex;
+    flex-direction: column;
+}
+.full_gallery_panel_header {
+    height: 24px;
+    line-height: 24px;
+    font-size: 16px;
+    background-color: $dark;
+    color: $light;
+    padding: 5px;
+}
+
+.full_gallery_panel_body {
     width: calc(100% - 30px);
     height: 120px !important;
     background-color: $dark;
