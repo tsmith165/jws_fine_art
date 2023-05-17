@@ -6,7 +6,7 @@ import { withRouter } from 'next/router';
 
 import { prisma } from '@/lib/prisma';
 
-import NextImage from 'next/image';
+import CustomNextImage from '@/components/components/CustomNextImage';
 
 import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url, updateExtraImagesOrder, deleteExtraImage } from '@/lib/api_calls';
 
@@ -405,7 +405,7 @@ class Edit extends React.Component {
                     { (db_id == -1) ? (null) : (db_id != piece.id) ? null : (
                         <div className={styles.centered_image_staging}>Staging</div>
                     )}
-                    <NextImage
+                    <CustomNextImage
                         id={`centered_image_${i}`}
                         className={styles.centered_image}
                         src={piece.image_path}
@@ -430,7 +430,7 @@ class Edit extends React.Component {
         using_extra_images.map((image, index) => {
             extra_image_array.push(
                 <div key={`extra_image_${index}`} className={index == (selected_image_index) ? styles.centered_image_container : styles.centered_image_container_hidden}>
-                    <NextImage
+                    <CustomNextImage
                         id={`extra_image_${index}`}
                         className={styles.centered_image}
                         src={image.image_path}
@@ -986,7 +986,7 @@ class Edit extends React.Component {
                                     const extra_image_array = await this.create_extra_image_array(this.state.extra_images, index)
                                     this.update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
                                 }}>
-                                    <NextImage
+                                    <CustomNextImage
                                         className={styles.centered_image}
                                         src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
                                         alt={``}
@@ -1011,7 +1011,7 @@ class Edit extends React.Component {
                     <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
                         this.update_state({'selected_gallery_image': 0})
                     }}>
-                        <NextImage
+                        <CustomNextImage
                             className={styles.centered_image}
                             src={this.state.image_path}
                             alt={``}

@@ -7,6 +7,7 @@ import { withRouter } from 'next/router';
 import { prisma } from '@/lib/prisma';
 
 import NextImage from 'next/image';
+import CustomNextImage from '@/components/components/CustomNextImage';
 import Link from 'next/link';
 
 import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
@@ -258,7 +259,7 @@ class Details extends React.Component {
                 <div key={`image_${i}`} className={
                     (i == piece_position) ? styles.centered_image_container : styles.centered_image_container_hidden
                 }>
-                    <NextImage
+                    <CustomNextImage
                         id={`centered_image_${i}`}
                         className={styles.centered_image}
                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
@@ -286,7 +287,7 @@ class Details extends React.Component {
             console.log(`Path: ${image.image_path} | Width: ${image.width} | Height: ${image.height}`)
             extra_image_array.push(
                 <div key={`extra_image_${index}`} className={index == (selected_image) ? styles.centered_image_container : styles.centered_image_container_hidden}>
-                    <NextImage
+                    <CustomNextImage
                         id={`extra_image_${index}`}
                         className={styles.centered_image}
                         src={image.image_path}
@@ -356,7 +357,7 @@ class Details extends React.Component {
                                     const extra_image_array = await this.create_extra_image_array(index)
                                     this.update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
                                 }}>
-                                    <NextImage
+                                    <CustomNextImage
                                         className={styles.centered_image}
                                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
                                         alt={``}
@@ -381,7 +382,7 @@ class Details extends React.Component {
                     <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
                         this.update_state({'selected_gallery_image': 0})
                     }}>
-                        <NextImage
+                        <CustomNextImage
                             className={styles.centered_image}
                             src={this.state.image_path}
                             alt={``}
