@@ -1239,16 +1239,16 @@ class Edit extends React.Component {
 
         const real_width_and_height_container_jsx = (
             <div className={form_styles.input_container}>
-                <InputComponent input_type={'input_textbox'} split={true} value={this.state.real_width} name={"Width"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.real_width} id={"real_width"} name={"Width"} update_field_value={this.update_field_value}/>
 
-                <InputComponent input_type={'input_textbox'} split={true} value={this.state.real_height} name={"Height"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.real_height} id={"real_height"} name={"Height"} update_field_value={this.update_field_value}/>
             </div>
         );
         
         const px_width_and_height_container_jsx = (
             <div className={form_styles.input_container}>
-                <InputComponent input_type={'input_textbox'} split={true} value={this.state.width} name={"PX Width"} update_field_value={this.update_field_value}/>
-                <InputComponent input_type={'input_textbox'} split={true} value={this.state.height} name={"PX Height"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.width} id={"width"} name={"PX Width"} update_field_value={this.update_field_value}/>
+                <InputComponent input_type={'input_textbox'} split={true} value={this.state.height} id={"height"} name={"PX Height"} update_field_value={this.update_field_value}/>
             </div>
         );
 
