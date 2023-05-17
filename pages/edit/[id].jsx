@@ -192,7 +192,7 @@ class Edit extends React.Component {
         var extra_image_array = [];
         const num_pieces = this.state.piece_list.length;
         if (num_pieces > 0) {
-            image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position, this.state.staging_db_id);
+            image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position, this.state.staging_db_id, true);
 
             extra_image_array = await this.create_extra_image_array(this.state.extra_images, this.state.selected_gallery_image);
         }
@@ -321,7 +321,7 @@ class Edit extends React.Component {
         logger.extra(`Setting theme to: ${theme} | framed: ${current_piece.framed} | options (Next line):`);
         logger.extra(theme_options);
 
-        const image_array = await this.create_image_array(this.state.piece_list, piece_position, this.state.staging_db_id);
+        const image_array = await this.create_image_array(this.state.piece_list, piece_position, this.state.staging_db_id, true);
 
         // Extra Images
         var extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images;
@@ -390,7 +390,7 @@ class Edit extends React.Component {
         );
     }
 
-    async create_image_array(piece_list, piece_position, db_id) {
+    async create_image_array(piece_list, piece_position, db_id, only_load_cover = false) {
         const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
 
         var image_array = [];
@@ -398,6 +398,10 @@ class Edit extends React.Component {
             let piece = piece_list[i];
             if (i == piece_position) {
                 logger.debug(`Staging DB ID: ${db_id} | Current index: ${piece.id}`)
+            } else {
+                if (only_load_cover == true) {
+                    continue
+                }
             }
 
             image_array.push(
@@ -700,7 +704,7 @@ class Edit extends React.Component {
             updated_piece = {...updated_piece, ...{image_path: uploaded_image_path, width: width, height: height}};
             var updated_piece_list = this.state.piece_list;
             updated_piece_list[this.state.piece_position] = updated_piece;
-            const image_array = await this.create_image_array(updated_piece_list, this.state.piece_position, this.state.db_id);
+            const image_array = await this.create_image_array(updated_piece_list, this.state.piece_position, this.state.db_id, true);
             
             logger.debug(`Pre-Update Cover Image (Next Line):`);
             logger.debug(this.state.image_path);
@@ -747,7 +751,7 @@ class Edit extends React.Component {
             progress_images: [],
         });
 
-        var new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1, -2);
+        var new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1, -2, true);
 
         var blank_piece_state = {
             uploaded: false,
@@ -887,19 +891,19 @@ class Edit extends React.Component {
         } else if (
             this.state.width != '' &&
             this.state.height != '' &&
-            this.state.width > 1500 &&
-            this.state.height > 1500
+            this.state.width > 1920 &&
+            this.state.height > 1920
         ) {
             message_type = 'Warning'
-            message = `Image upload successful but image resolution is too high!  Re-Upload with width / height < 1500px`;
+            message = `Image upload successful but image resolution is too high!  Re-Upload with width / height <= 1920px`;
         } else if (
             this.state.width != '' &&
             this.state.height != '' &&
-            this.state.width < 1000 &&
-            this.state.height < 1000
+            this.state.width < 800 &&
+            this.state.height < 800
         ) {
             message_type = 'Warning'
-            message = `Image upload successful but image resolution is low!  Re-Upload with width / height > 1000px`;
+            message = `Image upload successful but image resolution is low!  Re-Upload with width / height >= 800px`;
         } else if (this.state.uploaded == true) {
             message_type = 'Update'
             message = `Image Upload was successful...`;
@@ -1215,7 +1219,7 @@ class Edit extends React.Component {
         const extra_images_text_jsx = [undefined, null, '', [], ['']].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
             <div className={edit_details_styles.extra_images_container}>
                 <div className={edit_details_styles.extra_image_table_header}>Extra Images:</div>
-
+        
                 <div className={edit_details_styles.extra_image_table} id={'extra-images'}>
                     {using_extra_images.map((image, index) => {
                         // console.log(image)
@@ -1225,6 +1229,12 @@ class Edit extends React.Component {
                             <div key={index} className={edit_details_styles.image_row}>
                                 <div className={edit_details_styles.image_filename}>
                                     {image_path}
+                                </div>
+                                <div className={edit_details_styles.image_dimensions}>
+                                    Width: {image.width}px
+                                </div>
+                                <div className={edit_details_styles.image_dimensions}>
+                                Height: {image.height}px
                                 </div>
                                 <div className={edit_details_styles.button_container}>
                                     <ArrowForwardIosRoundedIcon
