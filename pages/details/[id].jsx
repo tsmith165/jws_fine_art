@@ -437,7 +437,7 @@ class Details extends React.Component {
         const progress_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
             <div className={styles.full_gallery_panel}>
                 <div className={styles.full_gallery_panel_header}>
-                    Progress Images:
+                    Pictures of piece in progress:
                 </div>
                 <div className={styles.full_gallery_panel_body}>
                     <div className={styles.full_gallery_padding_container}>

@@ -39,12 +39,13 @@
     min-width: 300px;
 }
 .full_gallery_panel_header {
-    height: 36px;
-    line-height: 36px;
-    font-size: 16px;
+    height: 40px;
+    line-height: 20px;
+    font-size: 20px;
+    font-weight: bold;
     background-color: $dark;
     color: $light;
-    padding: 0px 10px;
+    padding: 10px;
     border-radius: 5px 5px 0px 0px;
 }
 
