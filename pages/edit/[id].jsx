@@ -550,23 +550,34 @@ class Edit extends React.Component {
 
             if (this.state.file_upload_type === 'extra') {
                 let current_index = this.state.extra_images.length < 1 ? 1 : (this.state.extra_images.length + 1);
-                file_name = `${title}_extra_${current_index}.${file_extension}`;
+                file_name = `${title}_extra_${current_index}`;
                 selected_file = await this.resizeImage(selected_file, 1200, 1200); 
                 logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
             if (this.state.file_upload_type === 'progress') {
                 let current_index = this.state.progress_images.length < 1 ? 1 : (this.state.progress_images.length + 1);
-                file_name = `${title}_progress_${current_index}.${file_extension}`;
+                file_name = `${title}_progress_${current_index}`;
                 selected_file = await this.resizeImage(selected_file, 1200, 1200); 
                 logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
             if (this.state.file_upload_type === 'cover') {
-                file_name = `${title}.${file_extension}`;
+                file_name = `${title}`;
                 selected_file = await this.resizeImage(selected_file, 1920, 1920); 
                 logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
+            
+            const pre_update_image_filename = this.state.image_path.split('/').pop();
+            if (file_name == pre_update_image_filename) {
+                var current_index = 1
+                if (pre_update_image_filename.includes('update_')) {
+                    current_index = parseInt(pre_update_image_filename.split('update_').pop()) + 1
+                }
+                file_name = `${file_name}-update_${current_index}`
+            }
 
-            const s3_upload_url = await get_upload_url(file_name.toLowerCase(), this.state.file_upload_type);
+            const file_name_with_extension = `${file_name}.${file_extension}`;
+
+            const s3_upload_url = await get_upload_url(file_name_with_extension, this.state.file_upload_type);
             logger.debug(`Got Upload URL: ${s3_upload_url}`);
 
             var uploaded_image_path = await upload_image(s3_upload_url, selected_file);
