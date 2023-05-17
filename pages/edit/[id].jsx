@@ -567,7 +567,8 @@ class Edit extends React.Component {
             }
             
             const pre_update_image_filename = this.state.image_path.split('/').pop();
-            if (file_name == pre_update_image_filename) {
+            logger.debug(`Pre-Update FileName: ${pre_update_image_filename} | Current FileName: ${file_name}`)
+            if (pre_update_image_filename.includes(file_name)) {
                 var current_index = 1
                 if (pre_update_image_filename.includes('update_')) {
                     current_index = parseInt(pre_update_image_filename.split('update_').pop()) + 1
