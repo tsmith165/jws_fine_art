@@ -650,7 +650,9 @@ class Edit extends React.Component {
 
     async load_image_arrays(uploaded_image_path, width, height) {
         if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
-            const current_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
+            var current_progress_images = [undefined, null, ''].includes(this.state.progress_images) ? [] : this.state.extprogress_imagesra_images;
+            current_progress_images = typeof current_progress_images === 'string' ? JSON.parse(current_progress_images) : current_progress_images;
+
             const updated_progress_images = [...current_progress_images, ...{
                 image_path: uploaded_image_path,
                 width: width,
@@ -674,7 +676,9 @@ class Edit extends React.Component {
         }
 
         if ( this.state.file_upload_type.toString().toLowerCase().includes('extra') ) {
-            const current_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
+            var current_extra_images = [undefined, null, ''].includes(this.state.extra_images) ? [] : this.state.extra_images;
+            current_extra_images = typeof current_extra_images === 'string' ? JSON.parse(current_extra_images) : current_extra_images;
+            
             const updated_extra_images = [...current_extra_images, ...{
                 image_path: uploaded_image_path,
                 width: width,
