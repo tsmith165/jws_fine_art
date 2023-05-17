@@ -90,6 +90,7 @@ class Edit extends React.Component {
         logger.debug(`Using Progress Images: "${progress_images}"`)
         /* prettier-ignore-end */
 
+
         var theme_options = [{ value: theme, label: theme }];
         if (theme != 'None' && theme.includes(', ')) {
             // logger.extra(`Splitting theme string: ${theme}`);
@@ -103,6 +104,8 @@ class Edit extends React.Component {
         }
 
         var image_array = [];
+        var extra_image_array = [];
+        var progress_image_array = [];
 
         logger.extra(`Setting initial state theme to: ${theme} | options (Next line):`);
         logger.extra(theme_options);
@@ -114,6 +117,8 @@ class Edit extends React.Component {
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
+            extra_image_array: extra_image_array,
+            progress_image_array: progress_image_array,
             extra_images: extra_images,
             progress_images: progress_images,
             current_piece: current_piece,
@@ -191,11 +196,14 @@ class Edit extends React.Component {
     async componentDidMount() {
         var image_array = [];
         var extra_image_array = [];
+        var progress_image_array = [];
         const num_pieces = this.state.piece_list.length;
         if (num_pieces > 0) {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position, this.state.staging_db_id, true);
 
             extra_image_array = await this.create_extra_image_array(this.state.extra_images, this.state.selected_gallery_image);
+
+            progress_image_array = await this.create_extra_image_array(this.state.progress_images, this.state.selected_gallery_image);
         }
        
         logger.extra(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
@@ -205,6 +213,7 @@ class Edit extends React.Component {
             window_height: window.innerHeight,
             image_array: image_array,
             extra_image_array: extra_image_array,
+            progress_image_array: progress_image_array,
             next_oid:
                 this.state.piece_position + 1 > num_pieces - 1
                     ? this.state.piece_list[0]['o_id']
@@ -343,7 +352,7 @@ class Edit extends React.Component {
 
         const extra_image_array = await this.create_extra_image_array(extra_images, this.state.selected_gallery_image);
 
-        const progress_image_array = await this.create_extra_image_array(extra_images, this.state.selected_gallery_image);
+        const progress_image_array = await this.create_extra_image_array(progress_images, this.state.selected_gallery_image);
 
         const previous_url_o_id = this.state.url_o_id;
         this.update_state(
@@ -991,10 +1000,18 @@ class Edit extends React.Component {
             </div>
         );
         
+        var extra_images_length = [null, undefined].includes(this.state.extra_image_array) ? null : this.state.extra_image_array.length
+        console.log(`Extra Images Length: ${extra_images_length} | Selected Gallery Image: ${this.state.selected_gallery_image}`)
+        
         // Main Image Container JSX
         const image_container_jsx = (
             <div className={styles.centered_image_container}>
-                {this.state.loading == true ? ( image_loader_container_jsx ) : this.state.selected_gallery_image === 0 ? this.state.image_array : this.state.extra_image_array}
+                {
+                    this.state.loading === true ? 
+                        image_loader_container_jsx : this.state.selected_gallery_image === 0 ? 
+                        this.state.image_array : this.state.selected_gallery_image < this.state.extra_image_array.length + 1 ? 
+                        this.state.extra_image_array : this.state.progress_image_array
+                }
             </div>
         );
         
