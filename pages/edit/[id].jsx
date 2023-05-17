@@ -479,6 +479,7 @@ class Edit extends React.Component {
             `Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} |` + 
             `Image Path: ${this.state.image_path} | Description: ${this.state.description} | Instagram: ${this.state.instagram}`,
         );
+        logger.debug(`EDITING PIECE WITH FILE UPLOAD TYPE: ${this.state.file_upload_type}`)
         if (!this.state.new_piece_created) {
             const response = await edit_details({
                 id: this.state.db_id,
@@ -1070,9 +1071,7 @@ class Edit extends React.Component {
                 {main_image_and_extra_images_gallery_container_jsx}
             </div>
         )
-        
-        console.log(`RENDERING PROGRESS IMAGES DATA (NEXT LINE)`)
-        console.log(using_progress_images)
+
         const progress_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
             <div className={styles.full_gallery_padding_container}>
                 <div className={styles.full_gallery_container}>
