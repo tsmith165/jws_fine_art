@@ -69,7 +69,7 @@ class Edit extends React.Component {
         var instagram   = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
 
         var image_path  = num_pieces < 1 ? '' : current_piece.image_path === undefined ? '' : 
-                                                current_piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ?  current_piece.image_path : 
+                                                current_piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? current_piece.image_path : 
                                                 `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`;
 
 
@@ -487,7 +487,7 @@ class Edit extends React.Component {
                 available: this.state.available,
                 framed: this.state.framed,
                 comments: this.state.comments,
-                image_path: `/${this.state.uploaded_image_path.split('/').slice(-2).join('/')}}`,
+                image_path: `/${this.state.uploaded_image_path.split('/').slice(-2).join('/')}`,
                 extra_images: JSON.stringify(this.state.extra_images),
                 progress_images: JSON.stringify(this.state.progress_images),
             });
@@ -540,41 +540,36 @@ class Edit extends React.Component {
 
         logger.section({message: 'File Input Change Event Triggered'});
 
-        var uploaded_image_path = '';
-        var file_name = ''
-        var title = ''
         try {
             var selected_file = event.target.files[0];
-            file_name = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
+            var file_name = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
             var file_extension = file_name.split(".").pop().toLowerCase();
-            title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
-
-            if (this.state.file_upload_type === 'cover') {
-                selected_file = await this.resizeImage(selected_file, 1920, 1920); // resize the cover image to 1920x1920 max
-                logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
-            } else {
-                selected_file = await this.resizeImage(selected_file, 1200, 1200); //resize the non-cover image to 1200x1200 max
-                logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
-            }
+            var title = this.state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
 
             this.update_state({ loading: false, uploading: true, resizing: false })
 
             if (this.state.file_upload_type === 'extra') {
-                var current_index = this.state.extra_images.length < 1 ? 1 : (this.state.extra_images.length + 1);
+                let current_index = this.state.extra_images.length < 1 ? 1 : (this.state.extra_images.length + 1);
                 file_name = `${title}_extra_${current_index}.${file_extension}`;
+                selected_file = await this.resizeImage(selected_file, 1200, 1200); 
+                logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
             if (this.state.file_upload_type === 'progress') {
-                var current_index = this.state.progress_images.length < 1 ? 1 : (this.state.progress_images.length + 1);
+                let current_index = this.state.progress_images.length < 1 ? 1 : (this.state.progress_images.length + 1);
                 file_name = `${title}_progress_${current_index}.${file_extension}`;
+                selected_file = await this.resizeImage(selected_file, 1200, 1200); 
+                logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
             if (this.state.file_upload_type === 'cover') {
                 file_name = `${title}.${file_extension}`;
+                selected_file = await this.resizeImage(selected_file, 1920, 1920); 
+                logger.debug(`Resized ${this.state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
             }
 
             const s3_upload_url = await get_upload_url(file_name.toLowerCase(), this.state.file_upload_type);
             logger.debug(`Got Upload URL: ${s3_upload_url}`);
 
-            uploaded_image_path = await upload_image(s3_upload_url, selected_file);
+            var uploaded_image_path = await upload_image(s3_upload_url, selected_file);
             logger.debug(`Got Upload Reponse: ${uploaded_image_path}`);
 
             this.update_state({ loading: true, uploading: false, resizing: false })
@@ -985,7 +980,7 @@ class Edit extends React.Component {
                                 }}>
                                     <NextImage
                                         className={styles.centered_image}
-                                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                        src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${image_path}`}
                                         alt={``}
                                         width={image.width}
                                         height={image.height}
