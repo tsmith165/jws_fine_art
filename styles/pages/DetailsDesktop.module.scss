@@ -48,12 +48,14 @@
     flex-direction: column;
 }
 .full_gallery_panel_header {
-    height: 24px;
-    line-height: 24px;
-    font-size: 16px;
+    height: 40px;
+    line-height: 20px;
+    font-size: 20px;
+    font-weight: bold;
     background-color: $dark;
     color: $light;
-    padding: 5px;
+    padding: 10px;
+    border-radius: 5px 5px 0px 0px;
 }
 
 .full_gallery_panel_body {
@@ -61,7 +63,7 @@
     height: 120px !important;
     background-color: $dark;
     margin: 0px 15px;
-    border-radius: 5px;
+    border-radius: 0px 0px 5px 5px;
 
     .full_gallery_container {
         border-radius: 5px;

@@ -1093,7 +1093,7 @@ class Edit extends React.Component {
         const progress_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
             <div className={styles.full_gallery_panel}>
                 <div className={styles.full_gallery_panel_header}>
-                    Progress Images:
+                    Pictures of piece in progress:
                 </div>
                 <div className={styles.full_gallery_panel_body}>
                     <div className={styles.full_gallery_container}>
@@ -1397,6 +1397,9 @@ class Edit extends React.Component {
 
                                     {error_message_jsx}
 
+                                    {progress_images_gallery_container_jsx}
+                                    <div className={styles.extra_padding}></div>
+
                                     {piece_type_select_jsx /* Piece Type Select */}
                                 
                                     {theme_multiselect_jsx /* Theme Multiselect */}
@@ -1412,8 +1415,6 @@ class Edit extends React.Component {
                                     {framed_and_comments_container_jsx /* Split Container For framed / comments */}
 
                                     {description_text_area_jsx /* Description Text Area */}
-
-                                    {progress_images_gallery_container_jsx}
 
                                     {extra_images_text_jsx}
 
@@ -1442,6 +1443,9 @@ class Edit extends React.Component {
 
                             {error_message_jsx}
 
+                            {progress_images_gallery_container_jsx}
+                            <div className={styles.extra_padding}></div>
+
                             {piece_type_select_jsx /* Piece Type Select */}
 
                             {theme_multiselect_jsx /* Theme Multiselect */}
@@ -1457,8 +1461,6 @@ class Edit extends React.Component {
                             {framed_and_comments_container_jsx /* Split Container For framed / comments */}
 
                             {description_text_area_jsx /* Description Text Area */}
-
-                            {progress_images_gallery_container_jsx}
 
                             {extra_images_text_jsx}
 
