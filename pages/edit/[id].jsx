@@ -258,7 +258,7 @@ class Edit extends React.Component {
     }
 
     async fetch_pieces_from_api(type = 'none') {
-        logger.section({message: `Fetching Initial Server List`});
+        logger.section({message: `Fetching Server List`});
         this.update_state({ loading: true, updated: false });
 
         const piece_list = await fetch_pieces();
@@ -653,50 +653,8 @@ class Edit extends React.Component {
     }
 
     async load_image_arrays(uploaded_image_path, width, height) {
-        if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
-            var current_progress_images = [undefined, null, ''].includes(this.state.progress_images) ? [] : this.state.extprogress_imagesra_images;
-            current_progress_images = typeof current_progress_images === 'string' ? JSON.parse(current_progress_images) : current_progress_images;
 
-            const updated_progress_images = [...current_progress_images, {image_path: uploaded_image_path, width: width, height: height}];
-
-            logger.debug(`Pre-Update Progress Images (Next Line):`);
-            logger.debug(current_progress_images);
-
-            this.update_state_with_callback({
-                progress_images: updated_progress_images, 
-                uploaded_image_path: uploaded_image_path,
-                loading: false,
-                uploading: false,
-                resizing: false,
-            }, async () => {
-                logger.debug(`Post-Update Progress Images State (Next Line):`);
-                logger.debug(typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images);
-            });
-            return true
-        }
-
-        if ( this.state.file_upload_type.toString().toLowerCase().includes('extra') ) {
-            var current_extra_images = [undefined, null, ''].includes(this.state.extra_images) ? [] : this.state.extra_images;
-            current_extra_images = typeof current_extra_images === 'string' ? JSON.parse(current_extra_images) : current_extra_images;
-            
-            const updated_extra_images = [...current_extra_images, {image_path: uploaded_image_path, width: width, height: height}];
-
-            logger.debug(`Pre-Update Extra Images (Next Line):`);
-            logger.debug(current_extra_images);
-
-            this.update_state_with_callback({
-                extra_images: updated_extra_images, 
-                uploaded_image_path: uploaded_image_path,
-                loading: false,
-                uploading: false,
-                resizing: false,
-            }, async () => {
-                logger.debug(`Post-Update Extra Images State (Next Line):`);
-                logger.debug(typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images);
-            });
-            return true
-        }
-        
+        // Cover Images Update
         if ( this.state.file_upload_type.toString().toLowerCase().includes('piece') ||
             this.state.file_upload_type.toString().toLowerCase().includes('cover') ) {
             
@@ -719,9 +677,59 @@ class Edit extends React.Component {
                 loading: false,
                 uploading: false,
                 resizing: false,
+                uploaded: true,
             });
             return true
         }
+
+        // Extra Images Update
+        if ( this.state.file_upload_type.toString().toLowerCase().includes('extra') ) {
+            var current_extra_images = [undefined, null, ''].includes(this.state.extra_images) ? [] : this.state.extra_images;
+            current_extra_images = typeof current_extra_images === 'string' ? JSON.parse(current_extra_images) : current_extra_images;
+            
+            const updated_extra_images = [...current_extra_images, {image_path: uploaded_image_path, width: width, height: height}];
+
+            logger.debug(`Pre-Update Extra Images (Next Line):`);
+            logger.debug(current_extra_images);
+
+            this.update_state_with_callback({
+                extra_images: updated_extra_images, 
+                uploaded_image_path: uploaded_image_path,
+                loading: false,
+                uploading: false,
+                resizing: false,
+                uploaded: true,
+            }, async () => {
+                logger.debug(`Post-Update Extra Images State (Next Line):`);
+                logger.debug(typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images);
+            });
+            return true
+        }
+
+        // Progress Images Update
+        if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
+            var current_progress_images = [undefined, null, ''].includes(this.state.progress_images) ? [] : this.state.extprogress_imagesra_images;
+            current_progress_images = typeof current_progress_images === 'string' ? JSON.parse(current_progress_images) : current_progress_images;
+
+            const updated_progress_images = [...current_progress_images, {image_path: uploaded_image_path, width: width, height: height}];
+
+            logger.debug(`Pre-Update Progress Images (Next Line):`);
+            logger.debug(current_progress_images);
+
+            this.update_state_with_callback({
+                progress_images: updated_progress_images, 
+                uploaded_image_path: uploaded_image_path,
+                loading: false,
+                uploading: false,
+                resizing: false,
+                uploaded: true,
+            }, async () => {
+                logger.debug(`Post-Update Progress Images State (Next Line):`);
+                logger.debug(typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images);
+            });
+            return true
+        }
+        
         logger.error(`Unknown file upload type: "${this.state.file_upload_type}"`)
         return false
     }
