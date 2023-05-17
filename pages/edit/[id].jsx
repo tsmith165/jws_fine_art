@@ -988,7 +988,7 @@ class Edit extends React.Component {
                                 }}>
                                     <NextImage
                                         className={styles.centered_image}
-                                        src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${image_path}`}
+                                        src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
                                         alt={``}
                                         width={image.width}
                                         height={image.height}
