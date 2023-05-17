@@ -113,6 +113,14 @@ class InputComponent extends React.Component {
                                     borderColor: '',
                                     backgroundColor: '#45544d',
                                 }),
+                                singleValue: (provided, state) => ({
+                                    ...provided,
+                                    color: '#9fa090',
+                                }),
+                                option: (provided, state) => ({
+                                    ...provided,
+                                    color: '#30332E',
+                                }),
                             }}
                             options={react_select_options}
                         />
@@ -142,6 +150,14 @@ class InputComponent extends React.Component {
                                     ...baseStyles,
                                     borderColor: '',
                                     backgroundColor: '#45544d',
+                                }),
+                                multiValue: (styles) => ({
+                                    ...styles,
+                                    backgroundColor: '#9fa090',
+                                }),
+                                option: (provided, state) => ({
+                                    ...provided,
+                                    color: '#30332E',
                                 }),
                             }}
                             options={react_select_options}

@@ -1310,7 +1310,11 @@ class Edit extends React.Component {
 
                                     {title_container_jsx /* Title Container */}
 
-                                    {description_text_area_jsx /* Description Text Area */}
+                                    {file_input_continer /* File Input Container */}
+
+                                    {submit_container_jsx}
+
+                                    {error_message_jsx}
 
                                     {piece_type_select_jsx /* Piece Type Select */}
                                 
@@ -1326,11 +1330,7 @@ class Edit extends React.Component {
 
                                     {framed_and_comments_container_jsx /* Split Container For framed / comments */}
 
-                                    {file_input_continer /* File Input Container */}
-
-                                    {submit_container_jsx}
-
-                                    {error_message_jsx}
+                                    {description_text_area_jsx /* Description Text Area */}
 
                                     {extra_images_text_jsx}
 
@@ -1353,7 +1353,11 @@ class Edit extends React.Component {
 
                             {title_container_jsx /* Title Container */}
 
-                            {description_text_area_jsx /* Description Text Area */}
+                            {file_input_continer /* File Input Container */}
+
+                            {submit_container_jsx}
+
+                            {error_message_jsx}
 
                             {piece_type_select_jsx /* Piece Type Select */}
 
@@ -1369,11 +1373,7 @@ class Edit extends React.Component {
 
                             {framed_and_comments_container_jsx /* Split Container For framed / comments */}
 
-                            {file_input_continer /* File Input Container */}
-
-                            {submit_container_jsx}
-
-                            {error_message_jsx}
+                            {description_text_area_jsx /* Description Text Area */}
 
                             {extra_images_text_jsx}
 
