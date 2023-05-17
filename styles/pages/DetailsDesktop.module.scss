@@ -41,40 +41,65 @@
     width: 100%;
     height: calc(100% - 70px) !important;
     background-color: $dark;
-    
+}
+.full_gallery_padding_container {
+    width: calc(100% - 30px);
+    height: 120px !important;
+    background-color: $dark;
+    margin: 0px 15px;
+    border-radius: 5px;
+
     .full_gallery_container {
-        display: flex;
-        flex-direction: row;
-        padding: 5px;
-        margin: 0px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        height: 140px;
-        background-color: $secondary;
+        border-radius: 5px;
 
         .extra_images_gallery_container {
-            height: 110px;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            align-items: flex-start;
-
-            .extra_images_gallery_image_container {
-                width: 100% !important;
-                height: 100% !important;
-                position: relative;
-                overflow: hidden;
-                margin-right: 5px;
-
-                .extra_images_gallery_image {
-                    width: 100px !important;
-                    height: 100px !important;
-                    margin: 5px 0px;
-                }
+            .selected_gallery_image {
+                border-radius: 5px;
             }
         }
     }
 } 
+
+.full_gallery_container {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    margin: 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 120px !important;
+    min-height: 120px !important;
+    max-height: 120px !important;
+    background-color: $secondary;
+    border-radius: 5px;
+
+    .extra_images_gallery_container {
+        height: 110px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+
+        .extra_images_gallery_image_container {
+            width: 100% !important;
+            height: 100% !important;
+            position: relative;
+            overflow: hidden;
+            margin-right: 5px;
+
+            .extra_images_gallery_image {
+                width: 100px !important;
+                height: 100px !important;
+                margin: 5px 0px;
+            }
+        }
+
+        .selected_gallery_image {
+            border-radius: 5px;
+        }
+    }
+}
+
 .selected_gallery_image {
     background-color: $dark !important;
 }

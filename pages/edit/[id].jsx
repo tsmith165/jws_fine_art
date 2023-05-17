@@ -153,6 +153,7 @@ class Edit extends React.Component {
             upload_error: false,
             uploaded_image_path: '',
             file_upload_type: 'cover',
+            new_piece_created: false,
             error: false,
             staging_db_id: -2,
             selected_gallery_image: 0
@@ -280,6 +281,7 @@ class Edit extends React.Component {
             updated: type == 'updated' ? true : false,
             uploaded: type == 'uploaded' ? true : false,
             staging_db_id: type == 'updated' ? -2 : this.state.staging_db_id,
+            new_piece_created: false,
         };
         logger.extra(`Setting state with type: ${type} (Next Line):`);
         logger.extra(state)
@@ -341,6 +343,8 @@ class Edit extends React.Component {
 
         const extra_image_array = await this.create_extra_image_array(extra_images, this.state.selected_gallery_image);
 
+        const progress_image_array = await this.create_extra_image_array(extra_images, this.state.selected_gallery_image);
+
         const previous_url_o_id = this.state.url_o_id;
         this.update_state(
             {
@@ -348,6 +352,7 @@ class Edit extends React.Component {
                 piece_list: piece_list,
                 image_array: image_array,
                 extra_image_array: extra_image_array,
+                progress_image_array: progress_image_array,
                 piece_position: piece_position,
                 db_id: current_db_id,
                 o_id: current_o_id,
@@ -474,7 +479,7 @@ class Edit extends React.Component {
             `Framed: ${this.state.framed} | Piece Type: ${this.state.piece_type} | Price: ${this.state.price} |` + 
             `Image Path: ${this.state.image_path} | Description: ${this.state.description} | Instagram: ${this.state.instagram}`,
         );
-        if (!this.state.uploaded) {
+        if (!this.state.new_piece_created) {
             const response = await edit_details({
                 id: this.state.db_id,
                 title: this.state.title,
@@ -491,7 +496,9 @@ class Edit extends React.Component {
                 available: this.state.available,
                 framed: this.state.framed,
                 comments: this.state.comments,
-                image_path: `/${this.state.uploaded_image_path.split('/').slice(-2).join('/')}`,
+                image_path: this.state.file_upload_type.includes('cover') ? 
+                    `/${this.state.uploaded_image_path.split('/').slice(-2).join('/')}` : 
+                    `/${this.state.image_path.split('/').slice(-2).join('/')}`,
                 extra_images: JSON.stringify(this.state.extra_images),
                 progress_images: JSON.stringify(this.state.progress_images),
             });
@@ -505,6 +512,7 @@ class Edit extends React.Component {
                 logger.debug('Edit Piece - No Response - Setting error = true');
                 this.update_state({ loading: false, error: true });
             }
+            return
         } else {
             logger.section({message: 'Attempting To Create New Piece'});
             logger.debug(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${this.state.image_path}`);
@@ -536,6 +544,7 @@ class Edit extends React.Component {
                 this.update_state({ loading: false, updating: false, error: true });
             }
         }
+        return
     }
 
     async onFileChange(event) {
@@ -708,7 +717,7 @@ class Edit extends React.Component {
 
         // Progress Images Update
         if ( this.state.file_upload_type.toString().toLowerCase().includes('progress') ) {
-            var current_progress_images = [undefined, null, ''].includes(this.state.progress_images) ? [] : this.state.extprogress_imagesra_images;
+            var current_progress_images = [undefined, null, ''].includes(this.state.progress_images) ? [] : this.state.progress_images;
             current_progress_images = typeof current_progress_images === 'string' ? JSON.parse(current_progress_images) : current_progress_images;
 
             const updated_progress_images = [...current_progress_images, {image_path: uploaded_image_path, width: width, height: height}];
@@ -785,6 +794,7 @@ class Edit extends React.Component {
             framed: 'False',
             comments: '',
             staging_db_id: -2,
+            new_piece_created: true,
         };
         
         logger.debug('Updating state with BLANK piece details (Next Line):');
@@ -812,37 +822,41 @@ class Edit extends React.Component {
     }
 
     handleImageReorder = async (index, direction, image_type_to_edit) => {
-        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
-        let newExtraImages = [...using_extra_images];
+        var new_images = image_type_to_edit == 'extra_images' ? 
+            ( typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images ) :
+            ( typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images );
         let newIndex;
       
         if (direction === 'up') {
-            newIndex = index === newExtraImages.length - 1 ? 0 : index + 1;
+            newIndex = index === new_images.length - 1 ? 0 : index + 1;
         } else {
-            newIndex = index === 0 ? newExtraImages.length - 1 : index - 1;
+            newIndex = index === 0 ? new_images.length - 1 : index - 1;
         }
       
-        let temp = newExtraImages[newIndex];
-        newExtraImages[newIndex] = newExtraImages[index];
-        newExtraImages[index] = temp;
+        let temp = new_images[newIndex];
+        new_images[newIndex] = new_images[index];
+        new_images[index] = temp;
       
-        this.setState({ [image_type_to_edit]: newExtraImages });
+        this.setState({ [image_type_to_edit]: new_images });
 
-        logger.debug(`Updating DB with Extra Images: ${newExtraImages}`)
+        logger.debug(`Updating DB with Extra Images: ${new_images}`)
         
         // Call API to update the extra images order for the specific piece id.
-        await updateExtraImagesOrder(this.state.db_id, newExtraImages, image_type_to_edit);
+        await updateExtraImagesOrder(this.state.db_id, new_images, image_type_to_edit);
     };
     
     handleImageDelete = async (index, image_type_to_edit) => {
-        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
-        let newExtraImages = using_extra_images.filter((_, i) => i !== index);
-        this.setState({ [image_type_to_edit]: newExtraImages });
+        var new_images = image_type_to_edit == 'extra_images' ? 
+            ( typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images ) :
+            ( typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images );
+            
+        let new_images_filtered = new_images.filter((_, i) => i !== index);
+        this.setState({ [image_type_to_edit]: new_images_filtered });
     
-        logger.debug(`Updating DB with Extra Images: ${newExtraImages}`)
+        logger.debug(`Updating DB with Extra Images: ${new_images_filtered}`)
 
         // Call API to delete the extra image for the specific piece id.
-        await updateExtraImagesOrder(this.state.db_id, newExtraImages, image_type_to_edit);
+        await updateExtraImagesOrder(this.state.db_id, new_images_filtered, image_type_to_edit);
     };
 
     create_error_message_jsx() {
@@ -1056,6 +1070,43 @@ class Edit extends React.Component {
                 {main_image_and_extra_images_gallery_container_jsx}
             </div>
         )
+        
+        console.log(`RENDERING PROGRESS IMAGES DATA (NEXT LINE)`)
+        console.log(using_progress_images)
+        const progress_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
+            <div className={styles.full_gallery_padding_container}>
+                <div className={styles.full_gallery_container}>
+                    <div className={styles.extra_images_gallery_container}>
+                        {this.state.loading == true ? ( null ) : ( 
+                            using_progress_images.map((image, index) => {
+                                var image_path = image.image_path.split('/').slice(-2).join('/')
+                                logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                                return (
+                                    <div className={(this.state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ? 
+                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
+                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                                    }>
+                                        <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
+                                            const progress_image_array = await this.create_extra_image_array(this.state.progress_images, index)
+                                            this.update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
+                                        }}>
+                                            <CustomNextImage
+                                                className={styles.centered_image}
+                                                src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                                alt={``}
+                                                width={image.width}
+                                                height={image.height}
+                                                quality={100}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
         
         // Backwards Title Arrow JSX
         const backward_title_arrow_jsx = (
@@ -1287,15 +1338,15 @@ class Edit extends React.Component {
                                 <div className={edit_details_styles.button_container}>
                                     <ArrowForwardIosRoundedIcon
                                         className={edit_details_styles.up_arrow}
-                                        onClick={() => this.handleImageReorder(index, 'up', 'extra_images')}
+                                        onClick={() => this.handleImageReorder(index, 'up', 'progress_images')}
                                     />
                                     <ArrowForwardIosRoundedIcon
                                         className={edit_details_styles.down_arrow}
-                                        onClick={() => this.handleImageReorder(index, 'down', 'extra_images')}
+                                        onClick={() => this.handleImageReorder(index, 'down', 'progress_images')}
                                     />
                                     <DeleteForeverIcon
                                         className={edit_details_styles.delete_icon}
-                                        onClick={() => this.handleImageDelete(index, 'extra_images')}
+                                        onClick={() => this.handleImageDelete(index, 'progress_images')}
                                     />
                                 </div>
                             </div>
@@ -1382,6 +1433,8 @@ class Edit extends React.Component {
                             {framed_and_comments_container_jsx /* Split Container For framed / comments */}
 
                             {description_text_area_jsx /* Description Text Area */}
+
+                            {progress_images_gallery_container_jsx}
 
                             {extra_images_text_jsx}
 

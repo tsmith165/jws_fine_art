@@ -61,7 +61,7 @@ export default async function (req, res) {
     console.log(`Final JSON (Next Line):`);
     console.log(passed_json);
 
-    const passed_json_description = passed_json.description === undefined ? '' : passed_json.includes('\n') ? passed_json.split('\n').join('<br>') : ''
+    const passed_json_description = passed_json.description === undefined ? '' : passed_json.description.includes('\n') ? passed_json.description.split('\n').join('<br>') : ''
     
     const create_output = await prisma.piece.create({
         data: {
