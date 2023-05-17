@@ -77,6 +77,8 @@ class Details extends React.Component {
         console.log(`Description (Next Line):\n${description}`)
 
         var image_array = [];
+        var extra_image_array = [];
+        var progress_image_array = [];
 
         this.state = {
             window_width: null,
@@ -86,6 +88,8 @@ class Details extends React.Component {
             url_o_id: passed_o_id,
             piece_list: piece_list,
             image_array: image_array,
+            extra_image_array: extra_image_array,
+            progress_image_array: progress_image_array,
             extra_images: extra_images,
             progress_images: progress_images,
             current_piece: current_piece,
@@ -131,11 +135,14 @@ class Details extends React.Component {
     async componentDidMount() {
         var image_array = [];
         var extra_image_array = [];
+        var progress_image_array = [];
         const num_pieces = this.state.piece_list.length;
         if (num_pieces > 0) {
             image_array = await this.create_image_array(this.state.piece_list, this.state.piece_position);
 
-            extra_image_array = await this.create_extra_image_array(this.state.selected_gallery_image);
+            extra_image_array = await this.create_extra_image_array(this.state.extra_images, this.state.selected_gallery_image);
+
+            progress_image_array = await this.create_extra_image_array(this.state.progress_images, this.state.selected_gallery_image);
         }
        
         logger.debug(`Setting state with Piece Position: ${this.state.piece_position} | piece list length: ${num_pieces}`);
@@ -145,6 +152,7 @@ class Details extends React.Component {
             window_height: window.innerHeight,
             image_array: image_array,
             extra_image_array: extra_image_array,
+            progress_image_array: progress_image_array,
             next_oid:
                 this.state.piece_position + 1 > num_pieces - 1
                     ? this.state.piece_list[0]['o_id']
@@ -275,18 +283,15 @@ class Details extends React.Component {
         return image_array;
     }
 
-    async create_extra_image_array(selected_image) {
+    async create_extra_image_array(extra_images, selected_image_index) {
         const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
 
-        var using_extra_images = typeof this.state.extra_images === 'string' ? JSON.parse(this.state.extra_images) : this.state.extra_images;
-        console.log(`Using Extra Images HERE LENGTH: ${using_extra_images.length} | TYPE: ${typeof using_extra_images} | DATA (NEXT LINE):`)
-        console.log(using_extra_images)
+        var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
 
         var extra_image_array = [];
         using_extra_images.map((image, index) => {
-            console.log(`Path: ${image.image_path} | Width: ${image.width} | Height: ${image.height}`)
             extra_image_array.push(
-                <div key={`extra_image_${index}`} className={index == (selected_image) ? styles.centered_image_container : styles.centered_image_container_hidden}>
+                <div key={`extra_image_${index}`} className={index == (selected_image_index) ? styles.centered_image_container : styles.centered_image_container_hidden}>
                     <CustomNextImage
                         id={`extra_image_${index}`}
                         className={styles.centered_image}
@@ -345,7 +350,12 @@ class Details extends React.Component {
         // Main Image Container JSX
         const image_container_jsx = (
             <div className={styles.centered_image_container}>
-                {this.state.loading == true ? ( image_loader_container_jsx ) : this.state.selected_gallery_image === 0 ? this.state.image_array : this.state.extra_image_array}
+                {
+                    this.state.loading === true ? 
+                        image_loader_container_jsx : this.state.selected_gallery_image === 0 ? 
+                        this.state.image_array : this.state.selected_gallery_image < this.state.extra_image_array.length + 1 ? 
+                        this.state.extra_image_array : this.state.progress_image_array
+                }
             </div>
         );
 
@@ -362,7 +372,7 @@ class Details extends React.Component {
                                 `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
                             }>
                                 <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
-                                    const extra_image_array = await this.create_extra_image_array(index)
+                                    const extra_image_array = await this.create_extra_image_array(this.state.extra_images, index)
                                     this.update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
                                 }}>
                                     <CustomNextImage
