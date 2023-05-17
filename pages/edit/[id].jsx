@@ -1270,6 +1270,12 @@ class Edit extends React.Component {
                                 <div className={edit_details_styles.image_filename}>
                                     {image_path}
                                 </div>
+                                <div className={edit_details_styles.image_dimensions}>
+                                    Width: {image.width}px
+                                </div>
+                                <div className={edit_details_styles.image_dimensions}>
+                                    Height: {image.height}px
+                                </div>
                                 <div className={edit_details_styles.button_container}>
                                     <ArrowForwardIosRoundedIcon
                                         className={edit_details_styles.up_arrow}
