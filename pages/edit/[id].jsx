@@ -776,6 +776,7 @@ class Edit extends React.Component {
             uploaded_image_path: '',
             extra_images: [],
             progress_images: [],
+            file_upload_type: 'cover',
         });
 
         var new_image_array = await this.create_image_array(new_piece_list, new_piece_list.length - 1, -2, true);
