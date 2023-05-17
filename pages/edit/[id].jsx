@@ -653,11 +653,7 @@ class Edit extends React.Component {
             var current_progress_images = [undefined, null, ''].includes(this.state.progress_images) ? [] : this.state.extprogress_imagesra_images;
             current_progress_images = typeof current_progress_images === 'string' ? JSON.parse(current_progress_images) : current_progress_images;
 
-            const updated_progress_images = [...current_progress_images, ...{
-                image_path: uploaded_image_path,
-                width: width,
-                height: height,
-            }];
+            const updated_progress_images = [...current_progress_images, {image_path: uploaded_image_path, width: width, height: height}];
 
             logger.debug(`Pre-Update Progress Images (Next Line):`);
             logger.debug(current_progress_images);
@@ -679,11 +675,7 @@ class Edit extends React.Component {
             var current_extra_images = [undefined, null, ''].includes(this.state.extra_images) ? [] : this.state.extra_images;
             current_extra_images = typeof current_extra_images === 'string' ? JSON.parse(current_extra_images) : current_extra_images;
             
-            const updated_extra_images = [...current_extra_images, ...{
-                image_path: uploaded_image_path,
-                width: width,
-                height: height,
-            }];
+            const updated_extra_images = [...current_extra_images, {image_path: uploaded_image_path, width: width, height: height}];
 
             logger.debug(`Pre-Update Extra Images (Next Line):`);
             logger.debug(current_extra_images);
