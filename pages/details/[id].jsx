@@ -326,6 +326,14 @@ class Details extends React.Component {
         logger.debug(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
         logger.debug(using_extra_images)
 
+        let using_progress_images = null;
+        try {
+            using_progress_images = typeof this.state.progress_images === 'string' ? JSON.parse(this.state.progress_images) : this.state.progress_images;
+        } catch (error) { }
+
+        logger.debug(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
+        logger.debug(using_progress_images)
+
         // Gallery Loader Container JSX
         const image_loader_container_jsx = (
             <div className={`${styles.loader_container}`}>
@@ -415,6 +423,41 @@ class Details extends React.Component {
                 {main_image_and_extra_images_gallery_container_jsx}
             </div>
         )
+
+        const progress_images_gallery_container_jsx = this.state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
+            <div className={styles.full_gallery_padding_container}>
+                <div className={styles.full_gallery_container}>
+                    <div className={styles.extra_images_gallery_container}>
+                        {this.state.loading == true ? ( null ) : ( 
+                            using_progress_images.map((image, index) => {
+                                var image_path = image.image_path.split('/').slice(-2).join('/')
+                                logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                                return (
+                                    <div className={(this.state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ? 
+                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` : 
+                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                                    }>
+                                        <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={ async () => {
+                                            const progress_image_array = await this.create_extra_image_array(this.state.progress_images, index)
+                                            this.update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
+                                        }}>
+                                            <CustomNextImage
+                                                className={styles.centered_image}
+                                                src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                                alt={``}
+                                                width={image.width}
+                                                height={image.height}
+                                                quality={100}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
         
         // Title Container JSX
         const title_container = (
@@ -524,6 +567,8 @@ class Details extends React.Component {
                         <div className={styles.details_container_right}>
                             {title_container}
                             {details_form}
+                            {progress_images_gallery_container_jsx}
+                            <div className={styles.extra_padding}></div>
                         </div>
                     </div>
                 </PageLayout>
@@ -537,6 +582,8 @@ class Details extends React.Component {
                     {final_image_container_jsx /* Image Container */}
                     {title_container /* Title Container */}
                     {details_form /* Details Form Container */}
+                    {progress_images_gallery_container_jsx}
+                    <div className={styles.extra_padding}></div>
                 </div>
             </PageLayout>
         );
