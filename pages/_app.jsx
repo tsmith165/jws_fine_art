@@ -36,18 +36,41 @@ const App = ({ Component, pageProps }) => {
         };
     }, [router.events]);
 
+    useEffect(() => {
+        const tawkToInterval = setInterval(() => {
+            if (window.Tawk_API) {
+                clearInterval(tawkToInterval);
+                window.Tawk_API.onLoad = function() {
+                    window.Tawk_API.customStyle = {
+                        visibility: {
+                            desktop: {
+                                xOffset: '20px', // Adjust to your preference
+                                yOffset: '20px', // Adjust to your preference
+                                position: 'bl',  // Adjust to your preference
+                            },
+                            mobile: {
+                                xOffset: '20px', // Adjust to your preference
+                                yOffset: '20px', // Adjust to your preference
+                                position: 'bl',  // Adjust to your preference
+                            },
+                            bubble: {
+                                xOffset: '20px', // Adjust to your preference
+                                yOffset: '20px', // Adjust to your preference
+                                rotate: 0,       // Adjust to your preference
+                            },
+                        },
+                    };
+                };
+            }
+        }, 500);
+    }, []);
+
     const [app_state, app_set_state] = useState({
         pathname: pathname,
         menu_open: false,
         filter_menu_open: false,
         theme: 'None',
     });
-
-    // logger.debug(`USING KEY: ${MAPS_JAVASCRIPT_API_KEY}`)
-    // logger.debug(`Using Page Props (Next Line)`)
-    // logger.debug(pageProps)
-
-    // logger.debug(`Rendering APP with app_state URL Path: ${app_state.url_path} | Theme: ${app_state.theme} | Filter Menu Open: ${app_state.filter_menu_open}`)
 
     return (
         <ClerkProvider appearance={{ baseTheme: dark }}>
@@ -58,33 +81,19 @@ const App = ({ Component, pageProps }) => {
             <Script
                 id="gtag-init"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{
-                    __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${gtag.GA_TRACKING_ID}', {
-              page_path: window.location.pathname,
-            });
-          `,
-                }}
-            />
+            >
+                {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '${gtag.GA_TRACKING_ID}', {
+                        page_path: window.location.pathname,
+                    });
+                `}
+            </Script>
             <Script
-                id="tawkto-init"
-                strategy="afterInteractive"
-                dangerouslySetInnerHTML={{
-                    __html: `
-            var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-            (function(){
-            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-            s1.async=true;
-            s1.src='https://embed.tawk.to/6465199bad80445890ed8909/1h0leo2ac';
-            s1.charset='UTF-8';
-            s1.setAttribute('crossorigin','*');
-            s0.parentNode.insertBefore(s1,s0);
-            })();
-          `,
-                }}
+                strategy="beforeInteractive"
+                src="https://embed.tawk.to/6465199bad80445890ed8909/1h0leo2ac"
             />
             {!isPrivatePath && (
                 <Layout
