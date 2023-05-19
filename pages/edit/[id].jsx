@@ -1317,7 +1317,7 @@ class Edit extends React.Component {
                                 <div className={edit_details_styles.image_dimensions}>
                                 Height: {image.height}px
                                 </div>
-                                <div className={edit_details_styles.button_container}>
+                                <div className={edit_details_styles.button_container}> 
                                     <ArrowForwardIosRoundedIcon
                                         className={edit_details_styles.up_arrow}
                                         onClick={() => this.handleImageReorder(index, 'up', 'extra_images')}

@@ -69,14 +69,6 @@
     .full_gallery_container {
         border-radius: 5px;
 
-        .extra_images_gallery_container {
-            min-width: 110px !important;
-            max-width: 110px !important;
-
-            .selected_gallery_image {
-                border-radius: 5px;
-            }
-        }
     }
 } 
 
@@ -94,6 +86,7 @@
     border-radius: 5px;
 
     .extra_images_gallery_container {
+        width: 115px !important;
         height: 110px;
         display: flex;
         flex-direction: row;
@@ -107,15 +100,15 @@
             overflow: hidden;
             margin-right: 5px;
 
+            .selected_gallery_image {
+                border-radius: 5px;
+            }
+
             .extra_images_gallery_image {
                 width: 100px !important;
                 height: 100px !important;
                 margin: 5px 0px;
             }
-        }
-
-        .selected_gallery_image {
-            border-radius: 5px;
         }
     }
 }
