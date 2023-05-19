@@ -72,8 +72,8 @@
     background-color: $secondary;
 
     .extra_images_gallery_container {
-        width: 115px !important;
-        height: 110px;
+        min-width: 110px !important;
+        min-height: 110px !important;
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
