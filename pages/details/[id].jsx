@@ -617,7 +617,7 @@ class Details extends React.Component {
 
                 <div style={{ display: 'none' }}>
                     {this.state.piece_list
-                        .filter((_, i) => i >= this.state.piece_position - 2 && i <= this.state.piece_position + 2)
+                        .filter((_, i) => i >= this.state.piece_position - 5 && i <= this.state.piece_position + 5)
                         .map((piece, i) => (
                             <img
                                 key={`preload_${i}`}
