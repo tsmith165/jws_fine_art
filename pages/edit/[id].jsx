@@ -1423,6 +1423,18 @@ class Edit extends React.Component {
                             </div>
                         </div>
                     </div>
+
+                    <div style={{ display: 'none' }}>
+                        {this.state.piece_list
+                            .filter((_, i) => i >= this.state.piece_position - 5 && i <= this.state.piece_position + 5)
+                            .map((piece, i) => (
+                                <img
+                                    key={`preload_${i}`}
+                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
+                                    alt={`Preload ${piece.title}`}
+                                />
+                            ))}
+                    </div>
                 </PageLayout>
             );
         }
@@ -1468,6 +1480,18 @@ class Edit extends React.Component {
                         </form>
                     </div>
                 </div>
+
+                <div style={{ display: 'none' }}>
+                        {this.state.piece_list
+                            .filter((_, i) => i >= this.state.piece_position - 5 && i <= this.state.piece_position + 5)
+                            .map((piece, i) => (
+                                <img
+                                    key={`preload_${i}`}
+                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
+                                    alt={`Preload ${piece.title}`}
+                                />
+                            ))}
+                    </div>
             </PageLayout>
         );
     }
