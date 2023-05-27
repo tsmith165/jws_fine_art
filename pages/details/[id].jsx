@@ -588,6 +588,18 @@ class Details extends React.Component {
                             <div className={styles.extra_padding}></div>
                         </div>
                     </div>
+
+                    <div style={{ display: 'none' }}>
+                        {this.state.piece_list
+                            .filter((_, i) => i >= this.state.piece_position - 2 && i <= this.state.piece_position + 2)
+                            .map((piece, i) => (
+                                <img
+                                    key={`preload_${i}`}
+                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
+                                    alt={`Preload ${piece.title}`}
+                                />
+                            ))}
+                    </div>
                 </PageLayout>
             );
         }
@@ -601,6 +613,18 @@ class Details extends React.Component {
                     {details_form /* Details Form Container */}
                     {progress_images_gallery_container_jsx}
                     <div className={styles.extra_padding}></div>
+                </div>
+
+                <div style={{ display: 'none' }}>
+                    {this.state.piece_list
+                        .filter((_, i) => i >= this.state.piece_position - 2 && i <= this.state.piece_position + 2)
+                        .map((piece, i) => (
+                            <img
+                                key={`preload_${i}`}
+                                src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
+                                alt={`Preload ${piece.title}`}
+                            />
+                        ))}
                 </div>
             </PageLayout>
         );
