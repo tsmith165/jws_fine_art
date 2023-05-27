@@ -205,7 +205,7 @@ class Slideshow extends React.Component {
         })
 
         if (this.state.running == true || set_running == true) {
-            this.state.timer = setTimeout( () =>  { this.update_current_piece(this.state.piece_list, this.state.next_oid) }, (this.state.speed));
+            this.state.timer = setTimeout( () => { this.update_current_piece(this.state.piece_list, this.state.next_oid) }, (this.state.speed));
         }
     }
 
