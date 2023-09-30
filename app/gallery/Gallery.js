@@ -194,13 +194,17 @@ const Gallery = (props) => {
             piece_list: piece_list,
             gallery_pieces: gallery_pieces,
             lowest_height: lowest_height,
-            fade_in_visible: false // set this to false to fade out the overlay
+            fade_in_visible: false
         }));
+
+        setTimeout(() => {
+            setState(prevState => ({ ...prevState, fade_in_visible: false }));
+        }, 1000);  // 2 seconds delay
     };
 
     return (
         <div>
-            {state.fade_in_visible && <div className={styles.fade_in_overlay}></div>}
+            <div className={`${styles.fade_in_overlay} ${state.fade_in_visible ?  '' : styles.visible}`}></div>
             <div className={ (state.window_width !== undefined && state.window_width < 768 && appState.filter_menu_open == true) ? 
                 ( `${styles.gallery_container} ${styles.gallery_container_open}` ) : ( styles.gallery_container  ) }
             >

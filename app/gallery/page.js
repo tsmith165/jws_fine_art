@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'JWS Fine Art - Gallery Page',
+  title: 'JWS Fine Art - Gallery',
   description: 'Gallery page for JWS Fine Art',
   icons: {
       icon: '/JWS_ICON.png',
