@@ -7,8 +7,6 @@ import { prisma } from '@/lib/prisma'
 
 import styles from "@/styles/forms/SignIn.module.scss"
 
-import PageLayout from '@/components/layout/PageLayout'
-
 import { SignUp } from "@clerk/nextjs";
 
 class SignUpPage extends React.Component {
@@ -22,13 +20,11 @@ class SignUpPage extends React.Component {
 
     render() {
         return (
-            <PageLayout page_title={this.page_title}>
-                <div className={styles.sign_in_container}>
-                    <div className={styles.sign_in_inner_container}>
-                        <SignUp />
-                    </div>
+            <div className={styles.sign_in_container}>
+                <div className={styles.sign_in_inner_container}>
+                    <SignUp />
                 </div>
-            </PageLayout>
+            </div>
         )
     }
 }
