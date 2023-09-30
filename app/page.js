@@ -1,46 +1,41 @@
 export const metadata = {
-  title: 'JWS Fine Art - Gallery Page',
-  description: 'Gallery page for JWS Fine Art',
+  title: 'JWS Fine Art - Homepage',
+  description: 'Jill Weeks Smith Biography',
   icons: {
       icon: '/JWS_ICON.png',
   },
 }
 
-import PageLayout from '../components/layout/PageLayout';
-import Gallery from './Gallery'
+import PageLayout from '@/components/layout/PageLayout';
+import Homepage from './Homepage';
 
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma';
 
-export default async function Page() {
-  const {piece_list, most_recent_id} = await get_piece_list()
-
-  // console.log(`Returning most recent ID: ${most_recent_id} | piece_list:`, piece_list)
+export default async function Page(props) {
+  const {most_recent_id} = await get_piece_list()
 
   return (
-    <PageLayout >
-      <Gallery piece_list={piece_list} most_recent_id={most_recent_id}/>
+    <PageLayout {...props}>
+      <Homepage most_recent_id={most_recent_id}/>
     </PageLayout>
-  );
+  )
 }
 
-async function fetchPieces() {
+async function fetchFirstPiece() {
   console.log(`Fetching pieces with prisma`)
-  const piece_list = await prisma.piece.findMany({
+  const piece = await prisma.piece.findFirst({
     orderBy: {
-      o_id: 'desc',
-    }
-  })
-  return piece_list
+        o_id: 'desc',
+    },
+})
+  return piece
 }
 
 async function get_piece_list() {
   console.log("Fetching piece list...")
-  const piece_list = await fetchPieces()
-
-  //console.log(`Found piece_list:`, piece_list)
+  const first_piece = await fetchFirstPiece()
 
   return {
-      "piece_list": piece_list,
-      "most_recent_id": piece_list[0]['id']
+      "most_recent_id": first_piece['id']
     }
 }

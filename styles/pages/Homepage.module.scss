@@ -1,0 +1,134 @@
+@import '../../theme/common';
+@import "../../theme/theme";
+
+.bio_container {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  height: calc(100% - 100px);
+  width: 100%;
+  padding: 0px 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: $light;
+}
+
+// Left Column
+.left_column {
+  width: 50%;
+  padding-right: 20px;
+
+  // Bio Image
+  .bio_image_container { 
+    display: flex; 
+    justify-content: center; 
+    width: 100%; 
+    margin-top: 15px; 
+
+    .bio_image_border {
+      position: relative; 
+      height: 267px !important;
+      border-radius: 5px; 
+      background-color: $secondary; 
+      width: max-content !important;
+    }
+      .bio_image { 
+        padding: 5px !important;
+      }
+  }
+
+  // Contact Container
+  .contact_container { 
+    margin-bottom: 15px;
+  
+    .contact_text_container { 
+      display: flex; 
+      justify-content: center;
+      width: 100%; 
+  
+      .contact_text  { 
+        padding: 5px; 
+        text-align: center; 
+        color: $secondary;
+      }
+      .title { 
+        font-size: 24px; 
+      }
+      .description { 
+        font-size: 20px; 
+        line-height: 32px;
+      }
+      .contact_link { 
+        padding: 5px; 
+        color: blue; 
+        text-align: center; 
+        text-decoration: underline;
+      }
+      .link { 
+        font-size: 20px; 
+        line-height: 20px; 
+      }
+    }
+  }
+
+  // Enter Gallery Button
+  .enter_gallery_button_container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  
+    .enter_gallery_button {
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      background-color: $secondary;
+      color: $light;
+      border-radius: 5px;
+
+      &:hover {
+        background-color: $primary;
+      }
+    }
+  }
+}
+
+// Right Column
+.right_column {
+  width: 50%;
+  padding-left: 20px;
+
+  .bio_text_container { 
+    width: 100%; 
+  
+    .bio_text { 
+      color: $secondary; 
+      font-size: 20px; 
+      padding: 15px; 
+      margin-bottom: 20px; 
+      text-align: center;
+    }
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  z-index: 9999;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+  display: none; // This ensures it's hidden by default
+}
+
+@keyframes fadeIn {
+  to {
+      opacity: 1;
+  }
+}
+
+.hidden {
+  display: none;
+}

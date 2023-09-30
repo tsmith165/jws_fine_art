@@ -1,7 +1,7 @@
 'use client';
 
 import logger from '@/lib/logger';
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import 'react-tooltip/dist/react-tooltip.css';
 import AppContext from '@/contexts/AppContext';
 import styles from '@/styles/pages/Gallery.module.scss';
@@ -23,6 +23,7 @@ const Gallery = (props) => {
         gallery_pieces: [],
         lowest_height: 0,
         theme: 'None',
+        fade_in_visible: true
     });
 
     useEffect(() => {
@@ -43,7 +44,9 @@ const Gallery = (props) => {
 
     useEffect(() => {
         console.log("Checking theme change..."); 
-        createGallery(state.piece_list, appState.theme);
+        if (state.window_width && state.window_height) {
+            createGallery(state.piece_list, appState.theme);
+        }
     }, [state.theme, appState.theme, state.window_width, state.window_height]);
 
     const createGallery = async (piece_list, theme) => {
@@ -191,25 +194,28 @@ const Gallery = (props) => {
             piece_list: piece_list,
             gallery_pieces: gallery_pieces,
             lowest_height: lowest_height,
-            theme: theme
+            fade_in_visible: false // set this to false to fade out the overlay
         }));
     };
 
     return (
-        <div className={ (state.window_width !== undefined && state.window_width < 768 && appState.filter_menu_open == true) ? 
-            ( `${styles.gallery_container} ${styles.gallery_container_open}` ) : ( styles.gallery_container  ) }
-        >
-            <div className={styles.gallery_main_container}>
-                <div 
-                    className={styles.gallery_inner_container} 
-                    onClick={(e) => {
-                        if ( appState.filter_menu_open == true && state.window_width < 768) {
-                            setAppState({ ...appState, filter_menu_open: false });
-                        }
-                    }}
-                >
-                    <div className={styles.gallery_body} style={{ height: state.lowest_height }}>
-                        {state.gallery_pieces}
+        <div>
+            {state.fade_in_visible && <div className={styles.fade_in_overlay}></div>}
+            <div className={ (state.window_width !== undefined && state.window_width < 768 && appState.filter_menu_open == true) ? 
+                ( `${styles.gallery_container} ${styles.gallery_container_open}` ) : ( styles.gallery_container  ) }
+            >
+                <div className={styles.gallery_main_container}>
+                    <div 
+                        className={styles.gallery_inner_container} 
+                        onClick={(e) => {
+                            if ( appState.filter_menu_open == true && state.window_width < 768) {
+                                setAppState({ ...appState, filter_menu_open: false });
+                            }
+                        }}
+                    >
+                        <div className={styles.gallery_body} style={{ height: state.lowest_height }}>
+                            {state.gallery_pieces}
+                        </div>
                     </div>
                 </div>
             </div>

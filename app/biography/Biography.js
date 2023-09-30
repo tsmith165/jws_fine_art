@@ -34,13 +34,13 @@ function BiographyPage() {
                 <b className={styles.bio_title}>Jill Weeks Smith</b>
             </div>
             <div className={styles.bio_text_container}>
-                <p className={styles.bio_text}>
+                <div className={styles.bio_text}>
                     {biographyText.map((paragraph, index) => (
                         <p key={index} className={styles.bio_text}>
                             {paragraph}
                         </p>
                     ))}
-                </p>
+                </div>
             </div>
             <div className={styles.contact_container}>
                 <div className={styles.contact_text_container}>
