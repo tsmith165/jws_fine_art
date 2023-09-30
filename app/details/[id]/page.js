@@ -9,6 +9,8 @@ export const metadata = {
 import PageLayout from '@/components/layout/PageLayout';
 import Details from './details';
 
+import { prisma } from '@/lib/prisma';
+
 export default async function Page(props) {
   const {piece_list, most_recent_id} = await get_piece_list()
 

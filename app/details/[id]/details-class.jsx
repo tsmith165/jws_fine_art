@@ -630,8 +630,6 @@ class Details extends React.Component {
                 </div>
             </PageLayout>
         );
-
-
     }
 }
 export default withRouter(Details);
