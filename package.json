@@ -11,14 +11,14 @@
         "prettier": "prettier --write \"**/*.{js,jsx,json,md}\""
     },
     "dependencies": {
-        "@clerk/nextjs": "^4.10.1",
+        "@/nextjs": "^4.24.1",
         "@clerk/themes": "^1.2.41",
         "@emotion/react": "^11.10.6",
         "@emotion/styled": "^11.10.6",
         "@google-analytics/data": "^3.2.2",
         "@mui/icons-material": "^5.11.9",
         "@mui/material": "^5.11.9",
-        "@prisma/client": "^3.11.1",
+        "@prisma/client": "^5.3.1",
         "@react-google-maps/api": "^2.7.0",
         "@stripe/stripe-js": "^1.26.0",
         "@vercel/analytics": "^0.1.7",
@@ -29,7 +29,7 @@
         "global": "^4.4.0",
         "googleapis": "^118.0.0",
         "micro": "^9.3.4",
-        "next": "^13.1.6",
+        "next": "^13.3.0",
         "next-analytics": "^2.0.0",
         "react": "^18.2.0",
         "react-datepicker": "^4.11.0",
@@ -45,12 +45,12 @@
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
-        "@types/node": "17.0.23",
-        "@types/react": "17.0.43",
+        "@types/node": "18.7.1",
+        "@types/react": "18.0.1",
         "@types/react-dom": "17.0.14",
         "eslint": "8.12.0",
         "eslint-config-next": "^13.1.6",
         "prettier": "^2.8.7",
-        "prisma": "^3.11.1"
+        "prisma": "^5.3.1"
     }
 }
