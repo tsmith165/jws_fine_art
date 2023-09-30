@@ -97,6 +97,18 @@
   bottom: 0;
   background-color: black;
   z-index: 9999;
-  opacity: 1;
-  transition: opacity 1s ease-out; 
+  animation: fadeOut 2s ease-in;
+  pointer-events: auto;
+
+  &.visible {
+    opacity: 0;  // completely transparent after fade-out
+    pointer-events: none;
+  }
+}
+
+
+@keyframes fadeOut {
+  to {
+      opacity: 0;
+  }
 }
