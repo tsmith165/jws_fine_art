@@ -87,3 +87,16 @@
             top: auto !important; 
             left: auto !important; 
           }
+
+
+.fade_in_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 1s ease-out; 
+}

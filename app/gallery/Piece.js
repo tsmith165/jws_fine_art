@@ -2,16 +2,16 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from '@/styles/pages/Gallery.module.scss'
+
 import PROJECT_CONSTANTS from '@/lib/constants'
+
+import styles from '@/styles/pages/Gallery.module.scss'
 
 const USING_YELLOW_DOT = false;
 
 const Piece = ({ dimensions, id, className, o_id, image_path, title, sold, available }) => {
     var [x, y, img_width, img_height] = dimensions;
     x = (x == null || x < 0) ? 0 : x;
-
-    console.log(`Recieved dimensions: `, dimensions)
 
     return (
         <div id={id} className={`${styles.piece_container} ${className}`} style={{width: img_width + 10, height: img_height + 10, top: y, left: x}}>
