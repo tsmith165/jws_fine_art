@@ -130,7 +130,7 @@ const Details = (props) => {
         selected_gallery_image: 0,
     });
 
-    useEffect(async () => {
+    useEffect(() => {
         const handleResize = () => {
             logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState(prevState => ({
