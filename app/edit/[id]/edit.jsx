@@ -30,15 +30,6 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 const Edit = (props) => {
 
     const { isLoaded, isSignedIn, user } = useUser();
-    console.log(`Clerk User Loaded: ${isLoaded} | Signed In: ${isSignedIn} | User Role: ${user && user.publicMetadata?.role?.toLowerCase() || 'none'}`);
-    if (!isLoaded) {
-        return <div>Loading...</div>
-    } else if (!isSignedIn) {
-        return <div>Not signed in</div>
-    } else if (!user || user.publicMetadata?.role?.toLowerCase() != 'admin') {
-        console.log(`Current user is not admin - Role: ${user.publicMetadata?.role?.toLowerCase() || 'none'}`)
-        return <div>User not admin</div>
-    }
 
     const router = useRouter();
     const pathname = usePathname();
@@ -48,8 +39,8 @@ const Edit = (props) => {
     const piece_list = props.piece_list;
     const num_pieces = piece_list.length;
 
-    logger.extra(`getServerSideProps piece_list length: ${num_pieces} | Piece List Type: ${typeof piece_list} | Data (Next Line):`);
-    logger.extra(piece_list);
+    logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Piece List Type: ${typeof piece_list} | Data (Next Line):`);
+    logger.debug(piece_list);
 
     var piece_position = 0;
 
@@ -83,6 +74,8 @@ const Edit = (props) => {
         current_piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? current_piece.image_path :
             `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`;
 
+    console.log(`Piece Position: ${piece_position} | Current DB ID: ${db_id} | Data (Next Line):`);
+    console.log(current_piece);
 
     // Extra Images
     var extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images;
@@ -114,12 +107,9 @@ const Edit = (props) => {
         });
     }
 
-    var image_array = [];
+    var current_image_array = [];
     var extra_image_array = [];
     var progress_image_array = [];
-
-    logger.extra(`Setting initial state theme to: ${theme} | options (Next line):`);
-    logger.extra(theme_options);
 
     const [state, setState] = useState({
         window_width: null,
@@ -127,7 +117,7 @@ const Edit = (props) => {
         styles: desktop_styles,
         url_o_id: passed_o_id,
         piece_list: piece_list,
-        image_array: image_array,
+        current_image_array: current_image_array,
         extra_image_array: extra_image_array,
         progress_image_array: progress_image_array,
         extra_images: extra_images,
@@ -187,36 +177,48 @@ const Edit = (props) => {
                 window_height: window.innerHeight
             });
         }
+        console.log('Component mounted.')
 
-        var image_array = [];
-        var extra_image_array = [];
-        var progress_image_array = [];
-        const num_pieces = state.piece_list.length;
-        if (num_pieces > 0) {
-            image_array = create_image_array(state.piece_list, state.piece_position, state.staging_db_id, true);
+        if (!isLoaded) {
+            console.log('User not loaded.  Not setting initial state.')
+        } else if (!isSignedIn) {
+            console.log('User not signed in.  Not setting initial state.')
+        } else if (user.publicMetadata?.role?.toLowerCase() != 'admin') {
+            console.log('User not admin.  Not setting initial state.')
+        } else {
+            console.log('Component mounted and user signed in.  Loading image arrays...')
+            var current_image_array = [];
+            var extra_image_array = [];
+            var progress_image_array = [];
+            const num_pieces = state.piece_list.length;
+            console.log('Component did mount num pieces: ', num_pieces)
+            if (num_pieces > 0) {
+                current_image_array = create_image_array(state.piece_list, state.piece_position, state.staging_db_id, true);
 
-            extra_image_array = create_extra_image_array(state.extra_images, state.selected_gallery_image);
+                extra_image_array = create_extra_image_array(state.extra_images, state.selected_gallery_image);
 
-            progress_image_array = create_extra_image_array(state.progress_images, state.selected_gallery_image);
+                progress_image_array = create_extra_image_array(state.progress_images, state.selected_gallery_image);
+            }
+
+            logger.debug(`Setting state with Piece Position: ${state.piece_position} | piece list length: ${num_pieces}`);
+            update_state({
+                loading: false,
+                window_width: window.innerWidth,
+                window_height: window.innerHeight,
+                current_image_array: current_image_array,
+                extra_image_array: extra_image_array,
+                progress_image_array: progress_image_array,
+                next_oid:
+                    state.piece_position + 1 > num_pieces - 1
+                        ? state.piece_list[0]['o_id']
+                        : state.piece_list[state.piece_position + 1]['o_id'],
+                last_oid:
+                    state.piece_position - 1 < 0
+                        ? state.piece_list[num_pieces - 1]['o_id']
+                        : state.piece_list[state.piece_position - 1]['o_id']
+            });
         }
 
-        logger.extra(`Setting state with Piece Position: ${state.piece_position} | piece list length: ${num_pieces}`);
-        update_state({
-            loading: false,
-            window_width: window.innerWidth,
-            window_height: window.innerHeight,
-            image_array: image_array,
-            extra_image_array: extra_image_array,
-            progress_image_array: progress_image_array,
-            next_oid:
-                state.piece_position + 1 > num_pieces - 1
-                    ? state.piece_list[0]['o_id']
-                    : state.piece_list[state.piece_position + 1]['o_id'],
-            last_oid:
-                state.piece_position - 1 < 0
-                    ? state.piece_list[num_pieces - 1]['o_id']
-                    : state.piece_list[state.piece_position - 1]['o_id']
-        });
 
         window.addEventListener("resize", handleResize); // Add event listener
 
@@ -228,7 +230,7 @@ const Edit = (props) => {
                 staging_db_id: -2,
             });
         };
-    }, []);
+    }, [isLoaded, isSignedIn, user]);
 
     const update_state = (newState) => {
         logger.debug(`Updating state with object (Next Line):`);
@@ -265,7 +267,7 @@ const Edit = (props) => {
         update_state({ loading: true, updated: false });
 
         const piece_list = await fetch_pieces();
-        piece_list.sort((a, b) => a['o_id'] - b['o_id']);
+        piece_list.sort((a, b) => a['o_id'] - b['o_id']); s
 
         // Add AWS bucket URL to the image_path if not exists
         piece_list.forEach((piece) => {
@@ -303,8 +305,8 @@ const Edit = (props) => {
         const current_db_id = current_piece.id;
         const current_o_id = current_piece.o_id;
 
-        logger.extra(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
-        logger.extra(current_piece);
+        console.log(`Piece Position: ${piece_position} | Current DB ID: ${current_db_id} | Data (Next Line):`);
+        console.log(current_piece);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
@@ -325,7 +327,7 @@ const Edit = (props) => {
         logger.extra(`Setting theme to: ${theme} | framed: ${current_piece.framed} | options (Next line):`);
         logger.extra(theme_options);
 
-        const image_array = await create_image_array(state.piece_list, piece_position, state.staging_db_id, true);
+        const current_image_array = await create_image_array(state.piece_list, piece_position, state.staging_db_id, true);
 
         // Extra Images
         var extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images;
@@ -347,11 +349,13 @@ const Edit = (props) => {
 
         const progress_image_array = await create_extra_image_array(progress_images, state.selected_gallery_image);
 
+        console.log(`UPDATE PIECE IMAGE PATH: ${current_piece.image_path}`)
+
         const previous_url_o_id = state.url_o_id;
         update_state({
             url_o_id: current_o_id,
             piece_list: piece_list,
-            image_array: image_array,
+            current_image_array: current_image_array,
             extra_image_array: extra_image_array,
             progress_image_array: progress_image_array,
             piece_position: piece_position,
@@ -397,18 +401,19 @@ const Edit = (props) => {
     const create_image_array = async (piece_list, piece_position, db_id, only_load_cover = false) => {
         const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
 
-        var image_array = [];
+        var temp_image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
             let piece = piece_list[i];
+            console.log('create image array piece: ', piece)
             if (i == piece_position) {
-                logger.debug(`Staging DB ID: ${db_id} | Current index: ${piece.id}`)
+                logger.debug(`Found Staging DB ID: ${db_id} | Current index: ${piece.id}`)
             } else {
                 if (only_load_cover == true) {
                     continue
                 }
             }
 
-            image_array.push(
+            temp_image_array.push(
                 <div key={`image_${i}`} className={i == piece_position ? styles.centered_image_container : styles.centered_image_container_hidden}>
                     {(db_id == -1) ? (null) : (db_id != piece.id) ? null : (
                         <div className={styles.centered_image_staging}>Staging</div>
@@ -426,7 +431,7 @@ const Edit = (props) => {
                 </div>
             );
         }
-        return image_array;
+        return temp_image_array;
     };
 
     const create_extra_image_array = async (extra_images, selected_image_index) => {
@@ -434,9 +439,9 @@ const Edit = (props) => {
 
         var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
 
-        var extra_image_array = [];
+        var temp_extra_image_array = [];
         using_extra_images.map((image, index) => {
-            extra_image_array.push(
+            temp_extra_image_array.push(
                 <div key={`extra_image_${index}`} className={index == (selected_image_index) ? styles.centered_image_container : styles.centered_image_container_hidden}>
                     <CustomNextImage
                         id={`extra_image_${index}`}
@@ -452,7 +457,7 @@ const Edit = (props) => {
             );
         });
 
-        return extra_image_array;
+        return temp_extra_image_array;
     };
 
     const get_piece_from_path_o_id = async (piece_list, o_id) => {
@@ -671,7 +676,7 @@ const Edit = (props) => {
             updated_piece = { ...updated_piece, ...{ image_path: uploaded_image_path, width: width, height: height } };
             var updated_piece_list = state.piece_list;
             updated_piece_list[state.piece_position] = updated_piece;
-            const image_array = await create_image_array(updated_piece_list, state.piece_position, state.db_id, true);
+            const current_image_array = await create_image_array(updated_piece_list, state.piece_position, state.db_id, true);
 
             logger.debug(`Pre-Update Cover Image (Next Line):`);
             logger.debug(state.image_path);
@@ -681,7 +686,7 @@ const Edit = (props) => {
                 height: height,
                 uploaded_image_path: uploaded_image_path,
                 image_path: uploaded_image_path,
-                image_array: image_array,
+                current_image_array: current_image_array,
                 staging_db_id: state.db_id,
                 loading: false,
                 uploading: false,
@@ -769,13 +774,13 @@ const Edit = (props) => {
             file_upload_type: 'cover',
         });
 
-        var new_image_array = await create_image_array(new_piece_list, new_piece_list.length - 1, -2, true);
+        var new_current_image_array = await create_image_array(new_piece_list, new_piece_list.length - 1, -2, true);
 
         var blank_piece_state = {
             uploaded: false,
             upload_error: false,
             uploaded_image_path: '',
-            image_array: new_image_array,
+            current_image_array: new_current_image_array,
             extra_images: [],
             progress_images: [],
             piece_list: new_piece_list,
@@ -948,14 +953,8 @@ const Edit = (props) => {
         return error_message_and_label_jsx;
     };
 
-    if (!props.isLoaded) { return <></>; }
-    if (!props.isSignedIn) { props.router.push('/'); }
-    if (props.user == null) { props.router.push('/'); }
 
-    const role = props.user.publicMetadata.role !== undefined ? props.user.publicMetadata.role : null;
-    if (role !== 'ADMIN') { props.router.push('/'); }
-
-    // If to this position, User is signed in with ADMIN role in clerk publicMetadata
+    // Start building render
     const styles = state.window_width > 1800 ? desktop_styles : mobile_styles;
 
     const using_theme = [undefined, null, ''].includes(state.theme) == false ? state.theme : 'None';
@@ -980,7 +979,6 @@ const Edit = (props) => {
     logger.debug(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
     logger.debug(using_progress_images)
 
-    logger.section(`Creating JSX Elements`)
 
     // Gallery Loader Container JSX
     const image_loader_container_jsx = (
@@ -993,15 +991,14 @@ const Edit = (props) => {
     var extra_images_length = [null, undefined].includes(state.extra_image_array) ? null : state.extra_image_array.length
     console.log(`Extra Images Length: ${extra_images_length} | Selected Gallery Image: ${state.selected_gallery_image}`)
 
+    console.log('Current Image Array: ', state.current_image_array)
+    const main_image = state.selected_gallery_image === 0 ? state.current_image_array : state.selected_gallery_image < extra_images_length + 1 ? state.extra_image_array : state.progress_image_array
+    console.log('Using main image: ', main_image)
+
     // Main Image Container JSX
     const image_container_jsx = (
         <div className={styles.centered_image_container}>
-            {
-                state.loading === true ?
-                    image_loader_container_jsx : state.selected_gallery_image === 0 ?
-                        state.image_array : state.selected_gallery_image < state.extra_image_array.length + 1 ?
-                            state.extra_image_array : state.progress_image_array
-            }
+            {state.loading === true ? image_loader_container_jsx : main_image}
         </div>
     );
 
@@ -1010,7 +1007,7 @@ const Edit = (props) => {
             {state.loading == true ? (null) : (
                 using_extra_images.map((image, index) => {
                     var image_path = image.image_path.split('/').slice(-2).join('/')
-                    logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                    console.log(`Extra Images Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                     return (
                         <div className={(state.selected_gallery_image === (index + 1)) ?
                             `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
@@ -1047,7 +1044,7 @@ const Edit = (props) => {
                 }}>
                     <CustomNextImage
                         className={styles.centered_image}
-                        src={state.image_path}
+                        src={state.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
                         alt={``}
                         width={state.width}
                         height={state.height}
@@ -1283,7 +1280,7 @@ const Edit = (props) => {
 
     const error_message_jsx = create_error_message_jsx();
 
-
+    console.log('Extra Images: ', using_extra_images)
     const extra_images_text_jsx = [undefined, null, '', [], ['']].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
         <div className={edit_details_styles.extra_images_container}>
             <div className={edit_details_styles.extra_image_table_header}>Extra Images:</div>
@@ -1325,7 +1322,7 @@ const Edit = (props) => {
         </div>
     );
 
-
+    console.log('Progress Images: ', using_progress_images)
     const progress_images_test_jsx = [undefined, null, '', [], ['']].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
         <div className={edit_details_styles.extra_images_container}>
             <div className={edit_details_styles.extra_image_table_header}>Progress Images:</div>
@@ -1365,7 +1362,19 @@ const Edit = (props) => {
         </div>
     );
 
+    console.log("Returning JSX with window width: " + state.window_width)
+    console.log(`Clerk User Loaded: ${isLoaded} | Signed In: ${isSignedIn} | User Role: ${user && user.publicMetadata?.role?.toLowerCase() || 'none'}`);
+    if (!isLoaded) {
+        return <div>Loading...</div>
+    } else if (!isSignedIn) {
+        return <div>Not signed in</div>
+    } else if (!user || user.publicMetadata?.role?.toLowerCase() != 'admin') {
+        console.log(`Current user is not admin - Role: ${user.publicMetadata?.role?.toLowerCase() || 'none'}`)
+        return <div>User not admin</div>
+    }
+
     if (state.window_width > 1800) {
+        console.log("Rendering edit page for desktop screen size...")
         return (
             <>
                 <div className={styles.details_container}>
