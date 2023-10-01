@@ -7,12 +7,16 @@ export const metadata = {
 }
 
 import PageLayout from '../../components/layout/PageLayout';
-import ContactPage from './contact';
+import Contact from './Contact';
+
+import { prisma } from '@/lib/prisma';
 
 export default async function Page(props) {
+  const {most_recent_id} = await get_piece_list()
+
   return (
     <PageLayout {...props}>
-      <ContactPage/>
+      <Contact most_recent_id={most_recent_id}/>
     </PageLayout>
   )
 }

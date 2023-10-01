@@ -8,15 +8,12 @@ import { useUser } from "@clerk/nextjs";
 import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
-import { prisma } from '@/lib/prisma';
-
 import NextImage from 'next/image';
 import CustomNextImage from '@/components/components/CustomNextImage';
 import Link from 'next/link';
 
 import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
 
-import PageLayout from '@/components/layout/PageLayout';
 import PieceSpecificationTable from '@/components/components/PieceSpecificationTable';
 import TitleComponent from '@/components/components/TitleComponent';
 
