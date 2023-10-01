@@ -5,22 +5,21 @@ import { withRouter } from 'next/router'
 
 import { prisma } from '@/lib/prisma'
 
-import PageLayout from '@/components/layout/PageLayout'
 import Success from '@/components/pages/success/Success';
 
 class SuccessPage extends React.Component {
   constructor(props) {
-      super(props);
+    super(props);
 
-      this.page_title = "Checkout"
+    this.page_title = "Checkout"
   }
 
   async componentDidMount() { }
 
   render() {
-    return ( 
+    return (
       <PageLayout page_title={this.page_title}>
-        <Success id={this.props.router.query.id} piece_list={this.props.piece_list} router={this.props.router}/> 
+        <Success id={this.props.router.query.id} piece_list={this.props.piece_list} router={this.props.router} />
       </PageLayout>
     )
   }
@@ -29,14 +28,15 @@ class SuccessPage extends React.Component {
 export default withRouter(SuccessPage)
 
 export const getServerSideProps = async (context) => {
-  logger.section({message: `Fetching Initial Server List`})
+  logger.section({ message: `Fetching Initial Server List` })
 
   var piece_list = await prisma.piece.findMany()
   piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
   return {
     props: { // will be passed to the page component as props
-      piece_list: piece_list, 
-      most_recent_id: piece_list[piece_list.length - 1]['id']}, 
+      piece_list: piece_list,
+      most_recent_id: piece_list[piece_list.length - 1]['id']
+    },
   }
 }
