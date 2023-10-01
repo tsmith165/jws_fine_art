@@ -3,16 +3,14 @@
 import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
-import React from 'react';
-import { withRouter } from 'next/router';
+import React, { useState, useEffect, useContext } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
-import { prisma } from '@/lib/prisma';
+import { useUser } from "@clerk/nextjs";
 
 import CustomNextImage from '@/components/components/CustomNextImage';
 
 import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url, updateExtraImagesOrder, deleteExtraImage } from '@/lib/api_calls';
-
-import PageLayout from '@/components/layout/PageLayout';
 
 import InputComponent from '@/components/components/InputComponent';
 
@@ -32,12 +30,19 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 const Edit = (props) => {
 
     const { isLoaded, isSignedIn, user } = useUser();
+    console.log(`Clerk User Loaded: ${isLoaded} | Signed In: ${isSignedIn} | User Role: ${user && user.publicMetadata?.role?.toLowerCase() || 'none'}`);
+    if (!isLoaded) {
+        return <div>Loading...</div>
+    } else if (!isSignedIn) {
+        return <div>Not signed in</div>
+    } else if (!user || user.publicMetadata?.role?.toLowerCase() != 'admin') {
+        console.log(`Current user is not admin - Role: ${user.publicMetadata?.role?.toLowerCase() || 'none'}`)
+        return <div>User not admin</div>
+    }
 
     const router = useRouter();
     const pathname = usePathname();
     const passed_o_id = pathname.split('/').slice(-1)[0];
-
-    const passed_o_id = props.router.query.id;
     logger.section({ message: `LOADING EDIT DETAILS PAGE - Piece ID: ${passed_o_id}` });
 
     const piece_list = props.piece_list;
@@ -116,7 +121,7 @@ const Edit = (props) => {
     logger.extra(`Setting initial state theme to: ${theme} | options (Next line):`);
     logger.extra(theme_options);
 
-    state = {
+    const [state, setState] = useState({
         window_width: null,
         window_height: null,
         styles: desktop_styles,
@@ -168,11 +173,11 @@ const Edit = (props) => {
         error: false,
         staging_db_id: -2,
         selected_gallery_image: 0
-    };
+    });
 
     // Refrences
-    file_input_ref = React.createRef(null);
-    text_area_ref = React.createRef(null);
+    const file_input_ref = React.createRef(null);
+    const text_area_ref = React.createRef(null);
 
     useEffect(() => {
         const handleResize = () => {
@@ -343,53 +348,50 @@ const Edit = (props) => {
         const progress_image_array = await create_extra_image_array(progress_images, state.selected_gallery_image);
 
         const previous_url_o_id = state.url_o_id;
-        update_state(
-            {
-                url_o_id: current_o_id,
-                piece_list: piece_list,
-                image_array: image_array,
-                extra_image_array: extra_image_array,
-                progress_image_array: progress_image_array,
-                piece_position: piece_position,
-                db_id: current_db_id,
-                o_id: current_o_id,
-                current_piece: current_piece,
-                next_oid: next_oid,
-                last_oid: last_oid,
-                title: current_piece.title,
-                piece_type: current_piece.piece_type,
-                description: current_piece.description.split('<br>').join('\n'),
-                price: current_piece.price,
-                width: current_piece.width,
-                height: current_piece.height,
-                real_width: current_piece.real_width,
-                real_height: current_piece.real_height,
-                image_path: current_piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? current_piece.image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
-                instagram: current_piece.instagram,
-                available: current_piece.available == true || current_piece.available.toString().toLowerCase() == 'true' ? 'True' : 'False',
-                sold: current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False',
-                framed: current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False',
-                comments: current_piece.comments,
-                theme: theme,
-                theme_options: theme_options,
-                loading: false,
-                updating: false,
-                uploading: false,
-                updated: false,
-                error: false,
-                updated: preserve_submit_state == true ? state.updated : false,
-                uploaded: preserve_submit_state == true ? state.uploaded : false,
-                upload_error: false,
-                extra_images: extra_images,
-                progress_images: progress_images,
-                selected_gallery_image: 0,
-            },
-            async () => {
-                if (previous_url_o_id != o_id) {
-                    props.router.push(`/edit/${o_id}`);
-                }
-            },
-        );
+        update_state({
+            url_o_id: current_o_id,
+            piece_list: piece_list,
+            image_array: image_array,
+            extra_image_array: extra_image_array,
+            progress_image_array: progress_image_array,
+            piece_position: piece_position,
+            db_id: current_db_id,
+            o_id: current_o_id,
+            current_piece: current_piece,
+            next_oid: next_oid,
+            last_oid: last_oid,
+            title: current_piece.title,
+            piece_type: current_piece.piece_type,
+            description: current_piece.description.split('<br>').join('\n'),
+            price: current_piece.price,
+            width: current_piece.width,
+            height: current_piece.height,
+            real_width: current_piece.real_width,
+            real_height: current_piece.real_height,
+            image_path: current_piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? current_piece.image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
+            instagram: current_piece.instagram,
+            available: current_piece.available == true || current_piece.available.toString().toLowerCase() == 'true' ? 'True' : 'False',
+            sold: current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False',
+            framed: current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False',
+            comments: current_piece.comments,
+            theme: theme,
+            theme_options: theme_options,
+            loading: false,
+            updating: false,
+            uploading: false,
+            updated: false,
+            error: false,
+            updated: preserve_submit_state == true ? state.updated : false,
+            uploaded: preserve_submit_state == true ? state.uploaded : false,
+            upload_error: false,
+            extra_images: extra_images,
+            progress_images: progress_images,
+            selected_gallery_image: 0,
+        }, async () => {
+            if (previous_url_o_id != o_id) {
+                props.router.push(`/edit/${o_id}`);
+            }
+        });
     };
 
     const create_image_array = async (piece_list, piece_position, db_id, only_load_cover = false) => {
@@ -836,7 +838,7 @@ const Edit = (props) => {
         new_images[newIndex] = new_images[index];
         new_images[index] = temp;
 
-        setState({ [image_type_to_edit]: new_images });
+        update_state({ [image_type_to_edit]: new_images });
 
         logger.debug(`Updating DB with Extra Images: ${new_images}`)
 
@@ -850,7 +852,7 @@ const Edit = (props) => {
             (typeof state.progress_images === 'string' ? JSON.parse(state.progress_images) : state.progress_images);
 
         let new_images_filtered = new_images.filter((_, i) => i !== index);
-        setState({ [image_type_to_edit]: new_images_filtered });
+        update_state({ [image_type_to_edit]: new_images_filtered });
 
         logger.debug(`Updating DB with Extra Images: ${new_images_filtered}`)
 
@@ -1068,11 +1070,9 @@ const Edit = (props) => {
         <div className={styles.main_image_only_container}>
             {image_container_jsx}
         </div>
-
     ) : (
         <div className={styles.main_image_and_extra_images_container}>
             {image_container_jsx}
-
             {main_image_and_extra_images_gallery_container_jsx}
         </div>
     )
@@ -1482,3 +1482,5 @@ const Edit = (props) => {
         </>
     );
 }
+
+export default Edit;

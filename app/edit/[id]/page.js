@@ -6,7 +6,10 @@ export const metadata = {
   },
 }
 
-import PageLayout from '../../components/layout/PageLayout';
+import PROJECT_CONSTANTS from '@/lib/constants';
+import { prisma } from '@/lib/prisma';
+
+import PageLayout from '@/components/layout/PageLayout';
 import Edit from './edit';
 
 export default async function Page(props) {
