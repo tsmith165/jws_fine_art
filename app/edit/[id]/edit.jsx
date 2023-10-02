@@ -399,7 +399,7 @@ const Edit = (props) => {
     };
 
     const create_image_array = async (piece_list, piece_position, db_id, only_load_cover = false) => {
-        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
+        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1000 ? desktop_styles : mobile_styles;
 
         var temp_image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
@@ -435,7 +435,7 @@ const Edit = (props) => {
     };
 
     const create_extra_image_array = async (extra_images, selected_image_index) => {
-        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
+        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1000 ? desktop_styles : mobile_styles;
 
         var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
 
@@ -955,7 +955,7 @@ const Edit = (props) => {
 
 
     // Start building render
-    const styles = state.window_width > 1800 ? desktop_styles : mobile_styles;
+    const styles = state.window_width > 1000 ? desktop_styles : mobile_styles;
 
     const using_theme = [undefined, null, ''].includes(state.theme) == false ? state.theme : 'None';
     logger.extra(`Theme: ${using_theme} | Framed: ${state.framed} | Sold: ${state.sold}`);
@@ -1373,7 +1373,7 @@ const Edit = (props) => {
         return <div>User not admin</div>
     }
 
-    if (state.window_width > 1800) {
+    if (state.window_width > 1000) {
         console.log("Rendering edit page for desktop screen size...")
         return (
             <>
