@@ -256,7 +256,7 @@ const Details = (props) => {
     const create_image_array = (piece_list, piece_position) => {
         logger.debug(`Current window width: ${window.innerWidth} | piece position: ${piece_position}`)
 
-        const styles = window.innerWidth > 1800 ? desktop_styles : mobile_styles;
+        const styles = window.innerWidth > 1000 ? desktop_styles : mobile_styles;
 
         var image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
@@ -282,7 +282,7 @@ const Details = (props) => {
     };
 
     const create_extra_image_array = (extra_images, selected_image_index) => {
-        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1800 ? desktop_styles : mobile_styles;
+        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1000 ? desktop_styles : mobile_styles;
 
         var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
 
