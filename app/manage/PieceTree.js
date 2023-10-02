@@ -11,6 +11,16 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 
 const PieceTree = ({ piece_tree_data, refresh_data }) => {
+    
+    const handleOrderChange = async (curr_id_list, next_id_list) => {
+        await change_order(curr_id_list, next_id_list);
+        refresh_data();  // Refresh the piece list after changing the order
+    };
+
+    const handleDeletePiece = async (id) => {
+        await delete_piece(id);
+        refresh_data();  // Refresh the piece list after deleting
+    };
 
     logger.debug('Generating Piece Tree - Data Next Line');
     logger.debug(piece_tree_data);
@@ -38,10 +48,10 @@ const PieceTree = ({ piece_tree_data, refresh_data }) => {
                     <Image className={styles.list_item_image} src={image_url} layout="fill" objectFit="contain" />
                 </div>
 
-                <div className={styles.list_item_stacked_container}>
+                <div className={styles.list_item_stacked_container}> 
                     <div className={styles.stack_inner_container}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.stacked_arrow} ${styles.stacked_up}`} onClick={(e) => { e.preventDefault(); change_order(curr_id_list, next_id_list, refresh_data); }} />
-                        <ArrowForwardIosRoundedIcon className={`${styles.stacked_arrow} ${styles.stacked_down}`} onClick={(e) => { e.preventDefault(); change_order(curr_id_list, last_id_list, refresh_data); }} />
+                        <ArrowForwardIosRoundedIcon className={`${styles.stacked_arrow} ${styles.stacked_up}`} onClick={(e) => { e.preventDefault(); handleOrderChange(curr_id_list, next_id_list); }} />
+                        <ArrowForwardIosRoundedIcon className={`${styles.stacked_arrow} ${styles.stacked_down}`} onClick={(e) => { e.preventDefault(); handleOrderChange(curr_id_list, last_id_list); }} />
                     </div>
                 </div>
 
@@ -52,7 +62,7 @@ const PieceTree = ({ piece_tree_data, refresh_data }) => {
                 </Link>
 
                 <div className={styles.list_item_icon_container}>
-                    <DeleteForeverIcon className={`${styles.list_item_icon} ${styles.delete_button}`} onClick={(e) => { e.preventDefault(); delete_piece(curr_id, refresh_data); }} />
+                    <DeleteForeverIcon className={`${styles.list_item_icon} ${styles.delete_button}`} onClick={(e) => { e.preventDefault(); handleDeletePiece(curr_id); }} />
                 </div>
 
                 <div className={`${styles.list_item_title_container}`}>
