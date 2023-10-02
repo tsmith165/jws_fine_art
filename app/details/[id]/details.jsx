@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
 
 import PieceSpecificationTable from '@/components/components/PieceSpecificationTable';
-import TitleComponent from '@/components/components/TitleComponent';
+import TitleComponent from '@/app/details/[id]/TitleComponent';
 
 import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
 import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
@@ -127,7 +127,7 @@ const Details = (props) => {
         selected_gallery_image: 0,
     });
 
-    useEffect(() => {
+    useEffect(() => { // Initial Load
         const handleResize = () => {
             logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState(prevState => ({
@@ -169,7 +169,8 @@ const Details = (props) => {
                     ? state.piece_list[num_pieces - 1]['o_id']
                     : state.piece_list[state.piece_position - 1]['o_id']
         });
-        return () => {
+
+        return () => { // Cleanup
             window.removeEventListener('resize', handleResize);
         };
     }, []);
@@ -317,7 +318,7 @@ const Details = (props) => {
 
     // RENDER BEGINS HERE
     const piece_title = state.title != null ? state.title : '';
-    const styles = state.window_width > 1800 ? desktop_styles : mobile_styles;
+    const styles = state.window_width > 1000 ? desktop_styles : mobile_styles;
 
     let using_extra_images = null;
     try {
@@ -577,7 +578,7 @@ const Details = (props) => {
         </div>
     )
 
-    if (state.window_width > 1800) {
+    if (state.window_width > 1000) {
         return (
             <>
                 <div className={styles.details_container}>

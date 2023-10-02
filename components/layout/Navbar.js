@@ -58,7 +58,7 @@ class Navbar extends React.Component {
                         </Link>
                     </div>
 
-                    {appState.pathname == '/' ? (
+                    {appState.pathname == '/gallery' ? (
                         <FilterMenu/>
                     ) : null}
 
