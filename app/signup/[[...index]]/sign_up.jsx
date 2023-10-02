@@ -9,7 +9,7 @@ import styles from "@/styles/forms/SignIn.module.scss"
 
 import { SignUp } from "@clerk/nextjs";
 
-class SignUpPage extends React.Component {
+class Sign_Up extends React.Component {
     constructor(props) {
         super(props);
 
@@ -29,7 +29,7 @@ class SignUpPage extends React.Component {
     }
 }
 
-export default SignUpPage;
+export default Sign_Up;
 
 export const getServerSideProps = async (context) => {
     logger.debug("Getting Server Side Props")

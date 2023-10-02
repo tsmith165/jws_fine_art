@@ -11,9 +11,10 @@
   background-color: $light 
 }
   .slideshow_body {
-    position: relative;
+    position: absolute;
+    top: 100px;
     width: 100%;
-    height: 100% !important;
+    height: calc(100% - 110px)
   }
     .slideshow_image_outer_container {
       height: calc(100% - 80px) !important;
@@ -110,9 +111,10 @@
     background-color: $light 
   }
     .slideshow_body {
-      position: relative;
+      position: absolute;
+      top: 100px;
       width: 100%;
-      height: calc(100% - 100px)
+      height: calc(100% - 110px)
     }
     .slideshow_image_outer_container {
       height: calc(100% - 80px) !important;
