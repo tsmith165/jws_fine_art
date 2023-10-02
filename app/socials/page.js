@@ -6,13 +6,13 @@ export const metadata = {
   },
 }
 
-import PageLayout from '../../components/layout/PageLayout';
-import SocialsPage from './socials';
+import PageLayout from '@/components/layout/PageLayout';
+import Socials from './Socials';
 
 export default async function Page(props) {
   return (
     <PageLayout {...props}>
-      <SocialsPage/>
+      <Socials/>
     </PageLayout>
   )
 }
