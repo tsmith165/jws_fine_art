@@ -31,7 +31,6 @@
             flex-direction: row; 
             width: 100%; 
             height: 99px; 
-            color: $secondary;
             background-color: $light; 
             border-bottom: 2px solid $secondary; 
             font-size: 3rem !important; 
@@ -75,10 +74,11 @@
                 width: 45px !important; 
                 height: 48px !important; 
                 transform: scale(1.3); 
+                fill: $dark !important; 
             }
             .stacked_arrow:hover { 
-                color: $primary; 
-                stroke: $light; 
+                fill: $primary !important;; 
+                stroke: $dark; 
                 stroke-width: 1px; 
             } 
             .stacked_up {
@@ -102,16 +102,21 @@
     }
         .list_item_icon {  
             transform: scale(1.8); 
+            fill: $dark !important; 
         }
         .list_item_icon:hover { 
-            color: $primary; 
-            stroke: $light; 
+            fill: $primary !important;; 
+            stroke: $dark; 
             stroke-width: 1px; 
         }
 
     .list_item_title_container { 
         padding: 10px; 
         line-height: 70px; 
+        
+        > b {
+            color: $dark !important;
+        }
     }
     @media (max-width: 768px) {
         .list_item_title_container { font-size: 4vw; }

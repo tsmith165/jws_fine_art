@@ -1,18 +1,18 @@
-import { prisma } from '@/lib/prisma';
-
+import { prisma } from "@/lib/prisma";
 import XLSX from 'xlsx';
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default async function (req, res) {
+export async function POST(req) {
     try {
-        const passed_json = req.body;
+        const passed_json = await req.json()
 
-        console.log(`Passed JSON (Next Line):`);
-        console.log(passed_json);
+        if (passed_json === undefined) {
+            console.error(`Request body is undefined`);
+            return Response.json({ error: "Request body is undefined" }, { status: 400 });
+        }
 
-        const format = passed_json['format'] !== 'xlsx' ? 'None' : 'xlsx';
-        const theme = passed_json['theme'] !== undefined ? passed_json['theme'] : 'None';
-        console.log(`Theme: ${theme}`);
+        const format = passed_json?.format !== 'xlsx' ? 'None' : 'xlsx';
+        const theme = passed_json?.swap_id_list !== undefined ? passed_json?.swap_id_list : 'None';
+        console.log(`Passed Theme: ${theme} | Format: ${format}`);
 
         var pieces = null;
         if (theme !== 'None') {
@@ -56,19 +56,18 @@ export default async function (req, res) {
             XLSX.utils.book_append_sheet(wb, ws, 'Pieces');
 
             const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-            res.status(200).end(buffer);
+            const headers = {
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            };
+
+            return new Response(buffer, { status: 200, headers }); 
+
         } else {
-            res.status(200).json({ pieces });
+            return Response.json({ pieces }, { status: 200 }); 
         }
     } catch (e) {
         console.log(`Error: ${e}`);
-        res.status(500);
-        res.json({ error: 'Unable to fetch pieces' });
-    } finally {
-        //await prisma.$disconnect();
-        console.log('End Pieces API Call');
-        res.end();
+        return Response.json({ error: 'Unable to fetch pieces' }, { status: 500 }); 
     }
 }

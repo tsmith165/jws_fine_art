@@ -364,7 +364,7 @@ const Details = (props) => {
                     var image_path = image.image_path.split('/').slice(-2).join('/')
                     console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                     return (
-                        <div className={(state.selected_gallery_image === (index + 1)) ?
+                        <div key={`extra_image_container_${index}`} className={(state.selected_gallery_image === (index + 1)) ?
                             `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
                             `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
                         }>
@@ -445,7 +445,7 @@ const Details = (props) => {
                                     var image_path = image.image_path.split('/').slice(-2).join('/')
                                     logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                                     return (
-                                        <div className={(state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ?
+                                        <div key={`progress_image_${index}`} className={(state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ?
                                             `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
                                             `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
                                         }>

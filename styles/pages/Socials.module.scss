@@ -19,7 +19,7 @@
 
         .bio_image_border {
             border-radius: 5px;
-            background-color: $secondary;
+            background-color: $tertiary;
             height: 667px !important;
             width: 500px !important;
         }
@@ -41,7 +41,7 @@
             font-family: $lato_300;
             font-weight: 600;
             font-size: 32px;
-            color: $secondary;
+            color: $dark;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -50,20 +50,20 @@
             font-family: $lato_300;
             font-weight: 600;
             font-size: 32px;
-            color: $secondary;
+            color: $dark;
             margin-bottom: 20px;
             text-align: center;
             white-space: nowrap;
         }
 
         .qr_code_wrapper {
-            background-color: $primary;
+            background-color: $tertiary;
             border-radius: 5px;
             padding: 5px 5px 3px 5px;
             transition: background-color 0.3s ease;
 
             &:hover {
-                background-color: $secondary;
+                background-color: $primary;
             }
 
             img {
@@ -75,7 +75,7 @@
         .instagram_wrapper {
             display: flex;
             align-items: center;
-            background-color: $primary;
+            background-color: $tertiary;
             border-radius: 25px;
             padding: 5px 5px 3px 5px;
             margin: 10px 0px;

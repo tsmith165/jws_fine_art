@@ -1,37 +1,36 @@
-import React from 'react';
-
-import styles from '@/styles/layout/MenuOverlay.module.scss'
-
+import React, { useContext } from 'react';
+import styles from '@/styles/layout/MenuOverlay.module.scss';
 import { withClerk } from "@clerk/clerk-react";
-import Router from 'next/navigation';
-
+import { useRouter } from 'next/navigation';
 import AppContext from '@/contexts/AppContext';
 
-class MenuOverlayButton extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+function MenuOverlayButton({ menu_name, id, app_state, url_endpoint, clerk }) {
+    const { appState, setAppState } = useContext(AppContext);
+    const router = useRouter();
 
-    async componentDidMount() { }
+    // Removed componentDidMount as it was empty
 
-    render() {
-        const { appState, setAppState } = this.context;
-
-        if (this.props.menu_name == 'Sign Out') {
-            return (
-                <div className={styles.menu_overlay_item} id={this.props.id} onClick={() => this.props.clerk.signOut()}>
-                    <b className={styles.menu_overlay_item_title}>{this.props.menu_name}</b>
-                </div>
-            )
-        }
+    if (menu_name === 'Sign Out') {
         return (
-            <div className={styles.menu_overlay_item} id={this.props.id} onClick={ (e) => {e.preventDefault(); setAppState({...this.props.app_state, menu_open: false}); Router.push(this.props.url_endpoint)} }>
-                <b className={styles.menu_overlay_item_title}>{this.props.menu_name}</b>
+            <div className={styles.menu_overlay_item} id={id} onClick={() => clerk.signOut()}>
+                <b className={styles.menu_overlay_item_title}>{menu_name}</b>
             </div>
-        )
+        );
     }
-}
 
-MenuOverlayButton.contextType = AppContext;
+    return (
+        <div 
+            className={styles.menu_overlay_item} 
+            id={id} 
+            onClick={e => {
+                e.preventDefault(); 
+                setAppState({ ...app_state, menu_open: false });
+                router.push(url_endpoint);
+            }}
+        >
+            <b className={styles.menu_overlay_item_title}>{menu_name}</b>
+        </div>
+    );
+}
 
 export default withClerk(MenuOverlayButton);

@@ -2,29 +2,13 @@ import PROJECT_CONSTANTS from '@/lib/constants';
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        // REQUEST METHOD NOT POST
-        console.log('Request.method != POST.  Status: 402');
-        res.status(402);
-        res.end();
-        return;
+export async function POST(req) {
+    const passed_json = await req.json();
+
+    if (!passed_json) {
+        console.error(`Request body is undefined`);
+        return Response.json({ error: "Request body is undefined" }, { status: 400 });
     }
-
-    console.log(`Checkout Session REQ.BODY (Next Line):`);
-    console.log(req.body);
-
-    if (!req.body) {
-        // NO REQ.BODY JSON PASSED IN
-        console.log('Request.body not passed in.  Status: 405');
-        res.status(405);
-        res.end();
-        return;
-    }
-
-    const passed_json = req.body;
-    console.log(`Passed JSON (Next Line):`);
-    console.log(passed_json);
 
     const attrs_to_check = [
         'piece_db_id',
@@ -39,20 +23,11 @@ export default async function handler(req, res) {
         'address',
         'international',
     ];
-    var attr_errors_found = false;
-    for (var i = 0; i < attrs_to_check.length; i++) {
-        let attr = attrs_to_check[i];
-        if (passed_json[attr] == undefined) {
-            console.error(`Failed to pass in attribute: ${attr}`);
-            attr_errors_found = true;
-        }
-    }
+    const missingAttrs = attrs_to_check.filter(attr => passed_json[attr] === undefined);
 
-    if (attr_errors_found) {
-        console.error('Request.body not fully passed in.  Exit status: 406');
-        res.status(406);
-        res.end();
-        return;
+    if (missingAttrs.length > 0) {
+        console.error('Request.body not fully passed in. Missing attributes:', missingAttrs.join(', '));
+        return Response.json({ error: `Missing attributes: ${missingAttrs.join(', ')}` }, { status: 406 });
     }
 
     // Create Stripe Session
@@ -119,10 +94,10 @@ export default async function handler(req, res) {
 
     console.log('Attempting to create checkout session with following params (Next Line):');
     console.log(params);
+
     const checkout_session = await stripe.checkout.sessions.create(params);
 
     console.log(`Session ID: ${checkout_session.id}`);
 
-    res.status(200).json({ id: checkout_session.id });
-    res.end();
+    return Response.json({ id: checkout_session.id });
 }

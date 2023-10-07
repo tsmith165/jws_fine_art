@@ -267,7 +267,7 @@ const Edit = (props) => {
         update_state({ loading: true, updated: false });
 
         const piece_list = await fetch_pieces();
-        piece_list.sort((a, b) => a['o_id'] - b['o_id']); s
+        piece_list.sort((a, b) => a['o_id'] - b['o_id']);
 
         // Add AWS bucket URL to the image_path if not exists
         piece_list.forEach((piece) => {
@@ -484,41 +484,8 @@ const Edit = (props) => {
             `Image Path: ${state.image_path} | Description: ${state.description} | Instagram: ${state.instagram}`,
         );
         logger.debug(`EDITING PIECE WITH FILE UPLOAD TYPE: ${state.file_upload_type}`)
-        if (!state.new_piece_created) {
-            const response = await edit_details({
-                id: state.db_id,
-                title: state.title,
-                description: state.description,
-                piece_type: state.piece_type,
-                sold: state.sold,
-                price: state.price,
-                instagram: state.instagram,
-                width: state.width,
-                height: state.height,
-                real_width: state.real_width,
-                real_height: state.real_height,
-                theme: state.theme,
-                available: state.available,
-                framed: state.framed,
-                comments: state.comments,
-                image_path: state.file_upload_type.includes('cover') ?
-                    `/${state.uploaded_image_path.split('/').slice(-2).join('/')}` :
-                    `/${state.image_path.split('/').slice(-2).join('/')}`,
-                extra_images: JSON.stringify(state.extra_images),
-                progress_images: JSON.stringify(state.progress_images),
-            });
 
-            logger.debug(`Edit Piece Response (Next Line):`);
-            logger.debug(response);
-
-            if (response) {
-                await fetch_pieces_from_api('updated');
-            } else {
-                logger.debug('Edit Piece - No Response - Setting error = true');
-                update_state({ loading: false, error: true });
-            }
-            return
-        } else {
+        if (state.new_piece_created) {
             logger.section({ message: 'Attempting To Create New Piece' });
             logger.debug(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${state.image_path}`);
             const response = await create_piece({
@@ -543,12 +510,45 @@ const Edit = (props) => {
             logger.debug(`Create Piece Response (Next Line):`);
             logger.debug(response);
 
-            if (response) {
-                await fetch_pieces_from_api('uploaded');
-            } else {
+            if (!response) {
                 update_state({ loading: false, updating: false, error: true });
+                return
             }
+            await fetch_pieces_from_api('uploaded');
+            return
         }
+
+        const response = await edit_details({
+            id: state.db_id,
+            title: state.title,
+            description: state.description,
+            piece_type: state.piece_type,
+            sold: state.sold,
+            price: state.price,
+            instagram: state.instagram,
+            width: state.width,
+            height: state.height,
+            real_width: state.real_width,
+            real_height: state.real_height,
+            theme: state.theme,
+            available: state.available,
+            framed: state.framed,
+            comments: state.comments,
+            image_path: '/' + state.image_path.split('/').slice(-2).join('/'),
+            extra_images: JSON.stringify(state.extra_images),
+            progress_images: JSON.stringify(state.progress_images),
+        });
+
+        logger.debug(`Edit Piece Response (Next Line):`);
+        logger.debug(response);
+
+        if (!response) {
+            logger.debug('Edit Piece - No Response - Setting error = true');
+            update_state({ loading: false, error: true });
+            return
+        }
+
+        await fetch_pieces_from_api('updated');
         return
     };
 

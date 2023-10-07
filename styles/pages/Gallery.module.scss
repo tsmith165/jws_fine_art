@@ -8,7 +8,7 @@
     position: absolute;
     height: calc(100vh - 100px) !important;
     width: 100vw;
-    background-color: $light;
+    background-color: $dark;
   }
 
   .gallery_container_open {
@@ -16,7 +16,7 @@
     top: 170px;
     height: calc(100% - 170px);
     width: 100vw;
-    background-color: $light;
+    background-color: $dark;
   }
 
   .gallery_main_container {
@@ -25,7 +25,7 @@
     width: 100vw;
     overflow-y: scroll;
     overflow-x: hidden;
-    background-color: $light
+    background-color: $dark;
   }
 
   .gallery_inner_container {
@@ -42,7 +42,7 @@
     position: absolute;
     min-height: calc(100vh - 100px) !important;
     width: 100vw;
-    background-color: $light;
+    background-color: $dark;
   }
 
   .gallery_main_container {
@@ -52,7 +52,7 @@
     width: 100vw;
     overflow-y: scroll;
     overflow-x: hidden;
-    background-color: $light
+    background-color: $dark;
   }
 
   .gallery_inner_container {
@@ -71,7 +71,7 @@
   position: absolute;
   padding: 5px;
   border-radius: 3px;
-  background-color: $secondary;
+  background-color: $tertiary;
 }
 
 .piece_secondary_container {

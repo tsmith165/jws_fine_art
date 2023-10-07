@@ -1,49 +1,63 @@
-import logger from '@/lib/logger';
+'use client'
 
-import React from 'react';
-import { withRouter } from 'next/router';
+import logger from '@/lib/logger';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 
 import PageLayout from '@/components/layout/PageLayout';
 import styles from '@/styles/pages/Admin.module.scss';
-
 import { fetch_pieces, get_analytics_data } from '@/lib/api_calls';
 
-class Admin extends React.Component {
-    constructor(props) {
-        super(props);
+function Admin(props) {
+    const { isLoaded, isSignedIn, user } = useUser();
 
-        this.page_title = 'Admin Dashboard';
+    const router = useRouter();
+    const page_title = 'Admin Dashboard';
+    const [analyticsData, setAnalyticsData] = useState(null);
 
-        // Add a state property to store the analytics data
-        this.state = {
-            analyticsData: null,
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await get_analytics_data();
+            logger.debug(`Reporting API response: ${JSON.stringify(response)}`);
+            setAnalyticsData(response);
         };
-    }
 
-    async componentDidMount() {
-        // Fetch the analytics data and store it in the component's state
-        const response = await get_analytics_data();
-        logger.debug(`Reporting API response: ${JSON.stringify(response)}`);
-        this.setState({ analyticsData: response });
-    }
+        if (!isLoaded) {
+            return;
+        }
+        if (!isSignedIn) {
+            return;
+        }
+        if (!user) {
+            return;
+        }
+        if (!user.publicMetadata) {
+            return;
+        }
+        if (!user.publicMetadata.role) {
+            return;
+        }
+        if (user.publicMetadata.role.toLowerCase() != 'admin') {
+            console.error('User is not an admin.  Redirecting to home page...')
+            router.push('/');
+        }
 
-    renderAnalyticsData() {
-        if (this.state.analyticsData == null) {
+        fetchData();
+
+    }, [isLoaded, isSignedIn, user]);
+
+    const renderAnalyticsData = () => {
+        if (analyticsData == null) {
             return <p>Loading...</p>;
         }
 
-        const rows = this.state.analyticsData[0].rows;
+        const rows = analyticsData[0].rows;
 
         rows.sort((a, b) => {
             const dateA = a.dimensionValues[0].value;
             const dateB = b.dimensionValues[0].value;
-            if (dateA > dateB) {
-                return -1;
-            } else if (dateA < dateB) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return dateA > dateB ? -1 : dateA < dateB ? 1 : 0;
         });
 
         logger.debug(`Rendering analytics data rows`);
@@ -62,7 +76,6 @@ class Admin extends React.Component {
                 <tbody>
                     {rows.map((row, index) => {
                         const date = row.dimensionValues[0].value.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
-
                         return (
                             <tr key={index}>
                                 <td>{date}</td>
@@ -75,55 +88,13 @@ class Admin extends React.Component {
                 </tbody>
             </table>
         );
-    }
+    };
 
-    render() {
-        if (!this.props.isLoaded) {
-            return <></>;
-        }
-        if (!this.props.isSignedIn) {
-            this.props.router.push('/');
-        }
-        if (this.props.user == null) {
-            this.props.router.push('/');
-        }
-
-        const role = this.props.user.publicMetadata.role !== undefined ? this.props.user.publicMetadata.role : null;
-        logger.extra(`USER ROLE: ${role}`);
-
-        if (role !== 'ADMIN') {
-            this.props.router.push('/');
-        }
-
-        return (
-            <PageLayout page_title={this.page_title}>
-                <div className={styles.main_container}>
-                    <div className={styles.main_body}>
-                        <div className={styles.backup_panel}>
-                            <div className={styles.panel_header}>Data Backup</div>
-                            <div className={styles.panel_body}>
-                                <button className={styles.export_button} onClick={this.exportPiecesAsXLSX}>
-                                    Export Pieces as XLSX
-                                </button>
-                            </div>
-                        </div>
-                        <div className={styles.analytics_panel}>
-                            <div className={styles.panel_header}>Analytics Data</div>
-                            <div className={styles.panel_body}>
-                                {this.renderAnalyticsData()} {/* Render the analytics data */}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </PageLayout>
-        );
-    }
-
-    exportPiecesAsXLSX = async () => {
+    const exportPiecesAsXLSX = async () => {
         try {
             const response = await fetch_pieces('None', 'xlsx');
 
-            if (response == true) {
+            if (response) {
                 logger.info('Successfully exported pieces as XLSX');
             } else {
                 logger.error('Failed to export pieces:', response.statusText);
@@ -132,6 +103,36 @@ class Admin extends React.Component {
             logger.error('Failed to export pieces:', error);
         }
     };
+
+    if (!isLoaded) {
+        return <div>Loading...</div>
+    } else if (!isSignedIn) {
+        return <div>Not signed in</div>
+    } else if (!user || user.publicMetadata?.role?.toLowerCase() != 'admin') {
+        console.log(`Current user is not admin - Role: ${user.publicMetadata?.role?.toLowerCase() || 'none'}`)
+        return <div>User not admin</div>
+    }
+
+    return (
+        <div className={styles.main_container}>
+            <div className={styles.main_body}>
+                <div className={styles.backup_panel}>
+                    <div className={styles.panel_header}>Data Backup</div>
+                    <div className={styles.panel_body}>
+                        <button className={styles.export_button} onClick={exportPiecesAsXLSX}>
+                            Export Pieces as XLSX
+                        </button>
+                    </div>
+                </div>
+                <div className={styles.analytics_panel}>
+                    <div className={styles.panel_header}>Analytics Data</div>
+                    <div className={styles.panel_body}>
+                        {renderAnalyticsData()}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
-export default withRouter(Admin);
+export default Admin;
