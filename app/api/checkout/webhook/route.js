@@ -2,12 +2,6 @@ import { buffer } from "micro";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
-
 export async function POST(req) {
     console.log("Received Stripe Web Hook API Request");
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
