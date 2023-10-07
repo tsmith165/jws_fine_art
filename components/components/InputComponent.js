@@ -10,7 +10,16 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import PlacesAutocomplete from 'react-places-autocomplete';
 
-import Select from 'react-select';
+import Select, { components } from 'react-select';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
+const DropdownIndicator = (props) => {
+    return (
+        <components.DropdownIndicator {...props}>
+            <ArrowDropDownIcon style={{fill: '#333739'}}/> 
+        </components.DropdownIndicator>
+    );
+};
 
 // INPUT TYPES
 const INPUT_TYPE_MASTER = {
@@ -107,15 +116,18 @@ class InputComponent extends React.Component {
                             onChange={(new_selected_options) =>
                                 this.props.update_field_value(id, new_selected_options)
                             }
+                            components={{
+                                DropdownIndicator
+                            }}
                             styles={{
                                 control: (baseStyles, state) => ({
                                     ...baseStyles,
                                     borderColor: '',
-                                    backgroundColor: '#45544d',
+                                    backgroundColor: '#365349',
                                 }),
                                 singleValue: (provided, state) => ({
                                     ...provided,
-                                    color: '#9fa090',
+                                    color: '#333739',
                                 }),
                                 option: (provided, state) => ({
                                     ...provided,
@@ -145,19 +157,22 @@ class InputComponent extends React.Component {
                             onChange={(new_selected_options) =>
                                 this.props.handle_multi_select_change(new_selected_options)
                             }
+                            components={{
+                                DropdownIndicator
+                            }}
                             styles={{
                                 control: (baseStyles, state) => ({
                                     ...baseStyles,
                                     borderColor: '',
-                                    backgroundColor: '#45544d',
+                                    backgroundColor: '#365349',
                                 }),
                                 multiValue: (styles) => ({
                                     ...styles,
-                                    backgroundColor: '#9fa090',
+                                    backgroundColor: '#54786D',
                                 }),
                                 option: (provided, state) => ({
                                     ...provided,
-                                    color: '#30332E',
+                                    color: '#616C63',
                                 }),
                             }}
                             options={react_select_options}
@@ -255,7 +270,7 @@ class InputComponent extends React.Component {
                                     control: (baseStyles, state) => ({
                                         ...baseStyles,
                                         borderColor: "",
-                                        backgroundColor: "#45544d",
+                                        backgroundColor: "#365349",
                                     }),
                                 }}
                                 options={this.props.file_types}

@@ -15,7 +15,9 @@ const Manage = (props) => {
 
     const refreshPieceList = async () => {
         const updatedList = await fetch_pieces();
-        setPieceList(updatedList);
+        const reversedList = updatedList.reverse(); // Reversing the order of the list to match initial load order
+        console.log("Updated Piece List (Reversed Order): ", reversedList);
+        setPieceList(reversedList);
     };
 
     console.log(`Clerk User Loaded: ${isLoaded} | Signed In: ${isSignedIn} | User Role: ${user && user.publicMetadata?.role?.toLowerCase() || 'none'}`);

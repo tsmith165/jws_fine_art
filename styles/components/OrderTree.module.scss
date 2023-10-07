@@ -51,6 +51,10 @@
                 margin-top: auto; 
                 margin-bottom: auto; 
                 font-size: 2rem !important; 
+                
+                > b {
+                    color: $dark !important;
+                }
             }
             .order_description_container { 
                 display: flex; 
@@ -62,6 +66,10 @@
                 padding-right: 15px; 
                 margin-top: auto; 
                 margin-bottom: auto; 
+                
+                > div > b, b {
+                    color: $dark !important;
+                }
             }
             .list_item_desc_container { 
                 display: inline-block;  

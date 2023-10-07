@@ -81,14 +81,8 @@ function Slideshow(props) {
     console.log("Initial image array: ", image_array)
 
     const base_speed = 80
-    const default_ratio = (DEFAULT_MAX - base_speed) / (DEFAULT_MAX + DEFAULT_MIN)
-    // logger.debug(`Default ratio: ${default_ratio}`)
-
-    const ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN)
-    // logger.debug(`Ratio range: ${ratio_range}`)
-
-    const ratioed_value = default_ratio * ratio_range
-    // logger.debug(`Ratioed Speed: ${ratioed_value}`)
+    const ratioed_value = calculateRatioedValue(base_speed);
+    logger.debug(`Ratioed Speed: ${ratioed_value}`)
 
     // Initial State
     const [state, setState] = useState({
@@ -138,31 +132,43 @@ function Slideshow(props) {
             }, state.speed);
         }
 
-        return () => {
-            // componentWillUnmount (cleanup)
-            if (timer_ref.current) {
-                clearTimeout(timer_ref.current);
-            }
-        };
+        return () => clearRunningTimeout();
     }, []); // Empty dependency list means this useEffect runs once after initial render
 
-    // Helper Functions (converted from class methods)
-    const change_speed = (value) => {
-        logger.debug(`Changing speed with value ${value}`)
-
-        var default_ratio = (DEFAULT_MAX - value) / (DEFAULT_MAX - DEFAULT_MIN)
-        logger.debug(`Default ratio: ${default_ratio}`)
-
-        var ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN)
-        logger.debug(`Ratio range: ${ratio_range}`)
-
-        var ratioed_value = default_ratio * ratio_range
-        logger.debug(`Ratioed Speed: ${ratioed_value}`)
-
-        setState({ base_speed: value, speed: ratioed_value * 10 })
+    // Clear the running timeout
+    const clearRunningTimeout = () => {
+        if (timer_ref.current) {
+            clearTimeout(timer_ref.current);
+            timer_ref.current = null;
+        }
     };
 
-    const update_current_piece = async (piece_list, o_id, set_running = false) => {
+    const change_speed = (value) => {
+        logger.debug(`Changing speed with value ${value}`);
+
+        var default_ratio = (DEFAULT_MAX - value) / (DEFAULT_MAX - DEFAULT_MIN);
+        logger.debug(`Default ratio: ${default_ratio}`);
+
+        var ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN);
+        logger.debug(`Ratio range: ${ratio_range}`);
+
+        var newSpeed = default_ratio * ratio_range * 10;
+        logger.debug(`Ratioed Speed: ${newSpeed}`);
+
+        setState({ ...state, base_speed: value, speed: newSpeed });
+
+        clearRunningTimeout();
+        if (state.running) {
+            timer_ref.current = setTimeout(() => {
+                update_current_piece(state.piece_list, state.next_oid, false, newSpeed);
+            }, newSpeed);
+        }
+    };
+
+
+    const update_current_piece = async (piece_list, o_id, set_running = false, speed = state.speed) => {
+        clearRunningTimeout(); // Clear the existing timeout before setting a new one
+
         console.log("Updating to next piece with o_id: ", o_id)
 
         const piece_list_length = piece_list.length;
@@ -201,6 +207,7 @@ function Slideshow(props) {
         // logger.debug(piece_details)
 
         setState({
+            ...state,
             loading: false,
             url_o_id: o_id,
             piece_list: piece_list,
@@ -217,8 +224,8 @@ function Slideshow(props) {
 
         if (state.running || set_running == true) {
             timer_ref.current = setTimeout(() => {
-                update_current_piece(piece_list, next_oid);
-            }, state.speed);
+                update_current_piece(piece_list, next_oid, false, speed);
+            }, speed);
         }
     };
 
@@ -252,6 +259,8 @@ function Slideshow(props) {
         return [-1, null]
     }
 
+    console.log('Using speed: ', state.speed);
+
     // Rendering
     return (
         <div className={styles.slideshow_body}>
@@ -261,7 +270,7 @@ function Slideshow(props) {
                     (state.running == false) ? (
                         update_current_piece(state.piece_list, state.next_oid, true)
                     ) : (
-                        setState({ running: false })
+                        setState({ ...state, running: false })
                     )
                 }
             }}>
@@ -270,7 +279,7 @@ function Slideshow(props) {
             <div className={styles.slideshow_menu_container}>
                 <div className={styles.slideshow_menu_left_container}>
                     {state.running == true ? (
-                        <Pause className={`${styles.slideshow_icon}`} onClick={(e) => { e.preventDefault(); setState({ running: false }) }} />
+                        <Pause className={`${styles.slideshow_icon}`} onClick={(e) => { e.preventDefault(); setState({ ...state, running: false }) }} />
                     ) : (
                         <PlayArrow className={`${styles.slideshow_icon}`} onClick={(e) => {
                             e.preventDefault();
@@ -282,7 +291,7 @@ function Slideshow(props) {
 
                     <ArrowForwardIosRoundedIcon className={`${styles.slideshow_icon}`} onClick={(e) => { e.preventDefault(); update_current_piece(state.piece_list, state.next_oid) }} />
 
-                    <SpeedIcon className={`${styles.slideshow_icon}`} onClick={(e) => { e.preventDefault(); setState({ speed_open: !state.speed_open }) }} />
+                    <SpeedIcon className={`${styles.slideshow_icon}`} onClick={(e) => { e.preventDefault(); setState({ ...state, speed_open: !state.speed_open }) }} />
                 </div>
                 <div className={styles.slideshow_menu_title_container}>
                     <div className={styles.slideshow_menu_title}>
@@ -300,7 +309,8 @@ function Slideshow(props) {
                         defaultValue={state.base_speed}
                         className={styles.speed_slider}
                         id="speed_slider"
-                        onChange={(e) => { e.preventDefault(); change_speed(e.target.value) }}
+                        onChange={(e) => setState({ ...state, base_speed: e.target.value, speed: calculateRatioedValue(e.target.value) * 10 })}
+                        onMouseUp={(e) => change_speed(e.target.value)} // Update speed when the knob is released
                     />
                     <div className={styles.speed_text}>
                         {`${(state.speed / 1000)}s`}
@@ -311,6 +321,19 @@ function Slideshow(props) {
             )}
         </div>
     )
+}
+
+function calculateRatioedValue(baseSpeed) {
+    const default_ratio = (DEFAULT_MAX - baseSpeed) / (DEFAULT_MAX + DEFAULT_MIN);
+    // logger.debug(`Default ratio: ${default_ratio}`);
+
+    const ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN);
+    // logger.debug(`Ratio range: ${ratio_range}`);
+
+    const ratioed_value = default_ratio * ratio_range;
+    logger.debug(`Ratioed Speed: ${ratioed_value}`);
+
+    return ratioed_value;
 }
 
 export default Slideshow;

@@ -1,40 +1,26 @@
 import { prisma } from '@/lib/prisma';
-import { clerkClient, getAuth } from '@clerk/nextjs/server';
+import { authenticate } from "@/lib/authMiddleware";
 
-export default async function (req, res) {
-    if (req.method !== 'POST') {
-        console.log('Request.method != POST.  Status: 402');
-        res.status(402);
+export async function POST(req) {
+    console.log(`Authenticating...`);
+
+    const isAuthenticated = await authenticate(req);
+
+    // Return early if not authenticated.
+    if (!isAuthenticated) {
+        return Response.json({ error: "Authentication failed" }, { status: 401 });
     }
 
-    const passed_json = req.body;
+    console.log(`Authentication Successful.`);
 
-    console.log(`Passed JSON (Next Line):`);
-    console.log(passed_json);
+    const passed_json = await req.json();
 
-    const { userId } = getAuth(req);
-    const user = userId ? await clerkClient.users.getUser(userId) : null;
-
-    if (!user) {
-        console.log('No user token found.  Status: 401');
-        res.status(401);
-    }
-    if (!('publicMetadata' in user)) {
-        console.log('User does not have publicMetadata.  Status: 403 - User (Next Line):');
-        console.log(user);
-        res.status(403);
-    }
-    if (!('role' in user.publicMetadata)) {
-        console.log(`User does not have a role.  Status: 403 - User metadata: ${user.publicMetadata}`);
-        console.log(user);
-        res.status(403);
-    }
-    if (user.publicMetadata.role !== 'ADMIN') {
-        console.log(`User does not have role admin.  Status: 403 - User role: ${user.publicMetadata.role}`);
-        res.status(403);
+    if (passed_json === undefined) {
+        console.error(`Request body is undefined`);
+        return Response.json({ error: "Request body is undefined" }, { status: 400 });
     }
 
-    console.log(`Auth Successful.  Attempting to CREATE NEW PIECE...`);
+    console.log(`Attempting to CREATE NEW PIECE...`);
 
     const last_oid_json = await prisma.$queryRaw`select max(o_id) from "Piece"`;
     console.log(`LAST OID (Next Line):`);
@@ -42,12 +28,6 @@ export default async function (req, res) {
 
     const last_oid = parseInt(last_oid_json[0]['max']);
     const next_oid = last_oid + 1;
-
-    const last_id_json = await prisma.$queryRaw`select max(id) from "Piece"`;
-    console.log(`LAST ID (Next Line):`);
-    console.log(last_id_json);
-
-    const last_id = parseInt(last_oid_json[0]['max']);
     const next_id = last_oid + 1;
 
     passed_json['id'] = next_id;
@@ -61,8 +41,8 @@ export default async function (req, res) {
     console.log(`Final JSON (Next Line):`);
     console.log(passed_json);
 
-    const passed_json_description = passed_json.description === undefined ? '' : passed_json.description.includes('\n') ? passed_json.description.split('\n').join('<br>') : ''
-    
+    const passed_json_description = passed_json.description === undefined ? '' : passed_json.description.includes('\n') ? passed_json.description.split('\n').join('<br>') : '';
+
     const create_output = await prisma.piece.create({
         data: {
             id: next_id,
@@ -87,7 +67,5 @@ export default async function (req, res) {
 
     console.log(`Create Output (Next Line):`);
     console.log(create_output);
-    res.json(create_output);
-
-    res.end();
+    return Response.json(create_output);
 }
