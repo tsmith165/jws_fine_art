@@ -43,7 +43,7 @@ const Gallery = (props) => {
     }, []);
 
     useEffect(() => {
-        console.log("Checking theme change..."); 
+        console.log("Checking theme change...");
         if (state.window_width && state.window_height) {
             createGallery(state.piece_list, appState.theme);
         }
@@ -69,37 +69,37 @@ const Gallery = (props) => {
         var gallery_pieces = [];
         var column_bottom_list = [];
         var lowest_height = 0;
-        
+
         // Calculate piece width and max columns based on window width
         var piece_width = (state.window_width < MOBILE_SCREEN_MAX_WIDTH) ? (state.window_width - 40 - 60 - 20) / 2 : DEFAULT_PIECE_WIDTH;
         var max_columns = Math.trunc(state.window_width / (piece_width + (BORDER_MARGIN_WIDTH * 2) + INNER_MARGIN_WIDTH));
 
         console.log(`PIECE WIDTH: ${piece_width} | MAX COLUMNS: ${max_columns}`)
-        
+
         // Calculate width of one row of images
         var gallery_width = ((piece_width + (BORDER_MARGIN_WIDTH * 2)) * max_columns) + (10 * max_columns);
         if (max_columns < 3) gallery_width -= 20;
-        
+
         var leftover_width = state.window_width - gallery_width; // Leftover width for margins
         var margin = leftover_width / 2; // Margin width for left and right
-        
+
         var [cur_x, cur_y] = [margin, INNER_MARGIN_WIDTH]; // Initial X / Y Coords
         var [row, col] = [0, 0]; // Initial Row / Col
-        
+
         var row_starting_height = INNER_MARGIN_WIDTH;
         var skip_col = false;
 
         // logger.debug(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
         // logger.debug(piece_list)
-        
+
         var i = 0; var real_i = 0;
         while (i < piece_list_length) {
-            var current_piece_json =  piece_list[i];
+            var current_piece_json = piece_list[i];
             // logger.debug(current_piece_json)
-            
-            var piece_theme = (current_piece_json['theme'] !== undefined ) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
-            var piece_sold = (current_piece_json['sold'] !== undefined ) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
-            var piece_available = (current_piece_json['available'] !== undefined ) ? ((current_piece_json['available'] != null) ? current_piece_json['available'] : false) : false;
+
+            var piece_theme = (current_piece_json['theme'] !== undefined) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
+            var piece_sold = (current_piece_json['sold'] !== undefined) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
+            var piece_available = (current_piece_json['available'] !== undefined) ? ((current_piece_json['available'] != null) ? current_piece_json['available'] : false) : false;
             // logger.extra(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
             if (theme != 'None' && theme != undefined && theme != null) {
                 if (theme == 'Available') {
@@ -118,25 +118,25 @@ const Gallery = (props) => {
                     }
                 }
             }
-    
-            var o_id        = (current_piece_json['o_id'] !== undefined) ? current_piece_json['o_id'] : 'None';
-            var class_name  = (current_piece_json['class_name'] !== undefined) ? current_piece_json['class_name'] : 'None';
-            var image_path  = (current_piece_json['image_path'] !== undefined) ? current_piece_json['image_path'] : 'None';
-            var title       = (current_piece_json['title'] !== undefined) ? current_piece_json['title'] : 'None';
+
+            var o_id = (current_piece_json['o_id'] !== undefined) ? current_piece_json['o_id'] : 'None';
+            var class_name = (current_piece_json['class_name'] !== undefined) ? current_piece_json['class_name'] : 'None';
+            var image_path = (current_piece_json['image_path'] !== undefined) ? current_piece_json['image_path'] : 'None';
+            var title = (current_piece_json['title'] !== undefined) ? current_piece_json['title'] : 'None';
             var description = (current_piece_json['description'] !== undefined) ? current_piece_json['description'] : 'None';
-            var sold        = (current_piece_json['sold'] !== undefined) ? current_piece_json['sold'] : 'None';
-            var available   = (current_piece_json['available'] !== undefined) ? current_piece_json['available'] : 'None';
+            var sold = (current_piece_json['sold'] !== undefined) ? current_piece_json['sold'] : 'None';
+            var available = (current_piece_json['available'] !== undefined) ? current_piece_json['available'] : 'None';
             var [width, height] = (current_piece_json['width'] !== undefined && current_piece_json['height'] !== undefined) ? [current_piece_json['width'], current_piece_json['height']] : 'None';
 
             var [scaled_width, scaled_height] = [piece_width, height];
             scaled_height = (piece_width / width) * height;
-    
+
             real_i = (row * max_columns) + col;
             var index = real_i % max_columns;
-    
+
             if (row > 0) cur_y = column_bottom_list[index];
-            else         column_bottom_list.push(INNER_MARGIN_WIDTH);
-    
+            else column_bottom_list.push(INNER_MARGIN_WIDTH);
+
             if (col == 0) {
                 row_starting_height = column_bottom_list[index] + INNER_MARGIN_WIDTH;
                 skip_col = (row_starting_height > column_bottom_list[index + 1] + INNER_MARGIN_WIDTH) ? true : false;
@@ -144,7 +144,7 @@ const Gallery = (props) => {
                 // Y from last row intercepts current row.  Skipping column...
                 skip_col = (cur_y > row_starting_height) ? true : false
             }
-    
+
             if (skip_col == true) { // Skipping column since it would collide with previous row
                 if (col < max_columns - 1) { // set next x coord at end of current piece
                     col += 1;
@@ -156,22 +156,22 @@ const Gallery = (props) => {
             }
             else if (skip_col == false) { // Generate dimensions and create Piece component
                 column_bottom_list[index] = column_bottom_list[index] + scaled_height + INNER_MARGIN_WIDTH; // Current bottom
-    
+
                 var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
-    
+
                 gallery_pieces.push(
                     <Piece key={i} id={`piece-${i}`} o_id={o_id}
-                        className={class_name} 
+                        className={class_name}
                         image_path={image_path}
                         dimensions={dimensions}
-                        title={title} 
+                        title={title}
                         description={description}
                         sold={sold}
                         available={available}
                     />
                 );
-                
-                if ( col < max_columns - 1 ) { // set next x coord at end of current piece
+
+                if (col < max_columns - 1) { // set next x coord at end of current piece
                     cur_x += scaled_width + INNER_MARGIN_WIDTH;
                     col += 1;
                 } else { // Reset row / col / cur_x / cur_y to move to next row
@@ -204,15 +204,15 @@ const Gallery = (props) => {
 
     return (
         <div>
-            <div className={`${styles.fade_in_overlay} ${state.fade_in_visible ?  '' : styles.visible}`}></div>
-            <div className={ (state.window_width !== undefined && state.window_width < 768 && appState.filter_menu_open == true) ? 
-                ( `${styles.gallery_container} ${styles.gallery_container_open}` ) : ( styles.gallery_container  ) }
+            <div className={`${styles.fade_in_overlay} ${state.fade_in_visible ? '' : styles.visible}`}></div>
+            <div className={(state.window_width !== undefined && state.window_width < 768 && appState.filter_menu_open == true) ?
+                (`${styles.gallery_container} ${styles.gallery_container_open}`) : (styles.gallery_container)}
             >
                 <div className={styles.gallery_main_container}>
-                    <div 
-                        className={styles.gallery_inner_container} 
+                    <div
+                        className={styles.gallery_inner_container}
                         onClick={(e) => {
-                            if ( appState.filter_menu_open == true && state.window_width < 768) {
+                            if (appState.filter_menu_open == true && state.window_width < 768) {
                                 setAppState({ ...appState, filter_menu_open: false });
                             }
                         }}

@@ -7,7 +7,7 @@ export const metadata = {
 }
 
 import PageLayout from '@/components/layout/PageLayout';
-import Profile from './profile';
+import Profile from '@/components/pages/profile/profile';
 
 export default async function Page(props) {
   return (

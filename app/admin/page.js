@@ -6,8 +6,8 @@ export const metadata = {
   },
 }
 
-import PageLayout from '../../components/layout/PageLayout';
-import Admin from './admin';
+import PageLayout from '@/components/layout/PageLayout';
+import Admin from '@/components/pages/admin/admin';
 
 export default async function Page(props) {
   return (

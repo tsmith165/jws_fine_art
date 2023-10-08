@@ -7,7 +7,7 @@ export const metadata = {
 }
 
 import PageLayout from '@/components/layout/PageLayout';
-import Socials from './Socials';
+import Socials from '@/components/pages/socials/Socials';
 
 export default async function Page(props) {
   return (
