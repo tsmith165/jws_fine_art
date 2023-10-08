@@ -41,7 +41,7 @@
     align-items: center;
     justify-content: center;
     padding: 5px 10px;
-    background-color: $secondary;
+    background-color: $dark;
     border-radius: 5px 0px 0px 5px;
     font-weight: 600;
 }
@@ -52,16 +52,20 @@
 
 .input_textbox {
     height: 100%;
-    color: $light;
+    color: $dark;
     background-color: $primary;
     border-radius: 0px 5px 5px 0px;
     font-size: 14px;
     font-weight: bold;
     border: none !important;
+
+    &::placeholder {
+        color: $medium; 
+    }
 }
 
 .input_select {
-    color: $light;
+    color: $dark;
     background-color: $primary;
     border-radius: 0px 5px 5px 0px;
     border: none !important;
@@ -72,7 +76,7 @@
 
 .input_multi_select {
     height: 100%;
-    color: $light;
+    color: $dark;
     background-color: $primary;
     border-radius: 0px 5px 5px 0px;
     border: none;
@@ -82,13 +86,17 @@
 
 .input_textarea {
     height: 100%;
-    color: $light;
+    color: $dark;
     background-color: $primary;
     border-radius: 0px 5px 5px 0px;
     font-size: 14px;
     font-weight: bold;
     border: none !important;
     padding: 6px 10px; // Customize as per your need
+
+    &::placeholder {
+        color: $medium; 
+    }
 }
 
 .autocomplete_container {
@@ -104,12 +112,16 @@
     width: 70%;
     height: 100%;
     padding: 7px 10px;
-    color: $light;
+    color: $dark;
     background-color: $primary;
     border-radius: 0px 5px 5px 0px;
     border: none;
     padding-left: 5px;
     font-weight: bold;
+
+    &::placeholder {
+        color: $medium; 
+    }
 }
 
 .input_autocomplete:-webkit-autofill {
@@ -124,8 +136,8 @@
     margin-left: calc(30% + 5px);
 }
 .input_suggestion {
-    background-color: $secondary !important;
-    color: $light;
+    background-color: $primary !important;
+    color: $dark;
     padding: 10px 10px 0px 10px;
 }
 .input_suggestion:last-of-type {
@@ -142,7 +154,7 @@
     gap: 0;
     border-width: 3px 3px 3px 0px; /* top, right, bottom, left */
     border-style: solid;
-    border-color: $secondary;
+    border-color: $dark;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
 }
@@ -152,8 +164,8 @@
 }
 
 .input_file_select_button {
-    background-color: $secondary !important;
-    color: $light !important;
+    background-color: $dark !important;
+    color: $primary !important;
     border: none;
     font-family: $lato_300;
     font-weight: 600;
@@ -170,15 +182,15 @@
     flex-grow: 1;
 
     &:hover {
-        background-color: $light !important;
-        color: $dark !important;
+        background-color: $medium !important;
+        color: $primary !important;
     }
 }
 
 .input_file_select {
     background-color: $primary;
     border: none;
-    color: $light;
+    color: $dark;
     font-family: $lato_300;
     padding: 0.3rem;
     font-size: 14px;
@@ -191,7 +203,7 @@
 .input_file_path {
     background-color: $primary;
     border: none;
-    color: $light;
+    color: $dark !important;
     font-family: $lato_300;
     padding: 0.3rem;
     font-size: 14px;
@@ -294,7 +306,7 @@
 }
 
 .input_label {
-    color: $light;
+    color: $primary;
 }
 
 .split_left {

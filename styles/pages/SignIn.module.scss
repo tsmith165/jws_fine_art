@@ -8,7 +8,6 @@
     width: 100vw; 
     min-height: calc(100% - 100px); 
     height: calc(100% - 100px); 
-    background-color: $light; 
 }
     .sign_in_container { 
         position: absolute; 
@@ -18,7 +17,7 @@
         bottom: 0; 
         width: 400px; 
         height: fit-content; 
-        background-color: $primary; 
+        background-color: $primary !important; 
         margin: auto; 
         border-radius: 5px; 
     }

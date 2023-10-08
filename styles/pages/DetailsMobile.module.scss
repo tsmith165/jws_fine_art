@@ -42,8 +42,8 @@
     line-height: 20px;
     font-size: 20px;
     font-weight: bold;
-    background-color: $dark;
-    color: $light;
+    background-color: $primary;
+    color: $dark;
     padding: 10px;
     border-radius: 5px 5px 0px 0px;
 }
@@ -54,8 +54,12 @@
     
     border-radius: 0px 0px 5px 5px;
 
-    .full_gallery_container {
-        border-radius: 5px;
+    .full_gallery_padding_container {
+
+        .full_gallery_container {
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
     }
 } 
 
@@ -69,7 +73,7 @@
     height: 120px !important;
     min-height: 120px !important;
     max-height: 120px !important;
-    background-color: $secondary;
+    background-color: $light;
 
     .extra_images_gallery_container {
         min-width: 110px !important;
@@ -86,10 +90,6 @@
             overflow: hidden;
             margin-right: 5px;
 
-            .selected_gallery_image {
-                border-radius: 5px;
-            }
-
             .extra_images_gallery_image {
                 width: 100px !important;
                 height: 100px !important;
@@ -100,7 +100,8 @@
 }
 
 .selected_gallery_image {
-    background-color: $dark !important;
+    border-radius: 5px;
+    background-color: $tertiary !important;
 }
 
 .details_container {
@@ -110,14 +111,13 @@
     display: flex;
     flex-wrap: wrap;
     overflow-y: scroll;
-    background-color: $light;
+    background-color: $medium;
 
     .details_form_container {
         display: flex;
         flex-direction: column;
         width: 100%;
         height: max-content !important;
-        background-color: $light;
     
         .details_navigation_container {
             width: 100%;
@@ -141,17 +141,12 @@
                     flex-direction: row;
                     border-radius: 5px;
                     border: none;
-                    background-color: $primary;
+                    background-color: $dark;
                     padding: 0;
         
-                    &:hover {
-                        background-color: $secondary;
-                        color: $light !important;
-                        fill: $light !important;
-                    }
                     &:hover > .price_text {
-                        background-color: $dark;
-                        color: $light !important;
+                        background-color: $secondary;
+                        color: $primary;
                     }
         
                     .price_label_wrapper {
@@ -168,8 +163,8 @@
                     .price_text {
                         font-size: 1.5rem;
                         line-height: 40px;
-                        color: $light;
-                        background-color: $secondary;
+                        color: $dark;
+                        background-color: $primary;
                         border-radius: 0px 5px 5px 0px;
                         padding: 5px 10px;
                     }
@@ -186,13 +181,11 @@
                     display: flex;
                     flex-direction: row;
                     width: fit-content;
-                    color: $light;
-                    background-color: $primary;
+                    background-color: $dark;
                     border-radius: 5px;
                 
                     &:hover {
-                        background-color: $secondary;
-                        color: $light;
+                        background-color: $primary;
                     }
                 
                     .instagram_image_container {
@@ -217,15 +210,13 @@
                     font-size: 20px;
                     border-radius: 5px;
                     padding: 0px 10px;
-                    background-color: $primary;
-                    border: 1px solid $secondary;
-                    color: $light;
+                    background-color: $dark;
+                    color: $primary;
                     font-weight: 600;
                 
                     &:hover {
                         background-color: $secondary;
-                        border: 1px solid $secondary;
-                        color: $light;
+                        color: $dark;
                     }
                 }
             }
