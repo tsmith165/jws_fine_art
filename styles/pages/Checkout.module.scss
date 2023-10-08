@@ -14,13 +14,13 @@
     justify-content: center;
     width: 100%;
     height: 70px;
-    background-color: $primary;
+    background-color: $light;
     padding: 0px;
 
     .title {
         width: calc(100% - 80px);
         margin: auto;
-        color: $light;
+        color: $dark;
         font-size: 1.4em;
         line-height: 1.2em;
         text-align: center;
@@ -40,19 +40,9 @@
         flex-direction: row;
         border-radius: 5px;
         border: none;
-        background-color: $primary;
+        background-color: $dark;
         padding: 0;
         margin-right: 15px;
-
-        &:hover {
-            background-color: $secondary;
-            color: $light !important;
-            fill: $light !important;
-        }
-        &:hover > .price_text {
-            background-color: $dark;
-            color: $light !important;
-        }
 
         .price_label_wrapper {
             display: flex;
@@ -68,10 +58,15 @@
         .price_text {
             font-size: 1.5rem;
             line-height: 40px;
-            color: $light;
-            background-color: $secondary;
+            color: $dark;
+            background-color: $primary;
             border-radius: 0px 5px 5px 0px;
             padding: 5px 10px;
+
+            &:hover {
+                background-color: $secondary;
+                color: $primary !important;
+            }
         }
     }
 

@@ -21,9 +21,9 @@
         padding: 10px;
     }
 
-
     .extra_image_table {
         border-radius: 5px;
+        color: $dark;
     
         .image_row {
             display: flex;
@@ -31,7 +31,6 @@
             align-items: center;
             padding: 5px 10px;
             background-color: $secondary;
-            color: $light;
           
             &:last-of-type {
                 border-bottom-left-radius: 5px;
@@ -41,6 +40,10 @@
             &:hover {
                 background-color: $primary;
                 color: $dark;
+
+                .image_filename {
+                    color: $dark;
+                }
     
                 .up_arrow,
                 .down_arrow,
@@ -62,7 +65,11 @@
         
         .image_filename {
             font-weight: bold;
-            color: $light
+            color: $primary;
+        }
+
+        .image_dimensions {
+            color: $dark;
         }
     
         .button_container {

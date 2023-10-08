@@ -1,0 +1,109 @@
+import logger from "@/lib/logger";
+
+import React from 'react';
+
+import MenuOverlayButton from './MenuOverlayButton';
+
+import styles from "@/styles/layout/MenuOverlay.module.scss"
+
+import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from "@/lib/menu_list.js"
+
+import AppContext from '@/contexts/AppContext';
+
+class MenuOverlay extends React.Component {
+    constructor(props, context) {
+        super(props);
+        
+        const { appState, setAppState } = context;
+
+        const using_menu = this.select_menu(appState.isLoaded, appState.isSignedIn, appState.user);
+    
+        for (var i = 0; i < using_menu.length; i++) {
+            let menu_item = using_menu[i];
+            let menu_class = menu_item[0];
+            let menu_name = menu_item[1];
+            let is_admin = menu_item[2];
+            let menu_slug = menu_item[3];
+            let is_indexed = menu_item[4];
+            
+            /* 
+            if ((is_indexed == true) && (!menu_slug.includes(this.props.most_recent_page_id))) {
+                using_menu[i][3] += this.props.most_recent_page_id
+            }
+            */
+        }
+    
+        logger.debug("Menu List (Next Line):");
+        logger.debug(using_menu);
+            
+        var menu_items = this.generate_menu(using_menu);
+
+        this.state = {
+            menu_items: menu_items
+        }
+
+        this.generate_menu = this.generate_menu.bind(this);
+        this.select_menu = this.select_menu.bind(this);
+    }
+
+    async componentDidMount() { }
+
+    generate_menu(menu_list) {
+        var menu_items = [];
+        for (var i=0; i < menu_list.length; i++) {
+    
+            let class_name = menu_list[i][0];
+            let menu_item_string = menu_list[i][1];
+            let url_endpoint = menu_list[i][3];
+    
+            logger.debug(`Creating Menu Item for: ${menu_item_string}`);
+    
+            const menu_item = <MenuOverlayButton key={i} id={i} menu_name={menu_item_string} url_endpoint={url_endpoint}/>;
+    
+            menu_items.push(menu_item);
+        }
+    
+        return menu_items
+    }
+    
+    select_menu(isLoaded, isSignedIn, user) {
+        if (!isLoaded) {
+            logger.debug('User not loaded - returning signed out menu...')
+            return SIGNED_OUT_MENU_LIST
+        }
+        if (!isSignedIn) {
+            logger.debug('User not signed in - returning signed out menu...')
+            return SIGNED_OUT_MENU_LIST
+        }
+        if (user == null) {
+            logger.debug('User equals null - returning signed out menu...')
+            return SIGNED_OUT_MENU_LIST
+        }
+        if (!'publicMetadata' in user) {
+            logger.debug('User does not contain publicMetadata - returning signed out menu...')
+            return SIGNED_OUT_MENU_LIST
+        }
+        if (!'role' in user.publicMetadata) {
+            logger.debug('User does not contain role - returning signed out menu...')
+            return SIGNED_OUT_MENU_LIST
+        }
+        if (user.publicMetadata.role === 'ADMIN') {
+            logger.debug('User has role Admin - returning signed in admin menu...')
+            return ADMIN_MENU_LIST
+        }
+        logger.debug('User does not have role Admin - returning signed in non-admin menu...')
+        return SIGNED_IN_MENU_LIST
+    }
+
+    render() {
+        return (
+            <div className={styles.menu_overlay_items_container}>
+                {this.state.menu_items}
+            </div>
+        )
+    }
+}
+
+MenuOverlay.contextType = AppContext;
+
+export default MenuOverlay;
