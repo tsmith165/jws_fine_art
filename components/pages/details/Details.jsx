@@ -9,13 +9,13 @@ import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import NextImage from 'next/image';
-import CustomNextImage from '@/components/components/CustomNextImage';
+import CustomNextImage from '@/components/wrappers/CustomNextImage';
 import Link from 'next/link';
 
 import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
 
-import PieceSpecificationTable from '@/components/components/PieceSpecificationTable';
-import TitleComponent from '@/app/details/[id]/TitleComponent';
+import PieceSpecificationTable from '@/components/pages/details/PieceSpecificationTable';
+import TitleComponent from '@/components/pages/details/TitleComponent';
 
 import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
 import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';

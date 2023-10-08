@@ -7,7 +7,7 @@ export const metadata = {
 }
 
 import PageLayout from '@/components/layout/PageLayout';
-import BiographyPage from './Biography';
+import BiographyPage from '@/components/pages/biography/Biography';
 
 import { prisma } from '@/lib/prisma';
 

@@ -7,8 +7,8 @@ export const metadata = {
 }
 
 import PROJECT_CONSTANTS from '@/lib/constants'
-import PageLayout from '../../components/layout/PageLayout';
-import Manage from './Manage';
+import PageLayout from '@/components/layout/PageLayout';
+import Manage from '@/components/pages/manage/Manage';
 
 import { prisma } from '@/lib/prisma';
 

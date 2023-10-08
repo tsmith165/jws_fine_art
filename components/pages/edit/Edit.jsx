@@ -8,11 +8,11 @@ import { useRouter, usePathname } from 'next/navigation';
 
 import { useUser } from "@clerk/nextjs";
 
-import CustomNextImage from '@/components/components/CustomNextImage';
+import CustomNextImage from '@/components/wrappers/CustomNextImage';
 
 import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url, updateExtraImagesOrder, deleteExtraImage } from '@/lib/api_calls';
 
-import InputComponent from '@/components/components/InputComponent';
+import InputComponent from '@/components/wrappers/InputComponent';
 
 import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
 import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import ScriptLoader from '@/components/components/ScriptLoader';
+import ScriptLoader from '@/components/wrappers/ScriptLoader';
 
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';

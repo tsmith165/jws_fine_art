@@ -13,7 +13,7 @@ import PROJECT_CONSTANTS from '@/lib/constants';
 import { create_pending_transaction, create_stripe_checkout_session } from '@/lib/api_calls';
 import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
 
-import InputComponent from '@/components/components/InputComponent';
+import InputComponent from '@/components/wrappers/InputComponent';
 
 import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
 import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';

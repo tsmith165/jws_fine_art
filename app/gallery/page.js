@@ -6,8 +6,8 @@ export const metadata = {
   },
 }
 
-import PageLayout from '../../components/layout/PageLayout';
-import Gallery from './Gallery'
+import PageLayout from '@/components/layout/PageLayout';
+import Gallery from '@/components/pages/gallery/Gallery'
 
 import { prisma } from '@/lib/prisma'
 

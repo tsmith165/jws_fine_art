@@ -7,8 +7,8 @@ export const metadata = {
 }
 
 import logger from '@/lib/logger';
-import PageLayout from '../../components/layout/PageLayout';
-import Orders from './orders';
+import PageLayout from '@/components/layout/PageLayout';
+import Orders from '@/components/pages/orders/orders';
 
 export default async function Page(props) {
   const {verified_list, most_recent_id} = await get_piece_list()
