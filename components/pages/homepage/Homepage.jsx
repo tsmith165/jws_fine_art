@@ -3,10 +3,8 @@
 'use client';
 
 import React, { useRef } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 
-import logger from '@/lib/logger';
 import styles from '@/styles/pages/Homepage.module.scss'; // Updated the path for renamed SCSS module
 
 import PROJECT_CONSTANTS from '@/lib/constants';
@@ -45,11 +43,11 @@ function Homepage() {
                     <div className={styles.contact_text_container}>
                         <a className={`${styles.contact_link} ${styles.link}`} href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
                     </div>
-                </div>
-                <div className={styles.enter_gallery_button_container}>
-                    <button className={styles.enter_gallery_button} onClick={handleGalleryEnter}>
-                        Enter Gallery
-                    </button>
+                    <div className={styles.enter_gallery_button_container}>
+                        <button className={styles.enter_gallery_button} onClick={handleGalleryEnter}>
+                            Enter Gallery
+                        </button>
+                    </div>
                 </div>
                 <div className={`${styles.overlay} hidden`} ref={overlayRef}></div>
             </div>
