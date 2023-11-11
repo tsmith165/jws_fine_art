@@ -7,7 +7,6 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
     const [appState, setAppState] = useState({
         pathname: '',
-        menu_open: false,
         filter_menu_open: false,
         theme: 'None',
     });
