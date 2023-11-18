@@ -10,9 +10,9 @@ import { useUser } from "@clerk/nextjs";
 
 import CustomNextImage from '@/components/wrappers/CustomNextImage';
 
-import { fetch_pieces, edit_details, create_piece, upload_image, get_upload_url, updateExtraImagesOrder, deleteExtraImage } from '@/lib/api_calls';
+import { fetch_pieces, updateExtraImagesOrder } from '@/lib/api_calls';
 
-import InputComponent from '@/components/wrappers/InputComponent';
+import EditForm from './EditForm';
 
 import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
 import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
@@ -34,13 +34,13 @@ const Edit = (props) => {
     const router = useRouter();
     const pathname = usePathname();
     const passed_o_id = pathname.split('/').slice(-1)[0];
-    logger.section({ message: `LOADING EDIT DETAILS PAGE - Piece ID: ${passed_o_id}` });
+    console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${passed_o_id}`);
 
     const piece_list = props.piece_list;
     const num_pieces = piece_list.length;
 
-    logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Piece List Type: ${typeof piece_list} | Data (Next Line):`);
-    logger.debug(piece_list);
+    console.log(`getServerSideProps piece_list length: ${num_pieces} | Piece List Type: ${typeof piece_list} | Data (Next Line):`);
+    console.log(piece_list);
 
     var piece_position = 0;
 
@@ -79,19 +79,19 @@ const Edit = (props) => {
 
     // Extra Images
     var extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images;
-    logger.debug(`Edit Page ${passed_o_id} Extra Images: "${extra_images}"`)
+    console.log(`Edit Page ${passed_o_id} Extra Images: "${extra_images}"`)
 
     extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
     extra_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(extra_images) ? [] : extra_images
-    logger.debug(`Using Extra Images: "${extra_images}"`)
+    console.log(`Using Extra Images: "${extra_images}"`)
 
     // Progress Images
     var progress_images = [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images;
-    logger.debug(`Edit Page ${passed_o_id} Progress Images: "${progress_images}"`)
+    console.log(`Edit Page ${passed_o_id} Progress Images: "${progress_images}"`)
 
     progress_images = typeof progress_images === 'string' ? JSON.parse(progress_images) : progress_images;
     progress_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(progress_images) ? [] : progress_images
-    logger.debug(`Using Progress Images: "${progress_images}"`)
+    console.log(`Using Progress Images: "${progress_images}"`)
     /* prettier-ignore-end */
 
 
@@ -165,13 +165,9 @@ const Edit = (props) => {
         selected_gallery_image: 0
     });
 
-    // Refrences
-    const file_input_ref = React.createRef(null);
-    const text_area_ref = React.createRef(null);
-
     useEffect(() => {
         const handleResize = () => {
-            logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+            console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             update_state({
                 window_width: window.innerWidth,
                 window_height: window.innerHeight
@@ -194,13 +190,11 @@ const Edit = (props) => {
             console.log('Component did mount num pieces: ', num_pieces)
             if (num_pieces > 0) {
                 current_image_array = create_image_array(state.piece_list, state.piece_position, state.staging_db_id, true);
-
                 extra_image_array = create_extra_image_array(state.extra_images, state.selected_gallery_image);
-
                 progress_image_array = create_extra_image_array(state.progress_images, state.selected_gallery_image);
             }
 
-            logger.debug(`Setting state with Piece Position: ${state.piece_position} | piece list length: ${num_pieces}`);
+            console.log(`Setting state with Piece Position: ${state.piece_position} | piece list length: ${num_pieces}`);
             update_state({
                 loading: false,
                 window_width: window.innerWidth,
@@ -219,7 +213,6 @@ const Edit = (props) => {
             });
         }
 
-
         window.addEventListener("resize", handleResize); // Add event listener
 
         // Cleanup function on unmount
@@ -233,37 +226,27 @@ const Edit = (props) => {
     }, [isLoaded, isSignedIn, user]);
 
     const update_state = (newState) => {
-        logger.debug(`Updating state with object (Next Line):`);
-        logger.debug(newState);
+        console.log(`Updating state with object (Next Line):`);
+        console.log(newState);
 
         setState(prevState => ({ ...prevState, ...newState }));
     };
 
 
     const update_state_with_callback = async (state, callback) => {
-        logger.debug(`Updating state with object (Next Line):`);
-        logger.debug(state);
+        console.log(`Updating state with object (Next Line):`);
+        console.log(state);
 
         setState(prevState => ({ ...prevState, ...state }), () => {
-            logger.debug(`Updated state (Next Line):`);
-            logger.debug(state);
+            console.log(`Updated state (Next Line):`);
+            console.log(state);
 
             callback();
         });
     };
 
-    const update_field_value = async (field, new_value_object) => {
-        const key_name = field.toLowerCase();
-        const new_value = typeof new_value_object === "string" ? new_value_object : new_value_object.value;
-        logger.debug(`Setting state on key: ${key_name} | Value: ${new_value}`);
-
-        setState(prevState => ({ ...prevState, [key_name]: new_value }), () => {
-            logger.debug(`Updated key value: ${state[key_name]}`)
-        });
-    };
-
     const fetch_pieces_from_api = async (type = 'none') => {
-        logger.section({ message: `Fetching Server List` });
+        console.log(`Fetching Piece List`);
         update_state({ loading: true, updated: false });
 
         const piece_list = await fetch_pieces();
@@ -299,7 +282,7 @@ const Edit = (props) => {
 
         const num_pieces = piece_list.length;
 
-        logger.section(`Updating Current Piece to o_id: ${o_id}`);
+        console.log(`Updating Current Piece to o_id: ${o_id}`);
         const piece_from_path_o_id = await get_piece_from_path_o_id(piece_list, o_id);
         const [piece_position, current_piece] = piece_from_path_o_id;
         const current_db_id = current_piece.id;
@@ -331,19 +314,19 @@ const Edit = (props) => {
 
         // Extra Images
         var extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images;
-        logger.debug(`Current Piece Extra Images: "${extra_images}"`)
+        console.log(`Current Piece Extra Images: "${extra_images}"`)
 
         extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
         extra_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(extra_images) ? [] : extra_images
-        logger.debug(`Using Extra Images: "${extra_images}"`)
+        console.log(`Using Extra Images: "${extra_images}"`)
 
         // Progress Images
         var progress_images = [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images;
-        logger.debug(`Current Piece Progress Images: "${progress_images}"`)
+        console.log(`Current Piece Progress Images: "${progress_images}"`)
 
         progress_images = typeof progress_images === 'string' ? JSON.parse(progress_images) : progress_images;
         progress_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(progress_images) ? [] : progress_images
-        logger.debug(`Using Progress Images: "${progress_images}"`)
+        console.log(`Using Progress Images: "${progress_images}"`)
 
         const extra_image_array = await create_extra_image_array(extra_images, state.selected_gallery_image);
 
@@ -406,7 +389,7 @@ const Edit = (props) => {
             let piece = piece_list[i];
             console.log('create image array piece: ', piece)
             if (i == piece_position) {
-                logger.debug(`Found Staging DB ID: ${db_id} | Current index: ${piece.id}`)
+                console.log(`Found Staging DB ID: ${db_id} | Current index: ${piece.id}`)
             } else {
                 if (only_load_cover == true) {
                     continue
@@ -414,13 +397,12 @@ const Edit = (props) => {
             }
 
             temp_image_array.push(
-                <div key={`image_${i}`} className={i == piece_position ? styles.centered_image_container : styles.centered_image_container_hidden}>
+                <div key={`image_${i}`} className={i == piece_position ? 'flex relative w-full h-full justify-center' : 'invisible'}>
                     {(db_id == -1) ? (null) : (db_id != piece.id) ? null : (
-                        <div className={styles.centered_image_staging}>Staging</div>
+                        <div className='w-full h-full'>Staging</div>
                     )}
                     <CustomNextImage
-                        id={`centered_image_${i}`}
-                        className={styles.centered_image}
+                        id={`edit_image_${i}`}
                         src={piece.image_path}
                         alt={piece['title']}
                         priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
@@ -468,179 +450,9 @@ const Edit = (props) => {
         }
     }
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        update_state({ updating: true, updated: false });
-
-        if (!title) {
-            update_state({ updating: false, error: true });
-            return
-        }
-
-        logger.section({ message: 'Attempting To Edit Piece Details' });
-        logger.debug(
-            `Editing Piece DB ID: ${state.db_id} | Title: ${state.title} | Sold: ${state.sold} |` +
-            `Framed: ${state.framed} | Piece Type: ${state.piece_type} | Price: ${state.price} |` +
-            `Image Path: ${state.image_path} | Description: ${state.description} | Instagram: ${state.instagram}`,
-        );
-        logger.debug(`EDITING PIECE WITH FILE UPLOAD TYPE: ${state.file_upload_type}`)
-
-        if (state.new_piece_created) {
-            logger.section({ message: 'Attempting To Create New Piece' });
-            logger.debug(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${state.image_path}`);
-            const response = await create_piece({
-                title: state.title,
-                description: state.description,
-                piece_type: state.piece_type,
-                sold: state.sold,
-                price: state.price,
-                instagram: state.instagram,
-                width: state.width,
-                height: state.height,
-                real_width: state.real_width,
-                real_height: state.real_height,
-                image_path: state.image_path,
-                theme: state.theme,
-                available: state.available,
-                framed: state.framed,
-                comments: state.comments,
-            });
-
-
-            logger.debug(`Create Piece Response (Next Line):`);
-            logger.debug(response);
-
-            if (!response) {
-                update_state({ loading: false, updating: false, error: true });
-                return
-            }
-            await fetch_pieces_from_api('uploaded');
-            return
-        }
-
-        const response = await edit_details({
-            id: state.db_id,
-            title: state.title,
-            description: state.description,
-            piece_type: state.piece_type,
-            sold: state.sold,
-            price: state.price,
-            instagram: state.instagram,
-            width: state.width,
-            height: state.height,
-            real_width: state.real_width,
-            real_height: state.real_height,
-            theme: state.theme,
-            available: state.available,
-            framed: state.framed,
-            comments: state.comments,
-            image_path: '/' + state.image_path.split('/').slice(-2).join('/'),
-            extra_images: JSON.stringify(state.extra_images),
-            progress_images: JSON.stringify(state.progress_images),
-        });
-
-        logger.debug(`Edit Piece Response (Next Line):`);
-        logger.debug(response);
-
-        if (!response) {
-            logger.debug('Edit Piece - No Response - Setting error = true');
-            update_state({ loading: false, error: true });
-            return
-        }
-
-        await fetch_pieces_from_api('updated');
-        return
-    };
-
-    const onFileChange = async (event) => {
-        event.preventDefault();
-        update_state({ loading: false, uploading: false, resizing: true })
-
-        logger.section({ message: 'File Input Change Event Triggered' });
-
-        try {
-            var selected_file = event.target.files[0];
-            var file_name = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
-            var file_extension = file_name.split(".").pop().toLowerCase();
-            var title = state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
-
-            update_state({ loading: false, uploading: true, resizing: false })
-
-            if (state.file_upload_type === 'extra') {
-                let current_index = state.extra_images.length < 1 ? 1 : (state.extra_images.length + 1);
-                file_name = `${title}_extra_${current_index}`;
-                selected_file = await resizeImage(selected_file, 1200, 1200);
-                logger.debug(`Resized ${state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
-            }
-            if (state.file_upload_type === 'progress') {
-                let current_index = state.progress_images.length < 1 ? 1 : (state.progress_images.length + 1);
-                file_name = `${title}_progress_${current_index}`;
-                selected_file = await resizeImage(selected_file, 1200, 1200);
-                logger.debug(`Resized ${state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
-            }
-            if (state.file_upload_type === 'cover') {
-                file_name = `${title}`;
-                selected_file = await resizeImage(selected_file, 1920, 1920);
-                logger.debug(`Resized ${state.file_upload_type} image: ${selected_file} | Resized Size: ${selected_file.size}`)
-            }
-
-            const pre_update_image_filename = state.image_path.split('/').pop();
-            logger.debug(`Pre-Update FileName: ${pre_update_image_filename} | Current FileName: ${file_name}`)
-            if (pre_update_image_filename.includes(file_name)) {
-                var current_index = 1
-                if (pre_update_image_filename.includes('update_')) {
-                    current_index = parseInt(pre_update_image_filename.split('update_').pop()) + 1
-                }
-                file_name = `${file_name}-update_${current_index}`
-            }
-
-            const file_name_with_extension = `${file_name}.${file_extension}`;
-
-            const s3_upload_url = await get_upload_url(file_name_with_extension, state.file_upload_type);
-            logger.debug(`Got Upload URL: ${s3_upload_url}`);
-
-            var uploaded_image_path = await upload_image(s3_upload_url, selected_file);
-            logger.debug(`Got Upload Reponse: ${uploaded_image_path}`);
-
-            update_state({ loading: true, uploading: false, resizing: false })
-            load_changed_images(uploaded_image_path)
-
-        } catch (err) {
-            update_state({ uploaded: false, upload_error: true, loading: true, uploading: false, resizing: false });
-            logger.error(`S3 Image Upload Error: ${err.message}`);
-            return false
-        }
-    };
-
-    const resizeImage = async (file, maxWidth, maxHeight) => {
-        return new Promise((resolve, reject) => {
-            let img = new Image();
-            img.onload = function () {
-                let canvas = document.createElement('canvas');
-                let ctx = canvas.getContext('2d');
-                let scale = Math.min(maxWidth / width, maxHeight / height);
-                canvas.width = width * scale;
-                canvas.height = height * scale;
-                ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(resolve, 'image/jpeg', 1);
-            };
-            img.onerror = reject;
-            img.src = URL.createObjectURL(file);
-        });
-    };
-
-    const showFileUpload = (event) => {
-        event.preventDefault();
-        file_input_ref.current.click();
-    };
-
-    const refresh_data = () => {
-        props.router.replace(props.router.asPath);
-    };
-
     const load_changed_images = async (uploaded_image_path) => {
         if (uploaded_image_path == '') {
-            logger.error(`Failed to upload image.  Cannot load file...`);
+            console.error(`Failed to upload image.  Cannot load file...`);
             return false
         }
 
@@ -653,7 +465,7 @@ const Edit = (props) => {
 
             //Validate the File Height and Width.
             image.onload = async () => {
-                logger.debug(`WIDTH: ${image.width} | HEIGHT: ${image.height}`);
+                console.log(`WIDTH: ${image.width} | HEIGHT: ${image.height}`);
                 width = image.width;
                 height = image.height;
 
@@ -661,7 +473,7 @@ const Edit = (props) => {
             };
         } catch (err) {
             update_state({ uploaded: false, upload_error: true });
-            logger.error(`Image Load Error: ${err.message}`);
+            console.error(`Image Load Error: ${err.message}`);
             return false
         }
     };
@@ -678,8 +490,8 @@ const Edit = (props) => {
             updated_piece_list[state.piece_position] = updated_piece;
             const current_image_array = await create_image_array(updated_piece_list, state.piece_position, state.db_id, true);
 
-            logger.debug(`Pre-Update Cover Image (Next Line):`);
-            logger.debug(state.image_path);
+            console.log(`Pre-Update Cover Image (Next Line):`);
+            console.log(state.image_path);
             update_state({
                 piece_list: updated_piece_list,
                 width: width,
@@ -703,8 +515,8 @@ const Edit = (props) => {
 
             const updated_extra_images = [...current_extra_images, { image_path: uploaded_image_path, width: width, height: height }];
 
-            logger.debug(`Pre-Update Extra Images (Next Line):`);
-            logger.debug(current_extra_images);
+            console.log(`Pre-Update Extra Images (Next Line):`);
+            console.log(current_extra_images);
 
             update_state_with_callback({
                 extra_images: updated_extra_images,
@@ -714,8 +526,8 @@ const Edit = (props) => {
                 resizing: false,
                 uploaded: true,
             }, async () => {
-                logger.debug(`Post-Update Extra Images State (Next Line):`);
-                logger.debug(typeof state.extra_images === 'string' ? JSON.parse(state.extra_images) : state.extra_images);
+                console.log(`Post-Update Extra Images State (Next Line):`);
+                console.log(typeof state.extra_images === 'string' ? JSON.parse(state.extra_images) : state.extra_images);
             });
             return true
         };
@@ -727,8 +539,8 @@ const Edit = (props) => {
 
             const updated_progress_images = [...current_progress_images, { image_path: uploaded_image_path, width: width, height: height }];
 
-            logger.debug(`Pre-Update Progress Images (Next Line):`);
-            logger.debug(current_progress_images);
+            console.log(`Pre-Update Progress Images (Next Line):`);
+            console.log(current_progress_images);
 
             update_state_with_callback({
                 progress_images: updated_progress_images,
@@ -738,13 +550,13 @@ const Edit = (props) => {
                 resizing: false,
                 uploaded: true,
             }, async () => {
-                logger.debug(`Post-Update Progress Images State (Next Line):`);
-                logger.debug(typeof state.progress_images === 'string' ? JSON.parse(state.progress_images) : state.progress_images);
+                console.log(`Post-Update Progress Images State (Next Line):`);
+                console.log(typeof state.progress_images === 'string' ? JSON.parse(state.progress_images) : state.progress_images);
             });
             return true
         };
 
-        logger.error(`Unknown file upload type: "${state.file_upload_type}"`)
+        console.error(`Unknown file upload type: "${state.file_upload_type}"`)
         return false
     }
 
@@ -803,28 +615,10 @@ const Edit = (props) => {
             new_piece_created: true,
         };
 
-        logger.debug('Updating state with BLANK piece details (Next Line):');
-        logger.debug(blank_piece_state);
+        console.log('Updating state with BLANK piece details (Next Line):');
+        console.log(blank_piece_state);
 
         update_state(blank_piece_state);
-    };
-
-    const handle_multi_select_change = (new_selected_options) => {
-        logger.debug(`New theme passed (Next Lines):`);
-        //logger.debug(new_selected_options)
-        var theme_string = '';
-        var final_options = [];
-        for (var option_index in new_selected_options) {
-            let options = new_selected_options[option_index];
-            logger.debug(options);
-            if (options.value != 'None') {
-                theme_string += `${options.value}, `;
-                final_options.push(options);
-            }
-        }
-        theme_string = theme_string == '' ? 'None' : theme_string;
-        logger.extra(`Setting theme: ${theme_string}`);
-        update_state({ theme: theme_string, theme_options: final_options });
     };
 
     const handleImageReorder = async (index, direction, image_type_to_edit) => {
@@ -845,7 +639,7 @@ const Edit = (props) => {
 
         update_state({ [image_type_to_edit]: new_images });
 
-        logger.debug(`Updating DB with Extra Images: ${new_images}`)
+        console.log(`Updating DB with Extra Images: ${new_images}`)
 
         // Call API to update the extra images order for the specific piece id.
         await updateExtraImagesOrder(state.db_id, new_images, image_type_to_edit);
@@ -859,7 +653,7 @@ const Edit = (props) => {
         let new_images_filtered = new_images.filter((_, i) => i !== index);
         update_state({ [image_type_to_edit]: new_images_filtered });
 
-        logger.debug(`Updating DB with Extra Images: ${new_images_filtered}`)
+        console.log(`Updating DB with Extra Images: ${new_images_filtered}`)
 
         // Call API to delete the extra image for the specific piece id.
         await updateExtraImagesOrder(state.db_id, new_images_filtered, image_type_to_edit);
@@ -961,23 +755,23 @@ const Edit = (props) => {
     logger.extra(`Theme: ${using_theme} | Framed: ${state.framed} | Sold: ${state.sold}`);
 
     logger.section(`Creating Initial Image arrays`)
-    logger.debug(`Cover Image Path: ${state.image_path}`)
+    console.log(`Cover Image Path: ${state.image_path}`)
 
     let using_extra_images = null;
     try {
         using_extra_images = typeof state.extra_images === 'string' ? JSON.parse(state.extra_images) : state.extra_images;
     } catch (error) { }
 
-    logger.debug(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
-    logger.debug(using_extra_images)
+    console.log(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
+    console.log(using_extra_images)
 
     let using_progress_images = null;
     try {
         using_progress_images = typeof state.progress_images === 'string' ? JSON.parse(state.progress_images) : state.progress_images;
     } catch (error) { }
 
-    logger.debug(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
-    logger.debug(using_progress_images)
+    console.log(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
+    console.log(using_progress_images)
 
 
     // Gallery Loader Container JSX
@@ -1009,16 +803,13 @@ const Edit = (props) => {
                     var image_path = image.image_path.split('/').slice(-2).join('/')
                     console.log(`Extra Images Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                     return (
-                        <div className={(state.selected_gallery_image === (index + 1)) ?
-                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
-                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
-                        }>
-                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={async () => {
+                        <div className={`w-full h-full justify-center ${(state.selected_gallery_image === (index + 1)) ? 'bg-tertiary rounded-md': ''}`}>
+                            <div className={`w-full h-full`} onClick={async () => {
                                 const extra_image_array = await create_extra_image_array(state.extra_images, index)
                                 update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
                             }}>
                                 <CustomNextImage
-                                    className={styles.centered_image}
+                                    className={'w-full h-full'}
                                     src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
                                     alt={``}
                                     width={image.width}
@@ -1035,10 +826,7 @@ const Edit = (props) => {
 
     const main_image_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
         <div className={styles.extra_images_gallery_container}>
-            <div className={(state.selected_gallery_image === 0) ?
-                `${styles.extra_images_gallery_image_container} ${styles.selected_gallery_image}` :
-                `${styles.extra_images_gallery_image_container}`
-            }>
+            <div className={`flex w-full h-full justify-center ${(state.selected_gallery_image === 0) ? 'bg-tertiary rounded-md': ''}`}>
                 <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
                     update_state({ 'selected_gallery_image': 0 })
                 }}>
@@ -1087,16 +875,13 @@ const Edit = (props) => {
                                 var image_path = image.image_path.split('/').slice(-2).join('/')
                                 logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                                 return (
-                                    <div className={(state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ?
-                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
-                                        `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
-                                    }>
-                                        <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={async () => {
+                                    <div className={`flex w-full h-full justify-center ${(state.selected_gallery_image  === (index + (using_extra_images.length) + 1)) ? 'bg-tertiary rounded-md': ''}`}>
+                                        <div className={`w-full h-full`} onClick={async () => {
                                             const progress_image_array = await create_extra_image_array(state.progress_images, index)
                                             update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
                                         }}>
                                             <CustomNextImage
-                                                className={styles.centered_image}
+                                                className={'w-full h-full'}
                                                 src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
                                                 alt={``}
                                                 width={image.width}
@@ -1171,113 +956,6 @@ const Edit = (props) => {
         </div>
     );
 
-    const description_text_area_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_textarea'} split={false} value={state.description} name={"Description"} update_field_value={update_field_value} />
-        </div>
-    )
-
-    const theme_multiselect_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type="input_multiselect" name="Theme" value={state.theme_options} handle_multi_select_change={handle_multi_select_change} select_options={[
-                ["Water", "Water"],
-                ["Snow", "Snow"],
-                ["Mountains", "Mountains"],
-                ["Landscape", "Landscape"],
-                ["City", "City"],
-                ["Portrait", "Portrait"],
-                ["Black and White", "Black and White"],
-                ["Abstract", "Abstract"],
-                ["None", "None"]
-            ]}
-            />
-        </div>
-    )
-
-    const piece_type_select_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_select'} split={false} value={state.piece_type} name={"Type"} id={"piece_type"} update_field_value={update_field_value} select_options={[
-                ["Oil On Canvas", "Oil On Canvas"],
-                ["Oil On Cradled Panel", "Oil On Cradled Panel"],
-                ["Intaglio On Paper", "Intaglio On Paper"],
-                ["Linocut On Paper", "Linocut On Paper"],
-                ["Pastel On Paper", "Pastel On Paper"]
-            ]} />
-        </div>
-    );
-
-    const available_and_sold_container_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_select'} split={true} value={state.available} name={"Available"} update_field_value={update_field_value} select_options={[
-                ["True", "True"],
-                ["False", "False"]
-            ]} />
-            <InputComponent input_type={'input_select'} split={true} value={state.sold} name={"Sold"} update_field_value={update_field_value} select_options={[
-                ["True", "Sold"],
-                ["False", "Not Sold"]
-            ]} />
-        </div>
-    );
-
-    const instagram_and_price_container_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_textbox'} split={true} value={state.instagram} name={"Instagram"} update_field_value={update_field_value} />
-
-            <InputComponent input_type={'input_textbox'} split={true} value={state.price} name={"Price"} update_field_value={update_field_value} />
-        </div>
-    );
-
-    const real_width_and_height_container_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_textbox'} split={true} value={state.real_width} id={"real_width"} name={"Width"} update_field_value={update_field_value} />
-
-            <InputComponent input_type={'input_textbox'} split={true} value={state.real_height} id={"real_height"} name={"Height"} update_field_value={update_field_value} />
-        </div>
-    );
-
-    const px_width_and_height_container_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_textbox'} split={true} value={state.width} id={"width"} name={"PX Width"} update_field_value={update_field_value} />
-            <InputComponent input_type={'input_textbox'} split={true} value={state.height} id={"height"} name={"PX Height"} update_field_value={update_field_value} />
-        </div>
-    );
-
-    const framed_and_comments_container_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_select'} split={true} value={state.framed} name={"Framed"} update_field_value={update_field_value} select_options={[
-                ["True", "True"],
-                ["False", "False"]
-            ]} />
-            <InputComponent input_type={'input_textarea'} split={true} value={state.comments} name={"Comments"} update_field_value={update_field_value} rows={2} />
-        </div>
-    );
-
-    const file_input_continer = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type={'input_file'} split={false} value={state.framed} name={"Upload"} id={"upload_type"}
-                update_field_value={update_field_value}
-                file_upload_type={state.file_upload_type}
-                uploaded_image_path={state.uploaded_image_path}
-                showFileUpload={showFileUpload}
-                onFileChange={onFileChange}
-                file_types={[
-                    { value: 'cover', label: 'Cover Image' },
-                    { value: 'extra', label: 'Extra Image' },
-                    { value: 'progress', label: 'Progress Image' },
-                ]}
-            />
-        </div>
-    );
-
-    const submit_container_jsx = (
-        <div className={form_styles.submit_container}>
-            {/* <button type="button" className={form_styles.upload_button} onClick={showFileUpload}>Upload</button> */}
-            {/* <input type="file" className={form_styles.upload_file_input} onChange={onFileChange} ref={file_input_ref}/> */}
-            <button type="button" className={form_styles.submit_button} onClick={handleSubmit}>Submit Changes</button>
-            <button type="button" className={form_styles.submit_button} onClick={create_blank_piece}>Create New Piece</button>
-        </div>
-    );
-
     const error_message_jsx = create_error_message_jsx();
 
     console.log('Extra Images: ', using_extra_images)
@@ -1323,7 +1001,7 @@ const Edit = (props) => {
     );
 
     console.log('Progress Images: ', using_progress_images)
-    const progress_images_test_jsx = [undefined, null, '', [], ['']].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
+    const progress_images_text_jsx = [undefined, null, '', [], ['']].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
         <div className={edit_details_styles.extra_images_container}>
             <div className={edit_details_styles.extra_image_table_header}>Progress Images:</div>
 
@@ -1362,6 +1040,20 @@ const Edit = (props) => {
         </div>
     );
 
+    const edit_form = (
+        <EditForm 
+            state={state} 
+            setState={setState} 
+            load_changed_images={load_changed_images} 
+            fetch_pieces_from_api={fetch_pieces_from_api}
+            title_container_jsx={title_container_jsx}
+            progress_images_text_jsx={progress_images_text_jsx}
+            extra_images_text_jsx={extra_images_text_jsx}
+            error_message_jsx={error_message_jsx}
+            progress_images_gallery_container_jsx={progress_images_gallery_container_jsx}
+        />
+    )
+
     console.log("Returning JSX with window width: " + state.window_width)
     console.log(`Clerk User Loaded: ${isLoaded} | Signed In: ${isSignedIn} | User Role: ${user && user.publicMetadata?.role?.toLowerCase() || 'none'}`);
     if (!isLoaded) {
@@ -1380,46 +1072,12 @@ const Edit = (props) => {
         console.log("Rendering edit page for desktop screen size...")
         return (
             <>
-                <div className={styles.details_container}>
-                    <div className={styles.details_container_left}>
+                <div className={'w-full h-[calc(100vh-100px)] flex flex-col md:flex-row'}>
+                    <div className={'md:w-2/3'}>
                         {final_image_container_jsx}
                     </div>
-                    <div className={styles.details_container_right}>
-                        <div className={edit_details_styles.edit_details_form_container}>
-                            <form>
-
-                                {title_container_jsx /* Title Container */}
-
-                                {file_input_continer /* File Input Container */}
-
-                                {submit_container_jsx}
-
-                                {error_message_jsx}
-
-                                {progress_images_gallery_container_jsx}
-                                <div className={styles.extra_padding}></div>
-
-                                {piece_type_select_jsx /* Piece Type Select */}
-
-                                {theme_multiselect_jsx /* Theme Multiselect */}
-
-                                {available_and_sold_container_jsx /* Split Container For Available / sold */}
-
-                                {instagram_and_price_container_jsx /* Split Container For Instagram Link / Available */}
-
-                                {real_width_and_height_container_jsx /* Split Container For real_width / real_height */}
-
-                                {px_width_and_height_container_jsx /* Split Container For image pixel width / pixel height */}
-
-                                {framed_and_comments_container_jsx /* Split Container For framed / comments */}
-
-                                {description_text_area_jsx /* Description Text Area */}
-
-                                {extra_images_text_jsx}
-
-                                {progress_images_test_jsx}
-                            </form>
-                        </div>
+                    <div className={'md:w-1/3'}>
+                        {edit_form}
                     </div>
                 </div>
 
@@ -1440,44 +1098,8 @@ const Edit = (props) => {
     return (
         <>
             <div className={styles.details_container}>
-
                 {final_image_container_jsx}
-
-                <div className={edit_details_styles.edit_details_form_container}>
-                    <form>
-
-                        {title_container_jsx /* Title Container */}
-
-                        {file_input_continer /* File Input Container */}
-
-                        {submit_container_jsx}
-
-                        {error_message_jsx}
-
-                        {progress_images_gallery_container_jsx}
-                        <div className={styles.extra_padding}></div>
-
-                        {piece_type_select_jsx /* Piece Type Select */}
-
-                        {theme_multiselect_jsx /* Theme Multiselect */}
-
-                        {available_and_sold_container_jsx /* Split Container For Available / sold */}
-
-                        {instagram_and_price_container_jsx /* Split Container For Instagram Link / Available */}
-
-                        {real_width_and_height_container_jsx /* Split Container For real_width / real_height */}
-
-                        {px_width_and_height_container_jsx /* Split Container For image pixel width / pixel height */}
-
-                        {framed_and_comments_container_jsx /* Split Container For framed / comments */}
-
-                        {description_text_area_jsx /* Description Text Area */}
-
-                        {extra_images_text_jsx}
-
-                        {progress_images_test_jsx}
-                    </form>
-                </div>
+                {edit_form}
             </div>
 
             <div style={{ display: 'none' }}>

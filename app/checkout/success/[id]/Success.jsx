@@ -17,18 +17,18 @@ const Success = (props) => {
     const pathname = usePathname();
     const passed_o_id = pathname.split('/').slice(-1)[0];
 
-    logger.section({ message: `LOADING SUCCESS PAGE - Piece ID: ${passed_o_id}` });
+    console.log(`LOADING SUCCESS PAGE - Piece ID: ${passed_o_id}`);
 
     const piece_list = props.piece_list;
     const num_pieces = piece_list.length;
 
-    logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
-    logger.debug(piece_list);
+    console.log(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
+    console.log(piece_list);
 
     var piece_position = 0;
     for (var i = 0; i < piece_list.length; i++) {
         if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
-            logger.debug(
+            console.log(
                 `Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`,
             );
             piece_position = i;
@@ -76,7 +76,7 @@ const Success = (props) => {
 
     useEffect(() => {
         const handleResize = () => {
-            logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+            console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState({
                 ...state,
                 window_width: window.innerWidth,
@@ -105,7 +105,7 @@ const Success = (props) => {
             </div>
         )
 
-        logger.debug(`Setting state with Piece Position: ${piece_position}`);
+        console.log(`Setting state with Piece Position: ${piece_position}`);
         setState({
             ...state,
             loading: false,

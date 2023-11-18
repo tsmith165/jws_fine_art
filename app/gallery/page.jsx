@@ -19,8 +19,7 @@ export default async function Page() {
   // console.log(`Returning most recent ID: ${most_recent_id} | piece_list:`, piece_list)
 
   return (
-    <PageLayout >
-      <FilterMenu/>
+    <PageLayout navbar_modifiers={<FilterMenu/>}>
       <Gallery piece_list={piece_list} most_recent_id={most_recent_id}/>
     </PageLayout>
   );

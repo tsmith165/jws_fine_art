@@ -1,19 +1,17 @@
 import logger from '@/lib/logger';
-import PROJECT_CONSTANTS from '@/lib/constants'
+import PROJECT_CONSTANTS from '@/lib/constants';
 import React, { useEffect } from 'react';
-import styles from '@/styles/components/OrderTree.module.scss'
+import styles from '@/styles/components/OrderTree.module.scss';
 
 const OrderTree = (props) => {
-    useEffect(() => {
-        
-    }, []);
+    useEffect(() => {}, []);
 
-    logger.debug("Generating Order Tree - Data Next Line");
-    logger.debug(props.verified_list);
+    console.log('Generating Order Tree - Data Next Line');
+    console.log(props.verified_list);
 
-    const list_items = props.verified_list.map(verified_payment_data => {
-        logger.debug(`Verified Payment Data (Next Line):`);
-        logger.debug(verified_payment_data);
+    const list_items = props.verified_list.map((verified_payment_data) => {
+        console.log(`Verified Payment Data (Next Line):`);
+        console.log(verified_payment_data);
 
         let image_url = verified_payment_data['image_path'];
         if (!verified_payment_data['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)) {
@@ -21,62 +19,60 @@ const OrderTree = (props) => {
         }
 
         return (
-            <div className={styles.list_item_container} key={verified_payment_data.id || Math.random()}>
-                <div className={styles.list_item_image_container}>
-                    <img className={styles.list_item_image} src={image_url} alt={verified_payment_data['piece_title']} />
+            <div className={'flex flex-row hover:bg-secondary hover:text-light'} key={verified_payment_data.id || Math.random()}>
+                <div className={'bg-secondary'}>
+                    <img className={'h-[150px] w-[150px] object-contain'} src={image_url} alt={verified_payment_data['piece_title']} />
                 </div>
-                <div className={styles.list_item_title_container}>
-                    <b className={styles.list_item_title}>{verified_payment_data['piece_title']}</b>
+                <div className={'mb-auto mt-auto w-[30%] overflow-hidden overflow-ellipsis whitespace-nowrap p-2.5 pl-5 text-lg'}>
+                    <b className="text-dark">{verified_payment_data['piece_title']}</b>
                 </div>
-                <div className={styles.order_description_container}>
-                        <div className={styles.list_item_text_container}>
-                            <div className={styles.list_item_desc_container}>
-                                <b className={styles.list_item_desc}>Date: </b>
-                            </div>
-                            <b className={styles.list_item_text}>{verified_payment_data['date']}</b>
+                <div className={'flex w-[70%] flex-col px-2.5 py-1'}>
+                    <div className={'mb-auto mt-auto pr-4'}>
+                        <div className={'inline-block !w-[100px]'}>
+                            <b className={'text-dark'}>Date: </b>
                         </div>
-                        <div className={styles.list_item_text_container}>
-                            <div className={styles.list_item_desc_container}>
-                                <b className={styles.list_item_desc}>Name: </b>
-                            </div>
-                            <b className={styles.list_item_text}>{verified_payment_data['full_name']}</b>
-                        </div>
-                        <div className={styles.list_item_text_container}>
-                            <div className={styles.list_item_desc_container}>
-                                <b className={styles.list_item_desc}>Address: </b>
-                            </div>
-                            <b className={styles.list_item_text}>{verified_payment_data['address']}</b>
-                        </div>
-                        <div className={styles.list_item_text_container}>
-                            <div className={styles.list_item_desc_container}>
-                                <b className={styles.list_item_desc}>Phone: </b>
-                            </div>
-                            <b className={styles.list_item_text}>{verified_payment_data['phone']}</b>
-                        </div>
-                        <div className={styles.list_item_text_container}>
-                            <div className={styles.list_item_desc_container}>
-                                <b className={styles.list_item_desc}>Email: </b>
-                            </div>
-                            <b className={styles.list_item_text}>{verified_payment_data['email']}</b>
-                        </div>
-                        <div className={styles.list_item_text_container}>
-                            <div className={styles.list_item_desc_container}>
-                                <b className={styles.list_item_desc}>Price: </b>
-                            </div>
-                            <b className={styles.list_item_text}>${verified_payment_data['price']}</b>
-                        </div>
+                        <b className="">{verified_payment_data['date']}</b>
                     </div>
+                    <div className={'mb-auto mt-auto pr-4'}>
+                        <div className={'inline-block !w-[100px]'}>
+                            <b className={'text-dark'}>Name: </b>
+                        </div>
+                        <b className="">{verified_payment_data['full_name']}</b>
+                    </div>
+                    <div className={'mb-auto mt-auto pr-4'}>
+                        <div className={'inline-block !w-[100px]'}>
+                            <b className={'text-dark'}>Address: </b>
+                        </div>
+                        <b className="">{verified_payment_data['address']}</b>
+                    </div>
+                    <div className={'mb-auto mt-auto pr-4'}>
+                        <div className={'inline-block !w-[100px]'}>
+                            <b className={'text-dark'}>Phone: </b>
+                        </div>
+                        <b className="">{verified_payment_data['phone']}</b>
+                    </div>
+                    <div className={'mb-auto mt-auto pr-4'}>
+                        <div className={'inline-block !w-[100px]'}>
+                            <b className={'text-dark'}>Email: </b>
+                        </div>
+                        <b className="">{verified_payment_data['email']}</b>
+                    </div>
+                    <div className={'mb-auto mt-auto pr-4'}>
+                        <div className={'inline-block !w-[100px]'}>
+                            <b className={'text-dark'}>Price: </b>
+                        </div>
+                        <b className="">${verified_payment_data['price']}</b>
+                    </div>
+                </div>
             </div>
         );
     });
 
     return (
-        <div className={styles.order_tree_body}>
-            <div className={styles.tree_list_item_container}>
-                {list_items}
-            </div>
+        <div className={'relative h-full w-full rounded-md border-2 border-secondary bg-primary text-lg'}>
+            <div className={'h-full w-full'}>{list_items}</div>
         </div>
     );
-}
+};
 
 export default OrderTree;

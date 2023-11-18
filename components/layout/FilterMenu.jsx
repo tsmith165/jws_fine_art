@@ -44,7 +44,7 @@ class FilterMenu extends React.Component {
     render() {
         const { appState, setAppState } = this.context;
 
-        logger.debug(`Rendering Filter Menu with app_state Theme: ${appState.theme} | Filter Menu Open: ${appState.filter_menu_open}`)
+        console.log(`Rendering Filter Menu with app_state Theme: ${appState.theme} | Filter Menu Open: ${appState.filter_menu_open}`)
 
         var filter_menu_array = [];
         for (var i = 0; i < THEME_FILTERS.length; i++) {
