@@ -22,8 +22,8 @@ const PieceTree = ({ piece_tree_data, refresh_data }) => {
         refresh_data();  // Refresh the piece list after deleting
     };
 
-    logger.debug('Generating Piece Tree - Data Next Line');
-    logger.debug(piece_tree_data);
+    console.log('Generating Piece Tree - Data Next Line');
+    console.log(piece_tree_data);
 
     const list_items = piece_tree_data.map((piece_data, i) => {
         const pieces_length = piece_tree_data.length;

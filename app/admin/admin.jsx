@@ -17,7 +17,7 @@ function Admin(props) {
     useEffect(() => {
         const fetchData = async () => {
             const response = await get_analytics_data();
-            logger.debug(`Reporting API response: ${JSON.stringify(response)}`);
+            console.log(`Reporting API response: ${JSON.stringify(response)}`);
             setAnalyticsData(response);
         };
 
@@ -58,8 +58,8 @@ function Admin(props) {
             return dateA > dateB ? -1 : dateA < dateB ? 1 : 0;
         });
 
-        logger.debug(`Rendering analytics data rows`);
-        logger.debug(rows);
+        console.log(`Rendering analytics data rows`);
+        console.log(rows);
 
         return (
             <table className={styles.analytics_table}>
@@ -93,12 +93,12 @@ function Admin(props) {
             const response = await fetch_pieces('None', 'xlsx');
 
             if (response) {
-                logger.info('Successfully exported pieces as XLSX');
+                console.log('Successfully exported pieces as XLSX');
             } else {
-                logger.error('Failed to export pieces:', response.statusText);
+                console.error('Failed to export pieces:', response.statusText);
             }
         } catch (error) {
-            logger.error('Failed to export pieces:', error);
+            console.error('Failed to export pieces:', error);
         }
     };
 

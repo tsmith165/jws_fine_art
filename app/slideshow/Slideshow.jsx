@@ -22,8 +22,8 @@ function Slideshow(props) {
     const piece_list = props.piece_list;
     const piece_list_length = piece_list.length
 
-    logger.debug(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
-    logger.debug(piece_list)
+    console.log(`getServerSideProps piece_list length: ${piece_list_length} | Data (Next Line):`)
+    console.log(piece_list)
 
     var image_array = [];
 
@@ -82,7 +82,7 @@ function Slideshow(props) {
 
     const base_speed = 80
     const ratioed_value = calculateRatioedValue(base_speed);
-    logger.debug(`Ratioed Speed: ${ratioed_value}`)
+    console.log(`Ratioed Speed: ${ratioed_value}`)
 
     // Initial State
     const [state, setState] = useState({
@@ -144,16 +144,16 @@ function Slideshow(props) {
     };
 
     const change_speed = (value) => {
-        logger.debug(`Changing speed with value ${value}`);
+        console.log(`Changing speed with value ${value}`);
 
         var default_ratio = (DEFAULT_MAX - value) / (DEFAULT_MAX - DEFAULT_MIN);
-        logger.debug(`Default ratio: ${default_ratio}`);
+        console.log(`Default ratio: ${default_ratio}`);
 
         var ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN);
-        logger.debug(`Ratio range: ${ratio_range}`);
+        console.log(`Ratio range: ${ratio_range}`);
 
         var newSpeed = default_ratio * ratio_range * 10;
-        logger.debug(`Ratioed Speed: ${newSpeed}`);
+        console.log(`Ratioed Speed: ${newSpeed}`);
 
         setState({ ...state, base_speed: value, speed: newSpeed });
 
@@ -173,19 +173,19 @@ function Slideshow(props) {
 
         const piece_list_length = piece_list.length;
 
-        logger.debug(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
+        console.log(`Piece Count: ${piece_list_length} | Searching for URL_O_ID: ${o_id}`)
         const [piece_position, current_piece] = get_piece_from_path_o_id(piece_list, o_id);
         console.log('Got piece position #', piece_position, 'with piece data: ', current_piece)
         const piece_db_id = current_piece['id']
         const piece_o_id = current_piece['0_id']
 
-        logger.debug(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
-        logger.debug(current_piece)
+        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${piece_db_id} | Data (Next Line):`)
+        console.log(current_piece)
 
         const next_oid = (piece_position + 1 > piece_list_length - 1) ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'];
         const last_oid = (piece_position - 1 < 0) ? piece_list[piece_list_length - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
 
-        // logger.debug(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
+        // console.log(`Updating to new selected piece with Postition: ${piece_position} | DB ID: ${piece_db_id} | O_ID: ${o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`)
 
         const piece_details = {
             title: current_piece['title'],
@@ -203,8 +203,8 @@ function Slideshow(props) {
 
         const image_array = await create_image_array(state.piece_list, piece_position);
 
-        // logger.debug("CURRENT PIECE DETAILS (Next Line):")
-        // logger.debug(piece_details)
+        // console.log("CURRENT PIECE DETAILS (Next Line):")
+        // console.log(piece_details)
 
         setState({
             ...state,
@@ -325,13 +325,13 @@ function Slideshow(props) {
 
 function calculateRatioedValue(baseSpeed) {
     const default_ratio = (DEFAULT_MAX - baseSpeed) / (DEFAULT_MAX + DEFAULT_MIN);
-    // logger.debug(`Default ratio: ${default_ratio}`);
+    // console.log(`Default ratio: ${default_ratio}`);
 
     const ratio_range = ((RATIO_MAX - RATIO_MIN) - RATIO_MIN);
-    // logger.debug(`Ratio range: ${ratio_range}`);
+    // console.log(`Ratio range: ${ratio_range}`);
 
     const ratioed_value = default_ratio * ratio_range;
-    logger.debug(`Ratioed Speed: ${ratioed_value}`);
+    console.log(`Ratioed Speed: ${ratioed_value}`);
 
     return ratioed_value;
 }

@@ -21,20 +21,20 @@ export default async function Page(props) {
 }
 
 async function fetchVerfiedPayments() {
-  logger.debug(`Fetching pieces with prisma`)
+  console.log(`Fetching pieces with prisma`)
   var verified_list = await prisma.verified.findMany()
 
-  logger.debug("Verified Payments List (Next Line):")
-  logger.debug(verified_list)
+  console.log("Verified Payments List (Next Line):")
+  console.log(verified_list)
 
   for (var i = 0; i < verified_list.length; i++) {
       const date_string = new Date(verified_list[i]['date']).toUTCString();
-      logger.debug(`Current Date: ${date_string}`)
+      console.log(`Current Date: ${date_string}`)
       verified_list[i]['date'] = date_string
   }
 
-  logger.debug("Verified Payments List (Next Line):")
-  logger.debug(verified_list)
+  console.log("Verified Payments List (Next Line):")
+  console.log(verified_list)
 
   return verified_list
 }

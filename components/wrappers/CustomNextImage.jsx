@@ -16,11 +16,11 @@ class CustomNextImage extends React.Component {
     render() {
         const { src, alt, width, height, quality } = this.props;
         return (
-            <div className={styles.centered_image_container}>
+            <div className={'flex w-auto h-auto justify-center'}>
                 {this.state.isLoading && <div className={styles.spinner}></div>}
 
                 <NextImage
-                    className={styles.centered_image}
+                    className={'mx-auto w-fit'}
                     src={src}
                     alt={alt}
                     width={width}

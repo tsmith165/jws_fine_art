@@ -6,19 +6,16 @@ import React from 'react';
 
 import Navbar from './Navbar';
 
-const PageLayout = ({children}) => {
+const PageLayout = ({navbar_modifiers, children}) => {
     return (
-        <>
+        <body>
             <ScriptLoader />
-            <body>
-                <div className={styles.container}>
-                    <main className={styles.main}>
-                        <Navbar />
-                        {children}
-                    </main>
-                </div>
-            </body>
-        </>
+            <Navbar />
+            {navbar_modifiers}
+            <main claaName='relative h-[calc(100vh-100px)] w-full'>
+                {children}
+            </main>
+        </body>
 
     )
 }

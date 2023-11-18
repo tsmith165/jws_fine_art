@@ -19,7 +19,7 @@ function Socials() {
 
     useEffect(() => {
         const handleResize = () => {
-            logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+            console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState((prevState) => ({
                 ...prevState,
                 window_width: window.innerWidth,

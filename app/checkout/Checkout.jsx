@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -20,7 +20,9 @@ import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
 import checkout_styles from '@/styles/pages/Checkout.module.scss';
 import form_styles from '@/styles/forms/Form.module.scss';
 
-const stripePromise = loadStripe('pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj');
+const stripePromise = loadStripe(
+    'pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj',
+);
 const INTERNATIONAL_SHIPPING_RATE = 25;
 
 const Checkout = (props) => {
@@ -32,21 +34,19 @@ const Checkout = (props) => {
     const router = useRouter();
     const pathname = usePathname();
     const passed_o_id = pathname.split('/').slice(-1)[0];
-    logger.section({ message: `LOADING CHECKOUT PAGE - Piece ID: ${passed_o_id}` });
+    console.log(`LOADING CHECKOUT PAGE - Piece ID: ${passed_o_id}`);
 
     // State initializations and other necessary logic...
     const piece_list = props.piece_list;
     const num_pieces = piece_list.length;
 
-    logger.debug(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
-    logger.debug(piece_list);
+    console.log(`getServerSideProps piece_list length: ${num_pieces} | Data (Next Line):`);
+    console.log(piece_list);
 
     var piece_position = 0;
     for (var i = 0; i < piece_list.length; i++) {
         if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
-            logger.debug(
-                `Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`,
-            );
+            console.log(`Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`);
             piece_position = i;
         }
     }
@@ -62,7 +62,12 @@ const Checkout = (props) => {
     var piece_type = num_pieces < 1 ? '' : current_piece.piece_type !== undefined ? current_piece.piece_type : piece_type;
     var real_width = num_pieces < 1 ? '' : current_piece.real_width !== undefined ? current_piece.real_width : '';
     var real_height = num_pieces < 1 ? '' : current_piece.real_height !== undefined ? current_piece.real_height : '';
-    var image_path = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
+    var image_path =
+        num_pieces < 1
+            ? ''
+            : current_piece.image_path !== undefined
+            ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`
+            : '';
     var instagram = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
     /* prettier-ignore-end */
 
@@ -92,35 +97,36 @@ const Checkout = (props) => {
 
     useEffect(() => {
         const handleResize = () => {
-            logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+            console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState({
                 ...state,
                 window_width: window.innerWidth,
-                window_height: window.innerHeight
+                window_height: window.innerHeight,
             });
         };
 
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
 
         const styles = state.window_width < 769 ? mobile_styles : desktop_styles;
         const piece_position = state.piece_position;
 
-        var image_jsx = piece_position < 0 ? null : (
-            <div key={`image_${piece_position}`} className={styles.centered_image_container}>
-                <NextImage
-                    id={`centered_image_${piece_position}`}
-                    className={styles.centered_image}
-                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece.image_path}`}
-                    alt={state.title}
-                    priority={true}
-                    width={state.width}
-                    height={state.height}
-                    quality={100}
-                />
-            </div>
-        )
+        var image_jsx =
+            piece_position < 0 ? null : (
+                <div key={`image_${piece_position}`} className={styles.centered_image_container}>
+                    <NextImage
+                        id={`centered_image_${piece_position}`}
+                        className={styles.centered_image}
+                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece.image_path}`}
+                        alt={state.title}
+                        priority={true}
+                        width={state.width}
+                        height={state.height}
+                        quality={100}
+                    />
+                </div>
+            );
 
-        logger.debug(`Setting state with Piece Position: ${state.piece_position}`);
+        console.log(`Setting state with Piece Position: ${state.piece_position}`);
         setState({
             ...state,
             loading: false,
@@ -130,7 +136,7 @@ const Checkout = (props) => {
         });
 
         return () => {
-            window.removeEventListener("resize", handleResize);
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
 
@@ -139,7 +145,7 @@ const Checkout = (props) => {
             var is_international = true;
             if (updated_address.toString().includes('USA')) is_international = false;
 
-            logger.debug(`Updating Address: ${updated_address} | International: ${is_international}`);
+            console.log(`Updating Address: ${updated_address} | International: ${is_international}`);
             setState({ ...state, address: updated_address, international: is_international });
         }
     };
@@ -155,7 +161,7 @@ const Checkout = (props) => {
 
             if (field_lenth < min_length) {
                 error_reason = `${field_name} requirement not met.  Please enter valid ${field_name} with length > ${min_length}...`;
-                logger.error(error_reason);
+                console.error(error_reason);
                 error_found = true;
             }
         }
@@ -166,7 +172,7 @@ const Checkout = (props) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        logger.debug('Checkout Form Submit Recieved');
+        console.log('Checkout Form Submit Recieved');
 
         setState({ ...state, loading: true, submitted: false }, async () => {
             // capture data from form
@@ -174,8 +180,8 @@ const Checkout = (props) => {
             const phone = event.target.elements.phone.value;
             const email = event.target.elements.email.value;
 
-            logger.debug(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
-            logger.debug(`Address: ${state.address} | International: ${state.international}`);
+            console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
+            console.log(`Address: ${state.address} | International: ${state.international}`);
 
             const error_found = await check_fields([
                 ['Full Name', full_name, 3],
@@ -185,14 +191,14 @@ const Checkout = (props) => {
             ]);
 
             if (error_found) {
-                logger.error(`Could not check out due to an error...`);
+                console.error(`Could not check out due to an error...`);
                 setState({ ...state, loading: false, submitted: false, error_found: true });
                 return;
             }
 
-            logger.debug('Attempting to Check Out...');
+            console.log('Attempting to Check Out...');
 
-            logger.debug('Creating a Pending Transaction ...');
+            console.log('Creating a Pending Transaction ...');
             const pending_response = await create_pending_transaction(
                 state.db_id,
                 state.title,
@@ -203,21 +209,21 @@ const Checkout = (props) => {
                 state.international,
             );
 
-            logger.debug(`Pending Transaction Response (Next Line):`);
-            logger.debug(pending_response);
+            console.log(`Pending Transaction Response (Next Line):`);
+            console.log(pending_response);
 
             if (!pending_response) {
-                logger.error('No Response From Create Pending Transaction.  Cannot check out...');
+                console.error('No Response From Create Pending Transaction.  Cannot check out...');
                 return;
             }
 
-            logger.debug(`Creating stripe session with piece (Next Line):\n${state.current_piece}`);
+            console.log(`Creating stripe session with piece (Next Line):\n${state.current_piece}`);
 
             // Create Stripe Checkout Session
-            logger.debug(
+            console.log(
                 `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece['image_path']}`}`,
             );
-            const price_with_shipping = state.price + (state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0)
+            const price_with_shipping = state.price + (state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0);
 
             const stripe_response = await create_stripe_checkout_session(
                 state.db_id,
@@ -235,18 +241,18 @@ const Checkout = (props) => {
             );
             const json = await stripe_response.json();
 
-            logger.debug(`Creating Stripe Checkout Session Response JSON (Next Line):`);
-            logger.debug(json);
+            console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);
+            console.log(json);
 
             const session = json;
 
-            logger.debug(`Session ID: ${session.id}`);
+            console.log(`Session ID: ${session.id}`);
 
             var redirect_to_stripe = true;
             if (redirect_to_stripe) {
                 const stripe = await stripePromise;
-                logger.debug('Stripe (Next Line):');
-                logger.debug(stripe);
+                console.log('Stripe (Next Line):');
+                console.log(stripe);
 
                 const result = await stripe.redirectToCheckout({
                     sessionId: session.id,
@@ -262,14 +268,16 @@ const Checkout = (props) => {
         });
     };
 
-
     const update_field_value = (field, new_value_object) => {
         const key_name = field.toLowerCase();
         const new_value = new_value_object.value;
-        logger.debug(`Setting state on key: ${key_name} | Value: ${new_value}`);
+        console.log(`Setting state on key: ${key_name} | Value: ${new_value}`);
 
-        setState(prevState => ({ ...prevState, [key_name]: new_value }), () => logger.debug(`Updated key value: ${state[key_name]}`));
-    }
+        setState(
+            (prevState) => ({ ...prevState, [key_name]: new_value }),
+            () => console.log(`Updated key value: ${state[key_name]}`),
+        );
+    };
 
     // CHECK THAT GOOGLE MAPS API IS LOADED
     if (loadError) {
@@ -281,7 +289,7 @@ const Checkout = (props) => {
     }
 
     // BEGIN RENDER JSX
-    logger.extra(`Loading: ${state.loading} | Submitted: ${state.submitted}`)
+    logger.extra(`Loading: ${state.loading} | Submitted: ${state.submitted}`);
 
     const styles = state.window_width < 769 ? mobile_styles : desktop_styles;
 
@@ -300,11 +308,19 @@ const Checkout = (props) => {
     );
 
     // Price Label JSX
-    const price_with_shipping = state.price + (state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0)
+    const price_with_shipping = state.price + (state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0);
     const price_label = (
-        <button type="submit" className={checkout_styles.price_wrapper} onClick={() => handleButtonLabelClickGTagEvent(
-            'checkout_purchase_button_click', 'Checkout Purchase Button', 'Checkout Purchase Button Clicked')
-        }>
+        <button
+            type="submit"
+            className={checkout_styles.price_wrapper}
+            onClick={() =>
+                handleButtonLabelClickGTagEvent(
+                    'checkout_purchase_button_click',
+                    'Checkout Purchase Button',
+                    'Checkout Purchase Button Clicked',
+                )
+            }
+        >
             <div className={checkout_styles.price_label_wrapper}>
                 <NextImage
                     className={checkout_styles.price_label_stripe_image}
@@ -320,57 +336,74 @@ const Checkout = (props) => {
     );
 
     // Shipping Message JSX
-    const shipping_jsx = state.international != null ? (
-        <div className={checkout_styles.checkout_shipping_container}>
-            {state.international == true ? (
-                <div className={checkout_styles.checkout_shipping_label}>
-                    Pieces ship within 5 days. International shipping costs $25 and can take up to 1 month.
-                </div>
-            ) : (
-                <div className={checkout_styles.checkout_shipping_label}>
-                    Pieces ship within 5 days. Domestic shipping can take up to a week.
-                </div>
-            )}
-        </div>
-    ) : null;
+    const shipping_jsx =
+        state.international != null ? (
+            <div className={checkout_styles.checkout_shipping_container}>
+                {state.international == true ? (
+                    <div className={checkout_styles.checkout_shipping_label}>
+                        Pieces ship within 5 days. International shipping costs $25 and can take up to 1 month.
+                    </div>
+                ) : (
+                    <div className={checkout_styles.checkout_shipping_label}>
+                        Pieces ship within 5 days. Domestic shipping can take up to a week.
+                    </div>
+                )}
+            </div>
+        ) : null;
 
-    const submit_loader_spinner = (<CircularProgress color="inherit" className={form_styles.loader} />);
-    const submit_successful_jsx = (<div className={form_styles.submit_label}>Checkout submit successful.</div>);
-    const submit_unsuccessful_jsx = (<div className={form_styles.submit_label_failed}>Checkout submit was not successful.</div>);
+    const submit_loader_spinner = <CircularProgress color="inherit" className={form_styles.loader} />;
+    const submit_successful_jsx = <div className={form_styles.submit_label}>Checkout submit successful.</div>;
+    const submit_unsuccessful_jsx = <div className={form_styles.submit_label_failed}>Checkout submit was not successful.</div>;
 
-    const loader_container = (
-        (state.loading == true) ? submit_loader_spinner :
-            (state.submitted == true) ? submit_successful_jsx :
-                (state.error_found == true) ? submit_unsuccessful_jsx :
-                    null
-    );
+    const loader_container =
+        state.loading == true
+            ? submit_loader_spinner
+            : state.submitted == true
+            ? submit_successful_jsx
+            : state.error_found == true
+            ? submit_unsuccessful_jsx
+            : null;
 
-    const submit_container = loader_container != null ? (
-        <div className={form_styles.submit_container}>
-            {loader_container}
-        </div>
-    ) : null;
+    const submit_container = loader_container != null ? <div className={form_styles.submit_container}>{loader_container}</div> : null;
 
     const places_autocomplete_input_jsx = (
         <div className={form_styles.input_container}>
             <InputComponent input_type="input_autocomplete" value={state.address} address_change={address_change} />
         </div>
-    )
+    );
 
     const full_name_textbox_jsx = (
         <div className={form_styles.input_container}>
-            <InputComponent input_type="input_textbox" name="Full Name" id="full_name" placeholder="Enter Full Name..." update_field_value={update_field_value} />
+            <InputComponent
+                input_type="input_textbox"
+                name="Full Name"
+                id="full_name"
+                placeholder="Enter Full Name..."
+                update_field_value={update_field_value}
+            />
         </div>
-    )
+    );
 
     const phone_number_textbox_jsx = (
         <div className={form_styles.input_container}>
-            <InputComponent input_type="input_textbox" name="Phone #" id="phone" placeholder="Enter Phone Number..." update_field_value={update_field_value} />
+            <InputComponent
+                input_type="input_textbox"
+                name="Phone #"
+                id="phone"
+                placeholder="Enter Phone Number..."
+                update_field_value={update_field_value}
+            />
         </div>
     );
     const email_textbox_jsx = (
         <div className={form_styles.input_container}>
-            <InputComponent input_type="input_textbox" name="Email" id="email" placeholder="Enter Email Address..." update_field_value={update_field_value} />
+            <InputComponent
+                input_type="input_textbox"
+                name="Email"
+                id="email"
+                placeholder="Enter Email Address..."
+                update_field_value={update_field_value}
+            />
         </div>
     );
 
@@ -380,7 +413,6 @@ const Checkout = (props) => {
                 {image_container}
                 <div className={checkout_styles.checkout_form_container}>
                     <form method="post" onSubmit={handleSubmit}>
-
                         {title_container /* Title Container */}
 
                         {places_autocomplete_input_jsx /* Places Autocomplete Container */}
@@ -390,7 +422,6 @@ const Checkout = (props) => {
                         {phone_number_textbox_jsx /* Phone Number Container */}
 
                         {email_textbox_jsx /* Email Container */}
-
 
                         <div className={checkout_styles.price_container}>
                             {price_label}
@@ -406,13 +437,10 @@ const Checkout = (props) => {
 
     return (
         <div className={styles.details_container}>
-            <div className={styles.details_container_left}>
-                {image_container}
-            </div>
+            <div className={styles.details_container_left}>{image_container}</div>
             <div className={styles.details_container_right}>
                 <div className={checkout_styles.checkout_form_container}>
                     <form method="post" onSubmit={handleSubmit}>
-
                         {title_container /* Title Container */}
 
                         {places_autocomplete_input_jsx /* Places Autocomplete Container */}

@@ -13,8 +13,8 @@ const MenuOverlay = (props) => {
   useEffect(() => {
     const usingMenu = selectMenu(isLoaded, isSignedIn, user);
 
-    logger.debug("Menu List (Next Line):");
-    logger.debug(usingMenu);
+    console.log("Menu List (Next Line):");
+    console.log(usingMenu);
     
     const items = generateMenu(usingMenu);
     setMenuItems(items);
@@ -23,25 +23,25 @@ const MenuOverlay = (props) => {
   const generateMenu = (menuList) => {
     return menuList.map((menuItem, i) => {
       const [className, menuItemString, , urlEndpoint] = menuItem;
-      logger.debug(`Creating Menu Item for: ${menuItemString}`);
+      console.log(`Creating Menu Item for: ${menuItemString}`);
       return <MenuOverlayButton key={i} id={i} menu_name={menuItemString} url_endpoint={urlEndpoint} />;
     });
   };
 
   const selectMenu = (isLoaded, isSignedIn, user) => {
     if (!isLoaded) {
-      logger.debug('User not loaded - returning signed out menu...');
+      console.log('User not loaded - returning signed out menu...');
       return SIGNED_OUT_MENU_LIST;
     }
     if (!isSignedIn || user == null || !user.publicMetadata || !user.publicMetadata.role) {
-      logger.debug('User not signed in or missing metadata - returning signed out menu...');
+      console.log('User not signed in or missing metadata - returning signed out menu...');
       return SIGNED_OUT_MENU_LIST;
     }
     if (user.publicMetadata.role === 'ADMIN') {
-      logger.debug('User has role Admin - returning admin menu...');
+      console.log('User has role Admin - returning admin menu...');
       return ADMIN_MENU_LIST;
     }
-    logger.debug('User is signed in but not admin - returning signed in non-admin menu...');
+    console.log('User is signed in but not admin - returning signed in non-admin menu...');
     return SIGNED_IN_MENU_LIST;
   };
 

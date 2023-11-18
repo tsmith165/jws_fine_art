@@ -67,7 +67,7 @@ class InputComponent extends React.Component {
                             onChange={(e) => {
                                 e.preventDefault();
                                 const changed_value = document.getElementById(id).value; 
-                                logger.debug(`NEW VALUE FOR ${id}: ${changed_value}`); 
+                                console.log(`NEW VALUE FOR ${id}: ${changed_value}`); 
                                 this.props.update_field_value(id, changed_value)
                             }
                         }/>
@@ -91,7 +91,7 @@ class InputComponent extends React.Component {
                                 e.preventDefault();
                                 var changed_value = document.getElementById(id).value;
                                 changed_value = changed_value.split('<br>').join('\n');
-                                logger.debug(`NEW VALUE FOR ${id}: ${changed_value}`); 
+                                console.log(`NEW VALUE FOR ${id}: ${changed_value}`); 
                                 this.props.update_field_value(id, changed_value)
                             }
                         }/>
@@ -193,7 +193,7 @@ class InputComponent extends React.Component {
                             className={styles.date_picker}
                             selected={this.props.state.date} 
                             onChange= { (date) => {
-                                logger.debug(`NEW DATE SELECTED: ${date}`); 
+                                console.log(`NEW DATE SELECTED: ${date}`); 
                                 this.props.update_field_value(id, date)
                                 }
                             } 
@@ -263,7 +263,7 @@ class InputComponent extends React.Component {
                                 className={`${styles.input_file_select}`}
                                 classNamePrefix="select"
                                 onChange={(new_selected_option) => {
-                                    logger.debug(`NEW FILE TYPE SELECTED: ${new_selected_option}`);
+                                    console.log(`NEW FILE TYPE SELECTED: ${new_selected_option}`);
                                     this.props.update_field_value('file_upload_type', new_selected_option)
                                 }}
                                 styles={{

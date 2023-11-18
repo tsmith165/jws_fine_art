@@ -30,7 +30,7 @@ const Gallery = (props) => {
 
     useEffect(() => {
         const handleResize = () => {
-            logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+            console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState(prevState => ({
                 ...prevState,
                 window_width: window.innerWidth,
@@ -56,17 +56,17 @@ const Gallery = (props) => {
         const piece_list_length = piece_list.length
 
         if (piece_list == null || piece_list.length < 1) {
-            logger.error(`Cannot create gallery, passed piece_list invalid.  Width: ${(state.window_width == undefined) ? null : state.window_width}`)
+            console.error(`Cannot create gallery, passed piece_list invalid.  Width: ${(state.window_width == undefined) ? null : state.window_width}`)
         }
-        logger.debug(`Passed piece_list length: ${piece_list_length}`)
+        console.log(`Passed piece_list length: ${piece_list_length}`)
 
         if (state.window_width == undefined) {
-            logger.error(`Cannot create gallery, state.window_width invalid.  Value: ${(state.window_width == undefined) ? null : state.window_width}`)
+            console.error(`Cannot create gallery, state.window_width invalid.  Value: ${(state.window_width == undefined) ? null : state.window_width}`)
         }
         if (state.window_height == undefined) {
-            logger.error(`Cannot create gallery, state.window_height invalid.  Value: ${(state.window_width == undefined) ? null : state.window_width}`)
+            console.error(`Cannot create gallery, state.window_height invalid.  Value: ${(state.window_width == undefined) ? null : state.window_width}`)
         }
-        logger.debug(`Window Width: ${state.window_width} | Window height: ${state.window_height}`)
+        console.log(`Window Width: ${state.window_width} | Window height: ${state.window_height}`)
 
         var gallery_pieces = [];
         var column_bottom_list = [];
@@ -91,13 +91,13 @@ const Gallery = (props) => {
         var row_starting_height = INNER_MARGIN_WIDTH;
         var skip_col = false;
 
-        // logger.debug(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
-        // logger.debug(piece_list)
+        // console.log(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
+        // console.log(piece_list)
 
         var i = 0; var real_i = 0;
         while (i < piece_list_length) {
             var current_piece_json = piece_list[i];
-            // logger.debug(current_piece_json)
+            // console.log(current_piece_json)
 
             var piece_theme = (current_piece_json['theme'] !== undefined) ? ((current_piece_json['theme'] != null) ? current_piece_json['theme'] : 'None') : 'None';
             var piece_sold = (current_piece_json['sold'] !== undefined) ? ((current_piece_json['sold'] != null) ? current_piece_json['sold'] : false) : false;
@@ -204,15 +204,17 @@ const Gallery = (props) => {
         }, 1000);  // 2 seconds delay
     };
 
+    const gallery_clicked = (e) => {
+        if (appState.filter_menu_open == true && state.window_width < 768) {
+            setAppState({ ...appState, filter_menu_open: false });
+        }
+    }
+
     return (
         <>
             {!state.fade_in_visible ? null : (<div className={`fixed top-[100px] left-0 right-0 bottom-0 bg-black z-50 animate-fade-out pointer-events-auto `}></div> )}
             <div className={`h-full bg-dark w-full`}>
-                <div className={`relative max-h-[calc(100vh-100px)] w-full overflow-y-auto overflow-x-hidden bg-dark`} onClick={(e) => {
-                    if (appState.filter_menu_open == true && state.window_width < 768) {
-                        setAppState({ ...appState, filter_menu_open: false });
-                    }
-                }}>
+                <div className={`relative max-h-[calc(100vh-100px)] w-full overflow-y-auto overflow-x-hidden bg-dark`} onClick={(e) => {gallery_clicked()}}>
                     <div className={`w-full`} style={{ height: state.lowest_height }}>
                         {state.gallery_pieces}
                     </div>

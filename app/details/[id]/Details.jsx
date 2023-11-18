@@ -30,7 +30,7 @@ const Details = (props) => {
     const pathname = usePathname();
     const passed_o_id = pathname.split('/').slice(-1)[0];
 
-    logger.section({ message: `LOADING DETAILS PAGE - Piece ID: ${passed_o_id}` });
+    console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`);
     console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`)
 
     const piece_list = props.piece_list;
@@ -67,15 +67,15 @@ const Details = (props) => {
     var image_path = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
     var instagram = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
 
-    logger.debug(`Piece Type: "${piece_type}"`)
+    console.log(`Piece Type: "${piece_type}"`)
 
-    logger.debug(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`)
+    console.log(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`)
     var extra_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
-    logger.debug(`Using Extra Images: "${extra_images}"`)
+    console.log(`Using Extra Images: "${extra_images}"`)
 
-    logger.debug(`Edit Page ${passed_o_id} Progress Images: "${current_piece.extra_images}"`)
+    console.log(`Edit Page ${passed_o_id} Progress Images: "${current_piece.extra_images}"`)
     var progress_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
-    logger.debug(`Using Progress Images: "${progress_images}"`)
+    console.log(`Using Progress Images: "${progress_images}"`)
     /* prettier-ignore-end */
 
     description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
@@ -129,7 +129,7 @@ const Details = (props) => {
 
     useEffect(() => { // Initial Load
         const handleResize = () => {
-            logger.debug(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+            console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState(prevState => ({
                 ...prevState,
                 window_width: window.innerWidth,
@@ -152,7 +152,7 @@ const Details = (props) => {
             progress_image_array = create_extra_image_array(state.progress_images, state.selected_gallery_image);
         }
 
-        logger.debug(`Setting state with Piece Position: ${state.piece_position} | piece list length: ${num_pieces}`);
+        console.log(`Setting state with Piece Position: ${state.piece_position} | piece list length: ${num_pieces}`);
         update_state({
             loading: false,
             window_width: window.innerWidth,
@@ -176,8 +176,8 @@ const Details = (props) => {
     }, []);
 
     const update_state = (newState) => {
-        logger.debug(`Updating state with object (Next Line):`);
-        logger.debug(newState);
+        console.log(`Updating state with object (Next Line):`);
+        console.log(newState);
 
         setState(prevState => ({ ...prevState, ...newState }));
     };
@@ -188,18 +188,18 @@ const Details = (props) => {
         const previous_url_o_id = state.url_o_id;
         const num_pieces = piece_list.length;
 
-        logger.debug(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
+        console.log(`Piece Count: ${num_pieces} | Searching for URL_O_ID: ${o_id}`);
         const [piece_position, current_piece] = await get_piece_from_path_o_id(piece_list, o_id);
         const current_db_id = current_piece['id'];
         const current_o_id = current_piece['o_id'];
 
-        logger.debug(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Piece O ID: ${current_o_id} | Description (Next Line):`);
+        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Piece O ID: ${current_o_id} | Description (Next Line):`);
         console.log(current_piece.description);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
         const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1].o_id : piece_list[piece_position - 1].o_id;
 
-        logger.debug(
+        console.log(
             `Updating to new selected piece with Postition: ${piece_position} | ` +
             `DB ID: ${current_db_id} | O_ID: ${current_o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`
         );
@@ -254,7 +254,7 @@ const Details = (props) => {
     };
 
     const create_image_array = (piece_list, piece_position) => {
-        logger.debug(`Current window width: ${window.innerWidth} | piece position: ${piece_position}`)
+        console.log(`Current window width: ${window.innerWidth} | piece position: ${piece_position}`)
 
         const styles = window.innerWidth > 1000 ? desktop_styles : mobile_styles;
 
@@ -325,16 +325,16 @@ const Details = (props) => {
         using_extra_images = typeof state.extra_images === 'string' ? JSON.parse(state.extra_images) : state.extra_images;
     } catch (error) { }
 
-    logger.debug(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
-    logger.debug(using_extra_images)
+    console.log(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
+    console.log(using_extra_images)
 
     let using_progress_images = null;
     try {
         using_progress_images = typeof state.progress_images === 'string' ? JSON.parse(state.progress_images) : state.progress_images;
     } catch (error) { }
 
-    logger.debug(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
-    logger.debug(using_progress_images)
+    console.log(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
+    console.log(using_progress_images)
 
     // Gallery Loader Container JSX
     const image_loader_container_jsx = (
