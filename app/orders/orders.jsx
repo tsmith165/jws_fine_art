@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 
 import OrderTree from './OrderTree';
 
-import styles from '@/styles/pages/Orders.module.scss';
-
 const Orders = (props) => {
     const router = useRouter();
     const { isLoaded, isSignedIn, user } = useUser();
