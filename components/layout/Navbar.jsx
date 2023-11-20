@@ -4,8 +4,6 @@ import Image from 'next/image';
 
 import SiteMenu from './SiteMenu';
 
-import styles from '@/styles/layout/Navbar.module.scss';
-
 const Navbar = () => {
     return (
         <nav className={'min-h-[100px] overflow-hidden bg-secondary p-0'}>

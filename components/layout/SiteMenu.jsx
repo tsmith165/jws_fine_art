@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import MenuOverlay from './menu/MenuOverlay';
-import styles from '@/styles/layout/Navbar.module.scss';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { SignedIn, SignedOut, UserButton, ClerkLoading } from '@clerk/nextjs';
