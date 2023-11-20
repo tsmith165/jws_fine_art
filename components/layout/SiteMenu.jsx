@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -20,11 +20,12 @@ const SiteMenu = () => {
     };
 
     return (
-        <>
+        <div className="flex w-fit flex-row">
             {/* Account Profile Button */}
-            <div className={styles.clerk_user_button_container}>
+            <div className="p-0">
                 <SignedIn>
                     <UserButton
+                        className="!h-[40px] !w-[40px] bg-dark p-[2.5px] hover:bg-light md:!h-[50px] md:!w-[50px]"
                         appearance={{
                             userProfile: { elements: { breadcrumbs: 'bg-slate-500' } },
                         }}
@@ -32,45 +33,38 @@ const SiteMenu = () => {
                 </SignedIn>
                 <SignedOut>
                     <Link href="/signin">
-                        <div className={styles.sign_in_container}>
-                            <AccountCircleIcon className={styles.sign_in_button} />
+                        <div className="h-full w-full">
+                            <AccountCircleIcon className="!h-[40px] !w-[40px] rounded-t-md bg-dark !fill-light p-[2.5px] hover:bg-light hover:!fill-dark md:!h-[50px] md:!w-[50px]" />
                         </div>
                     </Link>
                 </SignedOut>
                 <ClerkLoading>
                     <Link href="/signin">
-                        <div className={styles.sign_in_container}>
-                            <AccountCircleIcon className={styles.sign_in_button} />
+                        <div className="h-full w-full">
+                            <AccountCircleIcon className="!h-[40px] !w-[40px] rounded-t-md bg-dark !fill-light p-[2.5px] hover:bg-light hover:!fill-dark md:!h-[50px] md:!w-[50px]" />
                         </div>
                     </Link>
                 </ClerkLoading>
             </div>
 
             {/* Hamburger Button */}
-            <div className={styles.page_menu_full_container} onMouseLeave={(e) => {
-                e.preventDefault();
-                setMenuOpen(false);
-            }}>
-                <div
-                    className={styles.menu_button_container}
-                    onClick={handleMenuToggle}
-                >
-                    <MenuIcon className={isMenuOpen ? styles.hamburger_button_open : styles.hamburger_button} />
+            <div className={`p-0`} onMouseLeave={() => setMenuOpen(false)}>
+                <div className={`h-full w-full`} onClick={handleMenuToggle}>
+                    <MenuIcon
+                        className={`!h-[40px] !w-[40px] bg-dark p-[2.5px] ${
+                            isMenuOpen ? 'bg-light !fill-dark ' : 'bg-dark !fill-light'
+                        } rounded-t-md hover:bg-light hover:!fill-dark md:!h-[50px] md:!w-[50px]`}
+                    />
                 </div>
 
                 {isMenuOpen && (
-                    <div className={styles.page_menu_container}>
-                        <div className={styles.page_menu_body}>
-                            <MenuOverlay />
-                        </div>
+                    <div className={'absolute right-0 top-[50px] z-50 h-fit w-[200px] border-b-2 border-l-2 border-secondary bg-light'}>
+                        <MenuOverlay />
                     </div>
                 )}
-            </div>  
-        </>
+            </div>
+        </div>
     );
 };
 
 export default SiteMenu;
-
-
-

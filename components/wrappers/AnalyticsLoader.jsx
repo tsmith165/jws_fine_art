@@ -1,20 +1,29 @@
-// components/components/ScriptLoader.js
+// components/components/AnalyticsLoader.js
 import Script from 'next/script';
 import * as gtag from '@/lib/gtag';
 
-function ScriptLoader() {
+function AnalyticsLoader() {
     return (
         <>
             <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`} />
-            <Script id="gtag-init" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
+            <Script
+                id="gtag-init"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                    __html: `
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', '${gtag.GA_TRACKING_ID}', {
                     page_path: window.location.pathname,
                 });
-            ` }} />
-            <Script strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
+            `,
+                }}
+            />
+            <Script
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                    __html: `
                 var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
                 (function(){
                     var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
@@ -24,9 +33,11 @@ function ScriptLoader() {
                     s1.setAttribute('crossorigin','*');
                     s0.parentNode.insertBefore(s1,s0);
                 })();
-            ` }} />
+            `,
+                }}
+            />
         </>
     );
 }
 
-export default ScriptLoader;
+export default AnalyticsLoader;
