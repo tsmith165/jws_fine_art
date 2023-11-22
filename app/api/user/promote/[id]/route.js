@@ -11,7 +11,8 @@ export async function POST(req) {
     return Response.json({ error: "Authentication failed" }, { status: 401 });
   }
 
-  const id = req.query.id.toString();
+  console.log(`Request URL: ${req.url}`);
+  const id = req.url.split('/').pop();
   console.log(`Auth Successful. Start PROMOTE API for ID: ${id}`);
 
   try {

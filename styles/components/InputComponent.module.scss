@@ -108,6 +108,7 @@
     display: flex;
     width: 100%;
 }
+    
 .input_autocomplete {
     width: 70%;
     height: 100%;
@@ -212,7 +213,13 @@
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     flex-grow: 1;
+     
+    &::placeholder {
+        color: $dark !important;
+        opacity: 1;
+    }
 }
+
 /* END Input File Section */
 
 .upload_success {
