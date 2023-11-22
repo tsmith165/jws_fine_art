@@ -1,17 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { authenticate } from "@/lib/authMiddleware";
 
-export async function POST(req) {
+export async function POST(req, ) {
     console.log("Authenticating...");
 
     const isAuthenticated = await authenticate(req);
     
     // Return early if not authenticated.
     if (!isAuthenticated) {
+        console.log("Request not authenticated. Returning 401.")
         return Response.json({ error: "Authentication failed" }, { status: 401 });
     }
 
-    const id = req.query.id.toString();
+    console.log(`Request URL: ${req.url}`);
+    const id = req.url.split('/').pop();
     console.log(`Auth Successful. Start DELETE PIECE API for ID: ${id}`);
     
     try {
