@@ -54,3 +54,8 @@ select {
   scrollbar-color: $dark transparent;
   color: $secondary;
 }
+
+@keyframes slide {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
