@@ -18,6 +18,8 @@ export async function POST(req) {
         return Response.json({ error: "Request body is undefined" }, { status: 400 });
     }
 
+    console.log('Current req.body: ', passed_json)
+
     if (
         !passed_json.piece_db_id ||
         !passed_json.piece_title ||
@@ -32,7 +34,15 @@ export async function POST(req) {
         return Response.json({ error: "Incomplete request body" }, { status: 406 });
     } else {
         // Create Pending Transaction
-        const pending_transaction_output = await create_pending_transaction(passed_json);
+        const pending_transaction_output = await create_pending_transaction({
+            piece_db_id: passed_json.piece_db_id, 
+            piece_title: passed_json.piece_title, 
+            full_name: passed_json.full_name, 
+            phone: passed_json.phone, 
+            email: passed_json.email, 
+            address: passed_json.address, 
+            international: passed_json.international
+        });
         console.log(`Pending Transaction Output (Next Line):`);
         console.log(pending_transaction_output);
         return Response.json({ success: true });
