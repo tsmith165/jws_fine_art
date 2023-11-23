@@ -39,7 +39,7 @@ const Manage = (props) => {
     return (
         <div className={styles.main_container}>
             <div className={styles.main_body}>
-                <h2 className={styles.module_title}>Piece Management:</h2>
+                <h2 className={'text-dark py-2 text-xl font-bold'}>Piece Management:</h2>
                 <div className={styles.manage_main_container}>
                     <div className={styles.pieces_tree_container}>
                         <PieceTree piece_tree_data={pieceList} refresh_data={refreshPieceList} />

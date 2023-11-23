@@ -26,9 +26,9 @@ const Orders = (props) => {
         return router.push('/signin');
     }
     return (
-        <div className={'h-full w-full overflow-y-auto overflow-x-hidden'}>
+        <div className={'h-full w-full overflow-y-auto overflow-x-hidden bg-dark'}>
             <div className={'p-4'}>
-                <h2 className={'mt-1 text-secondary'}>Order Management:</h2>
+            <h2 className={'mt-1 text-primary text-xl font-bold'}>Order Management:</h2>
                 <OrderTree verified_list={props.verified_list} />
             </div>
         </div>
