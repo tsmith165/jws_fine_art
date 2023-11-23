@@ -1,18 +1,18 @@
 export const metadata = {
-  title: 'JWS Fine Art - Admin',
-  description: 'Display admin info for authenticated users',
+  title: 'JWS Fine Art - Sign Up',
+  description: 'Sign up to JWS Fine Art',
   icons: {
       icon: '/JWS_ICON.png',
   },
 }
 
 import PageLayout from '@/components/layout/PageLayout';
-import Admin from '@/app/admin/admin';
+import Sign_Up from '@/app/signup/Sign_Up';
 
 export default async function Page(props) {
   return (
     <PageLayout {...props}>
-      <Admin/>
+      <Sign_Up/>
     </PageLayout>
   )
 }

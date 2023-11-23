@@ -16,7 +16,7 @@ export default function sitemap() {
       url: 'https://www.jwsfineart.com/details/1',
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.5,
+      priority: 1,
     },
     {
       url: 'https://www.jwsfineart.com/slideshow',

@@ -1,11 +1,9 @@
 {
-    "singleQuote": true,
-    "trailingComma": "all",
-    "printWidth": 120,
-    "tabWidth": 4,
-    "semi": true,
-    "proseWrap": "preserve",
-    "jsxBracketSameLine": true,
-    "plugins": ["prettier-plugin-preserve-formatting"]
-  }
-  
+  "semi": true,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "printWidth": 140,
+  "tabWidth": 4,
+  "useTabs": false,
+  "plugins": ["prettier-plugin-tailwindcss"]
+}
