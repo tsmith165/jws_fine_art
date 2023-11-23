@@ -427,8 +427,8 @@ const Details = (props) => {
     )
 
     const progress_images_gallery_container_jsx = state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
-        <div className={styles.full_gallery_panel}>
-            <div className={styles.full_gallery_panel_header}>
+        <div className={'flex flex-col p-3 min-w-[300px]'}>
+            <div className={'text-lg font-bold bg-primary text-dark px-2 py-1 rounded-t-md'}>
                 Pictures of piece in progress:
             </div>
             <div className={`h-fit bg-dark rounded-b-md`}>
