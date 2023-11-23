@@ -219,6 +219,7 @@ const EditForm = ({
     const description_text_area_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='description'
                 input_type={'input_textarea'}
                 split={false}
                 value={state.description}
@@ -231,6 +232,7 @@ const EditForm = ({
     const theme_multiselect_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='theme'
                 input_type="input_multiselect"
                 name="Theme"
                 value={state.theme_options}
@@ -253,11 +255,11 @@ const EditForm = ({
     const piece_type_select_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='piece_type'
                 input_type={'input_select'}
                 split={false}
                 value={state.piece_type}
                 name={'Type'}
-                id={'piece_type'}
                 update_field_value={update_field_value}
                 select_options={[
                     ['Oil On Canvas', 'Oil On Canvas'],
@@ -273,6 +275,7 @@ const EditForm = ({
     const available_and_sold_container_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='available'
                 input_type={'input_select'}
                 split={true}
                 value={state.available}
@@ -284,6 +287,7 @@ const EditForm = ({
                 ]}
             />
             <InputComponent
+                id='sold'
                 input_type={'input_select'}
                 split={true}
                 value={state.sold}
@@ -300,6 +304,7 @@ const EditForm = ({
     const instagram_and_price_container_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='instagram'
                 input_type={'input_textbox'}
                 split={true}
                 value={state.instagram}
@@ -308,6 +313,7 @@ const EditForm = ({
             />
 
             <InputComponent
+                id='price'
                 input_type={'input_textbox'}
                 split={true}
                 value={state.price}
@@ -320,19 +326,19 @@ const EditForm = ({
     const real_width_and_height_container_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='real_width'
                 input_type={'input_textbox'}
                 split={true}
                 value={state.real_width}
-                id={'real_width'}
                 name={'Width'}
                 update_field_value={update_field_value}
             />
 
             <InputComponent
+                id='real_height'
                 input_type={'input_textbox'}
                 split={true}
                 value={state.real_height}
-                id={'real_height'}
                 name={'Height'}
                 update_field_value={update_field_value}
             />
@@ -342,18 +348,18 @@ const EditForm = ({
     const px_width_and_height_container_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='width'
                 input_type={'input_textbox'}
                 split={true}
                 value={state.width}
-                id={'width'}
                 name={'PX Width'}
                 update_field_value={update_field_value}
             />
             <InputComponent
+                id='height'
                 input_type={'input_textbox'}
                 split={true}
                 value={state.height}
-                id={'height'}
                 name={'PX Height'}
                 update_field_value={update_field_value}
             />
@@ -363,6 +369,7 @@ const EditForm = ({
     const framed_and_comments_container_jsx = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='framed'
                 input_type={'input_select'}
                 split={true}
                 value={state.framed}
@@ -374,6 +381,7 @@ const EditForm = ({
                 ]}
             />
             <InputComponent
+                id='comments'
                 input_type={'input_textarea'}
                 split={true}
                 value={state.comments}
@@ -387,11 +395,11 @@ const EditForm = ({
     const file_input_continer = (
         <div className={'flex h-fit w-full px-4 py-1'}>
             <InputComponent
+                id='upload_type'
                 input_type={'input_file'}
                 split={false}
-                value={state.framed}
+                value={state.file_upload_type}
                 name={'Upload'}
-                id={'upload_type'}
                 update_field_value={update_field_value}
                 file_upload_type={state.file_upload_type}
                 uploaded_image_path={state.uploaded_image_path}
