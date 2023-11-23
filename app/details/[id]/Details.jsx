@@ -256,24 +256,23 @@ const Details = (props) => {
     const create_image_array = (piece_list, piece_position) => {
         console.log(`Current window width: ${window.innerWidth} | piece position: ${piece_position}`)
 
-        const styles = window.innerWidth > 1000 ? desktop_styles : mobile_styles;
-
         var image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
             let piece = piece_list[i];
+            let selected = i == piece_position ? true : false;
             image_array.push(
                 <div key={`image_${i}`} className={
-                    (i == piece_position) ? styles.centered_image_container : styles.centered_image_container_hidden
+                    selected ? '!w-full h-full relative' : 'hidden'
                 }>
                     <CustomNextImage
                         id={`centered_image_${i}`}
-                        className={styles.centered_image}
                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
                         alt={piece.title}
                         priority={i > piece_position - 3 && i < piece_position + 3 ? true : false}
                         quality={100}
                         width={state.width}
                         height={state.height}
+                        hidden={selected ? false : true}
                     />
                 </div>
             );
@@ -282,22 +281,19 @@ const Details = (props) => {
     };
 
     const create_extra_image_array = (extra_images, selected_image_index) => {
-        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1000 ? desktop_styles : mobile_styles;
-
         var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
 
         var extra_image_array = [];
         using_extra_images.map((image, index) => {
             extra_image_array.push(
-                <div key={`extra_image_${index}`} className={index == (selected_image_index) ? styles.centered_image_container : styles.centered_image_container_hidden}>
+                <div key={`extra_image_${index}`} className={index == (selected_image_index) ? 'w-full h-full relative' : 'hidden'}>
                     <CustomNextImage
                         id={`extra_image_${index}`}
-                        className={styles.centered_image}
                         src={image.image_path}
                         alt={image.image_path}
                         priority={true}
-                        width={300}
-                        height={300}
+                        width={image.width}
+                        height={image.height}
                         quality={100}
                     />
                 </div>
@@ -338,15 +334,15 @@ const Details = (props) => {
 
     // Gallery Loader Container JSX
     const image_loader_container_jsx = (
-        <div className={`${styles.loader_container}`}>
-            <div>Loading Gallery</div>
-            <CircularProgress color="inherit" className={styles.loader} />
+        <div className={`flex justify-center items-center flex-col h-full w-full`}>
+            <div className='text-light text-xl font-[600] pb-5'>Loading Gallery</div>
+            <CircularProgress color="inherit" className='text-light h-[100px] w-[100px]' />
         </div>
     );
 
     // Main Image Container JSX
     const image_container_jsx = (
-        <div className={styles.centered_image_container}>
+        <div className={'w-full h-full'}>
             {
                 state.loading === true ?
                     image_loader_container_jsx : state.selected_gallery_image === 0 ?
@@ -357,18 +353,17 @@ const Details = (props) => {
     );
 
     const extra_images_gallery_container_jsx = state.loading == true ? null : [null, undefined].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
-        <div className={styles.extra_images_gallery_container}>
+        <div className={'w-full h-full flex flex-row flex-nowrap items-start'}>
             {state.loading == true ? (null) : (
                 using_extra_images.map((image, index) => {
                     console.log(image)
                     var image_path = image.image_path.split('/').slice(-2).join('/')
                     console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
                     return (
-                        <div key={`extra_image_container_${index}`} className={(state.selected_gallery_image === (index + 1)) ?
-                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
-                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
+                        <div key={`extra_image_container_${index}`} className={`w-[110px] h-[110px] relative overflow-hidden mr-5 ${(state.selected_gallery_image === (index + 1)) ?
+                            `rounded-md bg-tertiary` : ``}`
                         }>
-                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={async () => {
+                            <div className={`w-[100px] h-[100px] m-[5px]`} onClick={async () => {
                                 const extra_image_array = create_extra_image_array(state.extra_images, index)
                                 update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
                             }}>
@@ -389,16 +384,14 @@ const Details = (props) => {
     );
 
     const main_image_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
-        <div className={styles.extra_images_gallery_container}>
-            <div className={(state.selected_gallery_image === 0) ?
-                `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
-                `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
-            }>
-                <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={() => {
+        <div className={`max-w-[110px] max-h-full !w-[110px] !h-[110px] flex flex-row ${(state.selected_gallery_image === 0) ?
+            `rounded-md bg-tertiary` : ``}`
+        }>
+            <div className={`w-full h-full relative mr-[5px]`}>
+                <div className={`w-[100px] h-[100px] m-1`} onClick={() => {
                     update_state({ 'selected_gallery_image': 0 })
                 }}>
                     <CustomNextImage
-                        className={styles.centered_image}
                         src={state.image_path}
                         alt={``}
                         width={state.width}
@@ -424,8 +417,10 @@ const Details = (props) => {
         </div>
 
     ) : (
-        <div className={styles.main_image_and_extra_images_container}>
-            {image_container_jsx}
+        <div className={'flex flex-col w-full h-full'}>
+            <div className='w-full h-[calc(100%-120px)]'>
+                {image_container_jsx}
+            </div>
 
             {main_image_and_extra_images_gallery_container_jsx}
         </div>
@@ -436,38 +431,33 @@ const Details = (props) => {
             <div className={styles.full_gallery_panel_header}>
                 Pictures of piece in progress:
             </div>
-            <div className={styles.full_gallery_panel_body}>
-                <div className={styles.full_gallery_padding_container}>
-                    <div className={styles.full_gallery_container}>
-                        <div className={styles.extra_images_gallery_container}>
-                            {state.loading == true ? (null) : (
-                                using_progress_images.map((image, index) => {
-                                    var image_path = image.image_path.split('/').slice(-2).join('/')
-                                    logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
-                                    return (
-                                        <div key={`progress_image_${index}`} className={(state.selected_gallery_image === (index + (using_extra_images.length) + 1)) ?
-                                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container} ${styles.selected_gallery_image}` :
-                                            `${styles.extra_images_gallery_image_container} ${styles.centered_image_container}`
-                                        }>
-                                            <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={async () => {
-                                                const progress_image_array = create_extra_image_array(state.progress_images, index)
-                                                update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
-                                            }}>
-                                                <CustomNextImage
-                                                    className={styles.centered_image}
-                                                    src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
-                                                    alt={``}
-                                                    width={image.width}
-                                                    height={image.height}
-                                                    quality={100}
-                                                />
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                            )}
-                        </div>
-                    </div>
+            <div className={`h-fit bg-dark rounded-b-md`}>
+                <div className={`max-h-full w-full flex flex-row p-2`}>
+                    {state.loading == true ? (null) : (
+                        using_progress_images.map((image, index) => {
+                            var image_path = image.image_path.split('/').slice(-2).join('/')
+                            logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
+                            return (
+                                <div key={`progress_image_${index}`} className={`w-[110px] h-[110px] relative overflow-hidden mr-[5px] ${(state.selected_gallery_image === (index + (using_extra_images.length + 1))) ?
+                                    `rounded-md bg-tertiary` : ``}`
+                                }>
+                                    <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={async () => {
+                                        const progress_image_array = create_extra_image_array(state.progress_images, index)
+                                        update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
+                                    }}>
+                                        <CustomNextImage
+                                            className={styles.centered_image}
+                                            src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                            alt={``}
+                                            width={image.width}
+                                            height={image.height}
+                                            quality={100}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </div>
@@ -485,19 +475,20 @@ const Details = (props) => {
     );
 
     // Sold Label JSX
-    const sold_label = (<div className={styles.piece_sold}>Sold</div>);
+    const sold_label = (<div className={'text-xl font-[600] text-red-800 py-1'}>Sold</div>);
 
     // Unavailable Label JSX
-    const unavailable_label = (<div className={styles.piece_sold}>Not For Sale</div>);
+    const unavailable_label = (<div className={'text-xl font-[600] text-red-800 py-1'}>Not For Sale</div>);
 
     // Price Label JSX
     const price_label = (
-        <Link href={`/checkout/${state.url_o_id}`} className={styles.price_wrapper} onClick={() => handleButtonLabelClickGTagEvent(
+        <Link href={`/checkout/${state.url_o_id}`} className={'w-fit h-fit flex flex-row space-x-2.5'} onClick={() => handleButtonLabelClickGTagEvent(
             'details_checkout_button_click', 'Details Checkout Button', 'Details Checkout Button Clicked')
         }>
-            <div className={styles.price_label_wrapper}>
+
+            <div className={'text-lg text-dark font-bold leading-10'}>{`$${state.price}`}</div>
+            <div className={'flex rounded-md bg-dark hover:bg-light px-2 py-1'}>
                 <NextImage
-                    className={styles.price_label_stripe_image}
                     src="/stripe_checkout_tan-221_50.png"
                     alt="View Stripe Info"
                     priority={true}
@@ -505,7 +496,6 @@ const Details = (props) => {
                     height={30}
                 />
             </div>
-            <div className={styles.price_text}>{`$${state.price}`}</div>
         </Link>
     );
 
@@ -516,17 +506,14 @@ const Details = (props) => {
 
     // Instagram Button JSX
     const instagram_jsx = (state.instagram != null && state.instagram != '' && state.instagram.length > 5) ? (
-        <Link className={styles.instagram_link_container} href={`https://www.instagram.com/p/${state.instagram}`}>
-            <div className={styles.instagram_image_container}>
-                <NextImage
-                    className={styles.instagram_link_image}
-                    src="/instagram_icon_100.png"
-                    alt="Instagram Link"
-                    priority={true}
-                    width={50}
-                    height={50}
-                />
-            </div>
+        <Link className={'bg-dark p-1.5 rounded-md hover:bg-light'} href={`https://www.instagram.com/p/${state.instagram}`}>
+            <NextImage
+                src="/instagram_icon_100.png"
+                alt="Instagram Link"
+                priority={true}
+                width={25}
+                height={25}
+            />
         </Link>
     ) : null;
 
@@ -538,7 +525,9 @@ const Details = (props) => {
         if (user.publicMetadata.role == 'ADMIN') {
             edit_piece_button_jsx = (
                 <Link href={`/edit/${state.url_o_id}`}>
-                    <div className={styles.edit_piece_button}>Edit Piece</div>
+                    <div className={'bg-dark text-light text-lg px-2.5 py-1.5 rounded-md hover:bg-light hover:text-dark w-fit whitespace-nowrap'}>
+                        Edit Piece
+                    </div>
                 </Link>
             )
         }
@@ -567,8 +556,8 @@ const Details = (props) => {
         <div className={styles.details_form_container}>
             {piece_specification_table}
 
-            <div className={styles.details_navigation_container}>
-                <div className={styles.details_navigation_inner_container}>
+            <div className={'flex flex-row'}>
+                <div className={'flex flex-row space-x-2.5 px-2.5'}>
                     {price_jsx}
                     {instagram_jsx}
                     {edit_piece_button_jsx}
@@ -582,10 +571,10 @@ const Details = (props) => {
         return (
             <>
                 <div className={styles.details_container}>
-                    <div className={styles.details_container_left}>
+                    <div className={'w-[65%] h-full bg-dark'}>
                         {final_image_container_jsx}
                     </div>
-                    <div className={styles.details_container_right}>
+                    <div className={'w-[35%] h-full bg-grey'}>
                         {title_container}
                         {details_form}
                         {progress_images_gallery_container_jsx}

@@ -409,8 +409,6 @@ const Edit = (props) => {
     };
 
     const create_image_array = async (piece_list, piece_position, db_id, only_load_cover = false) => {
-        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1000 ? desktop_styles : mobile_styles;
-
         var temp_image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
             let piece = piece_list[i];
@@ -442,24 +440,19 @@ const Edit = (props) => {
     };
 
     const create_extra_image_array = async (extra_images, selected_image_index) => {
-        const styles = window.innerWidth === undefined ? desktop_styles : window.innerWidth > 1000 ? desktop_styles : mobile_styles;
-
         var using_extra_images = typeof extra_images === 'string' ? JSON.parse(extra_images) : extra_images;
 
         var temp_extra_image_array = [];
         using_extra_images.map((image, index) => {
             temp_extra_image_array.push(
-                <div
-                    key={`extra_image_${index}`}
-                    className={index == selected_image_index ? styles.centered_image_container : styles.centered_image_container_hidden}
-                >
+                <div key={`extra_image_${index}`} className={index == (selected_image_index) ? 'w-full h-full relative' : 'hidden'} >
                     <CustomNextImage
                         id={`extra_image_${index}`}
                         className={styles.centered_image}
                         src={image.image_path}
                         alt={image.image_path}
                         priority={true}
-                        width={300}
+                        width={image.width}
                         height={300}
                         quality={100}
                     />
@@ -811,9 +804,9 @@ const Edit = (props) => {
 
     // Gallery Loader Container JSX
     const image_loader_container_jsx = (
-        <div className={styles.loader_container}>
-            <div>Loading Gallery</div>
-            <CircularProgress color="inherit" className={styles.loader} />
+        <div className={`flex justify-center items-center flex-col h-full w-full`}>
+            <div className='text-light text-xl font-[600] pb-5'>Loading Gallery</div>
+            <CircularProgress color="inherit" className='text-light h-[100px] w-[100px]' />
         </div>
     );
 
@@ -831,66 +824,53 @@ const Edit = (props) => {
 
     // Main Image Container JSX
     const image_container_jsx = (
-        <div className={styles.centered_image_container}>{state.loading === true ? image_loader_container_jsx : main_image}</div>
+        <div className={'w-full h-full'}>{state.loading === true ? image_loader_container_jsx : main_image}</div>
     );
 
     const extra_images_gallery_container_jsx =
         state.loading == true ? null : [null, undefined].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
-            <div className={styles.extra_images_gallery_container}>
-                {state.loading == true
-                    ? null
+            <div className={'w-full h-full flex flex-row flex-nowrap items-start'}>
+                {state.loading == true ? null
                     : using_extra_images.map((image, index) => {
-                          var image_path = image.image_path.split('/').slice(-2).join('/');
-                          console.log(`Extra Images Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`);
-                          return (
-                              <div
-                                  className={`h-full w-full justify-center ${
-                                      state.selected_gallery_image === index + 1 ? 'rounded-md bg-tertiary' : ''
-                                  }`}
-                              >
-                                  <div
-                                      className={`h-full w-full`}
-                                      onClick={async () => {
-                                          const extra_image_array = await create_extra_image_array(state.extra_images, index);
-                                          update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
-                                      }}
-                                  >
-                                      <CustomNextImage
-                                          className={'h-full w-full'}
-                                          src={
-                                              image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                                                  ? image_path
-                                                  : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`
-                                          }
-                                          alt={``}
-                                          width={image.width}
-                                          height={image.height}
-                                          quality={100}
-                                      />
-                                  </div>
-                              </div>
-                          );
-                      })}
+                        let image_path = image.image_path.split('/').slice(-2).join('/');
+                        let image_selected = state.selected_gallery_image === index + 1;
+                        console.log(`Extra Images Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`);
+                        return (
+                            <div key={`extra_image_container_${index}`} className={`w-[110px] h-[110px] relative overflow-hidden mr-5 ${(state.selected_gallery_image === (index + 1)) ?
+                                `rounded-md bg-tertiary` : ``}`
+                            }>
+                                <div className={`w-[100px] h-[100px] m-[5px]`} onClick={async () => {
+                                    const extra_image_array = await create_extra_image_array(state.extra_images, index);
+                                    update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
+                                }}>
+                                    <CustomNextImage
+                                        src={
+                                            image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
+                                                ? image_path
+                                                : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`
+                                        }
+                                        alt={``}
+                                        width={image.width}
+                                        height={image.height}
+                                        quality={100}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
             </div>
         );
 
-    const main_image_gallery_container_jsx =
-        extra_images_gallery_container_jsx == null ? null : (
-            <div className={styles.extra_images_gallery_container}>
-                <div className={`flex h-full w-full justify-center ${state.selected_gallery_image === 0 ? 'rounded-md bg-tertiary' : ''}`}>
-                    <div
-                        className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`}
-                        onClick={() => {
-                            update_state({ selected_gallery_image: 0 });
-                        }}
-                    >
+        const main_image_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
+            <div className={`max-w-[110px] max-h-full !w-[110px] !h-[110px] flex flex-row ${(state.selected_gallery_image === 0) ?
+                `rounded-md bg-tertiary` : ``}`
+            }>
+                <div className={`w-full h-full relative mr-[5px]`}>
+                    <div className={`w-[100px] h-[100px] m-1`} onClick={() => {
+                        update_state({ 'selected_gallery_image': 0 })
+                    }}>
                         <CustomNextImage
-                            className={'h-full w-full'}
-                            src={
-                                state.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                                    ? image_path
-                                    : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`
-                            }
+                            src={state.image_path}
                             alt={``}
                             width={state.width}
                             height={state.height}
@@ -899,7 +879,7 @@ const Edit = (props) => {
                     </div>
                 </div>
             </div>
-        );
+        )
 
     const main_image_and_extra_images_gallery_container_jsx =
         extra_images_gallery_container_jsx == null ? null : (
@@ -914,9 +894,11 @@ const Edit = (props) => {
         extra_images_gallery_container_jsx == null ? (
             <div className={styles.main_image_only_container}>{image_container_jsx}</div>
         ) : (
-            <div className={styles.main_image_and_extra_images_container}>
-                {image_container_jsx}
-                {main_image_and_extra_images_gallery_container_jsx}
+            <div className={'flex flex-col w-full h-full'}>
+                <div className='w-full h-[calc(100%-120px)]'>
+                    {image_container_jsx}
+                </div>
+                {main_image_and_extra_images_gallery_container_jsx} 
             </div>
         );
 
@@ -924,53 +906,47 @@ const Edit = (props) => {
         state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length <
           1 ? null : (
             <div className={styles.full_gallery_panel}>
-                <div className={styles.full_gallery_panel_header}>Pictures of piece in progress:</div>
-                <div className={styles.full_gallery_panel_body}>
-                    <div className={styles.full_gallery_container}>
-                        <div className={styles.extra_images_gallery_container}>
-                            {state.loading == true
-                                ? null
-                                : using_progress_images.map((image, index) => {
-                                      var image_path = image.image_path.split('/').slice(-2).join('/');
-                                      logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`);
-                                      return (
-                                          <div
-                                              className={`flex h-full w-full justify-center ${
-                                                  state.selected_gallery_image === index + using_extra_images.length + 1
-                                                      ? 'rounded-md bg-tertiary'
-                                                      : ''
-                                              }`}
-                                          >
-                                              <div
-                                                  className={`h-full w-full`}
-                                                  onClick={async () => {
-                                                      const progress_image_array = await create_extra_image_array(
-                                                          state.progress_images,
-                                                          index,
-                                                      );
-                                                      update_state({
-                                                          selected_gallery_image: index + using_extra_images.length + 1,
-                                                          progress_image_array: progress_image_array,
-                                                      });
-                                                  }}
-                                              >
-                                                  <CustomNextImage
-                                                      className={'h-full w-full'}
-                                                      src={
-                                                          image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                                                              ? image_path
-                                                              : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`
-                                                      }
-                                                      alt={``}
-                                                      width={image.width}
-                                                      height={image.height}
-                                                      quality={100}
-                                                  />
-                                              </div>
-                                          </div>
-                                      );
-                                  })}
-                        </div>
+                <div className={styles.full_gallery_panel_header}>
+                    Pictures of piece in progress:
+                </div>
+                <div className={`h-fit bg-dark rounded-b-md`}>
+                    <div className={`max-h-full w-full flex flex-row p-2`}>
+                        {state.loading == true ? null : using_progress_images.map((image, index) => {
+                            var image_path = image.image_path.split('/').slice(-2).join('/');
+                            logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`);
+                            return (
+                                <div key={`progress_image_${index}`} className={`w-[110px] h-[110px] relative overflow-hidden mr-[5px] ${(state.selected_gallery_image === (index + (using_extra_images.length + 1))) ?
+                                    `rounded-md bg-tertiary` : ``}`
+                                }>
+                                    <div
+                                        className={`h-full w-full`}
+                                        onClick={async () => {
+                                            const progress_image_array = await create_extra_image_array(
+                                                state.progress_images,
+                                                index,
+                                            );
+                                            update_state({
+                                                selected_gallery_image: index + using_extra_images.length + 1,
+                                                progress_image_array: progress_image_array,
+                                            });
+                                        }}
+                                    >
+                                        <CustomNextImage
+                                            className={'h-full w-full'}
+                                            src={
+                                                image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
+                                                    ? image_path
+                                                    : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`
+                                            }
+                                            alt={``}
+                                            width={image.width}
+                                            height={image.height}
+                                            quality={100}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -1121,6 +1097,7 @@ const Edit = (props) => {
             extra_images_text_jsx={extra_images_text_jsx}
             error_message_jsx={error_message_jsx}
             progress_images_gallery_container_jsx={progress_images_gallery_container_jsx}
+            create_blank_piece={create_blank_piece}
         />
     );
 
@@ -1147,8 +1124,8 @@ const Edit = (props) => {
         return (
             <>
                 <div className={'flex h-[calc(100vh-100px)] w-full flex-col md:flex-row'}>
-                    <div className={'md:w-2/3'}>{final_image_container_jsx}</div>
-                    <div className={'md:w-1/3'}>{edit_form}</div>
+                    <div className={'md:w-2/3 bg-dark'}>{final_image_container_jsx}</div>
+                    <div className={'md:w-1/3 bg-grey'}>{edit_form}</div>
                 </div>
 
                 <div style={{ display: 'none' }}>
