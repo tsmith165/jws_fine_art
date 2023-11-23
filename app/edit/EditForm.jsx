@@ -114,10 +114,11 @@ const EditForm = ({
     };
 
     const onFileChange = async (event) => {
+        console.log('File changed.  Attempting upload...')
         event.preventDefault();
-        update_state({ loading: false, uploading: false, resizing: true });
+        // update_state({ loading: false, uploading: true, resizing: true });
 
-       console.log('File Input Change Event Triggered');
+        console.log('File Input Change Event Triggered');
 
         try {
             var selected_file = event.target.files[0];
@@ -125,7 +126,7 @@ const EditForm = ({
             var file_extension = file_name.split('.').pop().toLowerCase();
             var title = state.title.toLowerCase().replace().replace(/\s+/g, '_'); // Replace spaces with underscore
 
-            update_state({ loading: false, uploading: true, resizing: false });
+            console.log('Uploading selected file: ', selected_file)
 
             if (state.file_upload_type === 'extra') {
                 let current_index = state.extra_images.length < 1 ? 1 : state.extra_images.length + 1;
@@ -157,14 +158,14 @@ const EditForm = ({
 
             const file_name_with_extension = `${file_name}.${file_extension}`;
 
+            console.log('Getting S3 upload URL...')
             const s3_upload_url = await get_upload_url(file_name_with_extension, state.file_upload_type);
             console.log(`Got Upload URL: ${s3_upload_url}`);
 
             var uploaded_image_path = await upload_image(s3_upload_url, selected_file);
             console.log(`Got Upload Reponse: ${uploaded_image_path}`);
 
-            update_state({ loading: true, uploading: false, resizing: false });
-            load_changed_images(uploaded_image_path);
+            update_state({ loading: true, uploading: false, resizing: false, uploaded_image_path: uploaded_image_path });
         } catch (err) {
             update_state({ uploaded: false, upload_error: true, loading: true, uploading: false, resizing: false });
             console.error(`S3 Image Upload Error: ${err.message}`);
@@ -196,16 +197,22 @@ const EditForm = ({
             img.onload = function () {
                 let canvas = document.createElement('canvas');
                 let ctx = canvas.getContext('2d');
+    
+                // Access width and height from the loaded image
+                let width = img.width;
+                let height = img.height;
+    
                 let scale = Math.min(maxWidth / width, maxHeight / height);
                 canvas.width = width * scale;
                 canvas.height = height * scale;
-                ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 canvas.toBlob(resolve, 'image/jpeg', 1);
             };
             img.onerror = reject;
             img.src = URL.createObjectURL(file);
         });
     };
+    
 
     const showFileUpload = (event) => {
         event.preventDefault();

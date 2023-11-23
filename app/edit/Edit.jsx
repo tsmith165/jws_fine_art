@@ -240,6 +240,11 @@ const Edit = (props) => {
         };
     }, [isLoaded, isSignedIn, user]);
 
+    useEffect(() => {
+        console.log('Uploaded image path changed:', state.uploaded_image_path)
+        load_changed_images(state.uploaded_image_path);
+    }, [state.uploaded_image_path]);
+
     const update_state = (newState) => {
         console.log(`Updating state with object (Next Line):`);
         console.log(newState);
@@ -279,7 +284,7 @@ const Edit = (props) => {
         logger.extra('Pieces fetched in state (Next Line):');
         logger.extra(piece_list);
 
-        const state =
+        const temp_state =
             type == 'none'
                 ? { piece_list: piece_list, loading: false }
                 : {
@@ -293,9 +298,9 @@ const Edit = (props) => {
                       new_piece_created: false,
                   };
         logger.extra(`Setting state with type: ${type} (Next Line):`);
-        logger.extra(state);
-        update_state_with_callback(state, async () => {
-            await update_current_piece(state.piece_list, state.url_o_id, type == 'none' ? false : true);
+        logger.extra(temp_state);
+        update_state_with_callback(temp_state, async () => {
+            await update_current_piece(temp_state.piece_list, temp_state.url_o_id, type == 'none' ? false : true);
         });
     };
 
