@@ -1098,6 +1098,7 @@ const Edit = (props) => {
             error_message_jsx={error_message_jsx}
             progress_images_gallery_container_jsx={progress_images_gallery_container_jsx}
             create_blank_piece={create_blank_piece}
+            update_state={update_state}
         />
     );
 

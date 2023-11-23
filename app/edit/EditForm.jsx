@@ -14,7 +14,8 @@ const EditForm = ({
     extra_images_text_jsx,
     error_message_jsx,
     progress_images_gallery_container_jsx,
-    create_blank_piece
+    create_blank_piece,
+    update_state
 }) => {
     const update_field_value = async (field, new_value_object) => {
         const key_name = field.toLowerCase();
@@ -38,7 +39,7 @@ const EditForm = ({
             return;
         }
 
-        logger.section({ message: 'Attempting To Edit Piece Details' });
+       console.log('Attempting To Edit Piece Details');
         console.log(
             `Editing Piece DB ID: ${state.db_id} | Title: ${state.title} | Sold: ${state.sold} |` +
                 `Framed: ${state.framed} | Piece Type: ${state.piece_type} | Price: ${state.price} |` +
@@ -47,7 +48,7 @@ const EditForm = ({
         console.log(`EDITING PIECE WITH FILE UPLOAD TYPE: ${state.file_upload_type}`);
 
         if (state.new_piece_created) {
-            logger.section({ message: 'Attempting To Create New Piece' });
+           console.log('Attempting To Create New Piece');
             console.log(`Creating piece with Title: ${title} | Sold: ${sold} | Price: ${price} | Image Path: ${state.image_path}`);
             const response = await create_piece({
                 title: state.title,
@@ -116,7 +117,7 @@ const EditForm = ({
         event.preventDefault();
         update_state({ loading: false, uploading: false, resizing: true });
 
-        logger.section({ message: 'File Input Change Event Triggered' });
+       console.log('File Input Change Event Triggered');
 
         try {
             var selected_file = event.target.files[0];
@@ -185,7 +186,7 @@ const EditForm = ({
             }
         }
         theme_string = theme_string == '' ? 'None' : theme_string;
-        logger.extra(`Setting theme: ${theme_string}`);
+        console.log(`Setting theme: ${theme_string}`);
         update_state({ theme: theme_string, theme_options: final_options });
     };
 
