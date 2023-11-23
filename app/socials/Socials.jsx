@@ -84,7 +84,7 @@ function Socials() {
 
     const socials_content =
         state.window_width >= 768 ? (
-            <div className={'flex h-full w-full bg-grey overflow-y-auto justify-center items-center space-x-2.5'}>
+            <div className={'flex h-full w-full bg-light overflow-y-auto justify-center items-center space-x-2.5'}>
                 {/* Left Side */}
                 <div className={'flex w-fit justify-center items-center bg-dark rounded-md'}>{bio_image_div}</div>
 
@@ -96,7 +96,7 @@ function Socials() {
                 </div>
             </div>
         ) : (
-            <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto justify-center items-center'}>
+            <div className={'flex flex-col h-full w-full bg-light overflow-y-auto justify-center items-center'}>
                 {/* Left Side */}
                 <div className={'flex flex-col w-full justify-center items-center'}>
                     {bio_image_div}

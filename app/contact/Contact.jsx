@@ -4,7 +4,7 @@ import styles from '@/styles/pages/Contact.module.scss';
 
 const Contact = () => {
   return (
-    <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
+    <div className={'flex flex-col h-full w-full bg-light overflow-y-auto'}>
       <div className={styles.contact_image_container}>
         <div className={styles.contact_image_border}>
           <Image

@@ -4,7 +4,8 @@
 .main_container {
     display: flex;
     justify-content: center;
-    height: calc(100vh - 100px);
+    height: 100%;
+    background-color: $dark;
 }
 
 .main_body {

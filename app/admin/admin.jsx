@@ -114,9 +114,9 @@ function Admin(props) {
     }
 
     return (
-        <div className={'flex justify-center'}>
-            <div className={'flex h-full w-full flex-col items-center overflow-x-hidden p-5'}>
-                <div className={'w-full rounded-md border-2 border-secondary pb-5'}>
+        <div className={'flex justify-center bg-dark h-full w-full'}>
+            <div className={'flex h-full w-full flex-col items-center overflow-x-hidden p-5 space-y-5'}>
+                <div className={'w-full rounded-md border-2 border-secondary'}>
                     <div className={'h-[40px] w-full rounded-tl-sm rounded-tr-sm bg-secondary px-1 py-2 font-lato text-lg text-light'}>
                         Data Backup
                     </div>
@@ -129,7 +129,7 @@ function Admin(props) {
                         </button>
                     </div>
                 </div>
-                <div className={'flex h-full w-full flex-col items-center overflow-x-hidden p-5'}>
+                <div className={'flex h-full w-full flex-col items-center overflow-x-hidden'}>
                     <div className={'h-[40px] w-full rounded-tl-sm rounded-tr-sm bg-secondary px-1 py-2 font-lato text-lg text-light'}>
                         Analytics Data
                     </div>
