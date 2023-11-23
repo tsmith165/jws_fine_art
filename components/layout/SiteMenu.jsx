@@ -59,7 +59,7 @@ const SiteMenu = () => {
                 </div>
 
                 {isMenuOpen && (
-                    <div className={'absolute right-0 top-[50px] z-50 h-fit w-[200px] border-b-2 border-l-2 border-secondary bg-light'}>
+                    <div className={'absolute right-0 top-[40x] md:top-[50px] z-50 h-fit w-[200px] border-b-2 border-l-2 border-secondary bg-light'}>
                         <MenuOverlay />
                     </div>
                 )}
