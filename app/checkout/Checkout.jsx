@@ -297,7 +297,7 @@ const Checkout = (props) => {
 
     // Main Image Container JSX
     const image_container = (
-        <div className={styles.centered_image_outer_container}>
+        <div className={'w-full h-full'}>
             <div className={styles.centered_image_container}>{state.image_jsx}</div>
         </div>
     );
@@ -420,7 +420,7 @@ const Checkout = (props) => {
 
     if (state.window_width < 769) {
         return (
-            <div className={styles.details_container}>
+            <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
                 {image_container}
                 <div className={checkout_styles.checkout_form_container}>
                     <form method="post" onSubmit={handleSubmit}>
@@ -428,7 +428,7 @@ const Checkout = (props) => {
 
                         {places_autocomplete_input_jsx /* Places Autocomplete Container */}
 
-                        {full_name_textbox_jsx /* Full Name Container */}
+                        {full_name_textbox_jsx /* Full Name Container */} 
 
                         {phone_number_textbox_jsx /* Phone Number Container */}
 
@@ -447,9 +447,9 @@ const Checkout = (props) => {
     }
 
     return (
-        <div className={styles.details_container}>
-            <div className={styles.details_container_left}>{image_container}</div>
-            <div className={styles.details_container_right}>
+        <div className={'flex flex-row h-full w-full bg-grey overflow-y-auto'}>
+            <div className={'w-2/3 h-full'}>{image_container}</div>
+            <div className={'w-1/3 h-full'}>
                 <div className={checkout_styles.checkout_form_container}>
                     <form method="post" onSubmit={handleSubmit}>
                         {title_container /* Title Container */}
