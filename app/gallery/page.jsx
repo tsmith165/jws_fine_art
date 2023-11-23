@@ -15,8 +15,6 @@ import { prisma } from '@/lib/prisma';
 export default async function Page() {
     const { piece_list, most_recent_id } = await get_piece_list();
 
-    // console.log(`Returning most recent ID: ${most_recent_id} | piece_list:`, piece_list)
-
     return (
         <PageLayout navbar_modifiers={<FilterMenu />}>
             <Gallery piece_list={piece_list} most_recent_id={most_recent_id} />
