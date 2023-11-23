@@ -62,6 +62,10 @@ export async function POST(req) {
         console.log(`Price after adding international shipping: ${price_int}`);
     }
 
+    const discount_rate = process.env.DISCOUNT_RATE || 0.0;
+    console.log(`Discount Rate: ${discount_rate}`);
+    
+    price_int = price_int - (price_int * discount_rate);
     const converted_price = `${price_int}00`;
     console.log('Using price from DB: ', converted_price);
 
