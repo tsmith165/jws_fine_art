@@ -23,12 +23,14 @@ const SiteMenu = () => {
             {/* Account Profile Button */}
             <div className="p-[1px] bg-dark rounded-t-md hover:bg-light">
                 <SignedIn>
-                    <UserButton
-                        className="!h-[40px] !w-[40px] bg-dark p-[2.5px] hover:bg-light md:!h-[50px] md:!w-[50px]"
-                        appearance={{
-                            userProfile: { elements: { breadcrumbs: 'bg-slate-500' } },
-                        }}
-                    />
+                    <div className='p-2'>
+                        <UserButton
+                            className="!h-[40px] !w-[40px] bg-dark p-[2.5px] hover:bg-light md:!h-[50px] md:!w-[50px]"
+                            appearance={{
+                                userProfile: { elements: { breadcrumbs: 'bg-slate-500' } },
+                            }}
+                        />
+                    </div>
                 </SignedIn>
                 <SignedOut>
                     <Link href="/signin">
