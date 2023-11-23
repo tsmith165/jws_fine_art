@@ -116,7 +116,7 @@ const EditForm = ({
     const onFileChange = async (event) => {
         console.log('File changed.  Attempting upload...')
         event.preventDefault();
-        // update_state({ loading: false, uploading: true, resizing: true });
+        update_state({ loading: false, uploading: true, resizing: true });
 
         console.log('File Input Change Event Triggered');
 

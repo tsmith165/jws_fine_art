@@ -8,7 +8,7 @@ const Navbar = () => {
     return (
         <nav className={'min-h-[100px] overflow-hidden bg-secondary p-0'}>
             <div className={'flex flex-row'}>
-                <Link href="/">
+                <Link href="/gallery">
                     <div className={`!h-full w-[250px] max-w-[250px]`}>
                         <Image
                             className={`max-h-[100px] min-h-[100px] p-2.5`}
