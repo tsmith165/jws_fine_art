@@ -1144,7 +1144,7 @@ const Edit = (props) => {
     }
     return (
         <>
-            <div className={styles.details_container}>
+            <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
                 {final_image_container_jsx}
                 {edit_form}
             </div>

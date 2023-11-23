@@ -18,8 +18,8 @@ function BiographyPage() {
     }, [page_name]);
 
     return (
-        <div className={'h-full w-full overflow-y-auto overflow-x-hidden px-2.5 py-0'}>
-            <div className={'jusify-center mt-4 flex w-full'}>
+        <div className={'h-full w-full overflow-y-auto overflow-x-hidden px-2.5 py-0 bg-light'}>
+            <div className={'jusify-center mt-4 flex w-full justify-center'}>
                 <div className={'relative !h-[267px] !w-max rounded-md bg-tertiary'}>
                     <Image
                         className={'p-1'}

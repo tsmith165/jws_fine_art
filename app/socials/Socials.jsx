@@ -49,12 +49,12 @@ function Socials() {
         }));
     };
 
-    const artist_name_div = <div className={styles.artist_name}>Jill Weeks Smith</div>;
+    const artist_name_div = <div className={'text-2xl text-primary font-bold p-2.5'}>Jill Weeks Smith</div>;
     const website_div = <div className={styles.website}>jwsfineart.com</div>;
     const bio_image_div = (
-        <div className={`${styles.bio_image_border} ${styles.centered_image_container}`}>
+        <div className={`w-[150px] h-[200px] md:w-[225px] md:h-[300px] flex justify-center items-center bg-tertiary rounded-md`}>
             <Image
-                className={`${styles.bio_image} ${styles.centered_image}`}
+                className={`h-full bg-dark p-2 rounded-md`}
                 src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/site/bio_pic.jpg`}
                 alt="Bio Pic"
                 quality={100}
@@ -64,8 +64,8 @@ function Socials() {
         </div>
     );
     const qr_code_div = (
-        <div className={styles.qr_code_wrapper} onClick={handleClickQRCode}>
-            <Image className={styles.qr_code} src={state.current_qr_code} alt="QR Code" width={200} height={200} />
+        <div className={''} onClick={handleClickQRCode}>
+            <Image className={'bg-dark rounded-md p-2 hover:bg-primary'} src={state.current_qr_code} alt="QR Code" width={200} height={200} />
         </div>
     );
     const instagram_div = (
@@ -84,28 +84,27 @@ function Socials() {
 
     const socials_content =
         state.window_width >= 768 ? (
-            <div className={styles.socials_container}>
+            <div className={'flex h-full w-full bg-grey overflow-y-auto justify-center items-center space-x-2.5'}>
                 {/* Left Side */}
-                <div className={styles.left_side}>{bio_image_div}</div>
+                <div className={'flex w-fit justify-center items-center bg-dark rounded-md'}>{bio_image_div}</div>
 
                 {/* Right Side */}
-                <div className={styles.right_side}>
+                <div className={'flex flex-col w-fit justify-center items-center space-y-2.5'}>
                     {artist_name_div}
-                    {website_div}
                     {qr_code_div}
                     {instagram_div}
                 </div>
             </div>
         ) : (
-            <div className={styles.socials_container}>
+            <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto justify-center items-center'}>
                 {/* Left Side */}
-                <div className={styles.left_side}>
+                <div className={'flex flex-col w-full justify-center items-center'}>
                     {bio_image_div}
                     {artist_name_div}
                 </div>
 
                 {/* Right Side */}
-                <div className={styles.right_side}>
+                <div className={'flex flex-col w-full justify-center items-center space-y-2.5'}>
                     {qr_code_div}
                     {instagram_div}
                 </div>
