@@ -22,6 +22,9 @@ import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { fetchDiscountRate } from '@/lib/api_calls';
+import { set } from 'react-ga';
+
 const Details = (props) => {
 
     const { isLoaded, isSignedIn, user } = useUser();
@@ -125,6 +128,7 @@ const Details = (props) => {
                 ? piece_list[num_pieces - 1]['o_id']
                 : piece_list[piece_position - 1]['o_id'],
         selected_gallery_image: 0,
+        discount_rate: 0,
     });
 
     useEffect(() => { // Initial Load
@@ -138,6 +142,13 @@ const Details = (props) => {
         };
 
         window.addEventListener("resize", handleResize);
+
+        const fetchDiscountRateAsync = async () => {
+            const response = await fetchDiscountRate();
+            console.log(`Discount Rate: ${response}`)
+            setState(prevState => ({ ...prevState, discount_rate: response }));
+        }
+        fetchDiscountRateAsync();
 
         // Create image arrays and update state
         var image_array = [];
@@ -167,7 +178,7 @@ const Details = (props) => {
             last_oid:
                 state.piece_position - 1 < 0
                     ? state.piece_list[num_pieces - 1]['o_id']
-                    : state.piece_list[state.piece_position - 1]['o_id']
+                    : state.piece_list[state.piece_position - 1]['o_id'],
         });
 
         return () => { // Cleanup
@@ -485,8 +496,14 @@ const Details = (props) => {
         <Link href={`/checkout/${state.url_o_id}`} className={'w-fit h-fit flex flex-row space-x-2.5'} onClick={() => handleButtonLabelClickGTagEvent(
             'details_checkout_button_click', 'Details Checkout Button', 'Details Checkout Button Clicked')
         }>
-
-            <div className={'text-lg text-dark font-bold leading-10'}>{`$${state.price}`}</div>
+            {state.discount_rate > 0.0 ? (
+                <>
+                <div className={`text-lg font-bold leading-10 text-primary line-through decoration-red-500`}>{`$${state.price}`}</div>
+            <div className={`text-lg font-bold leading-10 text-red-500`}>{`$${state.price - (state.price * state.discount_rate)}`}</div>
+                </>
+            ) : (
+                <div className={`text-lg text-dark font-bold leading-10`}>{`$${state.price}`}</div>
+            )}
             <div className={'flex rounded-md bg-dark hover:bg-light px-2 py-1'}>
                 <NextImage
                     src="/stripe_checkout_tan-221_50.png"
