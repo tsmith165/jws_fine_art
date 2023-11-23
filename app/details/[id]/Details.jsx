@@ -587,7 +587,7 @@ const Details = (props) => {
     if (state.window_width > 1000) {
         return (
             <>
-                <div className={styles.details_container}>
+                <div className={'flex flex-row h-full w-full'}>
                     <div className={'w-[65%] h-full bg-dark'}>
                         {final_image_container_jsx}
                     </div>
@@ -616,7 +616,7 @@ const Details = (props) => {
 
     return (
         <>
-            <div className={styles.details_container}>
+            <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
 
                 {final_image_container_jsx /* Image Container */}
                 {title_container /* Title Container */}

@@ -8,7 +8,7 @@ const PageLayout = ({ navbar_modifiers, children }) => {
             <AnalyticsLoader />
             <Navbar />
             {navbar_modifiers}
-            <main className="relative h-[100vh] w-full">{children}</main>
+            <main className="relative h-[calc(100vh-100px)] w-full">{children}</main>
         </body>
     );
 };

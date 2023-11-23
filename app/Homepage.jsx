@@ -27,7 +27,7 @@ function Homepage() {
     }
 
     return (
-        <div className={styles.bio_container}>
+        <div className={'w-full h-full overflow-y-auto bg-light pt-5'}>
             <div className={styles.left_column}>
                 <div className={styles.bio_image_container}>
                     <div className={styles.bio_image_border}>

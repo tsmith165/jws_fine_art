@@ -253,12 +253,12 @@ const Gallery = (props) => {
             )}
             <div className={`h-full w-full bg-dark`}>
                 <div
-                    className={`relative max-h-[calc(100vh-100px)] w-full overflow-y-auto overflow-x-hidden bg-dark`}
+                    className={`relative max-h-full w-full overflow-y-auto overflow-x-hidden bg-dark`}
                     onClick={(e) => {
                         gallery_clicked();
                     }}
                 >
-                    <div className={`w-full`} style={{ height: state.lowest_height }}>
+                    <div className={`w-full max-h-full`} style={{ height: state.lowest_height }}>
                         {state.gallery_pieces}
                     </div>
                 </div>
