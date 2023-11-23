@@ -1,4 +1,5 @@
 import PROJECT_CONSTANTS from '@/lib/constants';
+import { prisma } from '@/lib/prisma';
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -9,6 +10,8 @@ export async function POST(req) {
         console.error(`Request body is undefined`);
         return Response.json({ error: "Request body is undefined" }, { status: 400 });
     }
+
+    console.log('Checkout Session Passed JSON: ', passed_json)
 
     const attrs_to_check = [
         'piece_db_id',
@@ -44,14 +47,23 @@ export async function POST(req) {
     const address = passed_json.address;
     const international = passed_json.international;
 
-    var price_int = parseInt(price.toString().replace('$', ''));
-    const converted_price = `${price_int}00`;
+    const piece_info_from_db = await prisma.piece.findFirst({
+        where: { id: parseInt(piece_db_id) },
+    });
+
+    console.log('Piece Info from DB:', piece_info_from_db);
+    const price_from_db = piece_info_from_db.price;
+
+    var price_int = parseInt(price_from_db.toString().replace('$', ''));
 
     if (international == true || international == 'true') {
         console.log(`Adding $30 to current price of ${price_int}`);
         price_int = price_int + 30;
         console.log(`Price after adding international shipping: ${price_int}`);
     }
+
+    const converted_price = `${price_int}00`;
+    console.log('Using price from DB: ', converted_price);
 
     var full_image_url = `${image_path}`;
     console.log(`Piece Title: ${piece_title} | Price: ${converted_price} | Image Path: ${full_image_url}`);
