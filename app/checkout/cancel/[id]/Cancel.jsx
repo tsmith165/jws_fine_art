@@ -119,13 +119,11 @@ const Cancel = (props) => {
 
     if (state.window_width > 768) {
         return (
-            <div className={desktop_styles.details_container}>
-                <div className={desktop_styles.details_container_left}>
-                    <div className={desktop_styles.centered_image_outer_container}>
-                        <div className={desktop_styles.centered_image_container}>{state.image_jsx}</div>
-                    </div>
+            <div className={'flex flex-row h-full w-full overflow-y-auto'}>
+                <div className={'w-2/3 h-full bg-dark'}>
+                    <div className={'w-full h-full justify-center items-center'}>{state.image_jsx}</div>
                 </div>
-                <div className={desktop_styles.details_container_right}>
+                <div className={'w-1/3 h-full bg-grey'}>
                     <div className={checkout_styles.checkout_title_container}>
                         <div className={checkout_styles.title}>{state.title == '' ? `` : `"${state.title}"`}</div>
                     </div>
@@ -144,7 +142,7 @@ const Cancel = (props) => {
     }
 
     return (
-        <div className={mobile_styles.details_container}>
+        <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
             <div className={mobile_styles.centered_image_outer_container}>
                 <div className={mobile_styles.centered_image_container}>{state.image_jsx}</div>
             </div>

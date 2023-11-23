@@ -136,11 +136,11 @@ const Success = (props) => {
 
     if (state.window_width > 768) {
         return (
-            <div className={styles.details_container}>
-                <div className={styles.details_container_left}>
+            <div className={'flex flex-row h-full w-full bg-grey overflow-y-auto'}>
+                <div className={'w-2/3 h-full'}>
                     {image_container}
                 </div>
-                <div className={styles.details_container_right}>
+                <div className={'w-1/3 h-full'}>
                     {title_container}
                     <div className={checkout_styles.checkout_return_message_container}>
                         <div className={checkout_styles.checkout_return_message}>{`Purchase Successful!  Thank you!`}</div>
@@ -157,7 +157,7 @@ const Success = (props) => {
     }
 
     return (
-        <div className={styles.details_container}>
+        <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
             {image_container}
             {title_container}
             <div className={checkout_styles.checkout_return_message_container}>
