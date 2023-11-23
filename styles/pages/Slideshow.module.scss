@@ -12,9 +12,9 @@
 }
   .slideshow_body {
     position: absolute;
-    top: 100px;
+    top: 0px;
     width: 100%;
-    height: calc(100% - 110px)
+    height: 100%;
   }
     .slideshow_image_outer_container {
       height: calc(100% - 80px) !important;
@@ -113,9 +113,9 @@
   }
     .slideshow_body {
       position: absolute;
-      top: 100px;
+      top: 0;
       width: 100%;
-      height: calc(100% - 80px);
+      height: 100%;
     }
     .slideshow_image_outer_container {
       height: calc(100% - 80px) !important;
