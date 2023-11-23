@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
-import { create_pending_transaction, create_stripe_checkout_session } from '@/lib/api_calls';
+import { create_pending_transaction, create_stripe_checkout_session, fetchDiscountRate } from '@/lib/api_calls';
 import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
 
 import InputComponent from '@/components/wrappers/InputComponent';
@@ -93,6 +93,7 @@ const Checkout = (props) => {
         international: null,
         error: '',
         error_found: false,
+        discount_rate: 0.0,
     });
 
     useEffect(() => {
@@ -104,6 +105,13 @@ const Checkout = (props) => {
                 window_height: window.innerHeight,
             });
         };
+
+        const fetchDiscountRateAsync = async () => {
+            const response = await fetchDiscountRate();
+            console.log(`Discount Rate: ${response}`)
+            setState(prevState => ({ ...prevState, discount_rate: response }));
+        }
+        fetchDiscountRateAsync();
 
         window.addEventListener('resize', handleResize);
 
@@ -306,7 +314,7 @@ const Checkout = (props) => {
     const price_label = (
         <button
             type="submit"
-            className={checkout_styles.price_wrapper}
+            className={'flex flex-row rounded-md bg-dark ml-[5px]'}
             onClick={() =>
                 handleButtonLabelClickGTagEvent(
                     'checkout_purchase_button_click',
@@ -315,17 +323,26 @@ const Checkout = (props) => {
                 )
             }
         >
-            <div className={checkout_styles.price_label_wrapper}>
-                <NextImage
-                    className={checkout_styles.price_label_stripe_image}
-                    src="/stripe_purchase_tan-221_50.png"
-                    alt="View Stripe Info"
-                    priority={true}
-                    width={133}
-                    height={30}
-                />
-            </div>
-            <div className={checkout_styles.price_text}>{`$${price_with_shipping}`}</div>
+            <NextImage
+                className={'p-2.5'}
+                src="/stripe_purchase_tan-221_50.png"
+                alt="View Stripe Info"
+                priority={true}
+                width={133}
+                height={30}
+            />
+            {state.discount_rate > 0.0 ? (
+                <div className='group flex flex-row hover:bg-dark hover:text-primary bg-primary rounded-r-md space-x-2.5 px-2.5'>
+                    <div className={`py-2.5 text-lg font-bold text-dark group-hover:text-primary line-through  decoration-red-500`}>
+                        {`$${price_with_shipping}`}
+                    </div>
+                    <div className={`py-2.5 text-lg font-bold text-red-500 `}>
+                        {`$${price_with_shipping - (price_with_shipping * state.discount_rate)}`}
+                    </div>
+                </div>
+            ) : (
+                <div className={`p-2.5 text-lg text-dark hover:text-primary font-bold`}>{`$${price_with_shipping}`}</div>
+            )}
         </button>
     );
 
