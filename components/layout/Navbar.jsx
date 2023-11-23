@@ -37,7 +37,7 @@ const Navbar = () => {
                 animation: 'slide 15s linear infinite',
                 whiteSpace: 'nowrap'
             }}>
-                20% Off Black Friday Sale Going On now!
+                20% Off Black Friday Sale Going On Now!
             </div>
         </nav>
     );
