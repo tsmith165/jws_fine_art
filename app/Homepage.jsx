@@ -31,7 +31,7 @@ function Homepage() {
             <div className={styles.left_column}>
                 <div className={styles.bio_image_container}>
                     <div className={styles.bio_image_border}>
-                        <Image className={styles.bio_image} width={200} height={267} quality={100} priority
+                        <Image className={styles.bio_image} width={200} height={250} quality={100} priority
                             src={`/bio_pic_small.jpg`} alt="Bio Pic"
                         />
                     </div>

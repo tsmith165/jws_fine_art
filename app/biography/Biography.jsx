@@ -20,11 +20,11 @@ function BiographyPage() {
     return (
         <div className={'h-full w-full overflow-y-auto overflow-x-hidden px-2.5 py-0 bg-light'}>
             <div className={'jusify-center mt-4 flex w-full justify-center'}>
-                <div className={'relative !h-[267px] !w-max rounded-md bg-tertiary'}>
+                <div className={'relative !h-[250px] !w-max rounded-md bg-tertiary'}>
                     <Image
                         className={'p-1'}
                         width={200}
-                        height={267}
+                        height={250}
                         quality={100}
                         priority
                         src={`${AWS_BUCKET_URL}/site/bio_pic_small.jpg`}
