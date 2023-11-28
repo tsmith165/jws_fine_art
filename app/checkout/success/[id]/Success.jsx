@@ -1,17 +1,11 @@
-'use client'
+'use client';
 
-import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 
 import React, { useState, useEffect } from 'react';
-import { usePathname } from "next/navigation";
+import { usePathname } from 'next/navigation';
 
 import Image from 'next/image';
-
-import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
-import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
-
-import checkout_styles from '@/styles/pages/CheckoutReturn.module.scss'
 
 const Success = (props) => {
     const pathname = usePathname();
@@ -28,9 +22,7 @@ const Success = (props) => {
     var piece_position = 0;
     for (var i = 0; i < piece_list.length; i++) {
         if (piece_list[i]['o_id'].toString() == passed_o_id.toString()) {
-            console.log(
-                `Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`,
-            );
+            console.log(`Found piece at position ${i} | o_id: ${piece_list[i]['o_id']} | passed_o_id: ${passed_o_id}`);
             piece_position = i;
         }
     }
@@ -46,7 +38,12 @@ const Success = (props) => {
     var piece_type = num_pieces < 1 ? '' : current_piece.piece_type !== undefined ? current_piece.piece_type : piece_type;
     var real_width = num_pieces < 1 ? '' : current_piece.real_width !== undefined ? current_piece.real_width : '';
     var real_height = num_pieces < 1 ? '' : current_piece.real_height !== undefined ? current_piece.real_height : '';
-    var image_path = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
+    var image_path =
+        num_pieces < 1
+            ? ''
+            : current_piece.image_path !== undefined
+            ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`
+            : '';
     var instagram = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
     /* prettier-ignore-end */
 
@@ -80,30 +77,30 @@ const Success = (props) => {
             setState({
                 ...state,
                 window_width: window.innerWidth,
-                window_height: window.innerHeight
+                window_height: window.innerHeight,
             });
         };
 
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
 
-        const styles = state.window_width < 769 ? mobile_styles : desktop_styles;
         const piece_position = state.piece_position;
         const image_path = current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
 
-        var image_jsx = piece_position < 0 ? null : (
-            <div key={`image_${piece_position}`} className={styles.centered_image_container}>
-                <Image
-                    id={`centered_image_${piece_position}`}
-                    className={styles.centered_image}
-                    src={image_path}
-                    alt={state.title}
-                    priority={true}
-                    quality={100}
-                    width={state.width}
-                    height={state.height}
-                />
-            </div>
-        )
+        var image_jsx =
+            piece_position < 0 ? null : (
+                <div key={`image_${piece_position}`} className={'flex h-full items-center justify-center'}>
+                    <Image
+                        id={`centered_image_${piece_position}`}
+                        className={'h-full w-full object-contain'}
+                        src={image_path}
+                        alt={state.title}
+                        priority={true}
+                        quality={100}
+                        width={state.width}
+                        height={state.height}
+                    />
+                </div>
+            );
 
         console.log(`Setting state with Piece Position: ${piece_position}`);
         setState({
@@ -115,62 +112,29 @@ const Success = (props) => {
         });
 
         return () => {
-            window.removeEventListener("resize", handleResize); // Remove event listener
-        }
+            window.removeEventListener('resize', handleResize); // Remove event listener
+        };
     }, []);
 
-    const styles = state.window_width < 769 ? mobile_styles : desktop_styles;
-
-    const image_container = (
-        <div className={styles.centered_image_outer_container}>
-            <div className={styles.centered_image_container}>{state.image_jsx}</div>
-        </div>
-    )
-
-    // Title Container JSX
-    const title_container = (
-        <div className={checkout_styles.checkout_title_container}>
-            <div className={checkout_styles.title}>{title == '' ? `` : `"${title}"`}</div>
-        </div>
-    );
-
-    if (state.window_width > 768) {
-        return (
-            <div className={'flex flex-row h-full w-full bg-grey overflow-y-auto'}>
-                <div className={'w-2/3 h-full'}>
-                    {image_container}
-                </div>
-                <div className={'w-1/3 h-full'}>
-                    {title_container}
-                    <div className={checkout_styles.checkout_return_message_container}>
-                        <div className={checkout_styles.checkout_return_message}>{`Purchase Successful!  Thank you!`}</div>
-                        <div className={checkout_styles.checkout_return_message}>
-                            {`You will revieve an email shortly with your reciept and shipping info.`}
-                        </div>
-                        <div className={checkout_styles.checkout_return_message}>
-                            {`Feel free to reach out at ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}
-                        </div>
+    return (
+        <div className={'flex h-full w-full flex-row overflow-y-auto'}>
+            <div className={'h-fit w-full bg-dark md:h-full md:w-2/3'}>
+                <div className={'h-full w-full items-center justify-center'}>{state.image_jsx}</div>
+            </div>
+            <div className={'h-full w-full bg-grey md:h-full md:w-1/3'}>
+                <div className={'flex w-full justify-center bg-light p-0'}>
+                    <div className={'flex w-full justify-center py-2 text-center font-lato text-2xl text-dark'}>
+                        {state.title == '' ? `` : `"${state.title}"`}
                     </div>
                 </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
-            {image_container}
-            {title_container}
-            <div className={checkout_styles.checkout_return_message_container}>
-                <div className={checkout_styles.checkout_return_message}>{`Purchase Unsuccessful!`}</div>
-                <div className={checkout_styles.checkout_return_message}>
-                    {`Try reloading the home page and selecting the piece again.`}
-                </div>
-                <div className={checkout_styles.checkout_return_message}>
-                    {`If problems persist, feel free to reach out at ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}
+                <div className={'p-5 text-lg font-bold text-light'}>
+                    <div>{`Purchase Successful!  Thank you!`}</div>
+                    <div>{`You will revieve an email shortly with your reciept and shipping info.`}</div>
+                    <div>{`If problems persist, feel free to reach out at ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}</div>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default Success;

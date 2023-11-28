@@ -15,11 +15,6 @@ import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
 
 import InputComponent from '@/components/wrappers/InputComponent';
 
-import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
-import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
-import checkout_styles from '@/styles/pages/Checkout.module.scss';
-import form_styles from '@/styles/forms/Form.module.scss';
-
 const stripePromise = loadStripe(
     'pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj',
 );
@@ -82,7 +77,6 @@ const Checkout = (props) => {
         piece_position: piece_position,
         db_id: db_id,
         o_id: o_id,
-        image_jsx: null,
         width: width,
         height: height,
         title: title,
@@ -108,31 +102,14 @@ const Checkout = (props) => {
 
         const fetchDiscountRateAsync = async () => {
             const response = await fetchDiscountRate();
-            console.log(`Discount Rate: ${response}`)
-            setState(prevState => ({ ...prevState, discount_rate: response }));
-        }
+            console.log(`Discount Rate: ${response}`);
+            setState((prevState) => ({ ...prevState, discount_rate: response }));
+        };
         fetchDiscountRateAsync();
 
         window.addEventListener('resize', handleResize);
 
-        const styles = state.window_width < 769 ? mobile_styles : desktop_styles;
         const piece_position = state.piece_position;
-
-        var image_jsx =
-            piece_position < 0 ? null : (
-                <div key={`image_${piece_position}`} className={styles.centered_image_container}>
-                    <NextImage
-                        id={`centered_image_${piece_position}`}
-                        className={styles.centered_image}
-                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece.image_path}`}
-                        alt={state.title}
-                        priority={true}
-                        width={state.width}
-                        height={state.height}
-                        quality={100}
-                    />
-                </div>
-            );
 
         console.log(`Setting state with Piece Position: ${state.piece_position}`);
         setState({
@@ -140,7 +117,6 @@ const Checkout = (props) => {
             loading: false,
             window_width: window.innerWidth,
             window_height: window.innerHeight,
-            image_jsx: image_jsx,
         });
 
         return () => {
@@ -183,7 +159,7 @@ const Checkout = (props) => {
         console.log('Checkout Form Submit Recieved');
 
         setState((prevState) => ({ ...prevState, loading: true, submitted: false }));
-        
+
         // capture data from form
         const full_name = event.target.elements.full_name.value;
         const phone = event.target.elements.phone.value;
@@ -267,7 +243,7 @@ const Checkout = (props) => {
             }
         }
 
-        setState((prevState) => ({...prevState, loading: false, submitted: true }));
+        setState((prevState) => ({ ...prevState, loading: false, submitted: true }));
     };
 
     const update_field_value = (field, new_value_object) => {
@@ -293,28 +269,12 @@ const Checkout = (props) => {
     // BEGIN RENDER JSX
     logger.extra(`Loading: ${state.loading} | Submitted: ${state.submitted}`);
 
-    const styles = state.window_width < 769 ? mobile_styles : desktop_styles;
-
-    // Main Image Container JSX
-    const image_container = (
-        <div className={'w-full h-full'}>
-            <div className={styles.centered_image_container}>{state.image_jsx}</div>
-        </div>
-    );
-
-    // Title Container JSX
-    const title_container = (
-        <div className={checkout_styles.checkout_title_container}>
-            <div className={checkout_styles.title}>{state.title == '' ? `` : `"${state.title}"`}</div>
-        </div>
-    );
-
     // Price Label JSX
     const price_with_shipping = state.price + (state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0);
     const price_label = (
         <button
             type="submit"
-            className={'flex flex-row rounded-md bg-dark ml-[5px]'}
+            className={'flex flex-row rounded-md bg-dark'}
             onClick={() =>
                 handleButtonLabelClickGTagEvent(
                     'checkout_purchase_button_click',
@@ -332,16 +292,16 @@ const Checkout = (props) => {
                 height={30}
             />
             {state.discount_rate > 0.0 ? (
-                <div className='group flex flex-row hover:bg-dark hover:text-primary bg-primary rounded-r-md space-x-2.5 px-2.5'>
-                    <div className={`py-2.5 text-lg font-bold text-dark group-hover:text-primary line-through  decoration-red-500`}>
+                <div className="group flex flex-row space-x-2.5 rounded-r-md bg-primary px-2.5 hover:bg-dark hover:text-primary">
+                    <div className={`py-2.5 text-lg font-bold text-dark line-through decoration-red-500  group-hover:text-primary`}>
                         {`$${price_with_shipping}`}
                     </div>
                     <div className={`py-2.5 text-lg font-bold text-red-500 `}>
-                        {`$${price_with_shipping - (price_with_shipping * state.discount_rate)}`}
+                        {`$${price_with_shipping - price_with_shipping * state.discount_rate}`}
                     </div>
                 </div>
             ) : (
-                <div className={`p-2.5 text-lg text-dark hover:text-primary font-bold`}>{`$${price_with_shipping}`}</div>
+                <div className={`p-2.5 text-lg font-bold text-dark hover:text-primary`}>{`$${price_with_shipping}`}</div>
             )}
         </button>
     );
@@ -351,20 +311,20 @@ const Checkout = (props) => {
         state.international != null ? (
             <div className={'flex flex-wrap'}>
                 {state.international == true ? (
-                    <div className={'mt-2.5 text-xl text-primary mr-2.5'}>
+                    <div className={'mr-2.5 mt-2.5 text-xl text-primary'}>
                         Pieces ship within 5 days. International shipping costs $25 and can take up to 1 month.
                     </div>
                 ) : (
-                    <div className={'mt-2.5 text-xl text-primary mr-2.5'}>
+                    <div className={'mr-2.5 mt-2.5 text-xl text-primary'}>
                         Pieces ship within 5 days. Domestic shipping can take up to a week.
                     </div>
                 )}
             </div>
         ) : null;
 
-    const submit_loader_spinner = <CircularProgress color="inherit" className={form_styles.loader} />;
-    const submit_successful_jsx = <div className={form_styles.submit_label}>Checkout submit successful.</div>;
-    const submit_unsuccessful_jsx = <div className={form_styles.submit_label_failed}>Checkout submit was not successful.</div>;
+    const submit_loader_spinner = <CircularProgress color="inherit" className={''} />;
+    const submit_successful_jsx = <div className={'text-lg font-bold leading-8 text-light'}>Checkout submit successful.</div>;
+    const submit_unsuccessful_jsx = <div className={'text-lg font-bold leading-8 text-red-700'}>Checkout submit was not successful.</div>;
 
     const loader_container =
         state.loading == true
@@ -375,101 +335,72 @@ const Checkout = (props) => {
             ? submit_unsuccessful_jsx
             : null;
 
-    const submit_container = loader_container != null ? <div className={form_styles.submit_container}>{loader_container}</div> : null;
-
-    const places_autocomplete_input_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent input_type="input_autocomplete" value={state.address} address_change={address_change} />
-        </div>
-    );
-
-    const full_name_textbox_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent
-                input_type="input_textbox"
-                name="Full Name"
-                id="full_name"
-                placeholder="Enter Full Name..."
-                update_field_value={update_field_value}
-            />
-        </div>
-    );
-
-    const phone_number_textbox_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent
-                input_type="input_textbox"
-                name="Phone #"
-                id="phone"
-                placeholder="Enter Phone Number..."
-                update_field_value={update_field_value}
-            />
-        </div>
-    );
-    const email_textbox_jsx = (
-        <div className={form_styles.input_container}>
-            <InputComponent
-                input_type="input_textbox"
-                name="Email"
-                id="email"
-                placeholder="Enter Email Address..."
-                update_field_value={update_field_value}
-            />
-        </div>
-    );
-
-    if (state.window_width < 769) {
-        return (
-            <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
-                {image_container}
-                <div className={checkout_styles.checkout_form_container}>
-                    <form method="post" onSubmit={handleSubmit}>
-                        {title_container /* Title Container */}
-
-                        {places_autocomplete_input_jsx /* Places Autocomplete Container */}
-
-                        {full_name_textbox_jsx /* Full Name Container */} 
-
-                        {phone_number_textbox_jsx /* Phone Number Container */}
-
-                        {email_textbox_jsx /* Email Container */}
-
-                        <div className={checkout_styles.price_container}>
-                            {price_label}
-                            {shipping_jsx}
-                        </div>
-
-                        {submit_container}
-                    </form>
-                </div>
-            </div>
-        );
-    }
+    const submit_container = loader_container === null ? null : <div className={'flex flex-row px-2.5 py-4'}>{loader_container}</div>;
 
     return (
-        <div className={'flex flex-row h-full w-full bg-grey overflow-y-auto'}>
-            <div className={'w-2/3 h-full'}>{image_container}</div>
-            <div className={'w-1/3 h-full'}>
-                <div className={checkout_styles.checkout_form_container}>
-                    <form method="post" onSubmit={handleSubmit}>
-                        {title_container /* Title Container */}
+        <div className={'flex h-full w-full flex-col overflow-y-auto md:flex-row'}>
+            <div className={'h-fit bg-dark md:h-full md:w-2/3'}>
+                <div key={`image_${piece_position}`} className={'flex h-full items-center justify-center'}>
+                    <NextImage
+                        id={`centered_image_${piece_position}`}
+                        className={'h-full w-full object-contain'}
+                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece.image_path}`}
+                        alt={state.title}
+                        priority={true}
+                        width={state.width}
+                        height={state.height}
+                        quality={100}
+                    />
+                </div>
+            </div>
+            <div className={'h-fit bg-grey md:h-full md:w-1/3'}>
+                <form method="post" onSubmit={handleSubmit} className={'flex !h-max w-full flex-col'}>
+                    <div className={'flex w-full justify-center bg-light p-0'}>
+                        <div className={'py-4 text-2xl font-bold text-dark'}>{state.title == '' ? `` : `"${state.title}"`}</div>
+                    </div>
+                    <div className="h-full w-full space-y-2.5 p-2.5">
+                        <div className={'flex h-fit w-full flex-wrap'}>
+                            <InputComponent input_type="input_autocomplete" value={state.address} address_change={address_change} />
+                        </div>
 
-                        {places_autocomplete_input_jsx /* Places Autocomplete Container */}
+                        <div className={'flex h-fit w-full flex-wrap'}>
+                            <InputComponent
+                                input_type="input_textbox"
+                                name="Full Name"
+                                id="full_name"
+                                placeholder="Enter Full Name..."
+                                update_field_value={update_field_value}
+                            />
+                        </div>
 
-                        {full_name_textbox_jsx /* Full Name Container */}
+                        <div className={'flex h-fit w-full flex-wrap'}>
+                            <InputComponent
+                                input_type="input_textbox"
+                                name="Phone #"
+                                id="phone"
+                                placeholder="Enter Phone Number..."
+                                update_field_value={update_field_value}
+                            />
+                        </div>
 
-                        {phone_number_textbox_jsx /* Phone Number Container */}
+                        <div className={'flex h-fit w-full flex-wrap'}>
+                            <InputComponent
+                                input_type="input_textbox"
+                                name="Email"
+                                id="email"
+                                placeholder="Enter Email Address..."
+                                update_field_value={update_field_value}
+                            />
+                        </div>
 
-                        {email_textbox_jsx /* Email Container */}
-
-                        <div className={checkout_styles.price_container}>
+                        <div className={'flex flex-row flex-wrap'}>
                             {price_label}
                             {shipping_jsx}
                         </div>
 
                         {submit_container}
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     );
