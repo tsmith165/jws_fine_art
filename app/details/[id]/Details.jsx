@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect, useContext } from 'react';
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation';
 
-import { useUser } from "@clerk/nextjs";
+import { useUser } from '@clerk/nextjs';
 
 import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
@@ -17,16 +17,11 @@ import { handleButtonLabelClickGTagEvent } from '@/lib/analytics';
 import PieceSpecificationTable from '@/app/details/[id]/PieceSpecificationTable';
 import TitleComponent from '@/app/details/[id]/TitleComponent';
 
-import mobile_styles from '@/styles/pages/DetailsMobile.module.scss';
-import desktop_styles from '@/styles/pages/DetailsDesktop.module.scss';
-
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { fetchDiscountRate } from '@/lib/api_calls';
-import { set } from 'react-ga';
 
 const Details = (props) => {
-
     const { isLoaded, isSignedIn, user } = useUser();
 
     const router = useRouter();
@@ -34,7 +29,7 @@ const Details = (props) => {
     const passed_o_id = pathname.split('/').slice(-1)[0];
 
     console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`);
-    console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`)
+    console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`);
 
     const piece_list = props.piece_list;
     const num_pieces = piece_list == undefined || piece_list == null ? 0 : piece_list.length;
@@ -49,7 +44,8 @@ const Details = (props) => {
 
     var current_piece = piece_list[piece_position];
 
-    var description_raw = current_piece.description == undefined ? '' : current_piece.description.length > 2 ? current_piece.description : '';
+    var description_raw =
+        current_piece.description == undefined ? '' : current_piece.description.length > 2 ? current_piece.description : '';
 
     /* prettier-ignore-start */
     var db_id = num_pieces < 1 ? -1 : current_piece.id !== undefined ? current_piece.id : -1;
@@ -58,31 +54,62 @@ const Details = (props) => {
     var price = num_pieces < 1 ? '' : current_piece.price !== undefined ? current_piece.price : '';
     var width = num_pieces < 1 ? '' : current_piece.width !== undefined ? current_piece.width : '';
     var height = num_pieces < 1 ? '' : current_piece.height !== undefined ? current_piece.height : '';
-    var theme = num_pieces < 1 ? 'None' : current_piece.theme !== undefined ? current_piece.theme == null ? 'None' : current_piece.theme : 'None';
-    var framed = num_pieces < 1 ? 'False' : current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true' ? 'True' : 'False';
-    var sold = num_pieces < 1 ? 'False' : current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False';
-    var available = num_pieces < 1 ? '' : current_piece.available == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False';
+    var theme =
+        num_pieces < 1 ? 'None' : current_piece.theme !== undefined ? (current_piece.theme == null ? 'None' : current_piece.theme) : 'None';
+    var framed =
+        num_pieces < 1
+            ? 'False'
+            : current_piece.framed == true || current_piece.framed.toString().toLowerCase() == 'true'
+            ? 'True'
+            : 'False';
+    var sold =
+        num_pieces < 1 ? 'False' : current_piece.sold == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False';
+    var available =
+        num_pieces < 1 ? '' : current_piece.available == true || current_piece.sold.toString().toLowerCase() == 'true' ? 'True' : 'False';
     var piece_type = num_pieces < 1 ? '' : current_piece.piece_type !== undefined ? current_piece.piece_type : piece_type;
     var comments = num_pieces < 1 ? '' : current_piece.comments !== undefined ? current_piece.comments : '';
     var description = num_pieces < 1 ? '' : description_raw !== undefined ? description_raw.split('<br>').join('\n') : '';
     var real_width = num_pieces < 1 ? '' : current_piece.real_width !== undefined ? current_piece.real_width : '';
     var real_height = num_pieces < 1 ? '' : current_piece.real_height !== undefined ? current_piece.real_height : '';
-    var image_path = num_pieces < 1 ? '' : current_piece.image_path !== undefined ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}` : '';
+    var image_path =
+        num_pieces < 1
+            ? ''
+            : current_piece.image_path !== undefined
+            ? `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`
+            : '';
     var instagram = num_pieces < 1 ? '' : current_piece.instagram !== undefined ? current_piece.instagram : '';
 
-    console.log(`Piece Type: "${piece_type}"`)
+    console.log(`Piece Type: "${piece_type}"`);
 
-    console.log(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`)
-    var extra_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
-    console.log(`Using Extra Images: "${extra_images}"`)
+    console.log(`Edit Page ${passed_o_id} Extra Images: "${current_piece.extra_images}"`);
+    var extra_images =
+        num_pieces < 1
+            ? []
+            : [undefined, null, ''].includes(current_piece.extra_images)
+            ? []
+            : current_piece.extra_images.includes(', ')
+            ? current_piece.extra_images.split(', ')
+            : current_piece.extra_images.length > 2
+            ? current_piece.extra_images
+            : [];
+    console.log(`Using Extra Images: "${extra_images}"`);
 
-    console.log(`Edit Page ${passed_o_id} Progress Images: "${current_piece.extra_images}"`)
-    var progress_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
-    console.log(`Using Progress Images: "${progress_images}"`)
+    console.log(`Edit Page ${passed_o_id} Progress Images: "${current_piece.extra_images}"`);
+    var progress_images =
+        num_pieces < 1
+            ? []
+            : [undefined, null, ''].includes(current_piece.progress_images)
+            ? []
+            : current_piece.progress_images.includes(', ')
+            ? current_piece.progress_images.split(', ')
+            : current_piece.progress_images.length > 2
+            ? current_piece.progress_images
+            : [];
+    console.log(`Using Progress Images: "${progress_images}"`);
     /* prettier-ignore-end */
 
     description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
-    console.log(`Description (Next Line):\n${description}`)
+    console.log(`Description (Next Line):\n${description}`);
 
     var image_array = [];
     var extra_image_array = [];
@@ -131,23 +158,24 @@ const Details = (props) => {
         discount_rate: 0,
     });
 
-    useEffect(() => { // Initial Load
+    useEffect(() => {
+        // Initial Load
         const handleResize = () => {
             console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
-            setState(prevState => ({
+            setState((prevState) => ({
                 ...prevState,
                 window_width: window.innerWidth,
                 window_height: window.innerHeight,
             }));
         };
 
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
 
         const fetchDiscountRateAsync = async () => {
             const response = await fetchDiscountRate();
-            console.log(`Discount Rate: ${response}`)
-            setState(prevState => ({ ...prevState, discount_rate: response }));
-        }
+            console.log(`Discount Rate: ${response}`);
+            setState((prevState) => ({ ...prevState, discount_rate: response }));
+        };
         fetchDiscountRateAsync();
 
         // Create image arrays and update state
@@ -181,7 +209,8 @@ const Details = (props) => {
                     : state.piece_list[state.piece_position - 1]['o_id'],
         });
 
-        return () => { // Cleanup
+        return () => {
+            // Cleanup
             window.removeEventListener('resize', handleResize);
         };
     }, []);
@@ -190,7 +219,7 @@ const Details = (props) => {
         console.log(`Updating state with object (Next Line):`);
         console.log(newState);
 
-        setState(prevState => ({ ...prevState, ...newState }));
+        setState((prevState) => ({ ...prevState, ...newState }));
     };
 
     const update_current_piece = async (piece_list, o_id) => {
@@ -204,7 +233,9 @@ const Details = (props) => {
         const current_db_id = current_piece['id'];
         const current_o_id = current_piece['o_id'];
 
-        console.log(`Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Piece O ID: ${current_o_id} | Description (Next Line):`);
+        console.log(
+            `Piece Position: ${piece_position} | Piece DB ID: ${current_db_id} | Piece O ID: ${current_o_id} | Description (Next Line):`,
+        );
         console.log(current_piece.description);
 
         const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0].o_id : piece_list[piece_position + 1].o_id;
@@ -212,69 +243,88 @@ const Details = (props) => {
 
         console.log(
             `Updating to new selected piece with Postition: ${piece_position} | ` +
-            `DB ID: ${current_db_id} | O_ID: ${current_o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`
+                `DB ID: ${current_db_id} | O_ID: ${current_o_id} | NEXT_O_ID: ${next_oid} | LAST_O_ID: ${last_oid}`,
         );
 
         const image_array = create_image_array(state.piece_list, piece_position);
 
-        console.log(`Description type: ${typeof description} | Value (Next Line):\n ${description}`)
+        console.log(`Description type: ${typeof description} | Value (Next Line):\n ${description}`);
 
-        var description = current_piece.description
+        var description = current_piece.description;
         description = description.includes('<br>') ? description.split('<br>').join('\n') : description;
-        console.log(`Description (Next Line):\n${description}`)
+        console.log(`Description (Next Line):\n${description}`);
 
-        var extra_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.extra_images) ? [] : current_piece.extra_images.includes(', ') ? current_piece.extra_images.split(', ') : current_piece.extra_images.length > 2 ? current_piece.extra_images : []
-        var progress_images = num_pieces < 1 ? [] : [undefined, null, ''].includes(current_piece.progress_images) ? [] : current_piece.progress_images.includes(', ') ? current_piece.progress_images.split(', ') : current_piece.progress_images.length > 2 ? current_piece.progress_images : []
+        var extra_images =
+            num_pieces < 1
+                ? []
+                : [undefined, null, ''].includes(current_piece.extra_images)
+                ? []
+                : current_piece.extra_images.includes(', ')
+                ? current_piece.extra_images.split(', ')
+                : current_piece.extra_images.length > 2
+                ? current_piece.extra_images
+                : [];
+        var progress_images =
+            num_pieces < 1
+                ? []
+                : [undefined, null, ''].includes(current_piece.progress_images)
+                ? []
+                : current_piece.progress_images.includes(', ')
+                ? current_piece.progress_images.split(', ')
+                : current_piece.progress_images.length > 2
+                ? current_piece.progress_images
+                : [];
 
-        update_state({
-            loading: false,
-            url_o_id: o_id,
-            piece_list: piece_list,
-            image_array: image_array,
-            piece_position: piece_position,
-            current_piece: current_piece,
-            db_id: current_db_id,
-            o_id: current_o_id,
-            title: current_piece.title,
-            piece_type: current_piece.piece_type,
-            description: description,
-            sold: current_piece.sold,
-            price: current_piece.price,
-            width: current_piece.width,
-            height: current_piece.height,
-            real_width: current_piece.real_width,
-            real_height: current_piece.real_height,
-            image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
-            instagram: current_piece.instagram,
-            available: current_piece.available !== undefined ? current_piece.available : false,
-            framed: current_piece.framed !== undefined ? current_piece.framed : false,
-            comments: current_piece.comments,
-            next_oid: next_oid,
-            last_oid: last_oid,
-            sold: current_piece.sold,
-            available: current_piece.available,
-            price: current_piece.price,
-            extra_images: extra_images,
-            progress_images: progress_images,
-            selected_gallery_image: 0,
-        }, async () => {
-            if (previous_url_o_id != o_id) {
-                router.push(`/details/${o_id}`);
-            }
-        });
+        update_state(
+            {
+                loading: false,
+                url_o_id: o_id,
+                piece_list: piece_list,
+                image_array: image_array,
+                piece_position: piece_position,
+                current_piece: current_piece,
+                db_id: current_db_id,
+                o_id: current_o_id,
+                title: current_piece.title,
+                piece_type: current_piece.piece_type,
+                description: description,
+                sold: current_piece.sold,
+                price: current_piece.price,
+                width: current_piece.width,
+                height: current_piece.height,
+                real_width: current_piece.real_width,
+                real_height: current_piece.real_height,
+                image_path: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`,
+                instagram: current_piece.instagram,
+                available: current_piece.available !== undefined ? current_piece.available : false,
+                framed: current_piece.framed !== undefined ? current_piece.framed : false,
+                comments: current_piece.comments,
+                next_oid: next_oid,
+                last_oid: last_oid,
+                sold: current_piece.sold,
+                available: current_piece.available,
+                price: current_piece.price,
+                extra_images: extra_images,
+                progress_images: progress_images,
+                selected_gallery_image: 0,
+            },
+            async () => {
+                if (previous_url_o_id != o_id) {
+                    router.push(`/details/${o_id}`);
+                }
+            },
+        );
     };
 
     const create_image_array = (piece_list, piece_position) => {
-        console.log(`Current window width: ${window.innerWidth} | piece position: ${piece_position}`)
+        console.log(`Current window width: ${window.innerWidth} | piece position: ${piece_position}`);
 
         var image_array = [];
         for (var i = 0; i < piece_list.length; i++) {
             let piece = piece_list[i];
             let selected = i == piece_position ? true : false;
             image_array.push(
-                <div key={`image_${i}`} className={
-                    selected ? '!w-full h-full relative' : 'hidden'
-                }>
+                <div key={`image_${i}`} className={selected ? 'relative h-full !w-full' : 'hidden'}>
                     <CustomNextImage
                         id={`centered_image_${i}`}
                         src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
@@ -285,7 +335,7 @@ const Details = (props) => {
                         height={state.height}
                         hidden={selected ? false : true}
                     />
-                </div>
+                </div>,
             );
         }
         return image_array;
@@ -297,7 +347,7 @@ const Details = (props) => {
         var extra_image_array = [];
         using_extra_images.map((image, index) => {
             extra_image_array.push(
-                <div key={`extra_image_${index}`} className={index == (selected_image_index) ? 'w-full h-full relative' : 'hidden'}>
+                <div key={`extra_image_${index}`} className={index == selected_image_index ? 'relative h-full !w-full' : 'hidden'}>
                     <CustomNextImage
                         id={`extra_image_${index}`}
                         src={image.image_path}
@@ -307,7 +357,7 @@ const Details = (props) => {
                         height={image.height}
                         quality={100}
                     />
-                </div>
+                </div>,
             );
         });
 
@@ -322,157 +372,170 @@ const Details = (props) => {
         }
     };
 
-
     // RENDER BEGINS HERE
     const piece_title = state.title != null ? state.title : '';
-    const styles = state.window_width > 1000 ? desktop_styles : mobile_styles;
 
     let using_extra_images = null;
     try {
         using_extra_images = typeof state.extra_images === 'string' ? JSON.parse(state.extra_images) : state.extra_images;
-    } catch (error) { }
+    } catch (error) {}
 
     console.log(`using_extra_images type: ${typeof using_extra_images} | data (next line):`);
-    console.log(using_extra_images)
+    console.log(using_extra_images);
 
     let using_progress_images = null;
     try {
         using_progress_images = typeof state.progress_images === 'string' ? JSON.parse(state.progress_images) : state.progress_images;
-    } catch (error) { }
+    } catch (error) {}
 
     console.log(`using_progress_images type: ${typeof using_progress_images} | data (next line):`);
-    console.log(using_progress_images)
+    console.log(using_progress_images);
 
     // Gallery Loader Container JSX
     const image_loader_container_jsx = (
-        <div className={`flex justify-center items-center flex-col h-full w-full`}>
-            <div className='text-light text-xl font-[600] pb-5'>Loading Gallery</div>
-            <CircularProgress color="inherit" className='text-light h-[100px] w-[100px]' />
+        <div className={`flex h-full w-full flex-col items-center justify-center`}>
+            <div className="pb-5 text-xl font-[600] text-light">Loading Gallery</div>
+            <CircularProgress color="inherit" className="h-[100px] w-[100px] text-light" />
         </div>
     );
 
     // Main Image Container JSX
-    const image_container_jsx = (
-        <div className={'w-full h-full'}>
-            {
-                state.loading === true ?
-                    image_loader_container_jsx : state.selected_gallery_image === 0 ?
-                        state.image_array : state.selected_gallery_image < state.extra_image_array.length + 1 ?
-                            state.extra_image_array : state.progress_image_array
-            }
-        </div>
-    );
+    const image_container_jsx =
+        state.loading === true
+            ? image_loader_container_jsx
+            : state.selected_gallery_image === 0
+            ? state.image_array
+            : state.selected_gallery_image < state.extra_image_array.length + 1
+            ? state.extra_image_array
+            : state.progress_image_array;
 
-    const extra_images_gallery_container_jsx = state.loading == true ? null : [null, undefined].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
-        <div className={'w-full h-full flex flex-row flex-nowrap items-start'}>
-            {state.loading == true ? (null) : (
-                using_extra_images.map((image, index) => {
-                    console.log(image)
-                    var image_path = image.image_path.split('/').slice(-2).join('/')
-                    console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
-                    return (
-                        <div key={`extra_image_container_${index}`} className={`w-[110px] h-[110px] relative overflow-hidden mr-5 ${(state.selected_gallery_image === (index + 1)) ?
-                            `rounded-md bg-tertiary` : ``}`
-                        }>
-                            <div className={`w-[100px] h-[100px] m-[5px]`} onClick={async () => {
-                                const extra_image_array = create_extra_image_array(state.extra_images, index)
-                                update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
-                            }}>
-                                <CustomNextImage
-                                    className={styles.centered_image}
-                                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
-                                    alt={``}
-                                    width={image.width}
-                                    height={image.height}
-                                    quality={100}
-                                />
-                            </div>
-                        </div>
-                    );
-                })
-            )}
-        </div>
-    );
+    const extra_images_gallery_container_jsx =
+        state.loading == true ? null : [null, undefined].includes(using_extra_images) ? null : using_extra_images.length < 1 ? null : (
+            <div className={'flex h-full w-full flex-row flex-nowrap items-start'}>
+                {state.loading == true
+                    ? null
+                    : using_extra_images.map((image, index) => {
+                          console.log(image);
+                          var image_path = image.image_path.split('/').slice(-2).join('/');
+                          console.log(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`);
+                          return (
+                              <div
+                                  key={`extra_image_container_${index}`}
+                                  className={`relative mr-2 h-[110px] w-[110px] overflow-hidden rounded-md ${
+                                      state.selected_gallery_image === index + 1 ? ` bg-primary` : `bg-tertiary`
+                                  }`}
+                              >
+                                  <div
+                                      className={`m-[5px] h-[100px] w-[100px]`}
+                                      onClick={async () => {
+                                          const extra_image_array = create_extra_image_array(state.extra_images, index);
+                                          update_state({ selected_gallery_image: index + 1, extra_image_array: extra_image_array });
+                                      }}
+                                  >
+                                      <CustomNextImage
+                                          src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
+                                          alt={``}
+                                          width={image.width}
+                                          height={image.height}
+                                          quality={100}
+                                      />
+                                  </div>
+                              </div>
+                          );
+                      })}
+            </div>
+        );
 
-    const main_image_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
-        <div className={`max-w-[110px] max-h-full !w-[110px] !h-[110px] flex flex-row ${(state.selected_gallery_image === 0) ?
-            `rounded-md bg-tertiary` : ``}`
-        }>
-            <div className={`w-full h-full relative mr-[5px]`}>
-                <div className={`w-[100px] h-[100px] m-1`} onClick={() => {
-                    update_state({ 'selected_gallery_image': 0 })
-                }}>
-                    <CustomNextImage
-                        src={state.image_path}
-                        alt={``}
-                        width={state.width}
-                        height={state.height}
-                        quality={100}
-                    />
+    const main_image_gallery_container_jsx =
+        extra_images_gallery_container_jsx == null ? null : (
+            <div
+                className={`mr-2 flex !h-[110px] max-h-full !w-[110px] max-w-[110px] flex-row rounded-md ${
+                    state.selected_gallery_image === 0 ? ` bg-primary` : `bg-tertiary`
+                }`}
+            >
+                <div className={`relative mr-[5px] h-full w-full`}>
+                    <div
+                        className={`m-1 h-[100px] w-[100px]`}
+                        onClick={() => {
+                            update_state({ selected_gallery_image: 0 });
+                        }}
+                    >
+                        <CustomNextImage src={state.image_path} alt={``} width={state.width} height={state.height} quality={100} />
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        );
 
-    const main_image_and_extra_images_gallery_container_jsx = extra_images_gallery_container_jsx == null ? null : (
-        <div className={styles.full_gallery_container}>
-            {main_image_gallery_container_jsx}
+    const main_image_and_extra_images_gallery_container_jsx =
+        extra_images_gallery_container_jsx == null ? null : (
+            <div className="flex !h-[120px] !max-h-[120px] !min-h-[120px] flex-row overflow-x-auto overflow-y-hidden bg-light p-1">
+                {main_image_gallery_container_jsx}
 
-            {extra_images_gallery_container_jsx}
-        </div>
-    );
-
-    const final_image_container_jsx = extra_images_gallery_container_jsx == null ? (
-        <div className={styles.main_image_only_container}>
-            {image_container_jsx}
-        </div>
-
-    ) : (
-        <div className={'flex flex-col w-full h-full'}>
-            <div className='w-full h-[calc(100%-120px)]'>
-                {image_container_jsx}
+                {extra_images_gallery_container_jsx}
             </div>
+        );
 
-            {main_image_and_extra_images_gallery_container_jsx}
-        </div>
-    )
+    const final_image_container_jsx =
+        extra_images_gallery_container_jsx == null ? (
+            <div className="h-full w-full bg-dark">{image_container_jsx}</div>
+        ) : (
+            <div className={'flex h-full w-full flex-col'}>
+                <div className="!h-[calc(100%-120px)] !max-h-[calc(100%-120px)] w-full">{image_container_jsx}</div>
 
-    const progress_images_gallery_container_jsx = state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length < 1 ? null : (
-        <div className={'flex flex-col p-3 min-w-[300px]'}>
-            <div className={'text-lg font-bold bg-primary text-dark px-2 py-1 rounded-t-md'}>
-                Pictures of piece in progress:
+                {main_image_and_extra_images_gallery_container_jsx}
             </div>
-            <div className={`h-fit bg-dark rounded-b-md`}>
-                <div className={`max-h-full w-full flex flex-row p-2`}>
-                    {state.loading == true ? (null) : (
-                        using_progress_images.map((image, index) => {
-                            var image_path = image.image_path.split('/').slice(-2).join('/')
-                            logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`)
-                            return (
-                                <div key={`progress_image_${index}`} className={`w-[110px] h-[110px] relative overflow-hidden mr-[5px] ${(state.selected_gallery_image === (index + (using_extra_images.length + 1))) ?
-                                    `rounded-md bg-tertiary` : ``}`
-                                }>
-                                    <div className={`${styles.extra_images_gallery_image} ${styles.centered_image_container}`} onClick={async () => {
-                                        const progress_image_array = create_extra_image_array(state.progress_images, index)
-                                        update_state({ selected_gallery_image: index + (using_extra_images.length) + 1, progress_image_array: progress_image_array });
-                                    }}>
-                                        <CustomNextImage
-                                            className={styles.centered_image}
-                                            src={image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL) ? image_path : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`}
-                                            alt={``}
-                                            width={image.width}
-                                            height={image.height}
-                                            quality={100}
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })
-                    )}
+        );
+
+    const progress_images_gallery_container_jsx =
+        state.loading == true ? null : [null, undefined].includes(using_progress_images) ? null : using_progress_images.length <
+          1 ? null : (
+            <div className={'flex min-w-[300px] flex-col p-3'}>
+                <div className={'rounded-t-md bg-primary px-2 py-1 text-lg font-bold text-dark'}>Pictures of piece in progress:</div>
+                <div className={`h-fit rounded-b-md bg-dark`}>
+                    <div className={`flex max-h-full w-full flex-row p-2`}>
+                        {state.loading == true
+                            ? null
+                            : using_progress_images.map((image, index) => {
+                                  var image_path = image.image_path.split('/').slice(-2).join('/');
+                                  logger.extra(`Path: ${image_path} | Width: ${image.width} | Height: ${image.height}`);
+                                  return (
+                                      <div
+                                          key={`progress_image_${index}`}
+                                          className={`relative mr-[5px] h-[110px] w-[110px] overflow-hidden rounded-md ${
+                                              state.selected_gallery_image === index + (using_extra_images.length + 1)
+                                                  ? `bg-primary`
+                                                  : `bg-tertiary`
+                                          }`}
+                                      >
+                                          <div
+                                              className={`m-[5px] h-[100px] w-[100px]`}
+                                              onClick={async () => {
+                                                  const progress_image_array = create_extra_image_array(state.progress_images, index);
+                                                  update_state({
+                                                      selected_gallery_image: index + using_extra_images.length + 1,
+                                                      progress_image_array: progress_image_array,
+                                                  });
+                                              }}
+                                          >
+                                              <CustomNextImage
+                                                  src={
+                                                      image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
+                                                          ? image_path
+                                                          : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`
+                                                  }
+                                                  alt={``}
+                                                  width={image.width}
+                                                  height={image.height}
+                                                  quality={100}
+                                              />
+                                          </div>
+                                      </div>
+                                  );
+                              })}
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
 
     // Title Container JSX
     const title_container = (
@@ -486,76 +549,79 @@ const Details = (props) => {
     );
 
     // Sold Label JSX
-    const sold_label = (<div className={'text-xl font-[600] text-red-800 py-1'}>Sold</div>);
+    const sold_label = <div className={'py-1 text-xl font-[600] text-red-800'}>Sold</div>;
 
     // Unavailable Label JSX
-    const unavailable_label = (<div className={'text-xl font-[600] text-red-800 py-1'}>Not For Sale</div>);
+    const unavailable_label = <div className={'py-1 text-xl font-[600] text-red-800'}>Not For Sale</div>;
 
     // Price Label JSX
     const price_label = (
-        <Link href={`/checkout/${state.url_o_id}`} className={'w-fit h-fit flex flex-row space-x-2.5'} onClick={() => handleButtonLabelClickGTagEvent(
-            'details_checkout_button_click', 'Details Checkout Button', 'Details Checkout Button Clicked')
-        }>
+        <Link
+            href={`/checkout/${state.url_o_id}`}
+            className={'flex h-fit w-fit flex-row space-x-2.5'}
+            onClick={() =>
+                handleButtonLabelClickGTagEvent(
+                    'details_checkout_button_click',
+                    'Details Checkout Button',
+                    'Details Checkout Button Clicked',
+                )
+            }
+        >
             {state.discount_rate > 0.0 ? (
                 <>
-                <div className={`text-lg font-bold leading-10 text-primary line-through decoration-red-500`}>{`$${state.price}`}</div>
-            <div className={`text-lg font-bold leading-10 text-red-500`}>{`$${state.price - (state.price * state.discount_rate)}`}</div>
+                    <div className={`text-lg font-bold leading-10 text-primary line-through decoration-red-500`}>{`$${state.price}`}</div>
+                    <div className={`text-lg font-bold leading-10 text-red-500`}>{`$${
+                        state.price - state.price * state.discount_rate
+                    }`}</div>
                 </>
             ) : (
-                <div className={`text-lg text-dark font-bold leading-10`}>{`$${state.price}`}</div>
+                <div className={`text-lg font-bold leading-10 text-dark`}>{`$${state.price}`}</div>
             )}
-            <div className={'flex rounded-md bg-dark hover:bg-light px-2 py-1'}>
-                <NextImage
-                    src="/stripe_checkout_tan-221_50.png"
-                    alt="View Stripe Info"
-                    priority={true}
-                    width={133}
-                    height={30}
-                />
+            <div className={'flex rounded-md bg-dark px-2 py-1 hover:bg-light'}>
+                <NextImage src="/stripe_checkout_tan-221_50.png" alt="View Stripe Info" priority={true} width={133} height={30} />
             </div>
         </Link>
     );
 
     const sold_value = state.sold.toString().toLowerCase();
     // Uses sold label if piece sold, unavailable label if piece not for sale, or price label if piece is for sale
-    const price_jsx = sold_value == 'true' ? sold_label :
-        state.available == false ? unavailable_label : price_label
+    const price_jsx = sold_value == 'true' ? sold_label : state.available == false ? unavailable_label : price_label;
 
     // Instagram Button JSX
-    const instagram_jsx = (state.instagram != null && state.instagram != '' && state.instagram.length > 5) ? (
-        <Link className={'bg-dark p-1.5 rounded-md hover:bg-light'} href={`https://www.instagram.com/p/${state.instagram}`}>
-            <NextImage
-                src="/instagram_icon_100.png"
-                alt="Instagram Link"
-                priority={true}
-                width={25}
-                height={25}
-            />
-        </Link>
-    ) : null;
+    const instagram_jsx =
+        state.instagram != null && state.instagram != '' && state.instagram.length > 5 ? (
+            <Link className={'rounded-md bg-dark p-1.5 hover:bg-light'} href={`https://www.instagram.com/p/${state.instagram}`}>
+                <NextImage src="/instagram_icon_100.png" alt="Instagram Link" priority={true} width={25} height={25} />
+            </Link>
+        ) : null;
 
     // Edit Piece Button JSX
     var edit_piece_button_jsx = null;
     if (isLoaded && user && user.publicMetadata && user.publicMetadata.role) {
-        console.log('USER: ', user)
+        console.log('USER: ', user);
 
         if (user.publicMetadata.role == 'ADMIN') {
             edit_piece_button_jsx = (
                 <Link href={`/edit/${state.url_o_id}`}>
-                    <div className={'bg-dark text-light text-lg px-2.5 py-1.5 rounded-md hover:bg-light hover:text-dark w-fit whitespace-nowrap'}>
+                    <div
+                        className={
+                            'w-fit whitespace-nowrap rounded-md bg-dark px-2.5 py-1.5 text-lg text-light hover:bg-light hover:text-dark'
+                        }
+                    >
                         Edit Piece
                     </div>
                 </Link>
-            )
+            );
         }
     }
 
     // Piece Description Text Block
-    const description_jsx = (state.description != null && state.description.length > 2) ? (
-        <div className={styles.details_description_container}>
-            <h3 className={styles.details_description}>{state.description}</h3>
-        </div>
-    ) : null;
+    const description_jsx =
+        state.description != null && state.description.length > 2 ? (
+            <div className="w-full px-4 pt-5">
+                <h3 className="h-max w-full whitespace-pre-wrap font-lato text-xl font-[600] text-secondary">{state.description}</h3>
+            </div>
+        ) : null;
 
     // Piece Specification Table
     const piece_specification_table = (
@@ -567,10 +633,10 @@ const Details = (props) => {
             piece_type={state.piece_type}
             with_header={false}
         />
-    )
+    );
 
     const details_form = (
-        <div className={styles.details_form_container}>
+        <div className="flex !h-max w-full flex-col">
             {piece_specification_table}
 
             <div className={'flex flex-row'}>
@@ -582,47 +648,20 @@ const Details = (props) => {
             </div>
             {description_jsx}
         </div>
-    )
-
-    if (state.window_width > 1000) {
-        return (
-            <>
-                <div className={'flex flex-row h-full w-full'}>
-                    <div className={'w-[65%] h-full bg-dark'}>
-                        {final_image_container_jsx}
-                    </div>
-                    <div className={'w-[35%] h-full bg-grey'}>
-                        {title_container}
-                        {details_form}
-                        {progress_images_gallery_container_jsx}
-                        <div className={styles.extra_padding}></div>
-                    </div>
-                </div>
-
-                <div style={{ display: 'none' }}>
-                    {state.piece_list
-                        .filter((_, i) => i >= state.piece_position - 5 && i <= state.piece_position + 5)
-                        .map((piece, i) => (
-                            <img
-                                key={`preload_${i}`}
-                                src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
-                                alt={`Preload ${piece.title}`}
-                            />
-                        ))}
-                </div>
-            </>
-        );
-    }
+    );
 
     return (
         <>
-            <div className={'flex flex-col h-full w-full bg-grey overflow-y-auto'}>
-
-                {final_image_container_jsx /* Image Container */}
-                {title_container /* Title Container */}
-                {details_form /* Details Form Container */}
-                {progress_images_gallery_container_jsx}
-                <div className={styles.extra_padding}></div>
+            <div className={'flex h-full w-full flex-col md:flex-row'}>
+                <div className={'!h-[500px] !max-h-[500px] w-full bg-dark md:!h-full md:!max-h-full md:w-[65%]'}>
+                    {final_image_container_jsx}
+                </div>
+                <div className={'h-full w-full bg-grey md:w-[35%]'}>
+                    {title_container}
+                    {details_form}
+                    {progress_images_gallery_container_jsx}
+                    <div className="h-4 w-full"></div>
+                </div>
             </div>
 
             <div style={{ display: 'none' }}>

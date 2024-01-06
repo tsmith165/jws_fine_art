@@ -33,11 +33,14 @@ const Navbar = () => {
                     <SiteMenu />
                 </div>
             </div>
-            <div className='absolute top-0 right-0 w-1/2 overflow-hidden'>
-                <div className=' text-red-600 pt-3 pr-4 mr-10 text-xl' style={{
-                    animation: 'slide 15s linear infinite',
-                    whiteSpace: 'nowrap'
-                }}>
+            <div hidden className="absolute right-0 top-0 w-1/2 overflow-hidden">
+                <div
+                    className=" mr-10 pr-4 pt-3 text-xl text-red-600"
+                    style={{
+                        animation: 'slide 15s linear infinite',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
                     20% Off Black Friday Sale Going On Now!
                 </div>
             </div>
