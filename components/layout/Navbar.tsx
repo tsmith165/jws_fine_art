@@ -1,10 +1,13 @@
 import PROJECT_CONSTANTS from '@/lib/constants';
-import Link from 'next/link';
+import React from 'react';
+import Link from 'next/link';   
 import Image from 'next/image';
 
 import SiteMenu from './SiteMenu';
 
-const Navbar = () => {
+export default function Navbar({ page }: { page: string }) {
+    console.log('Navbar: page=', page);
+
     return (
         <nav className={'min-h-[100px] overflow-hidden bg-secondary p-0'}>
             <div className={'flex flex-row'}>
@@ -36,5 +39,3 @@ const Navbar = () => {
         </nav>
     );
 };
-
-export default Navbar;

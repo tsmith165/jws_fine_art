@@ -72,7 +72,7 @@ class FilterMenu extends React.Component {
         }
 
         return (
-            <>
+            <div className='absolute top-[50px] right-0'>
                 <div
                     className={
                         appState.filter_menu_open == false
@@ -100,7 +100,7 @@ class FilterMenu extends React.Component {
                     />
                 </div>
                 {appState.filter_menu_open == false ? null : <div className={filter_menu_styles.filter_menu}>{filter_menu_array}</div>}
-            </>
+            </div>
         );
     }
 }

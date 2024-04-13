@@ -1,12 +1,6 @@
-// /app/Homepage.js
-
-'use client';
-
-import React, { useRef } from 'react';
 import Image from 'next/image';
-
-import styles from '@/styles/pages/Homepage.module.scss'; // Updated the path for renamed SCSS module
-
+import Link from 'next/link';
+import styles from '@/styles/pages/Homepage.module.scss';
 import PROJECT_CONSTANTS from '@/lib/constants';
 import { biographyText } from '@/lib/biographyText';
 
@@ -16,16 +10,11 @@ const {
     CONTACT_EMAIL
 } = PROJECT_CONSTANTS;
 
-function Homepage() {
-    const overlayRef = useRef(null);
+interface HomepageProps {
+    most_recent_id: number | null;
+}
 
-    const handleGalleryEnter = () => {
-        overlayRef.current.style.display = 'block';
-        setTimeout(() => {
-            window.location.href = '/gallery';
-        }, 1000);
-    }
-
+function Homepage({ most_recent_id }: HomepageProps) {
     return (
         <div className={styles.bio_container}>
             <div className={styles.left_column}>
@@ -44,12 +33,13 @@ function Homepage() {
                         <a className={`${styles.contact_link} ${styles.link}`} href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
                     </div>
                     <div className={styles.enter_gallery_button_container}>
-                        <button className={styles.enter_gallery_button} onClick={handleGalleryEnter}>
-                            Enter Gallery
-                        </button>
+                        <Link href="/gallery">
+                            <button className={styles.enter_gallery_button}>
+                                Enter Gallery
+                            </button>
+                        </Link>
                     </div>
                 </div>
-                <div className={`${styles.overlay} hidden`} ref={overlayRef}></div>
             </div>
             <div className={styles.right_column}>
                 <div className={styles.bio_text_container}>

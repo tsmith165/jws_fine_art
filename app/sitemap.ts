@@ -1,4 +1,12 @@
-export default function sitemap() {
+// /app/sitemap.ts
+interface SitemapEntry {
+  url: string;
+  lastModified: Date;
+  changeFrequency: 'yearly' | 'weekly';
+  priority: number;
+}
+
+export default function sitemap(): SitemapEntry[] {
   return [
     {
       url: 'https://www.jwsfineart.com',
@@ -42,5 +50,5 @@ export default function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.5,
     },
-  ]
+  ];
 }

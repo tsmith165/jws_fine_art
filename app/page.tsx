@@ -11,11 +11,11 @@ import Homepage from '@/app/Homepage';
 
 import { prisma } from '@/lib/prisma';
 
-export default async function Page(props) {
+export default async function Page() {
   const {most_recent_id} = await get_piece_list()
 
   return (
-    <PageLayout {...props}>
+    <PageLayout page="/">
       <Homepage most_recent_id={most_recent_id}/>
     </PageLayout>
   )
@@ -32,10 +32,10 @@ async function fetchFirstPiece() {
 }
 
 async function get_piece_list() {
-  console.log("Fetching piece list...")
-  const first_piece = await fetchFirstPiece()
+  console.log("Fetching piece list...");
+  const first_piece = await fetchFirstPiece();
 
   return {
-      "most_recent_id": first_piece['id']
-    }
+    most_recent_id: first_piece ? first_piece.id : null,
+  };
 }

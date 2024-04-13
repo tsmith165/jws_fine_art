@@ -1,6 +1,7 @@
 {
     "name": "jws_fine_art",
     "version": "2.1.0",
+    "type": "module",
     "private": true,
     "scripts": {
         "dev": "cross-env next dev",
@@ -8,7 +9,7 @@
         "start": "next start",
         "lint": "next lint",
         "postinstall": "prisma generate",
-        "prettier": "prettier --write \"**/*.{js,jsx,json,md}\""
+        "prettier": "prettier --write \"**/*.{js,jsx,json,md,ts,tsx}\""
     },
     "dependencies": {
         "@clerk/nextjs": "^4.24.1",
@@ -26,6 +27,7 @@
         "aws-sdk": "^2.1105.0",
         "axios": "^1.5.1",
         "cross-env": "^7.0.3",
+        "css-loader": "^7.1.1",
         "file-saver": "^2.0.5",
         "fs": "^0.0.1-security",
         "global": "^4.4.0",
@@ -34,6 +36,7 @@
         "next": "^13.5.0",
         "next-analytics": "^2.0.0",
         "postcss": "^8.4.31",
+        "postcss-loader": "^8.1.1",
         "prettier-plugin-tailwindcss": "^0.5.7",
         "react": "^18.2.0",
         "react-datepicker": "^4.11.0",
@@ -42,8 +45,10 @@
         "react-places-autocomplete": "^7.3.0",
         "react-select": "^5.7.0",
         "react-tooltip": "^5.7.5",
-        "sass": "^1.49.9",
+        "sass": "^1.75.0",
+        "sass-loader": "^14.2.0",
         "stripe": "^8.215.0",
+        "style-loader": "^4.0.0",
         "tailwindcss": "^3.3.5",
         "typeface-lato": "^1.1.13",
         "vercel": "^24.0.1",
@@ -56,6 +61,7 @@
         "eslint": "8.12.0",
         "eslint-config-next": "^13.1.6",
         "prettier": "^3.0.3",
-        "prisma": "^5.3.1"
+        "prisma": "^5.3.1",
+        "typescript": "^5.4.5"
     }
 }

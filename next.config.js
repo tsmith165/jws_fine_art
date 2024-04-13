@@ -1,4 +1,6 @@
-const { AWS_BUCKET_URL } = require('./lib/constants')
+import constants from './lib/constants.js';
+
+const { AWS_BUCKET_URL } = constants;
 
 /** @type {import('next').NextConfig} */
 
@@ -28,4 +30,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig;
