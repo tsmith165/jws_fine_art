@@ -39,7 +39,11 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+<<<<<<< HEAD
     height: 100% !important;
+=======
+    max-height: calc(100vh - 100px) !important;
+>>>>>>> 818b29b7fa79234a1f62f780c22e09f7703a595c
     background-color: $dark;
 }
 

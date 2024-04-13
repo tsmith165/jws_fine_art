@@ -1,8 +1,6 @@
 import React from 'react';
 import NextImage from 'next/image';
 
-import styles from '@/styles/components/CustomNextImage.module.scss';
-
 class CustomNextImage extends React.Component {
     constructor(props) {
         super(props);
@@ -14,13 +12,17 @@ class CustomNextImage extends React.Component {
     }
 
     render() {
-        const { src, alt, width, height, quality } = this.props;
+        const { src, alt, width, height, quality, hidden=false } = this.props;
         return (
-            <div className={'flex w-auto h-auto justify-center'}>
-                {this.state.isLoading && <div className={styles.spinner}></div>}
+            <div className={'flex w-full h-full justify-center items-center'}>
+                {this.state.isLoading && !hidden && (
+                    <div className={'flex justify-center items-center absolute inset-0'}>
+                        <div className={'box-border border-8 border-primary rounded-[75%] border-t-8 border-t-light animate-spin w-16 h-16'}></div>
+                    </div>
+                )}
 
                 <NextImage
-                    className={'mx-auto w-fit'}
+                    className={'max-h-full max-w-full object-contain'}
                     src={src}
                     alt={alt}
                     width={width}
@@ -32,6 +34,7 @@ class CustomNextImage extends React.Component {
             </div>
         );
     }
-};
+}
 
 export default CustomNextImage;
+

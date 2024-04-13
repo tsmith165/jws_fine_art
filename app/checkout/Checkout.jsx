@@ -146,7 +146,7 @@ const Checkout = (props) => {
             if (updated_address.toString().includes('USA')) is_international = false;
 
             console.log(`Updating Address: ${updated_address} | International: ${is_international}`);
-            setState({ ...state, address: updated_address, international: is_international });
+            setState((prevState) => ({ ...prevState, address: updated_address, international: is_international }));
         }
     };
 
@@ -165,107 +165,101 @@ const Checkout = (props) => {
                 error_found = true;
             }
         }
-        setState({ ...state, error: error_found, error_reason: error_reason });
+        setState((prevState) => ({ ...prevState, error: error_found, error_reason: error_reason }));
         return error_found;
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         console.log('Checkout Form Submit Recieved');
 
-        setState({ ...state, loading: true, submitted: false }, async () => {
-            // capture data from form
-            const full_name = event.target.elements.full_name.value;
-            const phone = event.target.elements.phone.value;
-            const email = event.target.elements.email.value;
+        setState((prevState) => ({ ...prevState, loading: true, submitted: false }));
+        
+        // capture data from form
+        const full_name = event.target.elements.full_name.value;
+        const phone = event.target.elements.phone.value;
+        const email = event.target.elements.email.value;
 
-            console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
-            console.log(`Address: ${state.address} | International: ${state.international}`);
+        console.log(`Full Name: ${full_name} | Phone Number: ${phone} | E-Mail: ${email} `);
+        console.log(`Address: ${state.address} | International: ${state.international}`);
 
-            const error_found = await check_fields([
-                ['Full Name', full_name, 3],
-                ['Email', email, 8],
-                ['Phone', phone, 6],
-                ['Address', state.address, 10],
-            ]);
+        const error_found = await check_fields([
+            ['Full Name', full_name, 3],
+            ['Email', email, 8],
+            ['Phone', phone, 6],
+            ['Address', state.address, 10],
+        ]);
 
-            if (error_found) {
-                console.error(`Could not check out due to an error...`);
-                setState({ ...state, loading: false, submitted: false, error_found: true });
-                return;
+        if (error_found) {
+            console.error(`Could not check out due to an error...`);
+            setState((prevState) => ({ ...prevState, loading: false, submitted: false, error_found: true }));
+            return;
+        }
+
+        console.log('Attempting to Check Out...');
+
+        console.log('Creating a Pending Transaction ...');
+        const pending_response = await create_pending_transaction(
+            state.db_id,
+            state.title,
+            full_name,
+            phone,
+            email,
+            state.address,
+            state.international,
+        );
+
+        console.log(`Pending Transaction Response (Next Line):`);
+        console.log(pending_response);
+
+        if (!pending_response) {
+            console.error('No Response From Create Pending Transaction.  Cannot check out...');
+            return;
+        }
+
+        console.log(`Creating stripe session with piece :`, state.current_piece);
+
+        // Create Stripe Checkout Session
+        console.log(
+            `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece['image_path']}`}`,
+        );
+        const price_with_shipping = state.price + (state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0);
+
+        const session = await create_stripe_checkout_session(
+            state.db_id,
+            state.o_id,
+            state.title,
+            `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece['image_path']}`,
+            state.width,
+            state.height,
+            price_with_shipping,
+            full_name,
+            phone,
+            email,
+            state.address,
+            state.international,
+        );
+        console.log(`Stripe Response :`, session);
+        console.log(`Session ID: ${session.id}`);
+
+        var redirect_to_stripe = true;
+        if (redirect_to_stripe) {
+            const stripe = await stripePromise;
+            console.log('Stripe (Next Line):');
+            console.log(stripe);
+
+            const result = await stripe.redirectToCheckout({
+                sessionId: session.id,
+            });
+            if (result.error) {
+                // If `redirectToCheckout` fails due to a browser or network
+                // error, display the localized error message to your customer
+                // using `result.error.message`.
             }
+        }
 
-            console.log('Attempting to Check Out...');
-
-            console.log('Creating a Pending Transaction ...');
-            const pending_response = await create_pending_transaction(
-                state.db_id,
-                state.title,
-                full_name,
-                phone,
-                email,
-                state.address,
-                state.international,
-            );
-
-            console.log(`Pending Transaction Response (Next Line):`);
-            console.log(pending_response);
-
-            if (!pending_response) {
-                console.error('No Response From Create Pending Transaction.  Cannot check out...');
-                return;
-            }
-
-            console.log(`Creating stripe session with piece (Next Line):\n${state.current_piece}`);
-
-            // Create Stripe Checkout Session
-            console.log(
-                `Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece['image_path']}`}`,
-            );
-            const price_with_shipping = state.price + (state.international == true ? INTERNATIONAL_SHIPPING_RATE : 0);
-
-            const stripe_response = await create_stripe_checkout_session(
-                state.db_id,
-                state.o_id,
-                state.title,
-                `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${state.current_piece['image_path']}`,
-                state.width,
-                state.height,
-                price_with_shipping,
-                full_name,
-                phone,
-                email,
-                state.address,
-                state.international,
-            );
-            const json = await stripe_response.json();
-
-            console.log(`Creating Stripe Checkout Session Response JSON (Next Line):`);
-            console.log(json);
-
-            const session = json;
-
-            console.log(`Session ID: ${session.id}`);
-
-            var redirect_to_stripe = true;
-            if (redirect_to_stripe) {
-                const stripe = await stripePromise;
-                console.log('Stripe (Next Line):');
-                console.log(stripe);
-
-                const result = await stripe.redirectToCheckout({
-                    sessionId: session.id,
-                });
-                if (result.error) {
-                    // If `redirectToCheckout` fails due to a browser or network
-                    // error, display the localized error message to your customer
-                    // using `result.error.message`.
-                }
-            }
-
-            setState({ ...state, loading: false, submitted: true });
-        });
+        setState((prevState) => ({...prevState, loading: false, submitted: true }));
     };
 
     const update_field_value = (field, new_value_object) => {
@@ -338,13 +332,13 @@ const Checkout = (props) => {
     // Shipping Message JSX
     const shipping_jsx =
         state.international != null ? (
-            <div className={checkout_styles.checkout_shipping_container}>
+            <div className={'flex flex-wrap'}>
                 {state.international == true ? (
-                    <div className={checkout_styles.checkout_shipping_label}>
+                    <div className={'mt-2.5 text-xl text-primary mr-2.5'}>
                         Pieces ship within 5 days. International shipping costs $25 and can take up to 1 month.
                     </div>
                 ) : (
-                    <div className={checkout_styles.checkout_shipping_label}>
+                    <div className={'mt-2.5 text-xl text-primary mr-2.5'}>
                         Pieces ship within 5 days. Domestic shipping can take up to a week.
                     </div>
                 )}

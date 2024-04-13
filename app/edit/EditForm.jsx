@@ -14,6 +14,10 @@ const EditForm = ({
     extra_images_text_jsx,
     error_message_jsx,
     progress_images_gallery_container_jsx,
+<<<<<<< HEAD
+=======
+    create_blank_piece
+>>>>>>> 818b29b7fa79234a1f62f780c22e09f7703a595c
 }) => {
     const update_field_value = async (field, new_value_object) => {
         const key_name = field.toLowerCase();
@@ -407,7 +411,11 @@ const EditForm = ({
     const submit_button_classes =
         'rounded-md border-2 border-secondary bg-primary px-3 py-1 font-bold text-dark hover:border-primary hover:bg-dark hover:text-primary';
     const submit_container_jsx = (
+<<<<<<< HEAD
         <div className={'flex flex-row px-4 py-2'}>
+=======
+        <div className={'flex flex-row px-4 py-2 space-x-2.5'}>
+>>>>>>> 818b29b7fa79234a1f62f780c22e09f7703a595c
             {/* <button type="button" className={form_styles.upload_button} onClick={showFileUpload}>Upload</button> */}
             {/* <input type="file" className={form_styles.upload_file_input} onChange={onFileChange} ref={file_input_ref}/> */}
             <button type="button" className={submit_button_classes} onClick={handleSubmit}>
@@ -420,14 +428,21 @@ const EditForm = ({
     );
 
     return (
+<<<<<<< HEAD
         <div className="flex h-full w-full flex-col">
+=======
+        <div className="flex h-full w-full flex-col overflow-y-auto">
+>>>>>>> 818b29b7fa79234a1f62f780c22e09f7703a595c
             <form>
                 {title_container_jsx /* Title Container */}
                 {file_input_continer /* File Input Container */}
                 {submit_container_jsx}
                 {error_message_jsx}
                 {progress_images_gallery_container_jsx}
+<<<<<<< HEAD
                 <div className="p-4"></div>
+=======
+>>>>>>> 818b29b7fa79234a1f62f780c22e09f7703a595c
                 {piece_type_select_jsx /* Piece Type Select */}
                 {theme_multiselect_jsx /* Theme Multiselect */}
                 {available_and_sold_container_jsx /* Split Container For Available / sold */}

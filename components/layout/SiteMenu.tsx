@@ -21,7 +21,7 @@ const SiteMenu = () => {
     return (
         <div className="flex w-fit flex-row">
             {/* Account Profile Button */}
-            <div className="p-0">
+            <div className="p-2.5 bg-dark rounded-t-md hover:bg-light">
                 <SignedIn>
                     <UserButton
                         className="!h-[40px] !w-[40px] bg-dark p-[2.5px] hover:bg-light md:!h-[50px] md:!w-[50px]"
