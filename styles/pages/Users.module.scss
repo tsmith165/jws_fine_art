@@ -6,7 +6,7 @@
   width: 100vw; 
   overflow-y: auto; 
   overflow-x: hidden; 
-  background-color: $light; 
+  background-color: $secondary_light; 
 }
   .main_body { 
     padding: 15px 15px;
@@ -15,7 +15,7 @@
     .admin_header { }
 
     .module_title { 
-      color: $secondary; 
+      color: $primary_dark; 
       margin-top: 5px;  
     }
 

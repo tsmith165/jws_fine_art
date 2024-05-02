@@ -1,6 +1,6 @@
 import PROJECT_CONSTANTS from '@/lib/constants';
 import React from 'react';
-import Link from 'next/link';   
+import Link from 'next/link';
 import Image from 'next/image';
 
 import SiteMenu from './SiteMenu';
@@ -9,12 +9,12 @@ export default function Navbar({ page }: { page: string }) {
     console.log('Navbar: page=', page);
 
     return (
-        <nav className={'min-h-[100px] overflow-hidden bg-secondary p-0'}>
+        <nav className={'min-h-[80px] overflow-hidden bg-primary_dark p-0'}>
             <div className={'flex flex-row'}>
-                <Link href="/">
+                <Link href="/gallery">
                     <div className={`!h-full w-[250px] max-w-[250px]`}>
                         <Image
-                            className={`max-h-[100px] min-h-[100px] p-2.5`}
+                            className={`max-h-[80px] min-h-[80px] p-2.5`}
                             src="/jws_logo_small.png"
                             alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
                             width={274}
@@ -23,14 +23,14 @@ export default function Navbar({ page }: { page: string }) {
                         />
                     </div>
                 </Link>
-                <div className={'absolute right-0 top-[60px] flex h-[40px] w-fit flex-row md:top-[50px] md:h-[50px]'}>
+                <div className={'absolute right-0 top-[40px] flex h-[40px] w-fit flex-row'}>
                     <Link href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer">
                         <Image
-                            className={'w-[40px] rounded-t-md bg-dark p-2 hover:bg-light md:w-[50px]'}
+                            className={'w-[40px] rounded-t-md bg-secondary_dark p-2 hover:bg-secondary_light'}
                             src="/instagram_icon_50.png"
                             alt="Instagram Link"
-                            width={50}
-                            height={50}
+                            width={40}
+                            height={40}
                         />
                     </Link>
                     <SiteMenu />
@@ -38,4 +38,4 @@ export default function Navbar({ page }: { page: string }) {
             </div>
         </nav>
     );
-};
+}

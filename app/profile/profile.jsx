@@ -1,27 +1,13 @@
-'use client'
+import React from 'react';
 
-import React, { useEffect } from 'react';
-
-import PageLayout from '@/components/layout/PageLayout';
-import { UserProfile } from "@clerk/nextjs";
-import styles from '@/styles/components/Clerk.module.scss';
+import { UserProfile } from '@clerk/nextjs';
 
 const Profile = () => {
-    const page_title = "User Profile";
-
-    useEffect(() => {
-
-    }, []);
-
     return (
-        <PageLayout page_title={page_title}>
-            <div className={styles.clerk_container}>
-                <div className={styles.clerk_inner_container}>
-                    <UserProfile path="/profile" routing="path" />
-                </div>
-            </div>
-        </PageLayout>
+        <div className={'flex h-full w-full items-center justify-center bg-secondary_light'}>
+            <UserProfile path="/profile" routing="path" />
+        </div>
     );
-}
+};
 
 export default Profile;

@@ -1,29 +1,40 @@
 'use client';
 
-import { useAnalytics } from '@/lib/useAnalytics';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-tooltip/dist/react-tooltip.css';
-import AppContext from '@/contexts/AppContext';
+import { Piece as PieceType } from '@prisma/client';
+
+import useGalleryStore from '@/stores/gallery_store';
+
 import Piece from './Piece';
+import FilterMenu from './FilterMenu';
 
 const DEFAULT_PIECE_WIDTH = 250;
 const MOBILE_SCREEN_MAX_WIDTH = 500 + 40 + 60 + 30;
 const INNER_MARGIN_WIDTH = 30;
 const BORDER_MARGIN_WIDTH = 10;
 
-const Gallery = (props) => {
-    useAnalytics();
-    const { appState, setAppState } = useContext(AppContext);
+interface GalleryState {
+    window_width: number;
+    window_height: number;
+    piece_list: PieceType[];
+    gallery_pieces: JSX.Element[];
+    lowest_height: number;
+}
 
-    const [state, setState] = useState({
-        filter_menu_open: false,
-        window_width: null,
-        window_height: null,
-        piece_list: props.piece_list,
+const Gallery = ({ pieces }: { pieces: PieceType[] }) => {
+    const { theme, filterMenuOpen, setFilterMenuOpen } = useGalleryStore((state) => ({
+        theme: state.theme,
+        filterMenuOpen: state.filterMenuOpen,
+        setFilterMenuOpen: state.setFilterMenuOpen,
+    }));
+
+    const [state, setState] = useState<GalleryState>({
+        window_width: 0,
+        window_height: 0,
+        piece_list: pieces,
         gallery_pieces: [],
         lowest_height: 0,
-        theme: 'None',
-        fade_in_visible: true,
     });
 
     useEffect(() => {
@@ -45,11 +56,11 @@ const Gallery = (props) => {
     useEffect(() => {
         console.log('Checking theme change...');
         if (state.window_width && state.window_height) {
-            createGallery(state.piece_list, appState.theme);
+            createGallery(state.piece_list, theme);
         }
-    }, [state.theme, appState.theme, state.window_width, state.window_height]);
+    }, [theme, state.window_width, state.window_height, state.piece_list]);
 
-    const createGallery = async (piece_list, theme) => {
+    const createGallery = async (piece_list: PieceType[], selected_theme: string) => {
         console.log('Begin create gallery');
         const piece_list_length = piece_list.length;
 
@@ -74,8 +85,8 @@ const Gallery = (props) => {
         }
         console.log(`Window Width: ${state.window_width} | Window height: ${state.window_height}`);
 
-        var gallery_pieces = [];
-        var column_bottom_list = [];
+        var gallery_pieces: JSX.Element[] = [];
+        var column_bottom_list: number[] = [];
         var lowest_height = 0;
 
         // Calculate piece width and max columns based on window width
@@ -97,36 +108,17 @@ const Gallery = (props) => {
         var row_starting_height = INNER_MARGIN_WIDTH;
         var skip_col = false;
 
-        // console.log(`Creating gallery with piece_list length: ${piece_list_length} | Data (Next Line):`)
-        // console.log(piece_list)
-
         var i = 0;
         var real_i = 0;
         while (i < piece_list_length) {
             var current_piece_json = piece_list[i];
-            // console.log(current_piece_json)
 
-            var piece_theme =
-                current_piece_json['theme'] !== undefined
-                    ? current_piece_json['theme'] != null
-                        ? current_piece_json['theme']
-                        : 'None'
-                    : 'None';
-            var piece_sold =
-                current_piece_json['sold'] !== undefined
-                    ? current_piece_json['sold'] != null
-                        ? current_piece_json['sold']
-                        : false
-                    : false;
-            var piece_available =
-                current_piece_json['available'] !== undefined
-                    ? current_piece_json['available'] != null
-                        ? current_piece_json['available']
-                        : false
-                    : false;
-            // logger.extra(`Current piece theme: ${piece_theme} | State theme: ${theme}`)
-            if (theme != 'None' && theme != undefined && theme != null) {
-                if (theme == 'Available') {
+            var piece_theme = current_piece_json['theme'] ? current_piece_json['theme'] : 'None';
+            var piece_sold = current_piece_json['sold'] ? current_piece_json['sold'] : false;
+            var piece_available = current_piece_json['available'] ? current_piece_json['available'] : false;
+
+            if (selected_theme != 'None' && selected_theme != undefined && selected_theme != null) {
+                if (selected_theme == 'Available') {
                     if (piece_sold) {
                         // Skipping piece as it is sold
                         i += 1;
@@ -138,7 +130,7 @@ const Gallery = (props) => {
                         continue;
                     }
                 } else {
-                    if (piece_theme !== undefined && !piece_theme.includes(appState.theme)) {
+                    if (piece_theme !== undefined && !piece_theme.includes(selected_theme)) {
                         // Skipping piece as it does not match theme
                         i += 1;
                         continue;
@@ -146,17 +138,17 @@ const Gallery = (props) => {
                 }
             }
 
-            var o_id = current_piece_json['o_id'] !== undefined ? current_piece_json['o_id'] : 'None';
-            var class_name = current_piece_json['class_name'] !== undefined ? current_piece_json['class_name'] : 'None';
-            var image_path = current_piece_json['image_path'] !== undefined ? current_piece_json['image_path'] : 'None';
-            var title = current_piece_json['title'] !== undefined ? current_piece_json['title'] : 'None';
-            var description = current_piece_json['description'] !== undefined ? current_piece_json['description'] : 'None';
-            var sold = current_piece_json['sold'] !== undefined ? current_piece_json['sold'] : 'None';
-            var available = current_piece_json['available'] !== undefined ? current_piece_json['available'] : 'None';
+            var o_id = current_piece_json['o_id'] ? current_piece_json['o_id'] : 'None';
+            var class_name = current_piece_json['class_name'] ? current_piece_json['class_name'] : 'None';
+            var image_path = current_piece_json['image_path'] ? current_piece_json['image_path'] : 'None';
+            var title = current_piece_json['title'] ? current_piece_json['title'] : 'None';
+            var description = current_piece_json['description'] ? current_piece_json['description'] : 'None';
+            var sold = current_piece_json['sold'] ? current_piece_json['sold'] : false;
+            var available = current_piece_json['available'] !== undefined ? Boolean(current_piece_json['available']) : false;
             var [width, height] =
                 current_piece_json['width'] !== undefined && current_piece_json['height'] !== undefined
                     ? [current_piece_json['width'], current_piece_json['height']]
-                    : 'None';
+                    : [0, 0];
 
             var [scaled_width, scaled_height] = [piece_width, height];
             scaled_height = (piece_width / width) * height;
@@ -190,18 +182,17 @@ const Gallery = (props) => {
                 // Generate dimensions and create Piece component
                 column_bottom_list[index] = column_bottom_list[index] + scaled_height + INNER_MARGIN_WIDTH; // Current bottom
 
-                var dimensions = [cur_x, cur_y, scaled_width, scaled_height];
+                var dimensions: [number, number, number, number] = [cur_x, cur_y, scaled_width, scaled_height];
 
                 gallery_pieces.push(
                     <Piece
                         key={i}
                         id={`piece-${i}`}
-                        o_id={o_id}
+                        o_id={o_id.toString()}
                         className={class_name}
                         image_path={image_path}
                         dimensions={dimensions}
                         title={title}
-                        description={description}
                         sold={sold}
                         available={available}
                     />,
@@ -232,37 +223,31 @@ const Gallery = (props) => {
             piece_list: piece_list,
             gallery_pieces: gallery_pieces,
             lowest_height: lowest_height,
-            fade_in_visible: false,
         }));
-
-        setTimeout(() => {
-            setState((prevState) => ({ ...prevState, fade_in_visible: false }));
-        }, 1000); // 2 seconds delay
     };
 
-    const gallery_clicked = (e) => {
-        if (appState.filter_menu_open == true && state.window_width < 768) {
-            setAppState({ ...appState, filter_menu_open: false });
+    const gallery_clicked = (e: React.MouseEvent) => {
+        if (filterMenuOpen && state.window_width < 768) {
+            setFilterMenuOpen(false);
         }
     };
 
     return (
         <>
-            {!state.fade_in_visible ? null : (
-                <div className={`pointer-events-auto fixed bottom-0 left-0 right-0 top-[100px] z-50 animate-fade-out bg-black `}></div>
-            )}
-            <div className={`h-full w-full bg-dark`}>
+            <div className={`max-h-full min-h-full min-w-full max-w-full bg-secondary_dark`}>
                 <div
-                    className={`relative max-h-[calc(100vh-100px)] w-full overflow-y-auto overflow-x-hidden bg-dark`}
+                    className={`relative !max-h-[calc(100vh-80px)] w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
                     onClick={(e) => {
-                        gallery_clicked();
+                        gallery_clicked(e);
                     }}
                 >
-                    <div className={`w-full`} style={{ height: state.lowest_height }}>
+                    <div className={`max-h-full w-full`} style={{ height: state.lowest_height }}>
                         {state.gallery_pieces}
                     </div>
                 </div>
             </div>
+
+            <FilterMenu />
         </>
     );
 };

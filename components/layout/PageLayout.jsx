@@ -1,14 +1,12 @@
-import AnalyticsLoader from '@/components/wrappers/AnalyticsLoader';
 import React from 'react';
 import Navbar from './Navbar';
 
-const PageLayout = ({ navbar_modifiers, children }) => {
+const PageLayout = ({ children }) => {
     return (
         <body>
-            <AnalyticsLoader />
             <Navbar />
             {navbar_modifiers}
-            <main className="relative h-[100vh] w-full">{children}</main>
+            <main className="relative h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] w-full">{children}</main>
         </body>
     );
 };

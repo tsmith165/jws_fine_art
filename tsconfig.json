@@ -1,48 +1,44 @@
 {
-  "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "esnext",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "preserve",
+        "incremental": true,
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@/components/*": ["components/*"],
+            "@/styles/*": ["styles/*"],
+            "@/lib/*": ["lib/*"],
+            "@/app/*": ["app/*"],
+            "@/stores/*": ["stores/*"]
+        }
     },
-    "types": [
-      "node"
-    ]
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "src/**/*.ts",
-    "src/**/*.mts",
-    ".next/types/**/*.ts",
-    "tailwind.config.cjs"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.mts",
+        ".next/types/**/*.ts",
+        "tailwind.config.cjs",
+        "middleware.js",
+        "middleware.js",
+        "middleware.js"
+    ],
+    "exclude": ["node_modules"]
 }

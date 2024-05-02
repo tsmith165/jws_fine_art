@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import MenuOverlayButton from './MenuOverlayButton';
-import styles from '@/styles/layout/MenuOverlay.module.scss';
 import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from '@/lib/menu_list.js';
 
 const MenuOverlay = (props) => {
@@ -43,7 +42,7 @@ const MenuOverlay = (props) => {
         return SIGNED_IN_MENU_LIST;
     };
 
-    return <div className={styles.menu_overlay_items_container}>{menuItems}</div>;
+    return <div className="flex flex-col">{menuItems}</div>;
 };
 
 export default MenuOverlay;

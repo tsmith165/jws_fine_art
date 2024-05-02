@@ -17,7 +17,7 @@ class CustomNextImage extends React.Component {
             <div className={'flex w-full h-full justify-center items-center'}>
                 {this.state.isLoading && !hidden && (
                     <div className={'flex justify-center items-center absolute inset-0'}>
-                        <div className={'box-border border-8 border-primary rounded-[75%] border-t-8 border-t-light animate-spin w-16 h-16'}></div>
+                        <div className={'box-border border-8 border-primary rounded-[75%] border-t-8 border-t-secondary_light animate-spin w-16 h-16'}></div>
                     </div>
                 )}
 

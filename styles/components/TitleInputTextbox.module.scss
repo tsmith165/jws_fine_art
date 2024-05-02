@@ -4,7 +4,7 @@
     display: flex;
     width: 100%;
     height: 70px;
-    background-color: $light;
+    background-color: $secondary_light;
     margin-bottom: 10px;
 
     .title_inner_container {
@@ -18,7 +18,7 @@
     .title {
         width: calc(100% - 80px);
         margin: auto;
-        color: $light;
+        color: $secondary_light;
         font-size: 1.5em;
         line-height: 1.5em;
         text-align: center;
@@ -47,7 +47,7 @@
     padding: 0px 5px !important;
 
     &:hover {
-        background-color: $tertiary !important;
+        background-color: $primary_dark !important;
         fill: $primary !important;
         border-top-left-radius: 15px;
         border-bottom-left-radius: 15px;
@@ -67,7 +67,7 @@
         border-radius: 5px;
 
         &:hover {
-            background-color: $tertiary !important;
+            background-color: $primary_dark !important;
             fill: $dark !important;
         }
     }

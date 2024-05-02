@@ -1,7 +1,5 @@
-import logger from '@/lib/logger';
 import PROJECT_CONSTANTS from '@/lib/constants';
 import React, { useEffect } from 'react';
-import styles from '@/styles/components/OrderTree.module.scss';
 
 const OrderTree = (props) => {
     useEffect(() => {}, []);
@@ -19,8 +17,11 @@ const OrderTree = (props) => {
         }
 
         return (
-            <div className={'flex flex-row hover:bg-secondary hover:text-light'} key={verified_payment_data.id || Math.random()}>
-                <div className={'bg-secondary'}>
+            <div
+                className={'flex flex-row hover:bg-primary_dark hover:text-secondary_light'}
+                key={verified_payment_data.id || Math.random()}
+            >
+                <div className={'bg-primary_dark'}>
                     <img className={'h-[150px] w-[150px] object-contain'} src={image_url} alt={verified_payment_data['piece_title']} />
                 </div>
                 <div className={'mb-auto mt-auto w-[30%] overflow-hidden overflow-ellipsis whitespace-nowrap p-2.5 pl-5 text-lg'}>
@@ -69,7 +70,7 @@ const OrderTree = (props) => {
     });
 
     return (
-        <div className={'relative h-full w-full rounded-md border-2 border-secondary bg-primary text-lg'}>
+        <div className={'relative h-full w-full rounded-md border-2 border-primary_dark bg-primary text-lg'}>
             <div className={'h-full w-full'}>{list_items}</div>
         </div>
     );

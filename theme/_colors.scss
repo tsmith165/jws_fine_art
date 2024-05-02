@@ -1,9 +1,9 @@
 // theme/_colors.scss
 
-$light: #616C63; // Ebony
+$secondary_light: #616C63; // Ebony
 $primary: #54786D; // Hooker's Green
-$secondary: #365349; // Dark Slate Gray
-$tertiary: #475451; // Feldgrau
+$primary_dark: #365349; // Dark Slate Gray
+$primary_dark: #475451; // Feldgrau
 
 $medium: #4F5451; // Davy's Grey
 $dark: #333739; // Onyx
@@ -21,14 +21,14 @@ $danger_2: #85230A;
 $danger_3: #5E1908;
 
 $navbar_button_background: $dark;
-$navbar_button_color: $light;
+$navbar_button_color: $secondary_light;
 
-$navbar_button_background_hover: $light;
-$navbar_button_color_hover: $secondary;
+$navbar_button_background_hover: $secondary_light;
+$navbar_button_color_hover: $primary_dark;
 
 /*
 $b_primary: #597D9F;
-$b_secondary: #425D76;
-$b_light: #B9C3CA;
+$b_primary_dark: #425D76;
+$b_secondary_light: #B9C3CA;
 $b_dark: #30332E;
 */

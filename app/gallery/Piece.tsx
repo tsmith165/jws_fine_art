@@ -7,14 +7,25 @@ import PROJECT_CONSTANTS from '@/lib/constants';
 
 const USING_YELLOW_DOT = false;
 
-const Piece = ({ dimensions, id, className, o_id, image_path, title, sold, available }) => {
+type PieceProps = {
+    dimensions: [number, number, number, number];
+    id: string;
+    className: string;
+    o_id: string;
+    image_path: string;
+    title: string;
+    sold: boolean;
+    available: boolean;
+};
+
+const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_path, title, sold, available }) => {
     var [x, y, img_width, img_height] = dimensions;
     x = x == null || x < 0 ? 0 : x;
 
     return (
         <div
             id={id}
-            className={`absolute rounded-md bg-tertiary p-1 ${className}`}
+            className={`bg-secondary_light absolute rounded-md p-1 ${className}`}
             style={{ width: img_width + 8, height: img_height + 8, top: y, left: x }}
         >
             <Link href={`/details/${o_id}`}>

@@ -6,7 +6,7 @@
     width: 100%; 
     height: 100%; 
     position: relative; 
-    border: 2px solid $secondary; 
+    border: 2px solid $primary_dark; 
     border-radius: 5px; 
 }
 
@@ -19,7 +19,7 @@
             height: 40px; 
             border-top-left-radius: 5px; 
             border-top-right-radius: 5px; 
-            background-color: $secondary; 
+            background-color: $primary_dark; 
         }
 
     // tree list item
@@ -27,7 +27,7 @@
         padding: 0; 
     }
         .list_item_header { 
-            color: $light; 
+            color: $secondary_light; 
             float: right; 
             padding: 7.5px 10px; 
             margin-right: 10px; 
@@ -44,10 +44,10 @@
             border-bottom-right-radius: 5px;  
         } 
         .tree_list_item:hover { 
-            background-color: $light;  
+            background-color: $secondary_light;  
         }
         .tree_list_item:hover > .user_grid { 
-            color: $secondary; 
+            color: $primary_dark; 
         }
 
             // Grid for user details strings on left side
@@ -75,9 +75,9 @@
 
             // tree list item buttons - 
             .list_item_button { 
-                color: $light;
+                color: $secondary_light;
                 background-color: $primary; 
-                border: 2px solid $light; 
+                border: 2px solid $secondary_light; 
                 border-radius: 5px; 
                 padding: 5px 10px; 
                 float: right; 
@@ -86,7 +86,7 @@
             }
                 .list_item_button:hover { 
                     color: $primary;
-                    background-color: $light; 
+                    background-color: $secondary_light; 
                     border: 2px solid $primary; 
                     border-radius: 5px; 
                 }

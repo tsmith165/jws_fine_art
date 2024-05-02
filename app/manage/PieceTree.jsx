@@ -6,9 +6,9 @@ import PROJECT_CONSTANTS from '@/lib/constants';
 import styles from '@/styles/pages/Manage.module.scss';
 import { change_order, delete_piece } from '@/lib/api_calls';
 
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import EditIcon from '@mui/icons-material/Edit';
+import { IoIosArrowForward } from "react-icons/io";
+import { MdDeleteForever } from "react-icons/md";
+import { FaEdit } from "react-icons/fa";
 
 const PieceTree = ({ piece_tree_data, refresh_data }) => {
     
@@ -50,19 +50,19 @@ const PieceTree = ({ piece_tree_data, refresh_data }) => {
 
                 <div className={styles.list_item_stacked_container}> 
                     <div className={styles.stack_inner_container}>
-                        <ArrowForwardIosRoundedIcon className={`${styles.stacked_arrow} ${styles.stacked_up}`} onClick={(e) => { e.preventDefault(); handleOrderChange(curr_id_list, next_id_list); }} />
-                        <ArrowForwardIosRoundedIcon className={`${styles.stacked_arrow} ${styles.stacked_down}`} onClick={(e) => { e.preventDefault(); handleOrderChange(curr_id_list, last_id_list); }} />
+                        <IoIosArrowForward className={`${styles.stacked_arrow} ${styles.stacked_up}`} onClick={(e) => { e.preventDefault(); handleOrderChange(curr_id_list, next_id_list); }} />
+                        <IoIosArrowForward className={`${styles.stacked_arrow} ${styles.stacked_down}`} onClick={(e) => { e.preventDefault(); handleOrderChange(curr_id_list, last_id_list); }} />
                     </div>
                 </div>
 
                 <Link href={`/edit/${curr_id}`}>
                     <div className={styles.list_item_icon_container}>
-                        <EditIcon className={`${styles.list_item_icon} ${styles.edit_button}`} />
+                        <FaEdit className={`${styles.list_item_icon} ${styles.edit_button}`} />
                     </div>
                 </Link>
 
                 <div className={styles.list_item_icon_container}>
-                    <DeleteForeverIcon className={`${styles.list_item_icon} ${styles.delete_button}`} onClick={(e) => { e.preventDefault(); handleDeletePiece(curr_id); }} />
+                    <MdDeleteForever className={`${styles.list_item_icon} ${styles.delete_button}`} onClick={(e) => { e.preventDefault(); handleDeletePiece(curr_id); }} />
                 </div>
 
                 <div className={`${styles.list_item_title_container}`}>

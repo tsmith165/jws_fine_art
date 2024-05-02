@@ -1,8 +1,8 @@
 // theme/_colors.scss
 
-$light: #9fa090; // olive-1
+$secondary_light: #9fa090; // olive-1
 $primary: #45544d; // olive-2
-$secondary: #3b4640; // olive-3
+$primary_dark: #3b4640; // olive-3
 $dark: #30332E;
 $warning: #EED202;
 $error: #85230A;
@@ -17,14 +17,14 @@ $danger_2: #85230A;
 $danger_3: #5E1908;
 
 $navbar_button_background: $dark;
-$navbar_button_color: $light;
+$navbar_button_color: $secondary_light;
 
-$navbar_button_background_hover: $light;
-$navbar_button_color_hover: $secondary;
+$navbar_button_background_hover: $secondary_light;
+$navbar_button_color_hover: $primary_dark;
 
 /*
 $b_primary: #597D9F;
-$b_secondary: #425D76;
-$b_light: #B9C3CA;
+$b_primary_dark: #425D76;
+$b_secondary_light: #B9C3CA;
 $b_dark: #30332E;
 */

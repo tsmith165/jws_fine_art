@@ -23,7 +23,7 @@
     align-items: center;
     justify-content: center;
     padding: 5px 10px;
-    background-color: $secondary;
+    background-color: $primary_dark;
     border-radius: 5px 0px 0px 5px !important;
     font-weight: 600;
 }
@@ -42,7 +42,7 @@
     border-radius: 5px;
     padding: 10px;
     background-color: $primary;
-    color: $light;
+    color: $secondary_light;
     border: none;
     font-family: $lato_300;
     font-weight: bold;
@@ -57,7 +57,7 @@
     padding: 5px 10px;
     color: $dark;
     background-color: $primary;
-    border: 2px solid $secondary;
+    border: 2px solid $primary_dark;
     border-radius: 5px;
     font-weight: bold;
     margin-right: 10px;
@@ -100,7 +100,7 @@
 }
 
 .submit_label_update {
-    color: $light;
+    color: $secondary_light;
     font-size: 16px;
     font-weight: bold;
     line-height: 32px;
@@ -122,7 +122,7 @@
     padding: 5px 10px;
     color: $dark;
     background-color: $primary;
-    border: 2px solid $secondary;
+    border: 2px solid $primary_dark;
     border-radius: 5px;
     font-weight: bold;
     margin-right: 10px;
