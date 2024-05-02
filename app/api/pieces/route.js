@@ -1,13 +1,13 @@
-import { prisma } from "@/lib/prisma";
-import XLSX from 'xlsx';
+import { prisma } from '@/lib/prisma';
+import { read, utils, write } from 'xlsx';
 
 export async function POST(req) {
     try {
-        const passed_json = await req.json()
+        const passed_json = await req.json();
 
         if (passed_json === undefined) {
             console.error(`Request body is undefined`);
-            return Response.json({ error: "Request body is undefined" }, { status: 400 });
+            return Response.json({ error: 'Request body is undefined' }, { status: 400 });
         }
 
         const format = passed_json?.format !== 'xlsx' ? 'None' : 'xlsx';
@@ -51,23 +51,22 @@ export async function POST(req) {
                 comments: piece.comments || '',
             }));
 
-            const ws = XLSX.utils.json_to_sheet(simplifiedPieces);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Pieces');
+            const ws = utils.json_to_sheet(simplifiedPieces);
+            const wb = utils.book_new();
+            utils.book_append_sheet(wb, ws, 'Pieces');
 
-            const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+            const buffer = write(wb, { type: 'buffer', bookType: 'xlsx' });
 
             const headers = {
-                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             };
 
-            return new Response(buffer, { status: 200, headers }); 
-
+            return new Response(buffer, { status: 200, headers });
         } else {
-            return Response.json({ pieces }, { status: 200 }); 
+            return Response.json({ pieces }, { status: 200 });
         }
     } catch (e) {
         console.log(`Error: ${e}`);
-        return Response.json({ error: 'Unable to fetch pieces' }, { status: 500 }); 
+        return Response.json({ error: 'Unable to fetch pieces' }, { status: 500 });
     }
 }
