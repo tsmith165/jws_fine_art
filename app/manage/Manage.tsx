@@ -50,7 +50,7 @@ export function Manage({ pieces, deletedPieces, activeTab }: ManageProps) {
 
     return (
         <div className="flex h-full w-full flex-col items-center overflow-y-auto py-4">
-            <div className="w-4/5 rounded-t-md bg-primary text-lg font-bold text-secondary_dark">
+            <div className="w-4/5 rounded-lg bg-primary text-lg font-bold text-secondary_dark">
                 <div className="w-full rounded-t-md bg-secondary text-lg font-bold text-secondary_dark">
                     <div className="flex pt-1">
                         {pieces.length > 0 && (

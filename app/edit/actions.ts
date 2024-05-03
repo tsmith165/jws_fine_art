@@ -1,5 +1,7 @@
 'use server';
 import { prisma } from '@/lib/prisma';
+import { Piece } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 import { generate_upload_url } from '@/lib/s3_api_calls';
 import axios from 'axios';
 
@@ -119,4 +121,74 @@ export async function onFileUpload(data: FormData) {
 
     const uploaded_image_path = s3_upload_url.split('?')[0];
     return uploaded_image_path;
+}
+
+interface ImageData {
+    image_path: string;
+}
+
+export async function handleImageReorder(pieceId: number, index: number, direction: string, imageType: string) {
+    const piece = await prisma.piece.findUnique({ where: { id: pieceId } });
+    if (!piece) {
+        console.error(`Piece with id ${pieceId} not found`);
+        return;
+    }
+    const images = JSON.parse(piece[imageType as keyof Piece] as string) as ImageData[];
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= images.length) return;
+
+    const item = images[index];
+    images.splice(index, 1);
+    images.splice(newIndex, 0, item);
+
+    await prisma.piece.update({
+        where: { id: pieceId },
+        data: { [imageType]: JSON.stringify(images) },
+    });
+
+    revalidatePath(`/edit/${piece.o_id}`);
+}
+
+interface NewPieceData {
+    title: string;
+    imagePath: string;
+}
+
+export async function createPiece(newPieceData: NewPieceData) {
+    const { title, imagePath } = newPieceData;
+
+    // Find the maximum o_id value from existing pieces
+    const maxOId = await prisma.piece.aggregate({
+        _max: {
+            o_id: true,
+        },
+    });
+
+    const newOId = (maxOId._max.o_id || 0) + 1;
+
+    const newPiece = await prisma.piece.create({
+        data: {
+            title,
+            image_path: imagePath,
+            width: 0,
+            height: 0,
+            description: '',
+            piece_type: '',
+            sold: false,
+            price: 0,
+            real_width: 0,
+            real_height: 0,
+            active: true,
+            instagram: '',
+            theme: '',
+            available: true,
+            framed: false,
+            comments: '',
+            o_id: newOId,
+            class_name: '',
+        },
+    });
+
+    return newPiece;
 }

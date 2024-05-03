@@ -2,6 +2,8 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+
 import InputTextbox from '@/components/inputs/InputTextbox';
 import InputSelect from '@/components/inputs/InputSelect';
 import InputMultiSelect from '@/components/inputs/InputMultiSelect';
@@ -15,8 +17,8 @@ interface EditFormProps {
 
 const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
     return (
-        <div className="flex h-full w-full flex-col overflow-y-auto">
-            <form action={onSubmit}>
+        <div className="flex h-fit w-full overflow-y-auto px-2 pb-2">
+            <form action={onSubmit} className="flex flex-col space-y-2">
                 <input type="hidden" name="piece_id" value={current_piece.id} />
                 <input type="hidden" name="piece_title" value={current_piece.title} />
                 <input type="hidden" name="image_path" value={current_piece.image_path} />
@@ -26,7 +28,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 <input type="hidden" name="progress_images_count" value={current_piece.progress_images?.length.toString()} />
 
                 {/* Row 1.) File Input */}
-                <div className="flex h-fit w-full px-4 py-1">
+                <div className="flex h-fit w-full">
                     <InputFile
                         name="file"
                         defaultValue={current_piece.file_upload_type}
@@ -39,7 +41,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 2.) Piece Type Select */}
-                <div className="flex h-fit w-full px-4 py-1">
+                <div className="flex h-fit w-full">
                     <InputSelect
                         name="piece_type"
                         defaultValue={
@@ -56,7 +58,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 3.) Theme Select */}
-                <div className="flex h-fit w-full px-4 py-1">
+                <div className="flex h-fit w-full">
                     <InputMultiSelect
                         name="theme"
                         defaultValue={current_piece.theme_options}
@@ -75,7 +77,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 3.) Piece Is Framed Select */}
-                <div className="flex h-fit w-full px-4 py-1">
+                <div className="flex h-fit w-full">
                     <InputSelect
                         name="framed"
                         defaultValue={current_piece.framed ? { value: 'True', label: 'True' } : { value: 'False', label: 'False' }}
@@ -87,7 +89,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 5.) Available / Sold Selects */}
-                <div className="flex h-fit w-full flex-row space-x-2.5 px-4 py-1">
+                <div className="flex h-fit w-full flex-row space-x-2.5">
                     <div className="w-1/2">
                         <InputSelect
                             name="available"
@@ -111,7 +113,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 6.) Instagram URL Textbox / Price Textbox */}
-                <div className="flex h-fit w-full flex-row space-x-2.5 px-4 py-1">
+                <div className="flex h-fit w-full flex-row space-x-2.5">
                     <div className="w-1/2">
                         <InputTextbox name="instagram" defaultValue={current_piece.instagram} />
                     </div>
@@ -121,7 +123,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 7.) Real Width / Height Text Box */}
-                <div className="flex h-fit w-full flex-row space-x-2.5 px-4 py-1">
+                <div className="flex h-fit w-full flex-row space-x-2.5">
                     <div className="w-1/2">
                         <InputTextbox name="real_width" defaultValue={current_piece.real_width.toString()} />
                     </div>
@@ -131,7 +133,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 8.) Width / Height Text Box */}
-                <div className="flex h-fit w-full max-w-full flex-row space-x-2.5 px-4 py-1">
+                <div className="flex h-fit w-full max-w-full flex-row space-x-2.5">
                     <div className="w-1/2">
                         <InputTextbox name="width" defaultValue={current_piece.width.toString()} />
                     </div>
@@ -141,25 +143,34 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 9.) Comments Text Area */}
-                <div className="flex h-fit w-full px-4 py-1">
+                <div className="flex h-fit w-full">
                     <InputTextArea name="comments" defaultValue={current_piece.comments} rows={2} />
                 </div>
 
                 {/* Row 10.) Description Text Area */}
-                <div className="flex h-fit w-full px-4 py-1">
+                <div className="flex h-fit w-full">
                     <InputTextArea name="description" defaultValue={current_piece.description} rows={5} />
                 </div>
 
-                <div className="flex flex-row items-center px-4 py-1">
+                <div className="flex flex-row items-center space-x-2">
                     <button
                         type="submit"
                         className={
-                            'text-dark rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold' +
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
                         }
                     >
                         Submit Changes
                     </button>
+                    <Link
+                        href="/edit/new"
+                        className={
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark' +
+                            'hover:border-primary hover:bg-secondary_dark hover:text-primary'
+                        }
+                    >
+                        Create New Piece
+                    </Link>
                 </div>
             </form>
         </div>

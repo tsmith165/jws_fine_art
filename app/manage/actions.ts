@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 export async function getPieces() {
     'use server';
     return await prisma.piece.findMany({
-        where: { active: true },
+        where: { active: true, o_id: { gte: 0 } },
         orderBy: { o_id: 'asc' },
     });
 }
@@ -37,16 +37,25 @@ export async function setInactive(id: number) {
     console.log(`Setting piece with id: ${id} as inactive`);
     await prisma.piece.update({
         where: { id },
-        data: { active: false },
+        data: { active: false, o_id: -1000000 },
     });
 }
 
 export async function setActive(id: number) {
     'use server';
     console.log(`Setting piece with id: ${id} as active`);
+
+    // Find the maximum o_id value from active pieces
+    const maxOId = await prisma.piece.aggregate({
+        where: { active: true, o_id: { gte: 0 } },
+        _max: { o_id: true },
+    });
+
+    const newOId = (maxOId._max.o_id || 0) + 1;
+
     await prisma.piece.update({
         where: { id },
-        data: { active: true },
+        data: { active: true, o_id: newOId },
     });
 }
 

@@ -1,11 +1,12 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-
-import EditForm from './EditForm';
+import Link from 'next/link';
 
 import { IoIosArrowForward } from 'react-icons/io';
 import { MdPageview } from 'react-icons/md';
+
+import EditForm from './EditForm';
+import PieceOrderPanel from './PieceOrderPanel';
 
 interface EditProps {
     piece_list: any[];
@@ -25,7 +26,6 @@ const Edit: React.FC<EditProps> = ({ piece_list, current_id, most_recent_id }) =
             piece_position = i;
         }
     }
-
     const current_piece = piece_list[piece_position];
 
     return (
@@ -54,6 +54,7 @@ const Edit: React.FC<EditProps> = ({ piece_list, current_id, most_recent_id }) =
                     </Link>
                 </div>
                 <EditForm current_piece={current_piece} />
+                <PieceOrderPanel current_piece={current_piece} />
             </div>
         </div>
     );
