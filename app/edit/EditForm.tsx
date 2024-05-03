@@ -9,6 +9,7 @@ import InputSelect from '@/components/inputs/InputSelect';
 import InputMultiSelect from '@/components/inputs/InputMultiSelect';
 import InputTextArea from '@/components/inputs/InputTextArea';
 import InputFile from '@/components/inputs/InputFile';
+
 import { onSubmit } from './actions';
 
 interface EditFormProps {
@@ -18,27 +19,14 @@ interface EditFormProps {
 const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
     return (
         <div className="flex h-fit w-full overflow-y-auto px-2 pb-2">
-            <form action={onSubmit} className="flex flex-col space-y-2">
+            <form action={onSubmit} className="flex w-full flex-col space-y-2">
                 <input type="hidden" name="piece_id" value={current_piece.id} />
                 <input type="hidden" name="piece_title" value={current_piece.title} />
                 <input type="hidden" name="image_path" value={current_piece.image_path} />
-                <input type="hidden" name="extra_images" value={JSON.stringify(current_piece.extra_images)} />
-                <input type="hidden" name="progress_images" value={JSON.stringify(current_piece.progress_images)} />
+                <input type="hidden" name="extra_images" value={current_piece.extra_images} />
+                <input type="hidden" name="progress_images" value={current_piece.progress_images} />
                 <input type="hidden" name="extra_images_count" value={current_piece.extra_images?.length.toString()} />
                 <input type="hidden" name="progress_images_count" value={current_piece.progress_images?.length.toString()} />
-
-                {/* Row 1.) File Input */}
-                <div className="flex h-fit w-full">
-                    <InputFile
-                        name="file"
-                        defaultValue={current_piece.file_upload_type}
-                        file_types={[
-                            { value: 'cover', label: 'Cover Image' },
-                            { value: 'extra', label: 'Extra Image' },
-                            { value: 'progress', label: 'Progress Image' },
-                        ]}
-                    />
-                </div>
 
                 {/* Row 2.) Piece Type Select */}
                 <div className="flex h-fit w-full">
@@ -170,6 +158,15 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                         }
                     >
                         Create New Piece
+                    </Link>
+                    <Link
+                        href={`/edit/images/${current_piece.o_id}`}
+                        className={
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark' +
+                            'hover:border-primary hover:bg-secondary_dark hover:text-primary'
+                        }
+                    >
+                        Edit Images
                     </Link>
                 </div>
             </form>

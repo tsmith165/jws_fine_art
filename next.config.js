@@ -10,7 +10,7 @@ const nextConfig = {
         defaultLocale: 'en',
     },
     images: {
-        domains: [AWS_BUCKET_URL.replace('https://', '')],
+        domains: [AWS_BUCKET_URL.replace('https://', ''), 'utfs.io'],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
     },
     async headers() {

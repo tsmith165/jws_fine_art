@@ -16,6 +16,7 @@ const publicRoutes = [
     '/checkout',
     '/biography',
     '/contact',
+    '/api/uploadthing',
 ];
 
 export default authMiddleware({

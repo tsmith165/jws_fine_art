@@ -44,7 +44,7 @@ export async function onSubmit(data: FormData) {
     console.log(`Creating stripe session with piece:`, piece);
 
     // Create Stripe Checkout Session
-    console.log(`Creating a Stripe Checkout Session with image: ${`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}`);
+    console.log(`Creating a Stripe Checkout Session with image: ${piece.image_path}`);
     const price_with_shipping = piece.price + (is_international ? INTERNATIONAL_SHIPPING_RATE : 0);
 
     const session = await stripe.checkout.sessions.create({
@@ -56,7 +56,7 @@ export async function onSubmit(data: FormData) {
                     unit_amount: price_with_shipping * 100, // Amount in cents
                     product_data: {
                         name: piece.title,
-                        images: [`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`],
+                        images: [piece.image_path],
                     },
                 },
                 quantity: 1,

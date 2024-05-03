@@ -49,7 +49,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_i
     const description = description_raw.split('<br>').join('\n');
     const real_width = current_piece?.real_width ?? '';
     const real_height = current_piece?.real_height ?? '';
-    const image_path = `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece?.image_path}`;
+    const image_path = current_piece.image_path;
     const instagram = current_piece?.instagram ?? '';
 
     const extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : JSON.parse(current_piece.extra_images);
@@ -64,7 +64,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_i
     const using_extra_images = [
         { src: image_path, width, height },
         ...extra_images.map((image: any) => ({
-            src: `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image.image_path.split('/').slice(-2).join('/')}`,
+            src: image.image_path,
             width: image.width,
             height: image.height,
         })),
@@ -78,9 +78,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_i
     const allImages = [
         ...using_extra_images,
         ...using_progress_images.map((image: any) => ({
-            src: image.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                ? image.image_path
-                : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image.image_path.split('/').slice(-2).join('/')}`,
+            src: image.image_path,
             width: image.width,
             height: image.height,
         })),
@@ -147,7 +145,6 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_i
                         {type === 'progress' &&
                             using_progress_images.length !== 0 &&
                             using_progress_images.map((image: any, index: number) => {
-                                const image_path = image.image_path.split('/').slice(-2).join('/');
                                 return (
                                     <Link
                                         key={`progress_image_${index}`}
@@ -158,17 +155,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_i
                                         prefetch={true}
                                     >
                                         <div className="m-[5px] flex h-[100px] w-[100px] items-center justify-center">
-                                            <Image
-                                                src={
-                                                    image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-                                                        ? image_path
-                                                        : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/${image_path}`
-                                                }
-                                                alt=""
-                                                width={image.width}
-                                                height={image.height}
-                                                quality={100}
-                                            />
+                                            <Image src={image_path} alt="" width={image.width} height={image.height} quality={100} />
                                         </div>
                                     </Link>
                                 );
@@ -180,8 +167,8 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_i
     );
 
     return (
-        <div className="flex h-full w-full flex-col md:flex-row">
-            <div className="flex h-3/5 w-full flex-col bg-secondary_dark md:h-full md:w-[65%]">
+        <div className="flex h-full w-full flex-col lg:flex-row">
+            <div className="flex h-3/5 w-full flex-col bg-secondary_dark lg:h-full lg:w-[65%]">
                 {/* Main Image */}
                 <div className={`flex h-full max-w-full items-center justify-center`}>
                     <div className="flex h-full w-full items-center justify-center">
@@ -198,7 +185,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_i
                     </div>
                 </div>
             </div>
-            <div className="flex h-2/5 w-full flex-col bg-secondary_light md:h-full md:w-[35%]">
+            <div className="flex h-2/5 w-full flex-col bg-secondary_light lg:h-full lg:w-[35%]">
                 <TitleComponent title={title ? `"${title}"` : ''} piece_list={piece_list} next_oid={next_oid} last_oid={last_oid} />
 
                 <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">

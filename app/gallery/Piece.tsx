@@ -25,7 +25,7 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
     return (
         <div
             id={id}
-            className={`bg-secondary_light absolute rounded-md p-1 ${className}`}
+            className={`absolute rounded-md bg-secondary_light p-1 ${className}`}
             style={{ width: img_width + 8, height: img_height + 8, top: y, left: x }}
         >
             <Link href={`/details/${o_id}`}>
@@ -33,7 +33,7 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
                     <div className={`relative`}>
                         <Image
                             className={`p-0`}
-                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${image_path}`}
+                            src={image_path}
                             width={img_width}
                             height={img_height}
                             style={{ width: img_width, height: img_height }}

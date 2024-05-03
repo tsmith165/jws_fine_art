@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 <div className="flex items-center justify-center bg-secondary_dark md:w-[65%]">
                     {current_piece && (
                         <Image
-                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`}
+                            src={current_piece.image_path}
                             alt={current_piece.title}
                             width={current_piece.width}
                             height={current_piece.height}
@@ -59,6 +59,9 @@ async function fetchPieces() {
     const piece_list = await prisma.piece.findMany({
         orderBy: {
             o_id: 'desc',
+        },
+        where: {
+            active: true,
         },
     });
     return piece_list;

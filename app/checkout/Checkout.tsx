@@ -28,7 +28,7 @@ const Checkout: React.FC<CheckoutProps> = ({ piece_list, current_id, most_recent
         <div className="flex h-full w-full flex-col md:flex-row">
             <div className="bg-secondary_dark md:w-[65%]">
                 <Image
-                    src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${current_piece.image_path}`}
+                    src={current_piece.image_path}
                     alt={current_piece.title}
                     width={current_piece.width}
                     height={current_piece.height}

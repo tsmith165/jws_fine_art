@@ -65,7 +65,7 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
         <div className="relative h-full w-full overflow-hidden bg-secondary_dark">
             <div className="absolute left-0 top-0 h-full w-full">
                 <div className="relative h-full w-full">
-                    <Image src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${image_path}`} alt={title} fill className="object-contain" />
+                    <Image src={image_path} alt={title} fill className="object-contain" />
                 </div>
             </div>
 

@@ -94,7 +94,7 @@ export function Manage({ pieces, deletedPieces, activeTab }: ManageProps) {
                                 >
                                     <div className="flex h-24 w-24 items-center justify-center rounded bg-secondary p-1">
                                         <Image
-                                            src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
+                                            src={piece.image_path}
                                             alt={piece.title}
                                             width={96}
                                             height={96}
@@ -146,7 +146,7 @@ export function Manage({ pieces, deletedPieces, activeTab }: ManageProps) {
                             >
                                 <div className="flex h-24 w-24 items-center justify-center rounded bg-secondary p-1">
                                     <Image
-                                        src={`${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`}
+                                        src={piece.image_path}
                                         alt={piece.title}
                                         width={96}
                                         height={96}

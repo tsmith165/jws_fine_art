@@ -51,6 +51,9 @@ async function fetchPieces() {
         orderBy: {
             o_id: 'desc',
         },
+        where: {
+            active: true,
+        },
     });
     return piece_list;
 }

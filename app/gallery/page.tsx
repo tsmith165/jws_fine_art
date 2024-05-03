@@ -19,6 +19,9 @@ async function fetchPieces(): Promise<PieceType[]> {
         orderBy: {
             o_id: 'desc',
         },
+        where: {
+            active: true,
+        },
     });
     return pieces;
 }

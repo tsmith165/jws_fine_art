@@ -7,9 +7,11 @@ interface InputTextboxProps {
     defaultValue?: string;
     placeholder?: string;
     name: string;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputTextbox: React.FC<InputTextboxProps> = ({ defaultValue, placeholder, name }) => {
+const InputTextbox: React.FC<InputTextboxProps> = ({ defaultValue, placeholder, name, value, onChange }) => {
     const id = name.toLowerCase().replace(' ', '_');
     const formatted_name = name
         .split('_')
@@ -26,12 +28,25 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ defaultValue, placeholder, 
                 <div className="text-primary">{formatted_name}</div>
             </div>
             <Tooltip id={`tooltip-${id}`} place="top" />
-            <input
-                id={id}
-                className="flex h-full w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
-                placeholder={placeholder}
-                defaultValue={defaultValue}
-            />
+            {onChange === undefined ? (
+                <input
+                    id={id}
+                    className="flex h-full w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
+                    placeholder={placeholder}
+                    defaultValue={defaultValue}
+                    value={value}
+                    readOnly={value !== undefined}
+                />
+            ) : (
+                <input
+                    id={id}
+                    className="flex h-full w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
+                    placeholder={placeholder}
+                    defaultValue={defaultValue}
+                    value={value}
+                    onChange={onChange}
+                />
+            )}
         </div>
     );
 };

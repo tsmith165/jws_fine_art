@@ -11,18 +11,17 @@ const OrderTree = (props) => {
         console.log(`Verified Payment Data (Next Line):`);
         console.log(verified_payment_data);
 
-        let image_url = verified_payment_data['image_path'];
-        if (!verified_payment_data['image_path'].includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)) {
-            image_url = `${PROJECT_CONSTANTS.AWS_BUCKET_URL}/pieces/${verified_payment_data['image_path'].split('pieces/')[1]}`;
-        }
-
         return (
             <div
                 className={'flex flex-row hover:bg-primary_dark hover:text-secondary_light'}
                 key={verified_payment_data.id || Math.random()}
             >
                 <div className={'bg-primary_dark'}>
-                    <img className={'h-[150px] w-[150px] object-contain'} src={image_url} alt={verified_payment_data['piece_title']} />
+                    <img
+                        className={'h-[150px] w-[150px] object-contain'}
+                        src={verified_payment_data['image_path']}
+                        alt={verified_payment_data['piece_title']}
+                    />
                 </div>
                 <div className={'mb-auto mt-auto w-[30%] overflow-hidden overflow-ellipsis whitespace-nowrap p-2.5 pl-5 text-lg'}>
                     <b className="text-dark">{verified_payment_data['piece_title']}</b>

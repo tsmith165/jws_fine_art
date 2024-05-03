@@ -25,7 +25,8 @@
             "@/styles/*": ["styles/*"],
             "@/lib/*": ["lib/*"],
             "@/app/*": ["app/*"],
-            "@/stores/*": ["stores/*"]
+            "@/stores/*": ["stores/*"],
+            "@/utils/*": ["utils/*"]
         }
     },
     "include": [

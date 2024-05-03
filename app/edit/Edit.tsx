@@ -29,8 +29,8 @@ const Edit: React.FC<EditProps> = ({ piece_list, current_id, most_recent_id }) =
     const current_piece = piece_list[piece_position];
 
     return (
-        <div className="flex h-[calc(100vh-80px)] w-full flex-col md:flex-row">
-            <div className="bg-secondary_dark md:w-2/3">
+        <div className="flex h-[calc(100vh-80px)] w-full flex-col lg:flex-row">
+            <div className="h-1/3 bg-secondary_dark lg:h-full lg:w-2/3">
                 <Image
                     src={current_piece.image_path}
                     alt={current_piece.title}
@@ -40,7 +40,7 @@ const Edit: React.FC<EditProps> = ({ piece_list, current_id, most_recent_id }) =
                     className="h-full w-full object-contain"
                 />
             </div>
-            <div className="bg-secondary md:w-1/3">
+            <div className="h-2/3 bg-secondary lg:h-full lg:w-1/3">
                 <div className="flex flex-row items-center space-x-4 bg-primary px-4 py-1">
                     <Link href={`/edit/${piece_list[piece_position - 1 < 0 ? num_pieces - 1 : piece_position - 1].o_id}`}>
                         <IoIosArrowForward className="h-6 w-6 rotate-180 cursor-pointer text-secondary_dark hover:text-primary" />

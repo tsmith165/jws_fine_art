@@ -29,16 +29,15 @@ export default async function Page({ params }: { params: { id: string } }) {
 
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`);
-    const piece_list = await prisma.piece.findMany();
-    piece_list.sort((a, b) => a['o_id'] - b['o_id']);
-
-    // Add AWS bucket URL to the image_path if not exists
-    piece_list.forEach((piece) => {
-        piece.image_path = piece.image_path.includes(PROJECT_CONSTANTS.AWS_BUCKET_URL)
-            ? piece.image_path
-            : `${PROJECT_CONSTANTS.AWS_BUCKET_URL}${piece.image_path}`;
+    const pieces = await prisma.piece.findMany({
+        orderBy: {
+            o_id: 'desc',
+        },
+        where: {
+            active: true,
+        },
     });
-    return piece_list;
+    return pieces;
 }
 
 async function get_piece_list() {

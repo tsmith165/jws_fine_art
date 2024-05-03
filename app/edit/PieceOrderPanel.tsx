@@ -1,6 +1,7 @@
 import React from 'react';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
-import { handleImageReorder } from './actions';
+import { IoIosTrash } from 'react-icons/io';
+import { handleImageReorder, handleImageDeleteAction } from './actions';
 import { Piece } from '@prisma/client';
 
 interface PieceOrderPanelProps {
@@ -30,6 +31,15 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         const imageType = formData.get('imageType')?.toString() || '';
 
         await handleImageReorder(pieceId, index, direction, imageType);
+    }
+
+    async function handleImageDelete(formData: FormData) {
+        'use server';
+        const pieceId = Number(formData.get('pieceId'));
+        const imagePath = formData.get('imagePath')?.toString() || '';
+        const imageType = formData.get('imageType')?.toString() || '';
+
+        await handleImageDeleteAction(pieceId, imagePath, imageType);
     }
 
     return (
@@ -67,9 +77,17 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                                         <IoIosArrowDown />
                                     </button>
                                 </form>
-                                <span className="text-md overflow-ellipsis whitespace-nowrap text-primary">
-                                    {image.image_path.split('.com')[1]}
-                                </span>
+                                <form action={handleImageDelete}>
+                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
+                                    <input type="hidden" name="imagePath" value={image.image_path} />
+                                    <input type="hidden" name="imageType" value="extra_images" />
+                                    <button type="submit" className="h-6 w-6 cursor-pointer rounded-sm bg-red-500 p-1 hover:bg-red-600">
+                                        <IoIosTrash />
+                                    </button>
+                                </form>
+                                <div className="text-md overflow-hidden text-ellipsis whitespace-nowrap leading-6 text-primary">
+                                    {image.image_path}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -80,9 +98,9 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                         {progress_images.map((image: Image, index: number) => (
                             <div
                                 key={index}
-                                className="flex items-center space-x-2 rounded-b-lg px-2 py-1 hover:bg-primary_dark hover:text-secondary_light"
+                                className="flex max-w-fit flex-row items-center space-x-2 rounded-b-lg px-2 py-1 hover:bg-primary_dark hover:text-secondary_light"
                             >
-                                <form action={handleImageReorderAction}>
+                                <form action={handleImageReorderAction} className="flex">
                                     <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
                                     <input type="hidden" name="index" value={index.toString()} />
                                     <input type="hidden" name="direction" value="up" />
@@ -94,7 +112,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                                         <IoIosArrowUp />
                                     </button>
                                 </form>
-                                <form action={handleImageReorderAction}>
+                                <form action={handleImageReorderAction} className="flex">
                                     <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
                                     <input type="hidden" name="index" value={index.toString()} />
                                     <input type="hidden" name="direction" value="down" />
@@ -106,9 +124,17 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                                         <IoIosArrowDown />
                                     </button>
                                 </form>
-                                <span className="text-md overflow-ellipsis whitespace-nowrap leading-6 text-primary">
-                                    {image.image_path.split('.com')[1]}
-                                </span>
+                                <form action={handleImageDelete}>
+                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
+                                    <input type="hidden" name="imagePath" value={image.image_path} />
+                                    <input type="hidden" name="imageType" value="progress_images" />
+                                    <button type="submit" className="h-6 w-6 cursor-pointer rounded-sm bg-red-500 p-1 hover:bg-red-600">
+                                        <IoIosTrash />
+                                    </button>
+                                </form>
+                                <div className="text-md overflow-hidden text-ellipsis whitespace-nowrap leading-6 text-primary">
+                                    {image.image_path}
+                                </div>
                             </div>
                         ))}
                     </div>

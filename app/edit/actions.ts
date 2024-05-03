@@ -7,7 +7,7 @@ import axios from 'axios';
 
 export async function onSubmit(data: FormData) {
     const piece_id = data.get('piece_id')?.toString();
-    const title = data.get('title')?.toString();
+    const title = data.get('piece_title')?.toString();
     if (!title) {
         throw new Error('Title is required');
     }
@@ -27,6 +27,22 @@ export async function onSubmit(data: FormData) {
     const image_path = data.get('image_path')?.toString() || '';
     const extra_images = data.get('extra_images')?.toString() || '[]';
     const progress_images = data.get('progress_images')?.toString() || '[]';
+
+    console.log(`Updating Piece with id: ${piece_id}`);
+    console.log(`Title: ${title}`);
+    console.log(`Price: ${price}`);
+    console.log(`Width: ${width}`);
+    console.log(`Height: ${height}`);
+    console.log(`Real Width: ${real_width}`);
+    console.log(`Real Height: ${real_height}`);
+    console.log(`Description: ${description}`);
+    console.log(`Piece Type: ${piece_type}`);
+    console.log(`Sold: ${sold}`);
+    console.log(`Available: ${available}`);
+    console.log(`Framed: ${framed}`);
+    console.log(`Comments: ${comments}`);
+    console.log(`Theme: ${theme}`);
+    console.log(`Instagram: ${instagram}`);
 
     if (piece_id) {
         // Update existing piece
@@ -123,6 +139,40 @@ export async function onFileUpload(data: FormData) {
     return uploaded_image_path;
 }
 
+export async function handleImageUpload(data: FormData) {
+    const pieceId = parseInt(data.get('pieceId')?.toString() || '0');
+    const imageUrl = data.get('imageUrl')?.toString() || '';
+    const imageType = data.get('imageType')?.toString() || '';
+
+    const piece = await prisma.piece.findUnique({ where: { id: pieceId } });
+    if (!piece) {
+        console.error(`Piece with id ${pieceId} not found`);
+        return;
+    }
+
+    if (imageType === 'main') {
+        // Modify the current main image
+        await prisma.piece.update({
+            where: { id: pieceId },
+            data: { image_path: imageUrl },
+        });
+    } else {
+        // Add a new extra or progress image
+        const images = JSON.parse(piece[imageType as keyof Piece] as string) || [];
+        const width = parseInt(data.get('width')?.toString() || '0');
+        const height = parseInt(data.get('height')?.toString() || '0');
+        images.push({ image_path: imageUrl, width, height });
+
+        await prisma.piece.update({
+            where: { id: pieceId },
+            data: { [imageType]: JSON.stringify(images) },
+        });
+    }
+
+    revalidatePath(`/edit/${piece.o_id}`);
+    return imageUrl;
+}
+
 interface ImageData {
     image_path: string;
 }
@@ -153,10 +203,30 @@ export async function handleImageReorder(pieceId: number, index: number, directi
 interface NewPieceData {
     title: string;
     imagePath: string;
+    width: number;
+    height: number;
+}
+
+export async function handleImageDeleteAction(pieceId: number, imagePath: string, imageType: string) {
+    const piece = await prisma.piece.findUnique({ where: { id: pieceId } });
+    if (!piece) {
+        console.error(`Piece with id ${pieceId} not found`);
+        return;
+    }
+
+    const images = JSON.parse(piece[imageType as keyof Piece] as string) as ImageData[];
+    const updatedImages = images.filter((image) => image.image_path !== imagePath);
+
+    await prisma.piece.update({
+        where: { id: pieceId },
+        data: { [imageType]: JSON.stringify(updatedImages) },
+    });
+
+    revalidatePath(`/edit/${piece.o_id}`);
 }
 
 export async function createPiece(newPieceData: NewPieceData) {
-    const { title, imagePath } = newPieceData;
+    const { title, imagePath, width, height } = newPieceData;
 
     // Find the maximum o_id value from existing pieces
     const maxOId = await prisma.piece.aggregate({
@@ -166,29 +236,28 @@ export async function createPiece(newPieceData: NewPieceData) {
     });
 
     const newOId = (maxOId._max.o_id || 0) + 1;
+    const data = {
+        title: title,
+        image_path: imagePath,
+        width: width,
+        height: height,
+        description: '',
+        piece_type: '',
+        sold: false,
+        price: 0,
+        real_width: 0,
+        real_height: 0,
+        active: true,
+        instagram: '',
+        theme: '',
+        available: true,
+        framed: false,
+        comments: '',
+        o_id: newOId,
+        class_name: title.toString().toLowerCase().replace(' ', '_').replace('-', '_'),
+    };
 
-    const newPiece = await prisma.piece.create({
-        data: {
-            title,
-            image_path: imagePath,
-            width: 0,
-            height: 0,
-            description: '',
-            piece_type: '',
-            sold: false,
-            price: 0,
-            real_width: 0,
-            real_height: 0,
-            active: true,
-            instagram: '',
-            theme: '',
-            available: true,
-            framed: false,
-            comments: '',
-            o_id: newOId,
-            class_name: '',
-        },
-    });
+    const newPiece = await prisma.piece.create({ data: data });
 
     return newPiece;
 }

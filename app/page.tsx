@@ -30,6 +30,9 @@ async function fetchFirstPiece() {
         orderBy: {
             o_id: 'desc',
         },
+        where: {
+            active: true,
+        },
     });
     return piece;
 }

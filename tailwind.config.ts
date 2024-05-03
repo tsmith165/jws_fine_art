@@ -2,7 +2,9 @@
 import { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
 
-const config: Config = {
+import { withUt } from 'uploadthing/tw';
+
+export default withUt({
     content: ['./app/**/*.{js,ts,jsx,tsx}', './pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
     theme: {
         extend: {
@@ -37,6 +39,4 @@ const config: Config = {
     },
     mode: 'jit',
     plugins: [typography],
-};
-
-export default config;
+});
