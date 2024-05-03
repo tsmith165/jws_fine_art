@@ -6,10 +6,11 @@ import { Tooltip } from 'react-tooltip';
 interface InputTextboxProps {
     name: string;
     value?: string;
+    placeholder?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, onChange }) => {
+const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, placeholder, onChange }) => {
     const id = name.toLowerCase().replace(' ', '_');
     const formatted_name = name
         .split('_')
@@ -31,6 +32,7 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, onChange }) =>
                 name={id}
                 className="flex h-full w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
                 value={value}
+                placeholder={placeholder || ''}
                 onChange={onChange}
             />
         </div>

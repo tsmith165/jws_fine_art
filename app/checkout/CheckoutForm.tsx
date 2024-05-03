@@ -83,9 +83,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
                 <input type="hidden" name="piece_id" value={current_piece.id} />
 
                 <div className="flex flex-col space-y-2">
-                    <InputTextbox name="full_name" defaultValue="" placeholder="Enter Full Name..." />
-                    <InputTextbox name="phone" defaultValue="" placeholder="Enter Phone Number..." />
-                    <InputTextbox name="email" defaultValue="" placeholder="Enter Email Address..." />
+                    <InputTextbox name="full_name" placeholder="Enter Full Name..." />
+                    <InputTextbox name="phone" placeholder="Enter Phone Number..." />
+                    <InputTextbox name="email" placeholder="Enter Email Address..." />
                     <InputAutoComplete name="address" />
                 </div>
 
