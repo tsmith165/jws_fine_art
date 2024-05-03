@@ -49,11 +49,11 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name,
                     }),
                     multiValue: (styles) => ({
                         ...styles,
-                        backgroundColor: '#365349',
+                        backgroundColor: '#616c63',
                     }),
                     option: (provided, state) => ({
                         ...provided,
-                        color: '#616c63',
+                        color: '#54786d',
                     }),
                 }}
                 options={react_select_options}

@@ -16,22 +16,17 @@ interface InputSelectProps {
     defaultValue?: { value: string; label: string };
     name: string;
     select_options: [string, string][];
-    onChange?: (selectedValue: string) => void;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, name, select_options, onChange }) => {
+const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, name, select_options, value, onChange }) => {
     const id = name.toLowerCase().replace(' ', '_');
     const formatted_name = name
         .split('_')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
     const react_select_options = select_options.map((option) => ({ value: option[0], label: option[1] }));
-
-    const handleChange = (selectedOption: any) => {
-        if (onChange) {
-            onChange(selectedOption.value);
-        }
-    };
 
     return (
         <div className="m-0 flex w-full p-0">
@@ -41,6 +36,7 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, name, select_op
             {onChange === undefined ? (
                 <Select
                     defaultValue={defaultValue}
+                    value={react_select_options.find((option) => option.value === value)}
                     isMulti={false}
                     id={id}
                     name={id}
@@ -61,6 +57,7 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, name, select_op
             ) : (
                 <Select
                     defaultValue={defaultValue}
+                    value={react_select_options.find((option) => option.value === value)}
                     isMulti={false}
                     id={id}
                     name={id}
@@ -77,7 +74,9 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, name, select_op
                         }),
                     }}
                     options={react_select_options}
-                    onChange={handleChange}
+                    onChange={(selectedOption) =>
+                        onChange?.({ target: { value: selectedOption?.value, name: id } } as React.ChangeEvent<HTMLSelectElement>)
+                    }
                 />
             )}
         </div>

@@ -4,29 +4,53 @@ import { Piece } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { generate_upload_url } from '@/lib/s3_api_calls';
 import axios from 'axios';
+import { Upload } from 'aws-sdk/clients/devicefarm';
 
-export async function onSubmit(data: FormData) {
-    const piece_id = data.get('piece_id')?.toString();
-    const title = data.get('piece_title')?.toString();
+interface SubmitFormData {
+    piece_id: string;
+    piece_title: string;
+    description: string;
+    piece_type: string;
+    sold: string;
+    price: string;
+    instagram: string;
+    width: string;
+    height: string;
+    real_width: string;
+    real_height: string;
+    theme: string;
+    available: string;
+    framed: string;
+    comments: string;
+    image_path: string;
+    extra_images: string;
+    progress_images: string;
+}
+
+export async function onSubmit(data: SubmitFormData) {
+    console.log('Form Data (Next Line):');
+    console.log(data);
+    const piece_id = data.piece_id?.toString();
+    const title = data.piece_title?.toString();
     if (!title) {
         throw new Error('Title is required');
     }
-    const description = data.get('description')?.toString() || '';
-    const piece_type = data.get('piece_type')?.toString() || '';
-    const sold = data.get('sold')?.toString() === 'Sold';
-    const price = parseInt(data.get('price')?.toString() || '0');
-    const instagram = data.get('instagram')?.toString().split('/').pop() || '';
-    const width = parseInt(data.get('width')?.toString() || '0');
-    const height = parseInt(data.get('height')?.toString() || '0');
-    const real_width = parseInt(data.get('real_width')?.toString() || '0');
-    const real_height = parseInt(data.get('real_height')?.toString() || '0');
-    const theme = data.get('theme')?.toString().replace('None, ', '') || '';
-    const available = data.get('available')?.toString() === 'True';
-    const framed = data.get('framed')?.toString() === 'True';
-    const comments = data.get('comments')?.toString() || '';
-    const image_path = data.get('image_path')?.toString() || '';
-    const extra_images = data.get('extra_images')?.toString() || '[]';
-    const progress_images = data.get('progress_images')?.toString() || '[]';
+    const description = data.description || '';
+    const piece_type = data.piece_type || '';
+    const sold = data.sold === 'Sold';
+    const price = parseInt(data.price || '0');
+    const instagram = data.instagram?.split('/').pop() || '';
+    const width = parseInt(data.width || '0');
+    const height = parseInt(data.height || '0');
+    const real_width = parseInt(data.real_width || '0');
+    const real_height = parseInt(data.real_height || '0');
+    const theme = data.theme?.replace('None, ', '') || '';
+    const available = data.available === 'True';
+    const framed = data.framed === 'True';
+    const comments = data.comments || '';
+    const image_path = data.image_path || '';
+    const extra_images = data.extra_images || '[]';
+    const progress_images = data.progress_images || '[]';
 
     console.log(`Updating Piece with id: ${piece_id}`);
     console.log(`Title: ${title}`);
@@ -101,48 +125,19 @@ export async function onSubmit(data: FormData) {
     }
 }
 
-export async function onFileUpload(data: FormData) {
-    const selected_file = data.get('file') as File;
-    const file_upload_type = data.get('file_upload_type')?.toString() || '';
-    const piece_title = data.get('piece_title')?.toString() || '';
-
-    if (!selected_file) return;
-
-    let file_name = selected_file.name.replace(/\s+/g, '_'); // Replace spaces with underscore
-    const file_extension = file_name.split('.').pop()?.toLowerCase() || '';
-    const title = piece_title.toLowerCase().replace(/\s+/g, '_'); // Replace spaces with underscore
-
-    if (file_upload_type === 'extra') {
-        const current_index = parseInt(data.get('extra_images_count')?.toString() || '0') + 1;
-        file_name = `${title}_extra_${current_index}`;
-    }
-    if (file_upload_type === 'progress') {
-        const current_index = parseInt(data.get('progress_images_count')?.toString() || '0') + 1;
-        file_name = `${title}_progress_${current_index}`;
-    }
-    if (file_upload_type === 'cover') {
-        file_name = `${title}`;
-    }
-
-    const file_name_with_extension = `${file_name}.${file_extension}`;
-
-    const s3_upload_url = await generate_upload_url(file_name_with_extension, file_upload_type);
-
-    // Upload image to S3
-    await axios.put(s3_upload_url, selected_file, {
-        headers: {
-            'Content-Type': 'image/jpeg',
-        },
-    });
-
-    const uploaded_image_path = s3_upload_url.split('?')[0];
-    return uploaded_image_path;
+interface UploadFormData {
+    piece_id: string;
+    image_path: string;
+    piece_type: string;
+    width: string;
+    height: string;
 }
 
-export async function handleImageUpload(data: FormData) {
-    const pieceId = parseInt(data.get('pieceId')?.toString() || '0');
-    const imageUrl = data.get('imageUrl')?.toString() || '';
-    const imageType = data.get('imageType')?.toString() || '';
+export async function handleImageUpload(data: UploadFormData) {
+    console.log('Uploading Image...');
+    const pieceId = parseInt(data.piece_id?.toString() || '0');
+    const imageUrl = data.image_path?.toString() || '';
+    const imageType = data.piece_type?.toString() || '';
 
     const piece = await prisma.piece.findUnique({ where: { id: pieceId } });
     if (!piece) {
@@ -159,8 +154,8 @@ export async function handleImageUpload(data: FormData) {
     } else {
         // Add a new extra or progress image
         const images = JSON.parse(piece[imageType as keyof Piece] as string) || [];
-        const width = parseInt(data.get('width')?.toString() || '0');
-        const height = parseInt(data.get('height')?.toString() || '0');
+        const width = parseInt(data.width?.toString() || '0');
+        const height = parseInt(data.height?.toString() || '0');
         images.push({ image_path: imageUrl, width, height });
 
         await prisma.piece.update({

@@ -37,19 +37,18 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
         };
     };
 
-    const handleSelectChange = (selectedValue: string) => {
-        setSelectedOption(selectedValue);
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedOption(e.target.value);
     };
 
     const handleSubmit = async () => {
-        const formData = new FormData();
-        formData.append('pieceId', pieceId);
-        formData.append('imageUrl', imageUrl);
-        formData.append('imageType', selectedOption);
-        formData.append('width', width.toString());
-        formData.append('height', height.toString());
-
-        await handleImageUpload(formData);
+        await handleImageUpload({
+            piece_id: pieceId,
+            image_path: imageUrl,
+            piece_type: selectedOption,
+            width: width.toString(),
+            height: height.toString(),
+        });
 
         // Redirect to the piece details page after submitting the changes
         window.location.href = `/edit/${pieceId}`;

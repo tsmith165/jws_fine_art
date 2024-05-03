@@ -29,7 +29,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
 async function fetchPieces() {
     console.log(`Fetching pieces with prisma`);
-    const pieces = await prisma.piece.findMany({
+    const piece_list = await prisma.piece.findMany({
         orderBy: {
             o_id: 'desc',
         },
@@ -37,7 +37,7 @@ async function fetchPieces() {
             active: true,
         },
     });
-    return pieces;
+    return piece_list;
 }
 
 async function get_piece_list() {

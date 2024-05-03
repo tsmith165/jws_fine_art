@@ -4,12 +4,13 @@ import React from 'react';
 import { Tooltip } from 'react-tooltip';
 
 interface InputTextAreaProps {
-    defaultValue?: string;
     name: string;
     rows: number;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const InputTextArea: React.FC<InputTextAreaProps> = ({ defaultValue, name, rows }) => {
+const InputTextArea: React.FC<InputTextAreaProps> = ({ name, rows, value, onChange }) => {
     const id = name.toLowerCase().replace(' ', '_');
     const formatted_name = name
         .split('_')
@@ -28,9 +29,11 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({ defaultValue, name, rows 
             <Tooltip id={`tooltip-${id}`} place="top" />
             <textarea
                 id={id}
+                name={id}
                 className="h-full w-full whitespace-pre-wrap rounded-r-md border-none bg-primary py-1.5 pl-2.5 text-sm font-bold text-secondary_dark"
-                defaultValue={defaultValue}
+                value={value}
                 rows={rows}
+                onChange={onChange}
             />
         </div>
     );
