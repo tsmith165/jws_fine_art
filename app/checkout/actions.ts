@@ -1,8 +1,6 @@
 'use server';
 import { prisma } from '@/lib/prisma';
-import { create_pending_transaction } from '@/lib/api_calls';
 import PROJECT_CONSTANTS from '@/lib/constants';
-import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -10,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 const INTERNATIONAL_SHIPPING_RATE = 25;
 
-export async function onSubmit(data: FormData) {
+export async function runStripePurchase(data: FormData) {
     const piece_id = data.get('piece_id')?.toString();
     const full_name = data.get('full_name')?.toString() || '';
     const phone = data.get('phone')?.toString() || '';
@@ -75,4 +73,28 @@ export async function onSubmit(data: FormData) {
         success: true,
         redirectUrl: session.url,
     };
+}
+
+export async function create_pending_transaction(
+    piece_db_id: number,
+    piece_title: string,
+    full_name: string,
+    phone: string,
+    email: string,
+    address: string,
+    international: boolean,
+) {
+    console.log(`Attempting to create pending transaction for piece_db_id: ${piece_db_id}`);
+    const pending_transaction_output = await prisma.pending.create({
+        data: {
+            piece_db_id,
+            piece_title,
+            full_name,
+            phone,
+            email,
+            address,
+            international,
+        },
+    });
+    return pending_transaction_output;
 }

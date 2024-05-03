@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 // APIs
 import { loadStripe } from '@stripe/stripe-js';
 import { useLoadScript } from '@react-google-maps/api';
 // Icons
 import { TbProgress } from 'react-icons/tb';
 // Server Actions
-import { onSubmit } from './actions';
+import { runStripePurchase } from './actions';
 // Components
 import InputTextbox from '@/components/inputs/InputTextbox';
 import InputAutoComplete from '@/components/inputs/InputAutoComplete';
@@ -37,24 +36,20 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
     if (loadError) {
         return <div>Error loading Google Maps API: {loadError.message}</div>;
     }
-    if (!isLoaded) {
-        return <div>Loading Google Maps API...</div>;
-    }
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleStripePurchaseClick = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
         setSubmitted(false);
         setErrorFound(false);
 
         const formData = new FormData(event.currentTarget);
-        const response = await onSubmit(formData);
+        const response = await runStripePurchase(formData);
 
         if (response && response.success && response.redirectUrl) {
             window.location.href = response.redirectUrl;
         } else {
-            // Handle error case
-            console.error('Checkout submission failed');
+            console.error('Stripe purchase failed');
             setLoading(false);
             setSubmitted(false);
             setErrorFound(true);
@@ -79,14 +74,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
 
     return (
         <div className="flex h-full w-full flex-col overflow-y-auto">
-            <form onSubmit={handleSubmit} className="flex flex-col p-4">
+            <form onSubmit={handleStripePurchaseClick} className="flex flex-col p-4">
                 <input type="hidden" name="piece_id" value={current_piece.id} />
 
                 <div className="flex flex-col space-y-2">
                     <InputTextbox name="full_name" placeholder="Enter Full Name..." />
                     <InputTextbox name="phone" placeholder="Enter Phone Number..." />
                     <InputTextbox name="email" placeholder="Enter Email Address..." />
-                    <InputAutoComplete name="address" />
+                    {isLoaded && <InputAutoComplete name="address" />}
                 </div>
 
                 <div className="mt-4">
