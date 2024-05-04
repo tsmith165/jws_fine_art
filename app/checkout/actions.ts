@@ -61,8 +61,8 @@ export async function runStripePurchase(data: FormData) {
             },
         ],
         mode: 'payment',
-        success_url: `${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece.id}`,
-        cancel_url: `${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece.id}`,
+        success_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece.id}`,
+        cancel_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece.id}`,
         client_reference_id: piece.id.toString(),
     });
 
