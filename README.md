@@ -1,39 +1,49 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Jill Weeks Smith Fine Art Gallery
+
+This is a Next.js 14 project for Jill Weeks Smith, an artist showcasing and selling her artwork through a full-featured online gallery and sales platform.
+
+![Jill Weeks Smith Artwork GIF](public/jws_pieces.gif)
+
+## Features
+
+-   Full gallery displaying Jill Weeks Smith's artwork
+-   Artwork sales platform with integrated payments
+-   Admin panel for managing artwork, sales, and site content
+-   Responsive design for optimal viewing on various devices
+
+## Tech Stack
+
+-   **Next.js 14**: The project is built using Next.js 14, leveraging its powerful features and performance optimizations. The site extensively utilizes server components for efficient rendering and data fetching.
+-   **TypeScript**: The codebase is written in TypeScript, providing static typing and enhanced developer experience.
+-   **Tailwind CSS**: Styling is done using Tailwind CSS, a utility-first CSS framework that allows for rapid development and easy customization.
+-   **Clerk**: User authentication and management are handled by Clerk, ensuring secure access to the admin panel and user-specific features.
+-   **Uploadthing**: Uploadthing is used for efficient and secure file uploads, allowing the artist to easily add new artwork to the gallery.
+-   **Google Maps API**: The site integrates with the Google Maps API to display the location of the artist's studio or gallery.
+-   **Stripe**: Payments for artwork purchases are processed securely through Stripe, providing a seamless and reliable payment experience for customers.
+-   **Prisma**: The project uses Prisma as the ORM (Object-Relational Mapping) tool for database management, simplifying database queries and interactions.
+-   **PostgreSQL**: PostgreSQL is used as the database system to store artwork information, user details, and sales data.
+-   **Zustand**: Zustand is utilized for state management, providing a simple and efficient way to manage application state.
+-   **AWS S3**: Artwork images and other static assets are stored and served from Amazon S3 (Simple Storage Service) for scalable and reliable file storage.
+-   **Vercel**: The site is deployed and hosted on Vercel, ensuring fast and efficient delivery of the application to users worldwide.
 
 ## Getting Started
 
-First, run the development server:
+To run the project locally, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+1. Clone the repository: `git clone https://github.com/your-repo.git`
+2. Install dependencies: `npm install`
+3. Set up environment variables for required services (e.g., Clerk, Stripe, Google Maps API)
+4. Run the development server: `npm run dev`
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+The project is deployed on Vercel. To deploy your own instance, you can follow the Vercel deployment documentation and connect your repository.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## Contributing
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Contributions are welcome! If you find any issues or have suggestions for improvement, please open an issue or submit a pull request.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-=======
-# next_base
-base nextJS site
->>>>>>> 8b47bdf8b72134a0f0dad5f3cdb6c4fa1bfcc5ab
+This project is licensed under the [MIT License](LICENSE).

@@ -1,5 +1,3 @@
-// /tailwind.config.ts
-import { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
 
 import { withUt } from 'uploadthing/tw';

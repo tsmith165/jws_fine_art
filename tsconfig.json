@@ -29,17 +29,6 @@
             "@/utils/*": ["utils/*"]
         }
     },
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        "src/**/*.ts",
-        "src/**/*.mts",
-        ".next/types/**/*.ts",
-        "tailwind.config.cjs",
-        "middleware.js",
-        "middleware.js",
-        "middleware.js"
-    ],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "tailwind.config.cjs", "middleware.js"],
     "exclude": ["node_modules"]
 }
