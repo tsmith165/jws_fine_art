@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // APIs
 import { loadStripe } from '@stripe/stripe-js';
 import { useLoadScript } from '@react-google-maps/api';
@@ -31,6 +31,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
     const [loading, setLoading] = React.useState(false);
     const [submitted, setSubmitted] = React.useState(false);
     const [errorFound, setErrorFound] = React.useState(false);
+    const [address, setAddress] = React.useState('');
+    const [isInternational, setIsInternational] = useState(false);
 
     // CHECK THAT GOOGLE MAPS API IS LOADED
     if (loadError) {
@@ -56,7 +58,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
         }
     };
 
-    const price_with_shipping = current_piece.price + (current_piece.international ? INTERNATIONAL_SHIPPING_RATE : 0);
+    const handleAddressChange = (value: string) => {
+        setAddress(value);
+        const isInternationalAddress = value.includes('USA') ? false : true;
+        console.log(`Address changed to: ${value}`);
+        console.log(`Address is international: ${isInternationalAddress}`);
+        setIsInternational(isInternationalAddress);
+    };
+
+    useEffect(() => {
+        // Set the initial value of isInternational based on the current_piece prop
+        setIsInternational(current_piece.international);
+    }, [current_piece.international]);
 
     const submit_loader_spinner = <TbProgress className="animate-spin text-primary" />;
     const submit_successful_jsx = <div className="text-green-500">Checkout submit successful.</div>;
@@ -81,18 +94,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
                     <InputTextbox name="full_name" placeholder="Enter Full Name..." />
                     <InputTextbox name="phone" placeholder="Enter Phone Number..." />
                     <InputTextbox name="email" placeholder="Enter Email Address..." />
-                    {isLoaded && <InputAutoComplete name="address" />}
+                    {isLoaded && <InputAutoComplete name="address" value={address} onChange={handleAddressChange} />}
                 </div>
 
                 <div className="mt-4">
-                    <StripeBrandedButton url={'submit'} price={price_with_shipping} text="Purchase" />
+                    <StripeBrandedButton
+                        url={'submit'}
+                        price={isInternational ? current_piece.price + INTERNATIONAL_SHIPPING_RATE : current_piece.price}
+                        text="Purchase"
+                    />
                     <div className="mt-2">
                         <div className="text-secondary_dark">
-                            {`Pieces ship within 5 days. ${
-                                current_piece.international
-                                    ? 'International shipping costs $25 and can take up to 1 month.'
-                                    : 'Domestic shipping can take up to a week.'
-                            }`}
+                            {`Pieces ship within 5 days. ${isInternational ? 'International shipping costs $25 and can take up to 1 month.' : 'Domestic shipping can take up to a week.'}`}
                         </div>
                     </div>
                 </div>

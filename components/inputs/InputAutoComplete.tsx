@@ -3,18 +3,14 @@ import PlacesAutocomplete, { Suggestion } from 'react-places-autocomplete';
 
 interface InputAutoCompleteProps {
     name: string;
+    value?: string;
+    onChange?: (value: string) => void;
 }
 
-const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name }) => {
-    const [address, setAddress] = React.useState('');
-
-    const handleChange = (value: string) => {
-        setAddress(value);
-    };
-
+const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onChange }) => {
     return (
         <div className="m-0 flex w-full p-0">
-            <PlacesAutocomplete value={address} onChange={handleChange} onSelect={handleChange}>
+            <PlacesAutocomplete value={value || ''} onChange={onChange}>
                 {({ getInputProps, suggestions, getSuggestionItemProps }) => {
                     const inputProps: ReturnType<typeof getInputProps> = getInputProps({
                         placeholder: 'Enter Address...',
