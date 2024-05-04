@@ -27,6 +27,7 @@
         "@types/react": "^18.2.78",
         "@types/react-dom": "^18.2.25",
         "@uploadthing/react": "^6.5.1",
+        "@vercel/node": "^3.0.28",
         "autoprefixer": "^10.4.19",
         "aws-sdk": "^2.1105.0",
         "axios": "^1.5.1",
