@@ -1,7 +1,6 @@
 import { buffer } from 'micro';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
-import { console } from '@vercel/node';
 
 export async function POST(req) {
     console.log('Received Stripe Web Hook API Request');
