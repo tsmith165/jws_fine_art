@@ -4,8 +4,6 @@ import Link from 'next/link';
 
 import { SignedIn } from '@clerk/nextjs';
 
-import PROJECT_CONSTANTS from '@/lib/constants';
-
 import PieceSpecificationTable from '@/app/details/[id]/PieceSpecificationTable';
 import TitleComponent from '@/app/details/[id]/TitleComponent';
 
@@ -14,12 +12,11 @@ import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 interface DetailsProps {
     piece_list: any[];
     current_id: number;
-    most_recent_id: number;
     selectedIndex: number;
     type: string;
 }
 
-const Details: React.FC<DetailsProps> = ({ piece_list, current_id, most_recent_id, selectedIndex, type }) => {
+const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex, type }) => {
     const passed_o_id = current_id;
     console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`);
 

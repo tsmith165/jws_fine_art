@@ -1,4 +1,5 @@
-export const metadata = {
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
     title: 'JWS Fine Art - Admin',
     description: 'Display admin info for authenticated users',
     icons: {
@@ -11,11 +12,14 @@ export const metadata = {
 
 import PageLayout from '@/components/layout/PageLayout';
 import Admin from '@/app/admin/admin';
+import { SignedIn } from '@clerk/nextjs';
 
-export default async function Page(props) {
+export default async function Page() {
     return (
-        <PageLayout {...props}>
-            <Admin />
-        </PageLayout>
+        <SignedIn>
+            <PageLayout page="/admin">
+                <Admin />
+            </PageLayout>
+        </SignedIn>
     );
 }

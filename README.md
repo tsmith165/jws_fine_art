@@ -20,7 +20,7 @@ This is a Next.js 14 project for Jill Weeks Smith, an artist showcasing and sell
 -   **Uploadthing**: Uploadthing is used for efficient and secure file uploads, allowing the artist to easily add new artwork to the gallery.
 -   **Google Maps API**: The site integrates with the Google Maps API to display the location of the artist's studio or gallery.
 -   **Stripe**: Payments for artwork purchases are processed securely through Stripe, providing a seamless and reliable payment experience for customers.
--   **Prisma**: The project uses Prisma as the ORM (Object-Relational Mapping) tool for database management, simplifying database queries and interactions.
+-   **Drizzle ORM**: The project uses Drizzle ORM as the ORM (Object-Relational Mapping) tool for database management, simplifying database queries and interactions.
 -   **PostgreSQL**: PostgreSQL is used as the database system to store artwork information, user details, and sales data.
 -   **Zustand**: Zustand is utilized for state management, providing a simple and efficient way to manage application state.
 -   **AWS S3**: Artwork images and other static assets are stored and served from Amazon S3 (Simple Storage Service) for scalable and reliable file storage.

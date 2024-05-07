@@ -1,16 +1,5 @@
-import { SignedIn } from '@clerk/nextjs';
-
-import PageLayout from '@/components/layout/PageLayout';
-import { Manage } from './Manage';
-import { getPieces, getDeletedPieces } from './actions';
-
-interface PageProps {
-    searchParams?: {
-        tab?: string;
-    };
-}
-
-export const metadata = {
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
     title: 'JWS Fine Art - Admin Management',
     description: 'Jill Weeks Smith Admin Management',
     icons: {
@@ -20,6 +9,19 @@ export const metadata = {
         title: 'JWS Fine Art - Admin Management',
     },
 };
+
+import { getPieces, getDeletedPieces } from './actions';
+
+import { SignedIn } from '@clerk/nextjs';
+
+import PageLayout from '@/components/layout/PageLayout';
+import { Manage } from './Manage';
+
+interface PageProps {
+    searchParams?: {
+        tab?: string;
+    };
+}
 
 export default async function ManagePage({ searchParams }: PageProps) {
     const tab = searchParams?.tab || 'manage';

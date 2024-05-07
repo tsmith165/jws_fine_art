@@ -1,5 +1,3 @@
-// File 1: /app/api/checkout/webhook/route.ts
-
 import { buffer } from 'micro';
 import Stripe from 'stripe';
 import { eq } from 'drizzle-orm';
