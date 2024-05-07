@@ -1,31 +1,44 @@
-'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Piece } from '@prisma/client';
+import { eq } from 'drizzle-orm';
+import { db, piecesTable } from '@/db/db';
+import { Pieces } from '@/db/schema';
 
 // React Icons
 import { MdPlayArrow } from 'react-icons/md';
 import { FaPause } from 'react-icons/fa';
 import { IoIosArrowForward, IoIosSpeedometer } from 'react-icons/io';
 
-import PROJECT_CONSTANTS from '@/lib/constants';
-
 type SlideshowProps = {
-    piece_list: Piece[];
+    piece_ids: number[];
 };
 
-export default function Slideshow({ piece_list }: SlideshowProps) {
+export default function Slideshow({ piece_ids }: SlideshowProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(true);
     const [speed, setSpeed] = useState(1200);
     const [showSlider, setShowSlider] = useState(false);
+    const [pieces, setPieces] = useState<Pieces[]>([]);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        const fetchPieces = async () => {
+            const fetchedPieces = await Promise.all(
+                piece_ids.map(async (id) => {
+                    const [piece] = await db.select().from(piecesTable).where(eq(piecesTable.id, id)).limit(1);
+                    return piece;
+                }),
+            );
+            setPieces(fetchedPieces);
+        };
+
+        fetchPieces();
+    }, [piece_ids]);
 
     useEffect(() => {
         if (isPlaying) {
             timeoutRef.current = setTimeout(() => {
-                setCurrentIndex((prevIndex) => (prevIndex + 1) % piece_list.length);
+                setCurrentIndex((prevIndex) => (prevIndex + 1) % pieces.length);
             }, speed);
         }
 
@@ -34,18 +47,18 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [currentIndex, isPlaying, speed, piece_list.length]);
+    }, [currentIndex, isPlaying, speed, pieces.length]);
 
     const handlePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
     };
 
     const handlePrev = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + piece_list.length) % piece_list.length);
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + pieces.length) % pieces.length);
     };
 
     const handleNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % piece_list.length);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % pieces.length);
     };
 
     const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,14 +66,13 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
         setSpeed(speed);
     };
 
-    const current_piece = piece_list[currentIndex];
+    const current_piece = pieces[currentIndex];
 
     if (!current_piece) {
         return <div>Loading...</div>;
     }
 
     const { title, image_path } = current_piece;
-
     return (
         <div className="relative h-full w-full overflow-hidden bg-secondary_dark">
             <div className="absolute left-0 top-0 h-full w-full">
