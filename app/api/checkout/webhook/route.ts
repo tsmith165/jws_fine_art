@@ -1,10 +1,6 @@
-// File: /app/api/checkout/webhook/route.ts
-
-import { buffer } from 'micro';
 import Stripe from 'stripe';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db, piecesTable, pendingTransactionsTable, verifiedTransactionsTable } from '@/db/db';
-import { Pieces, PendingTransactions, VerifiedTransactions } from '@/db/schema';
 
 interface WebhookEvent {
     id: string;
@@ -30,7 +26,7 @@ export async function POST(request: Request) {
     console.log('Received Stripe Webhook Request');
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
 
-    const buff = await buffer(request);
+    const payload = await request.text();
     const sig = request.headers.get('stripe-signature');
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     let event: Stripe.Event;
@@ -41,7 +37,7 @@ export async function POST(request: Request) {
         }
 
         console.log('Verifying Signature From Webhook...');
-        event = stripe.webhooks.constructEvent(buff.toString(), sig, webhookSecret);
+        event = stripe.webhooks.constructEvent(payload, sig, webhookSecret);
 
         console.log('Stripe Event:', event);
 
@@ -63,8 +59,12 @@ export async function POST(request: Request) {
             const pendingTransactionData = await db
                 .select()
                 .from(pendingTransactionsTable)
-                .where(eq(pendingTransactionsTable.piece_db_id, parseInt(metadata.product_id, 10)))
-                .where(eq(pendingTransactionsTable.full_name, metadata.full_name))
+                .where(
+                    and(
+                        eq(pendingTransactionsTable.piece_db_id, parseInt(metadata.product_id, 10)),
+                        eq(pendingTransactionsTable.full_name, metadata.full_name),
+                    ),
+                )
                 .limit(1);
 
             console.log('Pending Transaction Data:', pendingTransactionData);
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
                 image_path: metadata.image_path,
                 image_width: parseInt(metadata.image_width, 10),
                 image_height: parseInt(metadata.image_height, 10),
-                date: new Date(),
+                date: new Date().toISOString(),
                 stripe_id: stripeId,
                 price: parseInt(metadata.price_id, 10),
             });
