@@ -30,7 +30,6 @@
         "autoprefixer": "^10.4.19",
         "drizzle-orm": "0.29.0",
         "file-saver": "^2.0.5",
-        "fs": "0.0.1-security",
         "googleapis": "^118.0.0",
         "micro": "^9.3.4",
         "next": "^14.2.3",
