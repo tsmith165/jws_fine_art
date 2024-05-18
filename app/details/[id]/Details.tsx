@@ -152,7 +152,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                                         prefetch={true}
                                     >
                                         <div className="m-[5px] flex h-[100px] w-[100px] items-center justify-center">
-                                            <Image src={image_path} alt="" width={image.width} height={image.height} quality={100} />
+                                            <Image src={image.src} alt="" width={image.width} height={image.height} quality={100} />
                                         </div>
                                     </Link>
                                 );
