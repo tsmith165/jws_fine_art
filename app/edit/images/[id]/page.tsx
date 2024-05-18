@@ -1,4 +1,5 @@
-export const metadata = {
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
     title: 'JWS Fine Art - Edit Piece Details',
     description: 'Edit gallery piece details for JWS Fine Art',
     icons: {

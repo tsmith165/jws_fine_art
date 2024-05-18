@@ -1,9 +1,5 @@
-import { prisma } from '@/lib/prisma';
-import PageLayout from '@/components/layout/PageLayout';
-import PROJECT_CONSTANTS from '@/lib/constants';
-import Image from 'next/image';
-
-export const metadata = {
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
     title: 'JWS Fine Art - Successful Checkout',
     description: 'Successful Checkout for JWS Fine Art',
     icons: {
@@ -14,8 +10,15 @@ export const metadata = {
     },
 };
 
+import { fetchPieces } from '@/app/actions';
+import { Pieces } from '@/db/schema';
+
+import PROJECT_CONSTANTS from '@/lib/constants';
+import PageLayout from '@/components/layout/PageLayout';
+import Image from 'next/image';
+
 export default async function Page({ params }: { params: { id: string } }) {
-    const { piece_list } = await get_piece_list();
+    const piece_list: Pieces[] = await fetchPieces();
     const passed_o_id = params.id;
     const current_piece = piece_list.find((piece) => piece.o_id === Number(passed_o_id));
 
@@ -54,25 +57,4 @@ export default async function Page({ params }: { params: { id: string } }) {
             </div>
         </PageLayout>
     );
-}
-
-async function fetchPieces() {
-    console.log('Fetching pieces with prisma');
-    const piece_list = await prisma.piece.findMany({
-        orderBy: {
-            o_id: 'desc',
-        },
-        where: {
-            active: true,
-        },
-    });
-    return piece_list;
-}
-
-async function get_piece_list() {
-    console.log('Fetching piece list...');
-    const piece_list = await fetchPieces();
-    return {
-        piece_list: piece_list,
-    };
 }

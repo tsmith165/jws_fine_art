@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import 'react-tooltip/dist/react-tooltip.css';
-import { Piece as PieceType } from '@prisma/client';
+import { Pieces } from '@/db/schema';
 
 import useGalleryStore from '@/stores/gallery_store';
 
@@ -17,12 +17,12 @@ const BORDER_MARGIN_WIDTH = 10;
 interface GalleryState {
     window_width: number;
     window_height: number;
-    piece_list: PieceType[];
+    piece_list: Pieces[];
     gallery_pieces: JSX.Element[];
     lowest_height: number;
 }
 
-const Gallery = ({ pieces }: { pieces: PieceType[] }) => {
+const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
     const { theme, filterMenuOpen, setFilterMenuOpen } = useGalleryStore((state) => ({
         theme: state.theme,
         filterMenuOpen: state.filterMenuOpen,
@@ -60,7 +60,7 @@ const Gallery = ({ pieces }: { pieces: PieceType[] }) => {
         }
     }, [theme, state.window_width, state.window_height, state.piece_list]);
 
-    const createGallery = async (piece_list: PieceType[], selected_theme: string) => {
+    const createGallery = async (piece_list: Pieces[], selected_theme: string) => {
         console.log('Begin create gallery');
         const piece_list_length = piece_list.length;
 
@@ -113,9 +113,9 @@ const Gallery = ({ pieces }: { pieces: PieceType[] }) => {
         while (i < piece_list_length) {
             var current_piece_json = piece_list[i];
 
-            var piece_theme = current_piece_json['theme'] ? current_piece_json['theme'] : 'None';
-            var piece_sold = current_piece_json['sold'] ? current_piece_json['sold'] : false;
-            var piece_available = current_piece_json['available'] ? current_piece_json['available'] : false;
+            var piece_theme = current_piece_json.theme ? current_piece_json.theme : 'None';
+            var piece_sold = current_piece_json.sold ? current_piece_json.sold : false;
+            var piece_available = current_piece_json.available ? current_piece_json.available : false;
 
             if (selected_theme != 'None' && selected_theme != undefined && selected_theme != null) {
                 if (selected_theme == 'Available') {
@@ -138,16 +138,16 @@ const Gallery = ({ pieces }: { pieces: PieceType[] }) => {
                 }
             }
 
-            var o_id = current_piece_json['o_id'] ? current_piece_json['o_id'] : 'None';
-            var class_name = current_piece_json['class_name'] ? current_piece_json['class_name'] : 'None';
-            var image_path = current_piece_json['image_path'] ? current_piece_json['image_path'] : 'None';
-            var title = current_piece_json['title'] ? current_piece_json['title'] : 'None';
-            var description = current_piece_json['description'] ? current_piece_json['description'] : 'None';
-            var sold = current_piece_json['sold'] ? current_piece_json['sold'] : false;
-            var available = current_piece_json['available'] !== undefined ? Boolean(current_piece_json['available']) : false;
+            var o_id = current_piece_json.o_id ? current_piece_json.o_id.toString() : 'None';
+            var class_name = current_piece_json.class_name ? current_piece_json.class_name : 'None';
+            var image_path = current_piece_json.image_path ? current_piece_json.image_path : 'None';
+            var title = current_piece_json.title ? current_piece_json.title : 'None';
+            var description = current_piece_json.description ? current_piece_json.description : 'None';
+            var sold = current_piece_json.sold ? current_piece_json.sold : false;
+            var available = current_piece_json.available !== undefined ? current_piece_json.available : false;
             var [width, height] =
-                current_piece_json['width'] !== undefined && current_piece_json['height'] !== undefined
-                    ? [current_piece_json['width'], current_piece_json['height']]
+                current_piece_json.width !== undefined && current_piece_json.height !== undefined
+                    ? [current_piece_json.width, current_piece_json.height]
                     : [0, 0];
 
             var [scaled_width, scaled_height] = [piece_width, height];
@@ -188,13 +188,13 @@ const Gallery = ({ pieces }: { pieces: PieceType[] }) => {
                     <Piece
                         key={i}
                         id={`piece-${i}`}
-                        o_id={o_id.toString()}
+                        o_id={o_id}
                         className={class_name}
                         image_path={image_path}
                         dimensions={dimensions}
                         title={title}
                         sold={sold}
-                        available={available}
+                        available={available || true}
                     />,
                 );
 

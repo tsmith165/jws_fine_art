@@ -2,17 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Piece } from '@prisma/client';
 
 // React Icons
 import { MdPlayArrow } from 'react-icons/md';
 import { FaPause } from 'react-icons/fa';
 import { IoIosArrowForward, IoIosSpeedometer } from 'react-icons/io';
 
-import PROJECT_CONSTANTS from '@/lib/constants';
-
 type SlideshowProps = {
-    piece_list: Piece[];
+    piece_list: any[];
 };
 
 export default function Slideshow({ piece_list }: SlideshowProps) {
@@ -60,17 +57,16 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
     }
 
     const { title, image_path } = current_piece;
-
     return (
-        <div className="relative h-full w-full overflow-hidden bg-secondary_dark">
-            <div className="absolute left-0 top-0 h-full w-full">
+        <div className="relative flex h-full w-full flex-col overflow-hidden bg-secondary_dark">
+            <div className="h-full w-full">
                 <div className="relative h-full w-full">
                     <Image src={image_path} alt={title} fill className="object-contain" />
                 </div>
             </div>
 
             {/* Slideshow Menu */}
-            <div className="absolute bottom-0 left-0 flex w-full items-center justify-between bg-primary_dark px-4 py-2">
+            <div className="flex h-[50px] w-full items-center justify-between bg-primary_dark px-4 py-2">
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl text-primary">{title}</div>
                 <div className="flex items-center space-x-4">
                     {isPlaying ? (

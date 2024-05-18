@@ -1,9 +1,10 @@
-import { prisma } from '@/lib/prisma';
-import { Piece as PieceType } from '@prisma/client';
+import { Metadata } from 'next';
+import { Pieces } from '@/db/schema';
+import { fetchPieces } from '@/app/actions';
 import Gallery from './Gallery';
 import PageLayout from '@/components/layout/PageLayout';
 
-export const metadata = {
+export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery',
     description: 'Gallery page for JWS Fine Art',
     icons: {
@@ -14,20 +15,8 @@ export const metadata = {
     },
 };
 
-async function fetchPieces(): Promise<PieceType[]> {
-    const pieces = await prisma.piece.findMany({
-        orderBy: {
-            o_id: 'desc',
-        },
-        where: {
-            active: true,
-        },
-    });
-    return pieces;
-}
-
 export default async function Page() {
-    const pieces = await fetchPieces();
+    const pieces: Pieces[] = await fetchPieces();
 
     return (
         <PageLayout page="/gallery">

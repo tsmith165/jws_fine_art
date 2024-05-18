@@ -4,13 +4,12 @@ import { IoIosArrowForward } from 'react-icons/io';
 import { MdDeleteForever, MdRestore } from 'react-icons/md';
 import { FaEdit } from 'react-icons/fa';
 import { changeOrder, setInactive, setActive } from './actions';
-import { Piece } from '@prisma/client';
+import { Pieces } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
-import PROJECT_CONSTANTS from '@/lib/constants';
 
 interface ManageProps {
-    pieces: Piece[];
-    deletedPieces: Piece[];
+    pieces: Pieces[];
+    deletedPieces: Pieces[];
     activeTab: string;
 }
 

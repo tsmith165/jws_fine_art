@@ -1,10 +1,13 @@
 'use server';
-import { prisma } from '@/lib/prisma';
+import { db, piecesTable, pendingTransactionsTable } from '@/db/db';
+import { eq, desc } from 'drizzle-orm';
+import { Pieces } from '@/db/schema';
+
 import PROJECT_CONSTANTS from '@/lib/constants';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2020-08-27',
+    apiVersion: '2024-04-10',
 });
 const INTERNATIONAL_SHIPPING_RATE = 25;
 
@@ -20,13 +23,17 @@ export async function runStripePurchase(data: FormData) {
         throw new Error('Piece ID is required');
     }
 
-    const piece = await prisma.piece.findUnique({
-        where: { id: parseInt(piece_id) },
-    });
+    const piece_data = await db
+        .select()
+        .from(piecesTable)
+        .where(eq(piecesTable.id, parseInt(piece_id)))
+        .orderBy(desc(piecesTable.o_id))
+        .limit(1);
 
-    if (!piece) {
+    if (!piece_data) {
         throw new Error('Piece not found');
     }
+    const piece = piece_data[0];
 
     console.log('Creating a Pending Transaction ...');
     const pending_response = await create_pending_transaction(piece.id, piece.title, full_name, phone, email, address, is_international);
@@ -85,16 +92,14 @@ export async function create_pending_transaction(
     international: boolean,
 ) {
     console.log(`Attempting to create pending transaction for piece_db_id: ${piece_db_id}`);
-    const pending_transaction_output = await prisma.pending.create({
-        data: {
-            piece_db_id,
-            piece_title,
-            full_name,
-            phone,
-            email,
-            address,
-            international,
-        },
+    const pending_transaction_output = await db.insert(pendingTransactionsTable).values({
+        piece_db_id,
+        piece_title,
+        full_name,
+        phone,
+        email,
+        address,
+        international,
     });
     return pending_transaction_output;
 }

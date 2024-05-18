@@ -1,4 +1,5 @@
-export const metadata = {
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
     title: 'JWS Fine Art - Homepage',
     description: 'Jill Weeks Smith Biography',
     icons: {
@@ -9,13 +10,15 @@ export const metadata = {
     },
 };
 
+import { db, piecesTable } from '@/db/db';
+import { eq, asc } from 'drizzle-orm';
+import { Pieces } from '@/db/schema';
+
 import PageLayout from '@/components/layout/PageLayout';
 import Homepage from '@/app/Homepage';
 
-import { prisma } from '@/lib/prisma';
-
 export default async function Page() {
-    const { most_recent_id } = await get_piece_list();
+    const { most_recent_id } = await getPieceList();
 
     return (
         <PageLayout page="/">
@@ -24,24 +27,18 @@ export default async function Page() {
     );
 }
 
-async function fetchFirstPiece() {
-    console.log(`Fetching pieces with prisma`);
-    const piece = await prisma.piece.findFirst({
-        orderBy: {
-            o_id: 'desc',
-        },
-        where: {
-            active: true,
-        },
-    });
-    return piece;
+async function fetchFirstPiece(): Promise<Pieces | null> {
+    console.log(`Fetching pieces with Drizzle`);
+    const piece = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(asc(piecesTable.o_id)).limit(1);
+
+    return piece[0] || null;
 }
 
-async function get_piece_list() {
+async function getPieceList() {
     console.log('Fetching piece list...');
-    const first_piece = await fetchFirstPiece();
+    const firstPiece = await fetchFirstPiece();
 
     return {
-        most_recent_id: first_piece ? first_piece.id : null,
+        most_recent_id: firstPiece ? firstPiece.id : null,
     };
 }

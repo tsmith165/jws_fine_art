@@ -2,14 +2,16 @@ import React from 'react';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import { IoIosTrash } from 'react-icons/io';
 import { handleImageReorder, handleImageDeleteAction } from './actions';
-import { Piece } from '@prisma/client';
+import { Pieces } from '@/db/schema';
 
 interface PieceOrderPanelProps {
-    current_piece: Piece;
+    current_piece: Pieces;
 }
 
 interface Image {
     image_path: string;
+    width: number;
+    height: number;
 }
 
 const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
@@ -27,8 +29,17 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         'use server';
         const pieceId = Number(formData.get('pieceId'));
         const index = Number(formData.get('index'));
-        const direction = formData.get('direction')?.toString() || '';
-        const imageType = formData.get('imageType')?.toString() || '';
+        const direction = formData.get('direction')?.toString();
+        const imageType = formData.get('imageType')?.toString();
+
+        if (!direction) {
+            console.error(`No direction or image type found in form data. Cannot reorder image.`);
+            return;
+        }
+        if (!imageType) {
+            console.error(`No image type found in form data. Cannot reorder image.`);
+            return;
+        }
 
         await handleImageReorder(pieceId, index, direction, imageType);
     }
@@ -36,8 +47,17 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
     async function handleImageDelete(formData: FormData) {
         'use server';
         const pieceId = Number(formData.get('pieceId'));
-        const imagePath = formData.get('imagePath')?.toString() || '';
-        const imageType = formData.get('imageType')?.toString() || '';
+        const imageType = formData.get('imageType')?.toString();
+        const imagePath = formData.get('imagePath')?.toString();
+
+        if (!imageType) {
+            console.error(`No image type found in form data. Cannot delete image.`);
+            return;
+        }
+        if (!imagePath) {
+            console.error(`No image path found in form data. Cannot delete image.`);
+            return;
+        }
 
         await handleImageDeleteAction(pieceId, imagePath, imageType);
     }
@@ -104,7 +124,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                                     <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
                                     <input type="hidden" name="index" value={index.toString()} />
                                     <input type="hidden" name="direction" value="up" />
-                                    <input type="hidden" name="imageType" value="extra_images" />
+                                    <input type="hidden" name="imageType" value="progress_images" />
                                     <button
                                         type="submit"
                                         className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light p-1 hover:bg-primary"
@@ -116,7 +136,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                                     <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
                                     <input type="hidden" name="index" value={index.toString()} />
                                     <input type="hidden" name="direction" value="down" />
-                                    <input type="hidden" name="imageType" value="extra_images" />
+                                    <input type="hidden" name="imageType" value="progress_images" />
                                     <button
                                         type="submit"
                                         className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light p-1 hover:bg-primary"
