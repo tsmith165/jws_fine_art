@@ -2,9 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { eq } from 'drizzle-orm';
-import { db, piece_listTable } from '@/db/db';
-import { piece_list } from '@/db/schema';
 
 // React Icons
 import { MdPlayArrow } from 'react-icons/md';
