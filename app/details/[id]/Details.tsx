@@ -134,7 +134,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                                             alt=""
                                             width={image.width}
                                             height={image.height}
-                                            quality={100}
+                                            quality={75}
                                             className="max-h-full max-w-full object-contain"
                                         />
                                     </div>
@@ -153,7 +153,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                                         prefetch={true}
                                     >
                                         <div className="m-[5px] flex h-[100px] w-[100px] items-center justify-center">
-                                            <Image src={image.src} alt="" width={image.width} height={image.height} quality={100} />
+                                            <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
                                         </div>
                                     </Link>
                                 );
@@ -175,6 +175,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                             alt={title}
                             quality={100}
                             priority
+                            placeholder="blur"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             width={mainImage.width}
                             height={mainImage.height}
