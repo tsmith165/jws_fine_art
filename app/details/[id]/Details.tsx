@@ -130,6 +130,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                                     <div className="m-[5px] flex h-[110px] w-[110px] items-center justify-center">
                                         <Image
                                             src={image.src}
+                                            priority
                                             alt=""
                                             width={image.width}
                                             height={image.height}
