@@ -16,7 +16,13 @@ interface DetailsProps {
     type: string;
 }
 
-const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex, type }) => {
+const fetchImageData = async (imagePath: string) => {
+    const res = await fetch(imagePath);
+    const imageData = await res.arrayBuffer();
+    return imageData;
+};
+
+const Details: React.FC<DetailsProps> = async ({ piece_list, current_id, selectedIndex, type }) => {
     const passed_o_id = current_id;
     console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`);
 
@@ -55,8 +61,11 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
     const progress_images = [undefined, null, ''].includes(current_piece.progress_images) ? [] : JSON.parse(current_piece.progress_images);
     console.log(`Using Progress Images: "${progress_images}"`);
 
-    const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'];
-    const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
+    const nextPiece = piece_position + 1 < num_pieces ? piece_list[piece_position + 1] : null;
+    const prevPiece = piece_position - 1 >= 0 ? piece_list[piece_position - 1] : null;
+
+    const next_oid = nextPiece ? nextPiece.o_id : null;
+    const last_oid = prevPiece ? prevPiece.o_id : null;
 
     const using_extra_images = [
         { src: image_path, width, height },
@@ -84,6 +93,27 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
     console.log(`Type: '${type}'`);
 
     const mainImage = allImages[selectedIndex];
+
+    const preloadNextAndPrevImages = async () => {
+        if (nextPiece) {
+            await fetchImageData(nextPiece.image_path);
+            if (nextPiece.extra_images) {
+                const extraImages = JSON.parse(nextPiece.extra_images);
+                await Promise.all(extraImages.map((image: any) => fetchImageData(image.image_path)));
+            }
+        }
+
+        if (prevPiece) {
+            await fetchImageData(prevPiece.image_path);
+            if (prevPiece.extra_images) {
+                const extraImages = JSON.parse(prevPiece.extra_images);
+                await Promise.all(extraImages.map((image: any) => fetchImageData(image.image_path)));
+            }
+        }
+    };
+
+    await preloadNextAndPrevImages();
+
     const extraImagesCard = (
         <div className="flex min-w-[300px] flex-col">
             <div className="text-dark rounded-t-md bg-primary text-lg font-bold">
@@ -134,7 +164,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                                             alt=""
                                             width={image.width}
                                             height={image.height}
-                                            quality={75}
+                                            quality={100}
                                             className="max-h-full max-w-full object-contain"
                                         />
                                     </div>
@@ -153,7 +183,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                                         prefetch={true}
                                     >
                                         <div className="m-[5px] flex h-[100px] w-[100px] items-center justify-center">
-                                            <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
+                                            <Image src={image.src} alt="" width={image.width} height={image.height} quality={100} />
                                         </div>
                                     </Link>
                                 );
@@ -175,7 +205,6 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                             alt={title}
                             quality={100}
                             priority
-                            placeholder="blur"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             width={mainImage.width}
                             height={mainImage.height}
