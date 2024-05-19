@@ -10,19 +10,19 @@ export const metadata: Metadata = {
     },
 };
 
-import { fetchPieces, getMostRecentId } from '@/app/actions';
+import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 import PageLayout from '@/components/layout/PageLayout';
-import Edit from '@/app/edit/Edit';
+import Edit from '@/app/edit/[id]/Edit';
 import { SignedIn } from '@clerk/nextjs';
 
 export default async function Page({ params }: { params: { id: string } }) {
-    const piece_list = await fetchPieces();
-    const most_recent_id = await getMostRecentId();
+    const piece = await fetchPieceById(parseInt(params.id));
+    const { next_id, last_id } = await fetchAdjacentPieceIds(parseInt(params.id));
 
     return (
         <PageLayout page={`/edit/${params.id}`}>
             <SignedIn>
-                <Edit piece_list={piece_list} current_id={params.id} most_recent_id={most_recent_id!} />
+                <Edit piece={piece} current_id={params.id} next_id={next_id} last_id={last_id} />
             </SignedIn>
         </PageLayout>
     );

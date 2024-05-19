@@ -1,8 +1,9 @@
 'use server';
-import { db, piecesTable } from '@/db/db';
-import { eq, desc } from 'drizzle-orm';
+import { db, piecesTable, extraImagesTable, progressImagesTable } from '@/db/db';
+import { eq, desc, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { getMostRecentId } from '@/app/actions';
+import { PiecesWithImages } from '@/db/schema';
 
 interface SubmitFormData {
     piece_id: string;
@@ -21,8 +22,6 @@ interface SubmitFormData {
     framed: string;
     comments: string;
     image_path: string;
-    extra_images: string;
-    progress_images: string;
 }
 
 export async function onSubmit(data: SubmitFormData) {
@@ -53,8 +52,6 @@ export async function onSubmit(data: SubmitFormData) {
                 framed: data.framed === 'True',
                 comments: data.comments || '',
                 image_path: data.image_path || '',
-                extra_images: data.extra_images || '[]',
-                progress_images: data.progress_images || '[]',
             })
             .where(eq(piecesTable.id, parseInt(data.piece_id)));
     } else {
@@ -118,37 +115,42 @@ export async function handleImageUpload(data: UploadFormData) {
         await db.update(piecesTable).set({ image_path: imageUrl }).where(eq(piecesTable.id, pieceId));
     } else {
         // Add a new extra or progress image
-        const jsonImages = imageType === 'extra' ? piece[0].extra_images : piece[0].progress_images;
-        const images = JSON.parse(jsonImages as string) as ImageData[];
         const width = parseInt(data.width?.toString() || '0');
         const height = parseInt(data.height?.toString() || '0');
-        images.push({ image_path: imageUrl, width: width, height: height });
 
-        await db
-            .update(piecesTable)
-            .set({ [imageType]: JSON.stringify(images) })
-            .where(eq(piecesTable.id, pieceId));
+        if (imageType === 'extra') {
+            await db.insert(extraImagesTable).values({
+                piece_id: pieceId,
+                image_path: imageUrl,
+                width: width,
+                height: height,
+            });
+        } else if (imageType === 'progress') {
+            await db.insert(progressImagesTable).values({
+                piece_id: pieceId,
+                image_path: imageUrl,
+                width: width,
+                height: height,
+            });
+        }
     }
 
     revalidatePath(`/edit/${piece[0].o_id}`);
     return imageUrl;
 }
 
-interface ImageData {
-    image_path: string;
-    width: number;
-    height: number;
-}
-
 export async function handleImageReorder(pieceId: number, index: number, direction: string, imageType: string) {
-    const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, pieceId)).limit(1);
-    if (!piece.length) {
-        console.error(`Piece with id ${pieceId} not found`);
-        return;
+    let images;
+    if (imageType === 'extra') {
+        images = await db.select().from(extraImagesTable).where(eq(extraImagesTable.piece_id, pieceId));
+    } else {
+        images = await db.select().from(progressImagesTable).where(eq(progressImagesTable.piece_id, pieceId));
     }
 
-    const jsonImages = imageType === 'extra' ? piece[0].extra_images : piece[0].progress_images;
-    const images = JSON.parse(jsonImages as string) as ImageData[];
+    if (images.length === 0) {
+        console.error(`No images found for piece with id ${pieceId}`);
+        return;
+    }
 
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= images.length) return;
@@ -157,12 +159,18 @@ export async function handleImageReorder(pieceId: number, index: number, directi
     images.splice(index, 1);
     images.splice(newIndex, 0, item);
 
-    await db
-        .update(piecesTable)
-        .set({ [imageType]: JSON.stringify(images) })
-        .where(eq(piecesTable.id, pieceId));
+    const updateTable = imageType === 'extra' ? extraImagesTable : progressImagesTable;
+    await db.update(updateTable).set({ image_path: images[newIndex].image_path }).where(eq(updateTable.id, images[newIndex].id));
+    await db.update(updateTable).set({ image_path: item.image_path }).where(eq(updateTable.id, item.id));
 
-    revalidatePath(`/edit/${piece[0].o_id}`);
+    revalidatePath(`/edit/${pieceId}`);
+}
+
+export async function handleImageDeleteAction(pieceId: number, imagePath: string, imageType: string) {
+    const deleteTable = imageType === 'extra' ? extraImagesTable : progressImagesTable;
+    await db.delete(deleteTable).where(and(eq(deleteTable.piece_id, pieceId), eq(deleteTable.image_path, imagePath)));
+
+    revalidatePath(`/edit/${pieceId}`);
 }
 
 interface NewPieceData {
@@ -170,25 +178,6 @@ interface NewPieceData {
     imagePath: string;
     width: number;
     height: number;
-}
-
-export async function handleImageDeleteAction(pieceId: number, imagePath: string, imageType: string) {
-    const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, pieceId)).limit(1);
-    if (!piece.length) {
-        console.error(`Piece with id ${pieceId} not found`);
-        return;
-    }
-
-    const jsonImages = imageType === 'extra' ? piece[0].extra_images : piece[0].progress_images;
-    const images = JSON.parse(jsonImages as string) as ImageData[];
-    const updatedImages = images.filter((image) => image.image_path !== imagePath);
-
-    await db
-        .update(piecesTable)
-        .set({ [imageType]: JSON.stringify(updatedImages) })
-        .where(eq(piecesTable.id, pieceId));
-
-    revalidatePath(`/edit/${piece[0].o_id}`);
 }
 
 export async function createPiece(newPieceData: NewPieceData) {

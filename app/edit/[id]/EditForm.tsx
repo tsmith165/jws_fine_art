@@ -8,7 +8,7 @@ import InputSelect from '@/components/inputs/InputSelect';
 import InputMultiSelect from '@/components/inputs/InputMultiSelect';
 import InputTextArea from '@/components/inputs/InputTextArea';
 
-import { onSubmit } from './actions';
+import { onSubmit } from '../actions';
 
 interface EditFormProps {
     current_piece: any;
@@ -34,6 +34,14 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
         }));
     };
 
+    const handleMultiSelectChange = (selectedOptions: { value: string; label: string }[]) => {
+        const selectedValues = selectedOptions.map((option) => option.value).join(',');
+        setFormData((prevData: typeof formData) => ({
+            ...prevData,
+            theme: selectedValues,
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log('Form Data (Next Line):');
@@ -41,10 +49,14 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
         await onSubmit(formData);
     };
 
-    console.log('Theme Options:', formData.theme);
+    const themeOptions =
+        formData.theme
+            ?.split(',')
+            .filter((option: string) => option.trim() !== '') // Filter out blank options
+            .map((option: string) => ({ value: option, label: option })) || [];
 
     return (
-        <div className="flex h-fit w-full overflow-y-auto p-2">
+        <div className="flex h-fit w-full p-2">
             <form onSubmit={handleSubmit} className="flex w-full flex-col space-y-2">
                 {/* Row 2.) Piece Type Select */}
                 <div className="flex h-fit w-full">
@@ -66,15 +78,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 <div className="flex h-fit w-full">
                     <InputMultiSelect
                         name="theme"
-                        defaultValue={
-                            formData.theme === null || formData.theme.length === 0
-                                ? []
-                                : formData.theme.includes(',')
-                                  ? formData.theme
-                                        .split(',')
-                                        .map(formData.theme.split(',').map((option: string) => ({ value: option, label: option })))
-                                  : { value: formData.theme, label: formData.theme }
-                        }
+                        defaultValue={themeOptions}
                         select_options={[
                             ['Water', 'Water'],
                             ['Snow', 'Snow'],
@@ -86,6 +90,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                             ['Abstract', 'Abstract'],
                             ['None', 'None'],
                         ]}
+                        onChange={handleMultiSelectChange}
                     />
                 </div>
 
