@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import PROJECT_CONSTANTS from '@/lib/constants';
-
 const USING_YELLOW_DOT = false;
 
 type PieceProps = {
@@ -28,7 +26,7 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
             className={`absolute rounded-md bg-secondary_light p-1 ${className}`}
             style={{ width: img_width + 8, height: img_height + 8, top: y, left: x }}
         >
-            <Link href={`/details/${o_id}`}>
+            <Link href={`/details/${id}`}>
                 <div className={`p-0`} style={{ width: img_width }}>
                     <div className={`relative`}>
                         <Image
