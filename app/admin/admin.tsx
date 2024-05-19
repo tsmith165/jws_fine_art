@@ -1,6 +1,6 @@
 import { fetchPieces } from '@/app/actions';
 import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 const Admin: React.FC = () => {
     const exportPiecesAsXLSX = async () => {
@@ -8,11 +8,15 @@ const Admin: React.FC = () => {
             const pieces = await fetchPieces();
 
             if (pieces.length > 0) {
-                const worksheet = XLSX.utils.json_to_sheet(pieces);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, 'Pieces');
-                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-                const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('Pieces');
+
+                // Assuming pieces is an array of objects, with each object representing a row
+                worksheet.columns = Object.keys(pieces[0]).map((key) => ({ header: key, key }));
+                pieces.forEach((piece) => worksheet.addRow(piece));
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                 saveAs(data, 'pieces.xlsx');
                 console.log('Successfully exported pieces as XLSX');
             } else {
