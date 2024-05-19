@@ -98,7 +98,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                 </div>
             </div>
             <div className="h-fit rounded-b-md bg-secondary_dark">
-                <div className="flex min-h-[120px] w-full flex-row space-x-[5px] overflow-y-hidden overflow-x-scroll p-2">
+                <div className="flex min-h-[120px] w-full flex-row space-x-[5px] overflow-y-hidden overflow-x-scroll p-2 md:pb-0">
                     {type === 'gallery' &&
                         using_extra_images.map((image: any, index: number) => (
                             <Link
