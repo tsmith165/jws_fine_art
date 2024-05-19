@@ -14,6 +14,7 @@
         "isolatedModules": true,
         "jsx": "preserve",
         "incremental": true,
+        "sourceMap": true,
         "plugins": [
             {
                 "name": "next"
@@ -35,11 +36,10 @@
         "**/*.ts",
         "**/*.tsx",
         ".next/types/**/*.ts",
-        "tailwind.config.cjs",
         "middleware.js",
-        "app/orders/orders.jsx",
-        "app/orders/OrderTree.jsx",
-        "app/orders/page.jsx"
-, "app/api/checkout/webhook/route.js", "app/api/checkout/webhook/route.js"    ],
+        "app/api/checkout/webhook/route.js",
+        "app/api/checkout/webhook/route.js",
+        "lib/*"
+    ],
     "exclude": ["node_modules"]
 }

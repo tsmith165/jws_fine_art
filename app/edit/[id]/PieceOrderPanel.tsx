@@ -1,7 +1,7 @@
 import React from 'react';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import { IoIosTrash } from 'react-icons/io';
-import { handleImageReorder, handleImageDeleteAction } from './actions';
+import { handleImageReorder, handleImageDeleteAction } from '../actions';
 import { Pieces } from '@/db/schema';
 
 interface PieceOrderPanelProps {

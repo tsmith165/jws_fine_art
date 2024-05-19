@@ -8,6 +8,7 @@ interface InputMultiSelectProps {
     defaultValue?: { value: string; label: string }[];
     name: string;
     select_options: [string, string][];
+    onChange?: (selectedOptions: { value: string; label: string }[]) => void; // Added onChange prop
 }
 
 const DropdownIndicator = (props: any) => {
@@ -18,7 +19,7 @@ const DropdownIndicator = (props: any) => {
     );
 };
 
-const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name, select_options }) => {
+const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name, select_options, onChange }) => {
     const id = name.toLowerCase().replace(' ', '_');
     const formatted_name = name
         .split('_')
@@ -57,6 +58,11 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name,
                     }),
                 }}
                 options={react_select_options}
+                onChange={(selectedOptions) => {
+                    if (onChange) {
+                        onChange(selectedOptions as { value: string; label: string }[]);
+                    }
+                }}
             />
         </div>
     );

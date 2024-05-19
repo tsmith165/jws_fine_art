@@ -10,53 +10,41 @@ import TitleComponent from '@/app/details/[id]/TitleComponent';
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
 interface DetailsProps {
-    piece_list: any[];
+    piece: any;
     current_id: number;
     selectedIndex: number;
     type: string;
+    next_id: number;
+    last_id: number;
 }
 
-const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex, type }) => {
+const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, type, next_id, last_id }) => {
     const passed_o_id = current_id;
-    console.log(`LOADING DETAILS PAGE - Piece ID: ${passed_o_id}`);
 
-    const num_pieces = piece_list?.length || 0;
-    let piece_position = 0;
-
-    for (let i = 0; i < piece_list.length; i++) {
-        if (piece_list[i]['o_id'].toString() === passed_o_id.toString()) {
-            piece_position = i;
-        }
-    }
-    const current_piece = piece_list[piece_position];
-
-    const description_raw = current_piece?.description?.length > 2 ? current_piece.description : '';
-    const db_id = current_piece?.id ?? -1;
-    const o_id = current_piece?.o_id ?? '';
-    const title = current_piece?.title ?? '';
-    const price = current_piece?.price ?? '';
-    const width = current_piece?.width ?? '';
-    const height = current_piece?.height ?? '';
-    const theme = current_piece?.theme ?? 'None';
-    const framed = current_piece?.framed === true || current_piece.framed.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const sold = current_piece?.sold === true || current_piece.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const available = current_piece?.available === true || current_piece.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const piece_type = current_piece?.piece_type ?? '';
-    const comments = current_piece?.comments ?? '';
+    const description_raw = piece?.description?.length > 2 ? piece.description : '';
+    const db_id = piece?.id ?? -1;
+    const o_id = piece?.o_id ?? '';
+    const title = piece?.title ?? '';
+    const price = piece?.price ?? '';
+    const width = piece?.width ?? '';
+    const height = piece?.height ?? '';
+    const theme = piece?.theme ?? 'None';
+    const framed = piece?.framed === true || piece.framed.toString().toLowerCase() === 'true' ? 'True' : 'False';
+    const sold = piece?.sold === true || piece.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
+    const available = piece?.available === true || piece.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
+    const piece_type = piece?.piece_type ?? '';
+    const comments = piece?.comments ?? '';
     const description = description_raw.split('<br>').join('\n');
-    const real_width = current_piece?.real_width ?? '';
-    const real_height = current_piece?.real_height ?? '';
-    const image_path = current_piece.image_path;
-    const instagram = current_piece?.instagram ?? '';
+    const real_width = piece?.real_width ?? '';
+    const real_height = piece?.real_height ?? '';
+    const image_path = piece.image_path;
+    const instagram = piece?.instagram ?? '';
 
-    const extra_images = [undefined, null, ''].includes(current_piece.extra_images) ? [] : JSON.parse(current_piece.extra_images);
+    const extra_images = [undefined, null, ''].includes(piece.extra_images) ? [] : JSON.parse(piece.extra_images);
     console.log(`Using Extra Images: "${extra_images}"`);
 
-    const progress_images = [undefined, null, ''].includes(current_piece.progress_images) ? [] : JSON.parse(current_piece.progress_images);
+    const progress_images = [undefined, null, ''].includes(piece.progress_images) ? [] : JSON.parse(piece.progress_images);
     console.log(`Using Progress Images: "${progress_images}"`);
-
-    const next_oid = piece_position + 1 > num_pieces - 1 ? piece_list[0]['o_id'] : piece_list[piece_position + 1]['o_id'];
-    const last_oid = piece_position - 1 < 0 ? piece_list[num_pieces - 1]['o_id'] : piece_list[piece_position - 1]['o_id'];
 
     const using_extra_images = [
         { src: image_path, width, height },
@@ -175,7 +163,6 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                             alt={title}
                             quality={100}
                             priority
-                            placeholder="blur"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             width={mainImage.width}
                             height={mainImage.height}
@@ -185,7 +172,7 @@ const Details: React.FC<DetailsProps> = ({ piece_list, current_id, selectedIndex
                 </div>
             </div>
             <div className="flex h-2/5 w-full flex-col bg-secondary_light lg:h-full lg:w-[35%]">
-                <TitleComponent title={title ? `"${title}"` : ''} piece_list={piece_list} next_oid={next_oid} last_oid={last_oid} />
+                <TitleComponent title={title ? `"${title}"` : ''} next_id={next_id} last_id={last_id} />
 
                 <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
                     <div className="flex flex-row space-x-1.5">

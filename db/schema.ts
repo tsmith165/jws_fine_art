@@ -21,12 +21,36 @@ export const piecesTable = pgTable('Pieces', {
     theme: text('theme'),
     framed: boolean('framed').default(false),
     comments: text('comments'),
-    extra_images: text('extra_images'),
-    progress_images: text('progress_images'),
 });
 
 export type Pieces = InferSelectModel<typeof piecesTable>;
 export type InsertPieces = InferInsertModel<typeof piecesTable>;
+
+export const extraImagesTable = pgTable('ExtraImages', {
+    id: serial('id').notNull().primaryKey(),
+    piece_id: integer('piece_id')
+        .notNull()
+        .references(() => piecesTable.id),
+    image_path: text('image_path').notNull(),
+    width: integer('width').notNull(),
+    height: integer('height').notNull(),
+});
+
+export type ExtraImages = InferSelectModel<typeof extraImagesTable>;
+export type InsertExtraImages = InferInsertModel<typeof extraImagesTable>;
+
+export const progressImagesTable = pgTable('ProgressImages', {
+    id: serial('id').notNull().primaryKey(),
+    piece_id: integer('piece_id')
+        .notNull()
+        .references(() => piecesTable.id),
+    image_path: text('image_path').notNull(),
+    width: integer('width').notNull(),
+    height: integer('height').notNull(),
+});
+
+export type ProgressImages = InferSelectModel<typeof progressImagesTable>;
+export type InsertProgressImages = InferInsertModel<typeof progressImagesTable>;
 
 export const pendingTransactionsTable = pgTable('PendingTransactions', {
     id: serial('id').notNull().primaryKey(),
@@ -61,3 +85,8 @@ export const verifiedTransactionsTable = pgTable('VerifiedTransactions', {
 
 export type VerifiedTransactions = InferSelectModel<typeof verifiedTransactionsTable>;
 export type InsertVerifiedTransactions = InferInsertModel<typeof verifiedTransactionsTable>;
+
+export type PiecesWithImages = Pieces & {
+    extraImages: ExtraImages[];
+    progressImages: ProgressImages[];
+};
