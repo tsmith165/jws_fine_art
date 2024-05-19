@@ -3,8 +3,6 @@ import React from 'react';
 interface StripeSVGProps {
     svg_className?: string;
     path_className?: string;
-    width?: string;
-    height?: string;
 }
 
 const StripeSVG: React.FC<StripeSVGProps> = ({ svg_className, path_className }) => {
