@@ -29,7 +29,7 @@ const FilterMenu: React.FC = () => {
                 className={
                     `absolute right-[120px] top-[40px] z-10 flex flex-row overflow-visible bg-secondary_dark p-[5px] text-secondary_light ` +
                     `hover:bg-secondary_light hover:text-secondary_dark ` +
-                    `${filterMenuOpen ? 'rounded-tr-lg bg-secondary_light text-secondary_dark' : 'rounded-t-lg'}`
+                    `${filterMenuOpen ? 'rounded-tr-lg bg-secondary_light text-secondary_dark' : 'rounded-t-lg md:rounded-b-lg md:rounded-t-none'}`
                 }
                 onClick={(e) => {
                     e.preventDefault();
