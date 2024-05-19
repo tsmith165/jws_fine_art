@@ -21,7 +21,6 @@ interface WebhookEvent {
         };
     };
 }
-Z;
 
 export async function POST(request: Request) {
     console.log('Received Stripe Webhook Request');
