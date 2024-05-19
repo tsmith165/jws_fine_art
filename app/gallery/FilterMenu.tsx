@@ -29,7 +29,7 @@ const FilterMenu: React.FC = () => {
                 className={
                     `absolute right-[120px] top-[40px] z-10 flex flex-row overflow-visible bg-secondary_dark p-[5px] text-secondary_light ` +
                     `hover:bg-secondary_light hover:text-secondary_dark ` +
-                    `${filterMenuOpen ? 'rounded-tr-lg bg-secondary_light text-secondary_dark' : 'rounded-t-lg md:rounded-b-lg md:rounded-t-none'}`
+                    `${filterMenuOpen ? 'rounded-t-lg bg-secondary_light text-secondary_dark md:rounded-t-none md:rounded-tr-lg' : 'rounded-t-lg'}`
                 }
                 onClick={(e) => {
                     e.preventDefault();
@@ -39,11 +39,11 @@ const FilterMenu: React.FC = () => {
                 <FaSlidersH className="h-[30px] w-[30px]" />
             </div>
             {filterMenuOpen === true && (
-                <div className="absolute right-0 top-[80px] flex h-[40px] w-fit flex-row rounded-tl-lg md:right-[160px] md:top-[40px] ">
+                <div className="absolute right-0 top-[80px] flex h-[40px] w-fit flex-row md:right-[160px] md:top-[40px]">
                     {THEME_FILTERS.map(([filter, Icon], i) => (
                         <div
                             key={i}
-                            className={`p-[5px] ${filter === theme ? 'bg-secondary' : 'bg-secondary_light'} ${i === 0 ? 'rounded-tl-lg' : ''}`}
+                            className={`p-[5px] ${filter === theme ? 'bg-secondary' : 'bg-secondary_light'} ${i === 0 ? 'rounded-bl-lg md:rounded-tl-lg' : ''}`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 setTheme(filter);
