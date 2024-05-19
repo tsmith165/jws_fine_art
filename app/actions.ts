@@ -39,24 +39,44 @@ export async function fetchPieceById(id: number) {
     return pieceData;
 }
 
-export async function fetchAdjacentPieceIds(id: number) {
-    const nextPiece = await db
-        .select({ id: piecesTable.id })
-        .from(piecesTable)
-        .where(eq(piecesTable.id, id + 1))
-        .limit(1)
-        .execute();
-    const lastPiece = await db
-        .select({ id: piecesTable.id })
-        .from(piecesTable)
-        .where(eq(piecesTable.id, id - 1))
-        .limit(1)
-        .execute();
+export async function fetchAdjacentPieceIds(currentId: number) {
+    console.log(`Fetching adjacent piece IDs for piece ID: ${currentId}`);
+    const currentPiece = await db.select().from(piecesTable).where(eq(piecesTable.id, currentId)).limit(1);
 
-    return {
-        next_id: nextPiece[0]?.id || null,
-        last_id: lastPiece[0]?.id || null,
-    };
+    if (currentPiece.length === 0) {
+        return { next_id: -1, last_id: -1 };
+    }
+
+    const currentOId = currentPiece[0].o_id;
+
+    // Fetch the next piece by o_id
+    const nextPiece = await db
+        .select()
+        .from(piecesTable)
+        .where(and(gt(piecesTable.o_id, currentOId), eq(piecesTable.active, true)))
+        .orderBy(asc(piecesTable.o_id))
+        .limit(1);
+
+    // Fetch the last piece by o_id
+    const lastPiece = await db
+        .select()
+        .from(piecesTable)
+        .where(and(lt(piecesTable.o_id, currentOId), eq(piecesTable.active, true)))
+        .orderBy(desc(piecesTable.o_id))
+        .limit(1);
+
+    // Fetch the piece with the minimum o_id
+    const firstPiece = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(asc(piecesTable.o_id)).limit(1);
+
+    // Fetch the piece with the maximum o_id
+    const maxOIdPiece = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(desc(piecesTable.o_id)).limit(1);
+
+    const next_id = nextPiece.length > 0 ? nextPiece[0].id : firstPiece[0].id;
+    const last_id = lastPiece.length > 0 ? lastPiece[0].id : maxOIdPiece[0].id;
+
+    console.log(`Found next_id: ${next_id} and last_id: ${last_id}`);
+
+    return { next_id, last_id };
 }
 
 export async function getMostRecentId(): Promise<number | null> {
