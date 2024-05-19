@@ -13,7 +13,7 @@ function Homepage({ most_recent_id }: HomepageProps) {
     return (
         <div className="flex h-full w-full flex-col bg-secondary_light">
             <div className="flex flex-col items-center justify-center px-0">
-                <div className="flex h-fit w-full flex-row items-center justify-center space-x-2.5 py-5">
+                <div className="flex h-fit w-full flex-row items-center justify-center space-x-2.5 px-5 py-5">
                     <div className="relative h-fit w-max rounded bg-secondary_dark">
                         <Image
                             className="p-1"
