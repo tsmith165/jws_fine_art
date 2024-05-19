@@ -100,50 +100,48 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
                 </div>
             </div>
             <div className="h-fit rounded-b-md bg-secondary_dark">
-                <div className="flex max-h-full w-full flex-row p-2">
-                    <div className="flex h-[120px] w-full flex-row space-x-[5px]">
-                        {type === 'gallery' &&
-                            using_extra_images.map((image: any, index: number) => (
+                <div className="flex min-h-[120px] w-full flex-row space-x-[5px] overflow-y-hidden overflow-x-scroll p-2 pb-0">
+                    {type === 'gallery' &&
+                        using_extra_images.map((image: any, index: number) => (
+                            <Link
+                                key={`extra_image_container_${index}`}
+                                href={`/details/${current_id}?selected=${index}&type=gallery`}
+                                className={`relative h-[120px] min-w-[120px] overflow-hidden rounded-md ${
+                                    selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
+                                }`}
+                                prefetch={true}
+                            >
+                                <div className="m-[5px] flex h-[110px] w-[110px] items-center justify-center">
+                                    <Image
+                                        src={image.src}
+                                        priority
+                                        alt=""
+                                        width={image.width}
+                                        height={image.height}
+                                        quality={75}
+                                        className="max-h-full max-w-full object-contain"
+                                    />
+                                </div>
+                            </Link>
+                        ))}
+                    {type === 'progress' &&
+                        using_progress_images.length !== 0 &&
+                        using_progress_images.map((image: any, index: number) => {
+                            return (
                                 <Link
-                                    key={`extra_image_container_${index}`}
-                                    href={`/details/${current_id}?selected=${index}&type=gallery`}
-                                    className={`relative mr-[5px] h-[120px] w-[120px] overflow-hidden rounded-md ${
-                                        selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
+                                    key={`progress_image_${index}`}
+                                    href={`/details/${current_id}?selected=${using_extra_images.length + index}&type=progress`}
+                                    className={`relative mr-[5px] h-[110px] min-w-[110px] overflow-hidden rounded-md ${
+                                        selectedIndex === using_extra_images.length + index ? 'bg-primary' : 'bg-primary_dark'
                                     }`}
                                     prefetch={true}
                                 >
-                                    <div className="m-[5px] flex h-[110px] w-[110px] items-center justify-center">
-                                        <Image
-                                            src={image.src}
-                                            priority
-                                            alt=""
-                                            width={image.width}
-                                            height={image.height}
-                                            quality={75}
-                                            className="max-h-full max-w-full object-contain"
-                                        />
+                                    <div className="m-[5px] flex h-[100px] w-[100px] items-center justify-center">
+                                        <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
                                     </div>
                                 </Link>
-                            ))}
-                        {type === 'progress' &&
-                            using_progress_images.length !== 0 &&
-                            using_progress_images.map((image: any, index: number) => {
-                                return (
-                                    <Link
-                                        key={`progress_image_${index}`}
-                                        href={`/details/${current_id}?selected=${using_extra_images.length + index}&type=progress`}
-                                        className={`relative mr-[5px] h-[110px] w-[110px] overflow-hidden rounded-md ${
-                                            selectedIndex === using_extra_images.length + index ? 'bg-primary' : 'bg-primary_dark'
-                                        }`}
-                                        prefetch={true}
-                                    >
-                                        <div className="m-[5px] flex h-[100px] w-[100px] items-center justify-center">
-                                            <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
-                                        </div>
-                                    </Link>
-                                );
-                            })}
-                    </div>
+                            );
+                        })}
                 </div>
             </div>
         </div>
