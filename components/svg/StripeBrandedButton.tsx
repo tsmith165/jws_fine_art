@@ -18,7 +18,7 @@ const StripeBrandedButtonProps: React.FC<StripeBrandedButtonProps> = ({ url, pri
                     </div>
                     <div className="flex p-1 pl-2">
                         <StripeSVG
-                            svg_className="w-fit h-6"
+                            svg_className="h-6"
                             path_className="fill-primary_dark group-hover:fill-current group-hover:text-secondary_light"
                         />
                     </div>

@@ -104,12 +104,11 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                             <Link
                                 key={`extra_image_container_${index}`}
                                 href={`/details/${db_id}?selected=${index}&type=gallery`}
-                                className={`relative overflow-hidden`}
                                 prefetch={true}
                             >
                                 <div
                                     className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
-                                    flex h-[110px] w-[110px] items-center justify-center rounded-md p-1`}
+                                    flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                                 >
                                     <Image
                                         src={image.src}
@@ -130,12 +129,11 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                                 <Link
                                     key={`progress_image_${index}`}
                                     href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress`}
-                                    className={`relative overflow-hidden`}
                                     prefetch={true}
                                 >
                                     <div
                                         className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
-                                        flex h-[110px] w-[110px] items-center justify-center rounded-md p-1`}
+                                        flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                                     >
                                         <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
                                     </div>
