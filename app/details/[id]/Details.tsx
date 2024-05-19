@@ -9,6 +9,8 @@ import TitleComponent from '@/app/details/[id]/TitleComponent';
 
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
+import { generate_random_param } from '@/lib/generate_random_param';
+
 interface DetailsProps {
     piece: any;
     selectedIndex: number;
@@ -73,7 +75,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                 <div className="flex pt-1">
                     {using_extra_images.length !== 0 && (
                         <Link
-                            href={`/details/${db_id}?type=gallery`}
+                            href={`/details/${db_id}?type=gallery&random=${generate_random_param()}`}
                             className={`rounded-t-md px-2 py-1 ${
                                 type === 'gallery'
                                     ? 'bg-secondary text-primary'
@@ -85,7 +87,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                     )}
                     {using_progress_images.length !== 0 && (
                         <Link
-                            href={`/details/${db_id}?type=progress`}
+                            href={`/details/${db_id}?type=progress&random=${generate_random_param()}`}
                             className={`rounded-t-md px-2 py-1 ${
                                 type === 'progress'
                                     ? 'bg-secondary text-primary'
