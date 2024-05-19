@@ -1,4 +1,4 @@
-import { eq, desc, asc, gt, lt } from 'drizzle-orm';
+import { eq, desc, asc, gt, lt, and } from 'drizzle-orm';
 import { db, piecesTable, extraImagesTable, progressImagesTable, verifiedTransactionsTable } from '@/db/db';
 import { VerifiedTransactions, PiecesWithImages, ExtraImages, ProgressImages } from '@/db/schema';
 
@@ -56,12 +56,20 @@ export async function fetchAdjacentPieceIds(currentId: number): Promise<{ next_i
 
     const currentOId = currentPiece[0].o_id;
 
+    // Fetch the next piece by o_id
     const nextPiece = await db.select().from(piecesTable).where(gt(piecesTable.o_id, currentOId)).orderBy(asc(piecesTable.o_id)).limit(1);
 
+    // Fetch the last piece by o_id
     const lastPiece = await db.select().from(piecesTable).where(lt(piecesTable.o_id, currentOId)).orderBy(desc(piecesTable.o_id)).limit(1);
 
-    const next_id = nextPiece.length > 0 ? nextPiece[0].id : currentPiece[0].id;
-    const last_id = lastPiece.length > 0 ? lastPiece[0].id : currentPiece[0].id;
+    // Fetch the piece with the minimum o_id
+    const firstPiece = await db.select().from(piecesTable).orderBy(asc(piecesTable.o_id)).limit(1);
+
+    // Fetch the piece with the maximum o_id
+    const maxOIdPiece = await db.select().from(piecesTable).orderBy(desc(piecesTable.o_id)).limit(1);
+
+    const next_id = nextPiece.length > 0 ? nextPiece[0].id : firstPiece[0].id;
+    const last_id = lastPiece.length > 0 ? lastPiece[0].id : maxOIdPiece[0].id;
 
     console.log(`Found next_id: ${next_id} and last_id: ${last_id}`);
 
@@ -70,7 +78,12 @@ export async function fetchAdjacentPieceIds(currentId: number): Promise<{ next_i
 
 export async function getMostRecentId(): Promise<number | null> {
     console.log('Fetching most recent piece ID...');
-    const piece = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(desc(piecesTable.o_id)).limit(1);
+    const piece = await db
+        .select()
+        .from(piecesTable)
+        .where(and(eq(piecesTable.active, true), eq(piecesTable.active, true)))
+        .orderBy(desc(piecesTable.o_id))
+        .limit(1);
 
     return piece[0]?.id || null;
 }
