@@ -75,7 +75,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                 <div className="flex pt-1">
                     {using_extra_images.length !== 0 && (
                         <Link
-                            href={`/details/${db_id}?type=gallery&random=${generate_random_param()}`}
+                            href={`/details/${db_id}?type=gallery`}
                             className={`rounded-t-md px-2 py-1 ${
                                 type === 'gallery'
                                     ? 'bg-secondary text-primary'
@@ -87,7 +87,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                     )}
                     {using_progress_images.length !== 0 && (
                         <Link
-                            href={`/details/${db_id}?type=progress&random=${generate_random_param()}`}
+                            href={`/details/${db_id}?type=progress`}
                             className={`rounded-t-md px-2 py-1 ${
                                 type === 'progress'
                                     ? 'bg-secondary text-primary'
@@ -105,7 +105,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                         using_extra_images.map((image: any, index: number) => (
                             <Link
                                 key={`extra_image_container_${index}`}
-                                href={`/details/${db_id}?selected=${index}&type=gallery`}
+                                href={`/details/${db_id}?selected=${index}&type=gallery&random=${generate_random_param()}`}
                                 className={`relative h-[120px] min-w-[120px] overflow-hidden rounded-md ${
                                     selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
                                 }`}
@@ -130,7 +130,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                             return (
                                 <Link
                                     key={`progress_image_${index}`}
-                                    href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress`}
+                                    href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress&random=${generate_random_param()}`}
                                     className={`relative mr-[5px] h-[110px] min-w-[110px] overflow-hidden rounded-md ${
                                         selectedIndex === using_extra_images.length + index ? 'bg-primary' : 'bg-primary_dark'
                                     }`}
