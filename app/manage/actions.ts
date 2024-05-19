@@ -55,8 +55,6 @@ export async function editDetails(details: Partial<Pieces>): Promise<void> {
             framed: details.framed ?? undefined,
             comments: details.comments ?? undefined,
             image_path: details.image_path ?? undefined,
-            extra_images: details.extra_images ?? undefined,
-            progress_images: details.progress_images ?? undefined,
         })
         .where(eq(piecesTable.id, details.id as number));
 }
@@ -82,8 +80,6 @@ export async function createPiece(details: Omit<Pieces, 'id' | 'o_id'>): Promise
         available: details.available,
         framed: details.framed,
         comments: details.comments ?? undefined,
-        extra_images: details.extra_images ?? undefined,
-        progress_images: details.progress_images ?? undefined,
         o_id: newOId,
         class_name: details.class_name,
     });
