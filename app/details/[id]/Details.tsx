@@ -40,8 +40,8 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
     const extra_images = piece.extraImages || [];
     const progress_images = piece.progressImages || [];
 
-    console.log(`Using Extra Images: "${extra_images}"`);
-    console.log(`Using Progress Images: "${progress_images}"`);
+    console.log(`Using Extra Images: ` + JSON.stringify(extra_images));
+    console.log(`Using Progress Images: ` + JSON.stringify(progress_images));
 
     const using_extra_images = [
         { src: image_path, width, height },
@@ -64,6 +64,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
     const allImages = [...using_extra_images, ...using_progress_images];
 
     console.log(`Type: '${type}'`);
+    console.log(`Current DB Id: ${db_id}`);
 
     const mainImage = allImages[selectedIndex];
     const extraImagesCard = (

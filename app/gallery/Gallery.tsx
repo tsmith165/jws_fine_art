@@ -138,6 +138,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                 }
             }
 
+            var id = current_piece_json.id ? current_piece_json.id : 1;
             var o_id = current_piece_json.o_id ? current_piece_json.o_id.toString() : 'None';
             var class_name = current_piece_json.class_name ? current_piece_json.class_name : 'None';
             var image_path = current_piece_json.image_path ? current_piece_json.image_path : 'None';
@@ -187,7 +188,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                 gallery_pieces.push(
                     <Piece
                         key={i}
-                        id={`piece-${i}`}
+                        id={`${id}`}
                         o_id={o_id}
                         className={class_name}
                         image_path={image_path}

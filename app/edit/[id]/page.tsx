@@ -22,7 +22,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     return (
         <PageLayout page={`/edit/${params.id}`}>
             <SignedIn>
-                <Edit piece={piece} current_id={params.id} next_id={next_id} last_id={last_id} />
+                <Edit piece={piece} current_id={params.id} next_id={next_id || 0} last_id={last_id || 0} />
             </SignedIn>
         </PageLayout>
     );

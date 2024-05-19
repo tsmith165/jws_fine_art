@@ -25,65 +25,49 @@ export async function fetchPieces(): Promise<PiecesWithImages[]> {
     return piecesWithImages;
 }
 
-export async function fetchPieceById(id: number): Promise<PiecesWithImages | null> {
-    console.log(`Fetching piece by ID: ${id}`);
-    const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, id)).limit(1);
+function getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+}
 
-    if (piece.length === 0) {
-        return null;
-    }
+export async function fetchPieceById(id: number) {
+    const randomParam = getRandomInt(100000); // Generate a random integer
 
-    const extraImages: ExtraImages[] = await db.select().from(extraImagesTable).where(eq(extraImagesTable.piece_id, piece[0].id));
-    const progressImages: ProgressImages[] = await db
-        .select()
-        .from(progressImagesTable)
-        .where(eq(progressImagesTable.piece_id, piece[0].id));
+    const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, id)).execute();
+    const extraImages = await db.select().from(extraImagesTable).where(eq(extraImagesTable.piece_id, id)).execute();
+    const progressImages = await db.select().from(progressImagesTable).where(eq(progressImagesTable.piece_id, id)).execute();
 
-    return {
+    const pieceData = {
         ...piece[0],
         extraImages,
         progressImages,
     };
+
+    console.log('Fetched piece data with randomParam:', pieceData, randomParam); // Log the fetched data and random parameter
+    return pieceData;
 }
 
-export async function fetchAdjacentPieceIds(currentId: number): Promise<{ next_id: number; last_id: number }> {
-    console.log(`Fetching adjacent piece IDs for piece ID: ${currentId}`);
-    const currentPiece = await db.select().from(piecesTable).where(eq(piecesTable.id, currentId)).limit(1);
+export async function fetchAdjacentPieceIds(id: number) {
+    const randomParam = getRandomInt(100000); // Generate a random integer
 
-    if (currentPiece.length === 0) {
-        return { next_id: -1, last_id: -1 };
-    }
-
-    const currentOId = currentPiece[0].o_id;
-
-    // Fetch the next piece by o_id
     const nextPiece = await db
-        .select()
+        .select({ id: piecesTable.id })
         .from(piecesTable)
-        .where(and(gt(piecesTable.o_id, currentOId), eq(piecesTable.active, true)))
-        .orderBy(asc(piecesTable.o_id))
-        .limit(1);
-
-    // Fetch the last piece by o_id
+        .where(eq(piecesTable.id, id + 1))
+        .limit(1)
+        .execute();
     const lastPiece = await db
-        .select()
+        .select({ id: piecesTable.id })
         .from(piecesTable)
-        .where(and(lt(piecesTable.o_id, currentOId), eq(piecesTable.active, true)))
-        .orderBy(desc(piecesTable.o_id))
-        .limit(1);
+        .where(eq(piecesTable.id, id - 1))
+        .limit(1)
+        .execute();
 
-    // Fetch the piece with the minimum o_id
-    const firstPiece = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(asc(piecesTable.o_id)).limit(1);
+    console.log('Fetched adjacent piece IDs with randomParam:', { nextPiece, lastPiece }, randomParam); // Log the fetched data and random parameter
 
-    // Fetch the piece with the maximum o_id
-    const maxOIdPiece = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(desc(piecesTable.o_id)).limit(1);
-
-    const next_id = nextPiece.length > 0 ? nextPiece[0].id : firstPiece[0].id;
-    const last_id = lastPiece.length > 0 ? lastPiece[0].id : maxOIdPiece[0].id;
-
-    console.log(`Found next_id: ${next_id} and last_id: ${last_id}`);
-
-    return { next_id, last_id };
+    return {
+        next_id: nextPiece[0]?.id || null,
+        last_id: lastPiece[0]?.id || null,
+    };
 }
 
 export async function getMostRecentId(): Promise<number | null> {
