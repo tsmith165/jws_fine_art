@@ -43,7 +43,7 @@ const FilterMenu: React.FC = () => {
                     {THEME_FILTERS.map(([filter, Icon], i) => (
                         <div
                             key={i}
-                            className={`p-[5px] ${filter === theme ? 'bg-secondary' : 'bg-secondary_light'} ${i === 0 ? 'rounded-bl-lg md:rounded-tl-lg' : ''}`}
+                            className={`p-[5px] ${filter === theme ? 'bg-secondary' : 'bg-secondary_light'} ${i === 0 ? 'rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg' : ''}`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 setTheme(filter);
