@@ -150,9 +150,6 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.2.5
-      tsconfig-paths:
-        specifier: ^4.2.0
-        version: 4.2.0
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -2054,11 +2051,6 @@ packages:
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
-  json5@2.2.3:
-    resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
-    engines: {node: '>=6'}
-    hasBin: true
-
   jwa@2.0.0:
     resolution: {integrity: sha512-jrZ2Qx916EA+fq9cEAeCROWPTfCwi1IVHqT2tapuqLEVVDKFDENFw1oL+MwrTvH6msKxsd1YTDVw6uKEcsrLEA==}
 
@@ -2935,10 +2927,6 @@ packages:
     resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
     engines: {node: '>=12'}
 
-  strip-bom@3.0.0:
-    resolution: {integrity: sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==}
-    engines: {node: '>=4'}
-
   strip-json-comments@2.0.1:
     resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
     engines: {node: '>=0.10.0'}
@@ -3062,10 +3050,6 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=2.7'
-
-  tsconfig-paths@4.2.0:
-    resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
-    engines: {node: '>=6'}
 
   tslib@2.4.1:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
@@ -5222,8 +5206,6 @@ snapshots:
   json-schema-traverse@0.4.1:
     optional: true
 
-  json5@2.2.3: {}
-
   jwa@2.0.0:
     dependencies:
       buffer-equal-constant-time: 1.0.1
@@ -6045,8 +6027,6 @@ snapshots:
     dependencies:
       ansi-regex: 6.0.1
 
-  strip-bom@3.0.0: {}
-
   strip-json-comments@2.0.1: {}
 
   stripe@15.5.0:
@@ -6193,12 +6173,6 @@ snapshots:
       source-map-support: 0.5.21
       typescript: 4.3.4
       yn: 3.1.1
-
-  tsconfig-paths@4.2.0:
-    dependencies:
-      json5: 2.2.3
-      minimist: 1.2.8
-      strip-bom: 3.0.0
 
   tslib@2.4.1: {}
 
