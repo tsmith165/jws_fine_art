@@ -35,14 +35,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
     return (
         <PageLayout page={`/details/${id}`}>
-            <Details
-                piece={piece}
-                current_id={parseInt(id)}
-                selectedIndex={selectedIndex}
-                type={type}
-                next_id={next_id}
-                last_id={last_id}
-            />
+            <Details piece={piece} selectedIndex={selectedIndex} type={type} next_id={next_id} last_id={last_id} />
         </PageLayout>
     );
 }

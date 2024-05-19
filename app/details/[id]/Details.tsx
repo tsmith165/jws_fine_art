@@ -11,16 +11,13 @@ import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
 interface DetailsProps {
     piece: any;
-    current_id: number;
     selectedIndex: number;
     type: string;
     next_id: number;
     last_id: number;
 }
 
-const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, type, next_id, last_id }) => {
-    const passed_o_id = current_id;
-
+const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, last_id }) => {
     const description_raw = piece?.description?.length > 2 ? piece.description : '';
     const db_id = piece?.id ?? -1;
     const o_id = piece?.o_id ?? '';
@@ -75,7 +72,7 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
                 <div className="flex pt-1">
                     {using_extra_images.length !== 0 && (
                         <Link
-                            href={`/details/${current_id}?type=gallery`}
+                            href={`/details/${db_id}?type=gallery`}
                             className={`rounded-t-md px-2 py-1 ${
                                 type === 'gallery'
                                     ? 'bg-secondary text-primary'
@@ -87,7 +84,7 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
                     )}
                     {using_progress_images.length !== 0 && (
                         <Link
-                            href={`/details/${current_id}?type=progress`}
+                            href={`/details/${db_id}?type=progress`}
                             className={`rounded-t-md px-2 py-1 ${
                                 type === 'progress'
                                     ? 'bg-secondary text-primary'
@@ -105,7 +102,7 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
                         using_extra_images.map((image: any, index: number) => (
                             <Link
                                 key={`extra_image_container_${index}`}
-                                href={`/details/${current_id}?selected=${index}&type=gallery`}
+                                href={`/details/${db_id}?selected=${index}&type=gallery`}
                                 className={`relative h-[120px] min-w-[120px] overflow-hidden rounded-md ${
                                     selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
                                 }`}
@@ -130,7 +127,7 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
                             return (
                                 <Link
                                     key={`progress_image_${index}`}
-                                    href={`/details/${current_id}?selected=${using_extra_images.length + index}&type=progress`}
+                                    href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress`}
                                     className={`relative mr-[5px] h-[110px] min-w-[110px] overflow-hidden rounded-md ${
                                         selectedIndex === using_extra_images.length + index ? 'bg-primary' : 'bg-primary_dark'
                                     }`}
@@ -172,7 +169,7 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
                 <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
                     <div className="flex flex-row space-x-1.5">
                         {sold_text === '' ? (
-                            <StripeBrandedButton url={'/checkout/' + current_id} price={price} text="Checkout" />
+                            <StripeBrandedButton url={'/checkout/' + db_id} price={price} text="Checkout" />
                         ) : (
                             <div className="py-1 text-xl font-[600] text-red-800">{sold_text}</div>
                         )}
@@ -192,7 +189,7 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
                             </Link>
                         )}
                         <SignedIn>
-                            <Link href={`/edit/${current_id}`} className="flex h-full w-fit">
+                            <Link href={`/edit/${db_id}`} className="flex h-full w-fit">
                                 <div className="flex h-full items-center justify-center rounded-md border-2 border-primary_dark bg-primary px-3 font-bold text-secondary_dark hover:border-primary hover:bg-secondary_dark hover:text-primary">
                                     Edit Piece
                                 </div>
