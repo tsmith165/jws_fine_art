@@ -25,13 +25,7 @@ export async function fetchPieces(): Promise<PiecesWithImages[]> {
     return piecesWithImages;
 }
 
-function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
-}
-
 export async function fetchPieceById(id: number) {
-    const randomParam = getRandomInt(100000); // Generate a random integer
-
     const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, id)).execute();
     const extraImages = await db.select().from(extraImagesTable).where(eq(extraImagesTable.piece_id, id)).execute();
     const progressImages = await db.select().from(progressImagesTable).where(eq(progressImagesTable.piece_id, id)).execute();
@@ -42,13 +36,10 @@ export async function fetchPieceById(id: number) {
         progressImages,
     };
 
-    console.log('Fetched piece data with randomParam:', pieceData, randomParam); // Log the fetched data and random parameter
     return pieceData;
 }
 
 export async function fetchAdjacentPieceIds(id: number) {
-    const randomParam = getRandomInt(100000); // Generate a random integer
-
     const nextPiece = await db
         .select({ id: piecesTable.id })
         .from(piecesTable)
@@ -61,8 +52,6 @@ export async function fetchAdjacentPieceIds(id: number) {
         .where(eq(piecesTable.id, id - 1))
         .limit(1)
         .execute();
-
-    console.log('Fetched adjacent piece IDs with randomParam:', { nextPiece, lastPiece }, randomParam); // Log the fetched data and random parameter
 
     return {
         next_id: nextPiece[0]?.id || null,

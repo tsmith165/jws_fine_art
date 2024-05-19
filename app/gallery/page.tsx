@@ -24,3 +24,5 @@ export default async function Page() {
         </PageLayout>
     );
 }
+
+export const revalidate = 60;

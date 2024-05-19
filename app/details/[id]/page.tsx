@@ -39,3 +39,5 @@ export default async function Page({ params, searchParams }: PageProps) {
         </PageLayout>
     );
 }
+
+export const revalidate = 60;
