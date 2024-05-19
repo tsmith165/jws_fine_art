@@ -56,7 +56,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
             .map((option: string) => ({ value: option, label: option })) || [];
 
     return (
-        <div className="flex h-fit w-full overflow-y-auto p-2">
+        <div className="flex h-fit w-full p-2">
             <form onSubmit={handleSubmit} className="flex w-full flex-col space-y-2">
                 {/* Row 2.) Piece Type Select */}
                 <div className="flex h-fit w-full">

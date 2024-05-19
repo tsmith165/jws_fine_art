@@ -30,7 +30,7 @@ const Edit: React.FC<EditProps> = ({ piece, current_id, next_id, last_id }) => {
                     className="h-full w-full object-contain"
                 />
             </div>
-            <div className="h-2/3 bg-secondary lg:h-full lg:w-1/3">
+            <div className="h-2/3 overflow-y-auto bg-secondary lg:h-full lg:w-1/3">
                 <div className="flex flex-row items-center space-x-4 bg-primary px-4 py-1">
                     <Link href={`/edit/${last_id}`}>
                         <IoIosArrowForward className="h-6 w-6 rotate-180 cursor-pointer text-secondary_dark hover:text-primary" />

@@ -1,11 +1,10 @@
 import React from 'react';
-import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
-import { IoIosTrash } from 'react-icons/io';
+import { IoIosArrowUp, IoIosArrowDown, IoIosTrash } from 'react-icons/io';
 import { handleImageReorder, handleImageDeleteAction } from '../actions';
-import { Pieces } from '@/db/schema';
+import { PiecesWithImages } from '@/db/schema'; // Use the type that includes extraImages and progressImages
 
 interface PieceOrderPanelProps {
-    current_piece: Pieces;
+    current_piece: PiecesWithImages;
 }
 
 interface Image {
@@ -15,14 +14,10 @@ interface Image {
 }
 
 const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
-    const extra_images = [undefined, null, ''].includes(current_piece.extra_images)
-        ? []
-        : JSON.parse(current_piece.extra_images?.toString() || '[]');
+    const extra_images: Image[] = current_piece.extraImages || [];
     console.log(`Using Extra Images: "${extra_images}"`);
 
-    const progress_images = [undefined, null, ''].includes(current_piece.progress_images)
-        ? []
-        : JSON.parse(current_piece.progress_images?.toString() || '[]');
+    const progress_images: Image[] = current_piece.progressImages || [];
     console.log(`Using Progress Images: "${progress_images}"`);
 
     async function handleImageReorderAction(formData: FormData) {
