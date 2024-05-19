@@ -4,7 +4,7 @@ import '@/styles/globals/globals.scss';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 
-// import '@/lib/suppress_console';
+import '@/lib/suppress_console';
 
 interface RootLayoutProps {
     children: React.ReactNode;

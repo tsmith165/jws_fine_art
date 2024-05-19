@@ -144,8 +144,6 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
             var image_path = current_piece_json.image_path ? current_piece_json.image_path : 'None';
             var title = current_piece_json.title ? current_piece_json.title : 'None';
             var description = current_piece_json.description ? current_piece_json.description : 'None';
-            var sold = current_piece_json.sold ? current_piece_json.sold : false;
-            var available = current_piece_json.available !== undefined ? current_piece_json.available : false;
             var [width, height] =
                 current_piece_json.width !== undefined && current_piece_json.height !== undefined
                     ? [current_piece_json.width, current_piece_json.height]
@@ -194,8 +192,8 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                         image_path={image_path}
                         dimensions={dimensions}
                         title={title}
-                        sold={sold}
-                        available={available || true}
+                        sold={piece_sold}
+                        available={piece_available ? true : false}
                     />,
                 );
 
