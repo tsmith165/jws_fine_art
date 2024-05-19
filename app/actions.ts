@@ -1,6 +1,6 @@
 import { eq, desc, asc, gt, lt, and } from 'drizzle-orm';
 import { db, piecesTable, extraImagesTable, progressImagesTable, verifiedTransactionsTable } from '@/db/db';
-import { VerifiedTransactions, PiecesWithImages, ExtraImages, ProgressImages } from '@/db/schema';
+import { PiecesWithImages, ExtraImages, ProgressImages, VerifiedTransactions } from '@/db/schema';
 
 export async function fetchPieces(): Promise<PiecesWithImages[]> {
     console.log(`Fetching pieces with Drizzle`);
