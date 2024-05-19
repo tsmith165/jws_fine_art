@@ -104,12 +104,13 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                             <Link
                                 key={`extra_image_container_${index}`}
                                 href={`/details/${db_id}?selected=${index}&type=gallery`}
-                                className={`relative h-[120px] min-w-[120px] overflow-hidden rounded-md ${
-                                    selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
-                                }`}
+                                className={`relative overflow-hidden`}
                                 prefetch={true}
                             >
-                                <div className="m-[5px] flex h-[110px] w-[110px] items-center justify-center">
+                                <div
+                                    className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
+                                    flex h-[110px] w-[110px] items-center justify-center rounded-md p-1`}
+                                >
                                     <Image
                                         src={image.src}
                                         priority
@@ -129,12 +130,13 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                                 <Link
                                     key={`progress_image_${index}`}
                                     href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress`}
-                                    className={`relative mr-[5px] h-[110px] min-w-[110px] overflow-hidden rounded-md ${
-                                        selectedIndex === using_extra_images.length + index ? 'bg-primary' : 'bg-primary_dark'
-                                    }`}
+                                    className={`relative overflow-hidden`}
                                     prefetch={true}
                                 >
-                                    <div className="m-[5px] flex h-[100px] w-[100px] items-center justify-center">
+                                    <div
+                                        className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
+                                        flex h-[110px] w-[110px] items-center justify-center rounded-md p-1`}
+                                    >
                                         <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
                                     </div>
                                 </Link>
