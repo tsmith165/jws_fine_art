@@ -40,10 +40,10 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
     const image_path = piece.image_path;
     const instagram = piece?.instagram ?? '';
 
-    const extra_images = [undefined, null, ''].includes(piece.extra_images) ? [] : JSON.parse(piece.extra_images);
-    console.log(`Using Extra Images: "${extra_images}"`);
+    const extra_images = piece.extraImages || [];
+    const progress_images = piece.progressImages || [];
 
-    const progress_images = [undefined, null, ''].includes(piece.progress_images) ? [] : JSON.parse(piece.progress_images);
+    console.log(`Using Extra Images: "${extra_images}"`);
     console.log(`Using Progress Images: "${progress_images}"`);
 
     const using_extra_images = [
@@ -54,20 +54,17 @@ const Details: React.FC<DetailsProps> = ({ piece, current_id, selectedIndex, typ
             height: image.height,
         })),
     ];
-    const using_progress_images = progress_images;
+    const using_progress_images = progress_images.map((image: any) => ({
+        src: image.image_path,
+        width: image.width,
+        height: image.height,
+    }));
 
     console.log(`Using Extra Images: ${using_extra_images.length !== 0} | Using Progress Images: ${using_progress_images.length !== 0}`);
 
     const sold_text = sold.toLowerCase() === 'true' ? 'Sold' : available.toLowerCase() === 'false' ? 'Not For Sale' : '';
 
-    const allImages = [
-        ...using_extra_images,
-        ...using_progress_images.map((image: any) => ({
-            src: image.image_path,
-            width: image.width,
-            height: image.height,
-        })),
-    ];
+    const allImages = [...using_extra_images, ...using_progress_images];
 
     console.log(`Type: '${type}'`);
 
