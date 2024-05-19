@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { db, piecesTable, pendingTransactionsTable, verifiedTransactionsTable } from '@/db/db';
 
 interface WebhookEvent {
@@ -48,61 +48,84 @@ export async function POST(request: Request) {
         console.log(`ID: ${stripeId}`);
         console.log(`Metadata:`, metadata);
 
-        if (event.type === 'payment_intent.payment_failed') {
-            // Handle unsuccessful payment
-            console.log('Payment Unsuccessful. Handle unverified transaction (no current handling)...');
-        } else if (event.type === 'payment_intent.succeeded') {
-            // Handle successful payment
-            console.log('Payment Successful! Creating Verified Transaction...');
+        switch (event.type) {
+            case 'payment_intent.payment_failed':
+                // Handle unsuccessful payment
+                console.log('Payment Unsuccessful. Handle unverified transaction (no current handling)...');
+                break;
 
-            console.log(`Querying pending transactions for Piece DB ID: ${metadata.product_id} | Full Name: ${metadata.full_name}`);
-            const pendingTransactionData = await db
-                .select()
-                .from(pendingTransactionsTable)
-                .where(
-                    and(
-                        eq(pendingTransactionsTable.piece_db_id, parseInt(metadata.product_id, 10)),
-                        eq(pendingTransactionsTable.full_name, metadata.full_name),
-                    ),
-                )
-                .limit(1);
+            case 'payment_intent.succeeded':
+                // Handle successful payment
+                console.log('Payment Successful! Creating Verified Transaction...');
 
-            console.log('Pending Transaction Data:', pendingTransactionData);
+                console.log(`Querying pending transactions for Piece DB ID: ${metadata.product_id} | Full Name: ${metadata.full_name}`);
+                const pendingTransactionData = await db
+                    .select()
+                    .from(pendingTransactionsTable)
+                    .where(
+                        and(
+                            eq(pendingTransactionsTable.piece_db_id, parseInt(metadata.product_id, 10)),
+                            eq(pendingTransactionsTable.full_name, metadata.full_name),
+                        ),
+                    )
+                    .limit(1);
 
-            if (pendingTransactionData.length === 0) {
-                throw new Error('Pending transaction not found');
-            }
+                console.log('Pending Transaction Data:', pendingTransactionData);
 
-            console.log('Creating Verified Transaction...');
-            const createOutput = await db.insert(verifiedTransactionsTable).values({
-                piece_db_id: parseInt(metadata.product_id, 10),
-                full_name: metadata.full_name,
-                piece_title: pendingTransactionData[0].piece_title,
-                phone: pendingTransactionData[0].phone,
-                email: pendingTransactionData[0].email,
-                address: pendingTransactionData[0].address,
-                international: pendingTransactionData[0].international,
-                image_path: metadata.image_path,
-                image_width: parseInt(metadata.image_width, 10),
-                image_height: parseInt(metadata.image_height, 10),
-                date: new Date().toISOString(),
-                stripe_id: stripeId,
-                price: parseInt(metadata.price_id, 10),
-            });
+                if (pendingTransactionData.length === 0) {
+                    throw new Error('Pending transaction not found');
+                }
 
-            console.log('Pending Transaction Create Output:', createOutput);
+                // Fetch the current maximum ID from the VerifiedTransactions table
+                const maxIdResult = await db
+                    .select({ value: sql`max(${verifiedTransactionsTable.id})`.mapWith(Number) })
+                    .from(verifiedTransactionsTable);
 
-            console.log('Setting Piece As Sold...');
-            const updateOutput = await db
-                .update(piecesTable)
-                .set({ sold: true })
-                .where(eq(piecesTable.id, parseInt(metadata.product_id, 10)));
+                const maxId = maxIdResult.length > 0 && maxIdResult[0].value !== null ? maxIdResult[0].value : 0;
 
-            console.log('Set Sold Update Output:', updateOutput);
-        } else {
-            console.warn(`Unhandled Stripe event type: ${event.type}`);
-            const unhandledData = stripeEvent.data.object;
-            console.log('Unhandled Event Data:', unhandledData);
+                // Calculate the next ID
+                const nextId = maxId + 1;
+
+                console.log('Creating Verified Transaction...');
+                const createOutput = await db.insert(verifiedTransactionsTable).values({
+                    id: nextId, // Manually setting the id
+                    piece_db_id: parseInt(metadata.product_id, 10),
+                    full_name: metadata.full_name,
+                    piece_title: pendingTransactionData[0].piece_title,
+                    phone: pendingTransactionData[0].phone,
+                    email: pendingTransactionData[0].email,
+                    address: pendingTransactionData[0].address,
+                    international: pendingTransactionData[0].international,
+                    image_path: metadata.image_path,
+                    image_width: parseInt(metadata.image_width, 10),
+                    image_height: parseInt(metadata.image_height, 10),
+                    date: new Date().toISOString(),
+                    stripe_id: stripeId,
+                    price: parseInt(metadata.price_id, 10),
+                });
+
+                console.log('Pending Transaction Create Output:', createOutput);
+
+                console.log('Setting Piece As Sold...');
+                const updateOutput = await db
+                    .update(piecesTable)
+                    .set({ sold: true })
+                    .where(eq(piecesTable.id, parseInt(metadata.product_id, 10)));
+
+                console.log('Set Sold Update Output:', updateOutput);
+                break;
+
+            case 'payment_intent.canceled':
+                // Handle canceled payment
+                console.log('Payment Canceled. Handle canceled transaction...');
+                // Implement any additional logic needed for canceled payments
+                break;
+
+            default:
+                console.warn(`Unhandled Stripe event type: ${event.type}`);
+                const unhandledData = stripeEvent.data.object;
+                console.log('Unhandled Event Data:', unhandledData);
+                break;
         }
     } catch (err: any) {
         console.error(`Webhook Error: ${err.message}`);

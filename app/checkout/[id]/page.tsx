@@ -14,7 +14,7 @@ import { fetchPieces, getMostRecentId } from '@/app/actions';
 import { Pieces } from '@/db/schema';
 
 import PageLayout from '@/components/layout/PageLayout';
-import Checkout from '@/app/checkout/Checkout';
+import Checkout from '@/app/checkout/[id]/Checkout';
 
 export default async function Page(props: { params: { id: string } }) {
     const piece_list: Pieces[] = await fetchPieces();

@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import CheckoutForm from './CheckoutForm';
-import PROJECT_CONSTANTS from '@/lib/constants';
 
 interface CheckoutProps {
     piece_list: any[];

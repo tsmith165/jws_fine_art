@@ -1,7 +1,6 @@
 'use server';
 import { db, piecesTable, pendingTransactionsTable } from '@/db/db';
-import { eq, desc } from 'drizzle-orm';
-import { Pieces } from '@/db/schema';
+import { eq, desc, sql } from 'drizzle-orm';
 
 import PROJECT_CONSTANTS from '@/lib/constants';
 import Stripe from 'stripe';
@@ -10,6 +9,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2024-04-10',
 });
 const INTERNATIONAL_SHIPPING_RATE = 25;
+
+interface MaxIdResult {
+    value: number | null;
+}
 
 export async function runStripePurchase(data: FormData) {
     const piece_id = data.get('piece_id')?.toString();
@@ -30,7 +33,7 @@ export async function runStripePurchase(data: FormData) {
         .orderBy(desc(piecesTable.o_id))
         .limit(1);
 
-    if (!piece_data) {
+    if (!piece_data.length) {
         throw new Error('Piece not found');
     }
     const piece = piece_data[0];
@@ -42,7 +45,7 @@ export async function runStripePurchase(data: FormData) {
     console.log(pending_response);
 
     if (!pending_response) {
-        console.error('No Response From Create Pending Transaction.  Cannot check out...');
+        console.error('No Response From Create Pending Transaction. Cannot check out...');
         return;
     }
 
@@ -92,7 +95,19 @@ export async function create_pending_transaction(
     international: boolean,
 ) {
     console.log(`Attempting to create pending transaction for piece_db_id: ${piece_db_id}`);
+    // Fetch the current maximum ID from the PendingTransactions table
+    const maxIdResult: MaxIdResult[] = await db
+        .select({ value: sql`max(${pendingTransactionsTable.id})`.mapWith(Number) })
+        .from(pendingTransactionsTable);
+
+    const maxId = maxIdResult[0].value ?? 0; // If max_id is null, set it to 0
+
+    // Calculate the next ID
+    const nextId = maxId + 1;
+
+    // Insert the new record with the next ID
     const pending_transaction_output = await db.insert(pendingTransactionsTable).values({
+        id: nextId,
         piece_db_id,
         piece_title,
         full_name,

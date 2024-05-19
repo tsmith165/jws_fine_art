@@ -3,20 +3,19 @@
 import React, { useState, useEffect } from 'react';
 // APIs
 import { loadStripe } from '@stripe/stripe-js';
-import { useLoadScript } from '@react-google-maps/api';
+import { useLoadScript, Libraries } from '@react-google-maps/api';
 // Icons
 import { TbProgress } from 'react-icons/tb';
 // Server Actions
-import { runStripePurchase } from './actions';
+import { runStripePurchase } from '../actions';
 // Components
 import InputTextbox from '@/components/inputs/InputTextbox';
 import InputAutoComplete from '@/components/inputs/InputAutoComplete';
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
-const stripePromise = loadStripe(
-    'pk_live_51IxP3oAuEqsFZjntawC5wWgSCTRmnkkxJhlICQmU8xH03qoS7mp2Dy7DHvKMb8uwPwxkf4sVuER5dqaLESIV3Urm00f0Hs2jsj',
-);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 const INTERNATIONAL_SHIPPING_RATE = 25;
+const googleMapsLibraries: Libraries = ['places'];
 
 interface CheckoutFormProps {
     current_piece: any;
@@ -24,8 +23,8 @@ interface CheckoutFormProps {
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: 'AIzaSyAQTCNGxtlglxAOC-CjqhKc2nroYKmPS7s',
-        libraries: ['places'],
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        libraries: googleMapsLibraries,
     });
 
     const [loading, setLoading] = React.useState(false);
