@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const USING_YELLOW_DOT = false;
-
 type PieceProps = {
     dimensions: [number, number, number, number];
     id: string;
@@ -39,7 +37,7 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
                             alt={title}
                         />
                     </div>
-                    {sold === true ? (
+                    {sold === true || available === false ? (
                         <div className={`absolute !bottom-2.5 right-2.5`}>
                             <Image
                                 className={`!left-auto !top-auto`}
@@ -48,17 +46,6 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
                                 width={30}
                                 height={30}
                                 priority={true}
-                            />
-                        </div>
-                    ) : USING_YELLOW_DOT && available === false ? (
-                        <div className={`absolute !bottom-2.5 right-2.5`}>
-                            <Image
-                                className={`!left-auto !top-auto`}
-                                src="/yellowDot.png"
-                                alt="Piece Sold"
-                                layout="fixed"
-                                width={30}
-                                height={30}
                             />
                         </div>
                     ) : null}
