@@ -13,6 +13,15 @@ const nextConfig = {
         domains: [AWS_BUCKET_URL.replace('https://', ''), 'utfs.io'],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
     },
+    async rewrites() {
+        return [
+            {
+                source: '/api/checkout/webhook',
+                destination: '/api/checkout/webhook',
+                locale: false,
+            },
+        ];
+    },
     async headers() {
         return [
             {
