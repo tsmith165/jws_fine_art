@@ -11,7 +11,6 @@ const publicRoutes = [
     '/checkout/:id*',
     '/checkout/cancel/:id*',
     '/checkout/success/:id*',
-    '/checkout/*',
     '/slideshow',
     '/socials',
     '/checkout',
