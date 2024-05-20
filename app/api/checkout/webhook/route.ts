@@ -13,7 +13,6 @@ interface WebhookEventMetadata {
     price_id: string;
 }
 
-// Simplified type guard to check for the presence of metadata
 function hasMetadata(event: Stripe.Event): event is Stripe.Event & { data: { object: { metadata: WebhookEventMetadata } } } {
     return 'metadata' in event.data.object;
 }

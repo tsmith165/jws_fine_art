@@ -52,8 +52,17 @@ export async function runStripePurchase(data: FormData) {
     console.log(`Creating stripe session with piece:`, piece);
 
     // Create Stripe Checkout Session
-    console.log(`Creating a Stripe Checkout Session with image: ${piece.image_path}`);
     const price_with_shipping = piece.price + (is_international ? INTERNATIONAL_SHIPPING_RATE : 0);
+    const metadata = {
+        product_id: piece.id.toString(),
+        full_name: full_name,
+        image_path: piece.image_path,
+        image_width: piece.width.toString(),
+        image_height: piece.height.toString(),
+        price_id: piece.price.toString(),
+    };
+
+    console.log(`Creating a Stripe Checkout Session with metadata:`, metadata);
 
     try {
         const session = await stripe.checkout.sessions.create({
@@ -75,17 +84,10 @@ export async function runStripePurchase(data: FormData) {
             success_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece.id}`,
             cancel_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece.id}`,
             client_reference_id: piece.id.toString(),
-            metadata: {
-                product_id: piece.id.toString(),
-                full_name: full_name,
-                image_path: piece.image_path,
-                image_width: piece.width.toString(),
-                image_height: piece.height.toString(),
-                price_id: piece.price.toString(),
-            },
+            metadata,
         });
 
-        console.log(`Stripe Response:`, session);
+        console.log(`Stripe Session Created:`, session);
         console.log(`Session ID: ${session.id}`);
 
         return {
