@@ -2,7 +2,9 @@ import Stripe from 'stripe';
 import { eq, and, sql } from 'drizzle-orm';
 import { db, piecesTable, pendingTransactionsTable, verifiedTransactionsTable } from '@/db/db';
 
-interface Metadata {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
+
+interface WebhookEventMetadata {
     product_id: string;
     full_name: string;
     image_path: string;
@@ -11,21 +13,13 @@ interface Metadata {
     price_id: string;
 }
 
-// Type guard to check if the event is a payment_intent.succeeded event with metadata
-function isPaymentIntentSucceededEvent(event: Stripe.Event): event is Stripe.Event & {
-    data: {
-        object: {
-            id: string;
-            metadata: Metadata;
-        };
-    };
-} {
-    return event.type === 'payment_intent.succeeded';
+// Simplified type guard to check for the presence of metadata
+function hasMetadata(event: Stripe.Event): event is Stripe.Event & { data: { object: { metadata: WebhookEventMetadata } } } {
+    return 'metadata' in event.data.object;
 }
 
 export async function POST(request: Request) {
     console.log('Received Stripe Webhook Request');
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
 
     const payload = await request.text();
     const sig = request.headers.get('stripe-signature');
@@ -43,8 +37,8 @@ export async function POST(request: Request) {
 
         console.log('Stripe Event:', event);
 
-        if (isPaymentIntentSucceededEvent(event)) {
-            const stripeEvent = event.data.object as { id: string; metadata: Metadata };
+        if (event.type === 'payment_intent.succeeded' && hasMetadata(event)) {
+            const stripeEvent = event.data.object;
             const metadata = stripeEvent.metadata;
             const stripeId = stripeEvent.id;
 
