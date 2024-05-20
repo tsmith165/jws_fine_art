@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         console.log('Stripe Event:', event);
 
         if (event.type === 'payment_intent.succeeded') {
-            const stripeEvent = event as unknown as WebhookEvent;
+            const stripeEvent = event as WebhookEvent;
             const metadata = stripeEvent.data.object.metadata;
             const stripeId = stripeEvent.data.object.id;
 
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
             // Implement any additional logic needed for canceled payments
         } else {
             console.warn(`Unhandled Stripe event type: ${event.type}`);
-            const stripeEvent = event as unknown as WebhookEvent;
+            const stripeEvent = event as WebhookEvent;
             const unhandledData = stripeEvent.data.object;
             console.log('Unhandled Event Data:', unhandledData);
         }
