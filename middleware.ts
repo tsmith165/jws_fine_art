@@ -14,6 +14,7 @@ const publicRoutes = [
     '/slideshow',
     '/socials',
     '/checkout',
+    '/api/checkout/webhook',
     '/biography',
     '/contact',
     '/api/uploadthing',
