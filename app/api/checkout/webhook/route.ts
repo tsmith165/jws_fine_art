@@ -2,24 +2,13 @@ import Stripe from 'stripe';
 import { eq, and, sql } from 'drizzle-orm';
 import { db, piecesTable, pendingTransactionsTable, verifiedTransactionsTable } from '@/db/db';
 
-interface WebhookEvent {
-    id: string;
-    type: string;
-    data: {
-        object: {
-            id: string;
-            object: string;
-            amount: number;
-            metadata: {
-                product_id: string;
-                full_name: string;
-                image_path: string;
-                image_width: string;
-                image_height: string;
-                price_id: string;
-            };
-        };
-    };
+interface Metadata {
+    product_id: string;
+    full_name: string;
+    image_path: string;
+    image_width: string;
+    image_height: string;
+    price_id: string;
 }
 
 // Type guard to check if the event is a payment_intent.succeeded event with metadata
@@ -27,29 +16,11 @@ function isPaymentIntentSucceededEvent(event: Stripe.Event): event is Stripe.Eve
     data: {
         object: {
             id: string;
-            metadata: {
-                product_id: string;
-                full_name: string;
-                image_path: string;
-                image_width: string;
-                image_height: string;
-                price_id: string;
-            };
+            metadata: Metadata;
         };
     };
 } {
-    const obj = event.data.object as any;
-    return (
-        event.type === 'payment_intent.succeeded' &&
-        typeof obj.id === 'string' &&
-        obj.metadata &&
-        typeof obj.metadata.product_id === 'string' &&
-        typeof obj.metadata.full_name === 'string' &&
-        typeof obj.metadata.image_path === 'string' &&
-        typeof obj.metadata.image_width === 'string' &&
-        typeof obj.metadata.image_height === 'string' &&
-        typeof obj.metadata.price_id === 'string'
-    );
+    return event.type === 'payment_intent.succeeded';
 }
 
 export async function POST(request: Request) {
@@ -63,6 +34,7 @@ export async function POST(request: Request) {
 
     try {
         if (!sig || !webhookSecret) {
+            console.error('Invalid signature or webhook secret');
             return new Response(JSON.stringify({ error: 'Invalid signature or webhook secret' }), { status: 400 });
         }
 
@@ -72,7 +44,7 @@ export async function POST(request: Request) {
         console.log('Stripe Event:', event);
 
         if (isPaymentIntentSucceededEvent(event)) {
-            const stripeEvent = event.data.object;
+            const stripeEvent = event.data.object as { id: string; metadata: Metadata };
             const metadata = stripeEvent.metadata;
             const stripeId = stripeEvent.id;
 
