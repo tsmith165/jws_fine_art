@@ -1,5 +1,3 @@
-// File: /app/checkout/actions.ts
-
 'use server';
 import { db, piecesTable, pendingTransactionsTable } from '@/db/db';
 import { eq, desc, sql } from 'drizzle-orm';
