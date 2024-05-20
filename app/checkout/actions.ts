@@ -1,3 +1,5 @@
+// File: /app/checkout/actions.ts
+
 'use server';
 import { db, piecesTable, pendingTransactionsTable } from '@/db/db';
 import { eq, desc, sql } from 'drizzle-orm';
@@ -55,42 +57,47 @@ export async function runStripePurchase(data: FormData) {
     console.log(`Creating a Stripe Checkout Session with image: ${piece.image_path}`);
     const price_with_shipping = piece.price + (is_international ? INTERNATIONAL_SHIPPING_RATE : 0);
 
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-            {
-                price_data: {
-                    currency: 'usd',
-                    unit_amount: price_with_shipping * 100, // Amount in cents
-                    product_data: {
-                        name: piece.title,
-                        images: [piece.image_path],
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        unit_amount: price_with_shipping * 100, // Amount in cents
+                        product_data: {
+                            name: piece.title,
+                            images: [piece.image_path],
+                        },
                     },
+                    quantity: 1,
                 },
-                quantity: 1,
+            ],
+            mode: 'payment',
+            success_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece.id}`,
+            cancel_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece.id}`,
+            client_reference_id: piece.id.toString(),
+            metadata: {
+                product_id: piece.id.toString(),
+                full_name: full_name,
+                image_path: piece.image_path,
+                image_width: piece.width.toString(),
+                image_height: piece.height.toString(),
+                price_id: piece.price.toString(),
             },
-        ],
-        mode: 'payment',
-        success_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece.id}`,
-        cancel_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece.id}`,
-        client_reference_id: piece.id.toString(),
-        metadata: {
-            product_id: piece.id.toString(),
-            full_name: full_name,
-            image_path: piece.image_path,
-            image_width: piece.width.toString(),
-            image_height: piece.height.toString(),
-            price_id: piece.price.toString(),
-        },
-    });
+        });
 
-    console.log(`Stripe Response:`, session);
-    console.log(`Session ID: ${session.id}`);
+        console.log(`Stripe Response:`, session);
+        console.log(`Session ID: ${session.id}`);
 
-    return {
-        success: true,
-        redirectUrl: session.url,
-    };
+        return {
+            success: true,
+            redirectUrl: session.url,
+        };
+    } catch (error) {
+        console.error('Error creating Stripe session:', error);
+        throw error;
+    }
 }
 
 export async function create_pending_transaction(
