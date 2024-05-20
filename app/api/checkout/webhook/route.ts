@@ -22,6 +22,36 @@ interface WebhookEvent {
     };
 }
 
+// Type guard to check if the event is a payment_intent.succeeded event with metadata
+function isPaymentIntentSucceededEvent(event: Stripe.Event): event is Stripe.Event & {
+    data: {
+        object: {
+            id: string;
+            metadata: {
+                product_id: string;
+                full_name: string;
+                image_path: string;
+                image_width: string;
+                image_height: string;
+                price_id: string;
+            };
+        };
+    };
+} {
+    const obj = event.data.object as any;
+    return (
+        event.type === 'payment_intent.succeeded' &&
+        typeof obj.id === 'string' &&
+        obj.metadata &&
+        typeof obj.metadata.product_id === 'string' &&
+        typeof obj.metadata.full_name === 'string' &&
+        typeof obj.metadata.image_path === 'string' &&
+        typeof obj.metadata.image_width === 'string' &&
+        typeof obj.metadata.image_height === 'string' &&
+        typeof obj.metadata.price_id === 'string'
+    );
+}
+
 export async function POST(request: Request) {
     console.log('Received Stripe Webhook Request');
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
@@ -41,10 +71,10 @@ export async function POST(request: Request) {
 
         console.log('Stripe Event:', event);
 
-        if (event.type === 'payment_intent.succeeded') {
-            const stripeEvent = event as WebhookEvent;
-            const metadata = stripeEvent.data.object.metadata;
-            const stripeId = stripeEvent.data.object.id;
+        if (isPaymentIntentSucceededEvent(event)) {
+            const stripeEvent = event.data.object;
+            const metadata = stripeEvent.metadata;
+            const stripeId = stripeEvent.id;
 
             console.log(`ID: ${stripeId}`);
             console.log(`Metadata:`, metadata);
@@ -117,8 +147,7 @@ export async function POST(request: Request) {
             // Implement any additional logic needed for canceled payments
         } else {
             console.warn(`Unhandled Stripe event type: ${event.type}`);
-            const stripeEvent = event as WebhookEvent;
-            const unhandledData = stripeEvent.data.object;
+            const unhandledData = event.data.object;
             console.log('Unhandled Event Data:', unhandledData);
         }
     } catch (err: any) {
