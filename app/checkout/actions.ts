@@ -74,6 +74,14 @@ export async function runStripePurchase(data: FormData) {
         success_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece.id}`,
         cancel_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/cancel/${piece.id}`,
         client_reference_id: piece.id.toString(),
+        metadata: {
+            product_id: piece.id.toString(),
+            full_name: full_name,
+            image_path: piece.image_path,
+            image_width: piece.width.toString(),
+            image_height: piece.height.toString(),
+            price_id: piece.price.toString(),
+        },
     });
 
     console.log(`Stripe Response:`, session);
