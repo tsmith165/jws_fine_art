@@ -20,6 +20,11 @@ const nextConfig = {
                 destination: '/api/checkout/webhook',
                 locale: false,
             },
+            {
+                source: '/:locale/api/checkout/webhook',
+                destination: '/api/checkout/webhook',
+                locale: false,
+            },
         ];
     },
     async headers() {
