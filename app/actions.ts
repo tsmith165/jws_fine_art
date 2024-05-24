@@ -79,6 +79,18 @@ export async function fetchAdjacentPieceIds(currentId: number) {
     return { next_id, last_id };
 }
 
+export async function fetchFirstPieceId(): Promise<number | null> {
+    const piece = await db
+        .select({
+            id: piecesTable.id,
+        })
+        .from(piecesTable)
+        .orderBy(piecesTable.o_id)
+        .limit(1);
+
+    return piece.length > 0 ? piece[0].id : null;
+}
+
 export async function getMostRecentId(): Promise<number | null> {
     console.log('Fetching most recent piece ID...');
     const piece = await db
