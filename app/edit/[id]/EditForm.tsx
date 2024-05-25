@@ -177,7 +177,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     <button
                         type="submit"
                         className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark' +
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
                         }
                     >
@@ -186,7 +186,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     <Link
                         href="/edit/new"
                         className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark' +
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
                         }
                     >
@@ -195,7 +195,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     <Link
                         href={`/edit/images/${formData.o_id}`}
                         className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark' +
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
                         }
                     >
