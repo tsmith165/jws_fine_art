@@ -97,29 +97,26 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                     )}
                 </div>
             </div>
-            <div className="h-fit rounded-b-md bg-secondary_dark">
-                <div className="flex min-h-[120px] w-full flex-row space-x-[5px] overflow-y-hidden overflow-x-scroll p-2 md:pb-0">
+            <div className="h-fit overflow-y-hidden overflow-x-scroll rounded-b-md bg-secondary_dark">
+                <div className="flex min-h-[120px] w-fit flex-row space-x-2 p-2">
                     {type === 'gallery' &&
                         using_extra_images.map((image: any, index: number) => (
                             <Link
                                 key={`extra_image_container_${index}`}
                                 href={`/details/${db_id}?selected=${index}&type=gallery`}
                                 prefetch={true}
-                            >
-                                <div
-                                    className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
+                                className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
                                     flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
-                                >
-                                    <Image
-                                        src={image.src}
-                                        priority
-                                        alt=""
-                                        width={image.width}
-                                        height={image.height}
-                                        quality={75}
-                                        className="max-h-full max-w-full object-contain"
-                                    />
-                                </div>
+                            >
+                                <Image
+                                    src={image.src}
+                                    priority
+                                    alt=""
+                                    width={image.width}
+                                    height={image.height}
+                                    quality={75}
+                                    className="max-h-full max-w-full object-contain"
+                                />
                             </Link>
                         ))}
                     {type === 'progress' &&
@@ -130,13 +127,10 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                                     key={`progress_image_${index}`}
                                     href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress`}
                                     prefetch={true}
+                                    className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
+                                    flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                                 >
-                                    <div
-                                        className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
-                                        flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
-                                    >
-                                        <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
-                                    </div>
+                                    <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
                                 </Link>
                             );
                         })}
