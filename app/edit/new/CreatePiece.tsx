@@ -16,7 +16,7 @@ export default function CreatePiece() {
         console.log('Creating new piece:', newPieceData);
         const newPiece = await createPiece(newPieceData);
         revalidatePath('/edit');
-        redirect(`/edit/${newPiece.o_id}`);
+        redirect(`/edit/${newPiece.id}`);
     }
 
     return (
