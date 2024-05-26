@@ -49,7 +49,7 @@ const SiteMenu = () => {
                 <div className={`h-full w-full`} onClick={handleMenuToggle}>
                     <IoMenu
                         className={`!h-[40px] !w-[40px] bg-secondary_dark p-[2.5px] ${
-                            isMenuOpen ? '!fill-dark bg-secondary_light ' : 'bg-secondary_dark !fill-secondary_light'
+                            isMenuOpen ? 'bg-secondary_light !fill-primary_dark' : 'bg-secondary_dark !fill-secondary_light'
                         } hover:!fill-dark rounded-t-md hover:bg-secondary_light`}
                     />
                 </div>
