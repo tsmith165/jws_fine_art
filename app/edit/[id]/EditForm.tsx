@@ -8,7 +8,7 @@ import InputSelect from '@/components/inputs/InputSelect';
 import InputMultiSelect from '@/components/inputs/InputMultiSelect';
 import InputTextArea from '@/components/inputs/InputTextArea';
 
-import { onSubmit } from '../actions';
+import { onSubmitEditForm } from '../actions';
 
 interface EditFormProps {
     current_piece: any;
@@ -46,7 +46,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
         e.preventDefault();
         console.log('Form Data (Next Line):');
         console.log(formData);
-        await onSubmit(formData);
+        await onSubmitEditForm(formData);
     };
 
     const themeOptions =

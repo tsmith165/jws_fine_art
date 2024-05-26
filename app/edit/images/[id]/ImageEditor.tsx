@@ -13,6 +13,7 @@ interface ImageEditorProps {
 const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
     const [selectedOption, setSelectedOption] = useState('main');
     const [imageUrl, setImageUrl] = useState('');
+    const [title, setTitle] = useState('');
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
 
@@ -45,6 +46,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
         await handleImageUpload({
             piece_id: pieceId,
             image_path: imageUrl,
+            title: title,
             piece_type: selectedOption,
             width: width.toString(),
             height: height.toString(),
@@ -68,9 +70,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                         endpoint="imageUploader"
                         className={
                             '!flex-row items-center justify-center space-x-2 rounded-lg bg-secondary_dark p-2 ' +
-                            'ut-button:bg-primary ut-button:text-secondary_dark ut-button:ut-readying:bg-primary ut-button:hover:bg-secondary_light ' +
-                            'ut-allowed-content:text-primary ut-allowed-content:min-w-[100px] ut-allowed-content:text-lg ut-allowed-content:leading-[18px] ' +
-                            'ut-button:ut-uploading:bg-secondary_light ut-button:after:bg-primary '
+                            'ut-button:bg-primary ut-button:text-secondary_dark ut-button:hover:bg-secondary_light ut-button:ut-readying:bg-primary ' +
+                            'ut-allowed-content:min-w-[100px] ut-allowed-content:text-lg ut-allowed-content:leading-[18px] ut-allowed-content:text-primary ' +
+                            'ut-button:after:bg-primary ut-button:ut-uploading:bg-secondary_light '
                         }
                         onClientUploadComplete={handleImageUploadComplete}
                         onUploadError={(error: Error) => {
@@ -87,6 +89,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                         ]}
                         onChange={handleSelectChange}
                     />
+                    <InputTextbox name="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                     <InputTextbox name="Image Path" value={imageUrl} />
                     <button
                         type="button"

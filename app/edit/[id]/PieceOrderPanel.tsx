@@ -1,7 +1,9 @@
 import React from 'react';
 import { IoIosArrowUp, IoIosArrowDown, IoIosTrash } from 'react-icons/io';
-import { handleImageReorder, handleImageDeleteAction } from '../actions';
+import { MdModeEdit } from 'react-icons/md';
+import { handleImageReorder, handleImageDeleteAction, handleImageTitleEdit } from '../actions';
 import { PiecesWithImages, ExtraImages, ProgressImages } from '@/db/schema';
+import Image from 'next/image';
 
 interface PieceOrderPanelProps {
     current_piece: PiecesWithImages;
@@ -40,6 +42,20 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         await handleImageDeleteAction(pieceId, imagePath, imageType);
     }
 
+    async function handleImageTitleEditAction(formData: FormData) {
+        'use server';
+        const imageId = Number(formData.get('imageId'));
+        const newTitle = formData.get('newTitle')?.toString();
+        const imageType = formData.get('imageType')?.toString();
+
+        if (!imageId || !newTitle || !imageType) {
+            console.error(`Required form data missing. Cannot edit image title.`);
+            return;
+        }
+
+        await handleImageTitleEdit(imageId, newTitle, imageType);
+    }
+
     const renderImages = (images: (ExtraImages | ProgressImages)[], imageType: string) => {
         const elements = [];
         for (let index = 0; index < images.length; index++) {
@@ -51,17 +67,16 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
             elements.push(
                 <div
                     key={index}
-                    className="flex items-center space-x-2 rounded-b-lg px-2 pt-1 hover:bg-primary_dark hover:text-secondary_light"
+                    className="flex h-[70px] flex-row items-center space-x-2 rounded-b-lg px-2 py-2 hover:bg-primary_dark hover:text-secondary_light"
                 >
-                    <form action={handleImageDelete}>
-                        <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
-                        <input type="hidden" name="imagePath" value={image.image_path} />
-                        <input type="hidden" name="imageType" value={imageType} />
-                        <button type="submit">
-                            <IoIosTrash className="h-6 w-6 cursor-pointer rounded-sm bg-red-500 p-1 hover:bg-red-600" />
-                        </button>
-                    </form>
-                    {prevPieceId && (
+                    <Image
+                        src={image.image_path}
+                        alt={image.image_path}
+                        width={image.width}
+                        height={image.height}
+                        className="h-[40x] w-[40px] object-cover"
+                    />
+                    <div className="flex h-[58px] flex-col space-y-1">
                         <form action={handleImageReorderAction}>
                             <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
                             <input type="hidden" name="currentPieceId" value={currentPieceId.toString()} />
@@ -71,8 +86,6 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                                 <IoIosArrowUp className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light fill-primary_dark p-1 hover:bg-primary hover:fill-secondary_dark" />
                             </button>
                         </form>
-                    )}
-                    {nextPieceId && (
                         <form action={handleImageReorderAction}>
                             <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
                             <input type="hidden" name="currentPieceId" value={currentPieceId.toString()} />
@@ -82,8 +95,19 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                                 <IoIosArrowDown className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light fill-primary_dark p-1 hover:bg-primary hover:fill-secondary_dark" />
                             </button>
                         </form>
-                    )}
-                    <div className="text-md overflow-hidden text-ellipsis whitespace-nowrap leading-8 text-primary">{image.image_path}</div>
+                    </div>
+
+                    <div className="flex h-[58px] items-center justify-center">
+                        <form action={handleImageDelete} className="h-6 w-6">
+                            <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
+                            <input type="hidden" name="imagePath" value={image.image_path} />
+                            <input type="hidden" name="imageType" value={imageType} />
+                            <button type="submit">
+                                <IoIosTrash className="h-6 w-6 cursor-pointer rounded-sm bg-red-800 fill-primary_dark p-1 hover:bg-red-600 hover:fill-secondary_dark" />
+                            </button>
+                        </form>
+                    </div>
+                    <div className="flex h-[58px] items-center justify-center">{image.title || image.image_path}</div>
                 </div>,
             );
         }
@@ -95,14 +119,14 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
             <div className="rounded-lg bg-secondary_dark">
                 {extra_images.length > 0 && (
                     <div>
-                        <h3 className="rounded-t-lg bg-primary px-2 py-1 text-lg font-semibold text-secondary_dark">Extra Images</h3>
-                        {renderImages(extra_images, 'extra')}
+                        <h3 className="rounded-t-lg bg-primary px-2 py-2 text-lg font-semibold text-secondary_dark">Extra Images</h3>
+                        <div className="flex h-fit flex-col">{renderImages(extra_images, 'extra')}</div>
                     </div>
                 )}
                 {progress_images.length > 0 && (
                     <div className="">
-                        <h3 className="rounded-t-lg bg-primary px-2 py-1 text-lg font-semibold text-secondary_dark">Progress Images</h3>
-                        {renderImages(progress_images, 'progress')}
+                        <h3 className="rounded-t-lg bg-primary px-2 py-2 text-lg font-semibold text-secondary_dark">Progress Images</h3>
+                        <div className="flex h-fit flex-col">{renderImages(progress_images, 'progress')}</div>
                     </div>
                 )}
             </div>

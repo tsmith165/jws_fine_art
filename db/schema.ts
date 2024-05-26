@@ -32,6 +32,7 @@ export const extraImagesTable = pgTable('ExtraImages', {
         .notNull()
         .references(() => piecesTable.id),
     image_path: text('image_path').notNull(),
+    title: text('title').default(''),
     width: integer('width').notNull(),
     height: integer('height').notNull(),
 });
@@ -45,6 +46,7 @@ export const progressImagesTable = pgTable('ProgressImages', {
         .notNull()
         .references(() => piecesTable.id),
     image_path: text('image_path').notNull(),
+    title: text('title').default(''),
     width: integer('width').notNull(),
     height: integer('height').notNull(),
 });

@@ -23,7 +23,7 @@ interface SubmitFormData {
     image_path: string;
 }
 
-export async function onSubmit(data: SubmitFormData) {
+export async function onSubmitEditForm(data: SubmitFormData) {
     console.log('Form Data (Next Line):');
     console.log(data);
 
@@ -87,11 +87,13 @@ export async function onSubmit(data: SubmitFormData) {
             comments: data.comments || '',
         });
     }
+    revalidatePath(`/edit/${data.piece_id}`);
 }
 
 interface UploadFormData {
     piece_id: string;
     image_path: string;
+    title: string | null; // Make title nullable
     piece_type: string;
     width: string;
     height: string;
@@ -101,6 +103,7 @@ export async function handleImageUpload(data: UploadFormData) {
     console.log('Uploading Image...');
     const pieceId = parseInt(data.piece_id?.toString() || '0');
     const imageUrl = data.image_path?.toString() || '';
+    const title = data.title;
     const imageType = data.piece_type?.toString() || '';
 
     const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, pieceId)).limit(1);
@@ -121,6 +124,7 @@ export async function handleImageUpload(data: UploadFormData) {
             await db.insert(extraImagesTable).values({
                 piece_id: pieceId,
                 image_path: imageUrl,
+                title: title, // Set the title
                 width: width,
                 height: height,
             });
@@ -128,13 +132,14 @@ export async function handleImageUpload(data: UploadFormData) {
             await db.insert(progressImagesTable).values({
                 piece_id: pieceId,
                 image_path: imageUrl,
+                title: title, // Set the title
                 width: width,
                 height: height,
             });
         }
     }
 
-    revalidatePath(`/edit/${piece[0].o_id}`);
+    revalidatePath(`/edit/${piece[0].id}`);
     return imageUrl;
 }
 
@@ -159,9 +164,33 @@ export async function handleImageReorder(pieceId: number, currentPieceId: number
     revalidatePath(`/edit/${pieceId}`);
 }
 
+export async function handleImageTitleEdit(imageId: number, newTitle: string, imageType: string) {
+    const table = imageType === 'extra' ? extraImagesTable : progressImagesTable;
+
+    await db.update(table).set({ title: newTitle }).where(eq(table.id, imageId));
+
+    // Revalidate the path to refetch the data
+    revalidatePath(`/edit/${imageId}`);
+}
+
 export async function handleImageDeleteAction(pieceId: number, imagePath: string, imageType: string) {
     const deleteTable = imageType === 'extra' ? extraImagesTable : progressImagesTable;
     await db.delete(deleteTable).where(and(eq(deleteTable.piece_id, pieceId), eq(deleteTable.image_path, imagePath)));
+
+    // Revalidate the path to refetch the data
+    revalidatePath(`/edit/${pieceId}`);
+}
+
+export async function handleTitleUpdate(formData: FormData) {
+    const pieceId = Number(formData.get('pieceId'));
+    const newTitle = formData.get('newTitle')?.toString();
+
+    if (!pieceId || !newTitle) {
+        console.error('Required form data missing. Cannot update title.');
+        return;
+    }
+
+    await db.update(piecesTable).set({ title: newTitle }).where(eq(piecesTable.id, pieceId));
 
     // Revalidate the path to refetch the data
     revalidatePath(`/edit/${pieceId}`);
