@@ -27,8 +27,18 @@ export async function fetchPieces(): Promise<PiecesWithImages[]> {
 
 export async function fetchPieceById(id: number) {
     const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, id)).execute();
-    const extraImages = await db.select().from(extraImagesTable).where(eq(extraImagesTable.piece_id, id)).execute();
-    const progressImages = await db.select().from(progressImagesTable).where(eq(progressImagesTable.piece_id, id)).execute();
+    const extraImages = await db
+        .select()
+        .from(extraImagesTable)
+        .where(eq(extraImagesTable.piece_id, id))
+        .orderBy(asc(extraImagesTable.id))
+        .execute();
+    const progressImages = await db
+        .select()
+        .from(progressImagesTable)
+        .where(eq(progressImagesTable.piece_id, id))
+        .orderBy(asc(progressImagesTable.id))
+        .execute();
 
     const pieceData = {
         ...piece[0],

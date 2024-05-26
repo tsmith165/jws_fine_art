@@ -1,9 +1,8 @@
 'use server';
 import { db, piecesTable, extraImagesTable, progressImagesTable } from '@/db/db';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { getMostRecentId } from '@/app/actions';
-import { PiecesWithImages } from '@/db/schema';
 
 interface SubmitFormData {
     piece_id: string;
@@ -139,30 +138,24 @@ export async function handleImageUpload(data: UploadFormData) {
     return imageUrl;
 }
 
-export async function handleImageReorder(pieceId: number, index: number, direction: string, imageType: string) {
-    let images;
-    if (imageType === 'extra') {
-        images = await db.select().from(extraImagesTable).where(eq(extraImagesTable.piece_id, pieceId));
-    } else {
-        images = await db.select().from(progressImagesTable).where(eq(progressImagesTable.piece_id, pieceId));
-    }
+export async function handleImageReorder(pieceId: number, currentPieceId: number, targetPieceId: number, imageType: string) {
+    const table = imageType === 'extra' ? extraImagesTable : progressImagesTable;
 
-    if (images.length === 0) {
-        console.error(`No images found for piece with id ${pieceId}`);
+    const currentImage = await db.select().from(table).where(eq(table.id, currentPieceId)).limit(1);
+    const targetImage = await db.select().from(table).where(eq(table.id, targetPieceId)).limit(1);
+
+    if (currentImage.length === 0 || targetImage.length === 0) {
+        console.error(`No images found for reordering`);
         return;
     }
 
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= images.length) return;
+    console.log(`Setting image path for ${currentPieceId} to ${targetImage[0].image_path}`);
+    await db.update(table).set({ image_path: targetImage[0].image_path }).where(eq(table.id, currentPieceId));
 
-    const item = images[index];
-    images.splice(index, 1);
-    images.splice(newIndex, 0, item);
+    console.log(`Setting image path for ${targetPieceId} to ${currentImage[0].image_path}`);
+    await db.update(table).set({ image_path: currentImage[0].image_path }).where(eq(table.id, targetPieceId));
 
-    const updateTable = imageType === 'extra' ? extraImagesTable : progressImagesTable;
-    await db.update(updateTable).set({ image_path: images[newIndex].image_path }).where(eq(updateTable.id, images[newIndex].id));
-    await db.update(updateTable).set({ image_path: item.image_path }).where(eq(updateTable.id, item.id));
-
+    // Revalidate the path to refetch the data
     revalidatePath(`/edit/${pieceId}`);
 }
 
@@ -170,6 +163,7 @@ export async function handleImageDeleteAction(pieceId: number, imagePath: string
     const deleteTable = imageType === 'extra' ? extraImagesTable : progressImagesTable;
     await db.delete(deleteTable).where(and(eq(deleteTable.piece_id, pieceId), eq(deleteTable.image_path, imagePath)));
 
+    // Revalidate the path to refetch the data
     revalidatePath(`/edit/${pieceId}`);
 }
 
@@ -183,7 +177,6 @@ interface NewPieceData {
 export async function createPiece(newPieceData: NewPieceData) {
     const { title, imagePath, width, height } = newPieceData;
 
-    // Find the maximum o_id value from existing pieces
     const maxOId = await getMostRecentId();
     const newOId = maxOId ? maxOId + 1 : 1;
 

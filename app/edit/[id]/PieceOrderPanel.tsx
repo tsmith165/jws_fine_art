@@ -1,42 +1,29 @@
 import React from 'react';
 import { IoIosArrowUp, IoIosArrowDown, IoIosTrash } from 'react-icons/io';
 import { handleImageReorder, handleImageDeleteAction } from '../actions';
-import { PiecesWithImages } from '@/db/schema'; // Use the type that includes extraImages and progressImages
+import { PiecesWithImages, ExtraImages, ProgressImages } from '@/db/schema';
 
 interface PieceOrderPanelProps {
     current_piece: PiecesWithImages;
 }
 
-interface Image {
-    image_path: string;
-    width: number;
-    height: number;
-}
-
 const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
-    const extra_images: Image[] = current_piece.extraImages || [];
-    console.log(`Using Extra Images: "${extra_images}"`);
-
-    const progress_images: Image[] = current_piece.progressImages || [];
-    console.log(`Using Progress Images: "${progress_images}"`);
+    const extra_images: ExtraImages[] = current_piece.extraImages || [];
+    const progress_images: ProgressImages[] = current_piece.progressImages || [];
 
     async function handleImageReorderAction(formData: FormData) {
         'use server';
         const pieceId = Number(formData.get('pieceId'));
-        const index = Number(formData.get('index'));
-        const direction = formData.get('direction')?.toString();
+        const currentPieceId = Number(formData.get('currentPieceId'));
+        const targetPieceId = Number(formData.get('targetPieceId'));
         const imageType = formData.get('imageType')?.toString();
 
-        if (!direction) {
-            console.error(`No direction or image type found in form data. Cannot reorder image.`);
-            return;
-        }
-        if (!imageType) {
-            console.error(`No image type found in form data. Cannot reorder image.`);
+        if (!currentPieceId || !targetPieceId || !imageType) {
+            console.error(`Required form data missing. Cannot reorder image.`);
             return;
         }
 
-        await handleImageReorder(pieceId, index, direction, imageType);
+        await handleImageReorder(pieceId, currentPieceId, targetPieceId, imageType);
     }
 
     async function handleImageDelete(formData: FormData) {
@@ -45,17 +32,63 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         const imageType = formData.get('imageType')?.toString();
         const imagePath = formData.get('imagePath')?.toString();
 
-        if (!imageType) {
-            console.error(`No image type found in form data. Cannot delete image.`);
-            return;
-        }
-        if (!imagePath) {
-            console.error(`No image path found in form data. Cannot delete image.`);
+        if (!imageType || !imagePath) {
+            console.error(`Required form data missing. Cannot delete image.`);
             return;
         }
 
         await handleImageDeleteAction(pieceId, imagePath, imageType);
     }
+
+    const renderImages = (images: (ExtraImages | ProgressImages)[], imageType: string) => {
+        const elements = [];
+        for (let index = 0; index < images.length; index++) {
+            const image = images[index];
+            const currentPieceId = image.id;
+            const prevPieceId = images[index - 1]?.id || images[images.length - 1]?.id;
+            const nextPieceId = images[index + 1]?.id || images[0]?.id;
+
+            elements.push(
+                <div
+                    key={index}
+                    className="flex items-center space-x-2 rounded-b-lg px-2 pt-1 hover:bg-primary_dark hover:text-secondary_light"
+                >
+                    <form action={handleImageDelete}>
+                        <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
+                        <input type="hidden" name="imagePath" value={image.image_path} />
+                        <input type="hidden" name="imageType" value={imageType} />
+                        <button type="submit">
+                            <IoIosTrash className="h-6 w-6 cursor-pointer rounded-sm bg-red-500 p-1 hover:bg-red-600" />
+                        </button>
+                    </form>
+                    {prevPieceId && (
+                        <form action={handleImageReorderAction}>
+                            <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
+                            <input type="hidden" name="currentPieceId" value={currentPieceId.toString()} />
+                            <input type="hidden" name="targetPieceId" value={prevPieceId.toString()} />
+                            <input type="hidden" name="imageType" value={imageType} />
+                            <button type="submit">
+                                <IoIosArrowUp className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light fill-primary_dark p-1 hover:bg-primary hover:fill-secondary_dark" />
+                            </button>
+                        </form>
+                    )}
+                    {nextPieceId && (
+                        <form action={handleImageReorderAction}>
+                            <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
+                            <input type="hidden" name="currentPieceId" value={currentPieceId.toString()} />
+                            <input type="hidden" name="targetPieceId" value={nextPieceId.toString()} />
+                            <input type="hidden" name="imageType" value={imageType} />
+                            <button type="submit">
+                                <IoIosArrowDown className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light fill-primary_dark p-1 hover:bg-primary hover:fill-secondary_dark" />
+                            </button>
+                        </form>
+                    )}
+                    <div className="text-md overflow-hidden text-ellipsis whitespace-nowrap leading-8 text-primary">{image.image_path}</div>
+                </div>,
+            );
+        }
+        return elements;
+    };
 
     return (
         <div className="flex h-fit w-full flex-col p-2 pt-0">
@@ -63,95 +96,13 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                 {extra_images.length > 0 && (
                     <div>
                         <h3 className="rounded-t-lg bg-primary px-2 py-1 text-lg font-semibold text-secondary_dark">Extra Images</h3>
-                        {extra_images.map((image: Image, index: number) => (
-                            <div
-                                key={index}
-                                className="flex items-center space-x-2 rounded-b-lg px-2 py-1 hover:bg-primary_dark hover:text-secondary_light"
-                            >
-                                <form action={handleImageReorderAction}>
-                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
-                                    <input type="hidden" name="index" value={index.toString()} />
-                                    <input type="hidden" name="direction" value="up" />
-                                    <input type="hidden" name="imageType" value="extra_images" />
-                                    <button
-                                        type="submit"
-                                        className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light p-1 hover:bg-primary"
-                                    >
-                                        <IoIosArrowUp />
-                                    </button>
-                                </form>
-                                <form action={handleImageReorderAction}>
-                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
-                                    <input type="hidden" name="index" value={index.toString()} />
-                                    <input type="hidden" name="direction" value="down" />
-                                    <input type="hidden" name="imageType" value="extra_images" />
-                                    <button
-                                        type="submit"
-                                        className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light p-1 hover:bg-primary"
-                                    >
-                                        <IoIosArrowDown />
-                                    </button>
-                                </form>
-                                <form action={handleImageDelete}>
-                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
-                                    <input type="hidden" name="imagePath" value={image.image_path} />
-                                    <input type="hidden" name="imageType" value="extra_images" />
-                                    <button type="submit" className="h-6 w-6 cursor-pointer rounded-sm bg-red-500 p-1 hover:bg-red-600">
-                                        <IoIosTrash />
-                                    </button>
-                                </form>
-                                <div className="text-md overflow-hidden text-ellipsis whitespace-nowrap leading-6 text-primary">
-                                    {image.image_path}
-                                </div>
-                            </div>
-                        ))}
+                        {renderImages(extra_images, 'extra')}
                     </div>
                 )}
                 {progress_images.length > 0 && (
                     <div className="">
                         <h3 className="rounded-t-lg bg-primary px-2 py-1 text-lg font-semibold text-secondary_dark">Progress Images</h3>
-                        {progress_images.map((image: Image, index: number) => (
-                            <div
-                                key={index}
-                                className="flex max-w-fit flex-row items-center space-x-2 rounded-b-lg px-2 py-1 hover:bg-primary_dark hover:text-secondary_light"
-                            >
-                                <form action={handleImageReorderAction} className="flex">
-                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
-                                    <input type="hidden" name="index" value={index.toString()} />
-                                    <input type="hidden" name="direction" value="up" />
-                                    <input type="hidden" name="imageType" value="progress_images" />
-                                    <button
-                                        type="submit"
-                                        className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light p-1 hover:bg-primary"
-                                    >
-                                        <IoIosArrowUp />
-                                    </button>
-                                </form>
-                                <form action={handleImageReorderAction} className="flex">
-                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
-                                    <input type="hidden" name="index" value={index.toString()} />
-                                    <input type="hidden" name="direction" value="down" />
-                                    <input type="hidden" name="imageType" value="progress_images" />
-                                    <button
-                                        type="submit"
-                                        className="h-6 w-6 cursor-pointer rounded-sm bg-secondary_light p-1 hover:bg-primary"
-                                    >
-                                        <IoIosArrowDown />
-                                    </button>
-                                </form>
-                                <form action={handleImageDelete}>
-                                    <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
-                                    <input type="hidden" name="imagePath" value={image.image_path} />
-                                    <input type="hidden" name="imageType" value="progress_images" />
-                                    <button type="submit" className="h-6 w-6 cursor-pointer rounded-sm bg-red-500 p-1 hover:bg-red-600">
-                                        <IoIosTrash />
-                                    </button>
-                                </form>
-                                <div className="text-md overflow-hidden text-ellipsis whitespace-nowrap leading-6 text-primary">
-                                    {image.image_path}
-                                </div>
-                            </div>
-                        ))}
+                        {renderImages(progress_images, 'progress')}
                     </div>
                 )}
             </div>
