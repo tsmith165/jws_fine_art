@@ -11,34 +11,41 @@ export const metadata: Metadata = {
 };
 
 import { db, piecesTable } from '@/db/db';
-import { eq, asc } from 'drizzle-orm';
-import { Pieces } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
 import PageLayout from '@/components/layout/PageLayout';
 import Homepage from '@/app/Homepage';
+import { BIOGRAPHY_TEXT } from '@/lib/biography_text';
 
 export default async function Page() {
-    const { most_recent_id } = await getPieceList();
+    const numParagraphs = BIOGRAPHY_TEXT.length;
+    const homepage_pieces = await fetchHomepageImages(numParagraphs);
+    const homepage_data = homepage_pieces.map((piece, index) => ({
+        id: piece.id,
+        title: piece.name,
+        image_path: piece.imagePath,
+        bio_paragraph: BIOGRAPHY_TEXT[index],
+    }));
 
     return (
         <PageLayout page="/">
-            <Homepage most_recent_id={most_recent_id} />
+            <Homepage homepage_data={homepage_data} />
         </PageLayout>
     );
 }
 
-async function fetchFirstPiece(): Promise<Pieces | null> {
+async function fetchHomepageImages(limit: number) {
     console.log(`Fetching pieces with Drizzle`);
-    const piece = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(asc(piecesTable.o_id)).limit(1);
+    const pieces = await db
+        .select({
+            imagePath: piecesTable.image_path,
+            id: piecesTable.id,
+            name: piecesTable.title,
+        })
+        .from(piecesTable)
+        .where(eq(piecesTable.active, true))
+        .orderBy(desc(piecesTable.o_id))
+        .limit(limit);
 
-    return piece[0] || null;
-}
-
-async function getPieceList() {
-    console.log('Fetching piece list...');
-    const firstPiece = await fetchFirstPiece();
-
-    return {
-        most_recent_id: firstPiece ? firstPiece.id : null,
-    };
+    return pieces;
 }
