@@ -24,14 +24,20 @@ const slideDirections = [
 
 const Homepage = ({ homepage_data }: HomepageProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
+            setImageLoaded(false); // Reset image loaded state
             setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
         }, 5000);
 
         return () => clearInterval(interval);
     }, [homepage_data.length]);
+
+    const handleImageLoad = () => {
+        setImageLoaded(true);
+    };
 
     return (
         <div className="relative h-screen w-screen">
@@ -47,7 +53,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                             width={300}
                             height={400}
                             quality={100}
-                            className="rounded-lg bg-secondary p-1 "
+                            className="rounded-lg bg-secondary p-1"
                         />
                     );
                     const current_paragraph_div = (
@@ -63,12 +69,20 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                             <motion.div
                                 key={data.id}
                                 initial={direction}
-                                animate={{ x: 0, y: 0, opacity: 1 }}
+                                animate={imageLoaded ? { x: 0, y: 0, opacity: 1 } : {}}
                                 exit={direction}
                                 transition={{ duration: 1 }}
                                 className="absolute inset-0"
                             >
-                                <Image src={data.image_path} alt={data.title} layout="fill" objectFit="cover" quality={100} priority />
+                                <Image
+                                    src={data.image_path}
+                                    alt={data.title}
+                                    layout="fill"
+                                    objectFit="cover"
+                                    quality={100}
+                                    priority
+                                    onLoadingComplete={handleImageLoad}
+                                />
 
                                 <div className="absolute inset-0 flex flex-col items-center justify-center space-x-4 bg-secondary_dark bg-opacity-40 p-4 text-center text-white md:flex-row">
                                     {isEven ? current_image_div : current_paragraph_div}
