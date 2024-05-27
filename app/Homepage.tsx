@@ -30,7 +30,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
         const interval = setInterval(() => {
             setImageLoaded(false); // Reset image loaded state
             setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
-        }, 5000);
+        }, 7500);
 
         return () => clearInterval(interval);
     }, [homepage_data.length]);
