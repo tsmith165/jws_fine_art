@@ -57,7 +57,7 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
                 {isMenuOpen && (
                     <div
                         className={
-                            'absolute right-0 top-[40px] z-50 h-fit w-[200px] rounded-bl-md border-b-2 border-l-2 border-primary_dark bg-secondary_light'
+                            'absolute right-0 top-[40px] h-fit w-[200px] rounded-bl-md border-b-2 border-l-2 border-primary_dark bg-secondary_light'
                         }
                     >
                         <MenuOverlay currentPage={currentPage} />
