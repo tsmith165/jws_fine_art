@@ -37,11 +37,6 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
                         <MdAccountCircle className="h-full w-full" />
                     </Link>
                 </SignedOut>
-                <ClerkLoading>
-                    <Link href="/signin">
-                        <MdAccountCircle className="h-full w-full" />
-                    </Link>
-                </ClerkLoading>
             </div>
 
             {/* Hamburger Button */}
