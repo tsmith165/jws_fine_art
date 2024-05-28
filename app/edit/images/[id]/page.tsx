@@ -6,7 +6,7 @@ export const metadata: Metadata = {
         icon: '/JWS_ICON.png',
     },
     openGraph: {
-        title: 'JWS Fine Art - Edit Piece Details',
+        images: '/opengraph-image.png',
     },
 };
 

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             icon: '/JWS_ICON.png',
         },
         openGraph: {
-            title: 'JWS Fine Art - Gallery Piece Details',
+            images: '/opengraph-image.png',
         },
     };
 }
