@@ -1,19 +1,22 @@
+// File: /app/manage/Manage.tsx
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { IoIosArrowForward } from 'react-icons/io';
 import { MdDeleteForever, MdRestore } from 'react-icons/md';
 import { FaEdit } from 'react-icons/fa';
-import { changeOrder, setInactive, setActive } from './actions';
+import { changeOrder, changePriority, setInactive, setActive } from './actions';
 import { Pieces } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
 
 interface ManageProps {
     pieces: Pieces[];
     deletedPieces: Pieces[];
+    prioritized_pieces: Pieces[];
     activeTab: string;
 }
 
-export function Manage({ pieces, deletedPieces, activeTab }: ManageProps) {
+export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }: ManageProps) {
     async function handleOrderChange(formData: FormData) {
         'use server';
         const currId = Number(formData.get('currId'));
@@ -24,6 +27,20 @@ export function Manage({ pieces, deletedPieces, activeTab }: ManageProps) {
         if (nextId !== null && nextOrderId !== null) {
             console.log(`Handle Order Change: currId: ${currId} (${currOrderId}) | nextId: ${nextId} (${nextOrderId})`);
             await changeOrder([currId, currOrderId], [nextId, nextOrderId]);
+            revalidatePath('/manage');
+        }
+    }
+
+    async function handlePriorityChange(formData: FormData) {
+        'use server';
+        const currId = Number(formData.get('currId'));
+        const currPriorityId = Number(formData.get('currPriorityId'));
+        const nextId = Number(formData.get('nextId'));
+        const nextPriorityId = Number(formData.get('nextPriorityId'));
+
+        if (nextId !== null && nextPriorityId !== null) {
+            console.log(`Handle Priority Change: currId: ${currId} (${currPriorityId}) | nextId: ${nextId} (${nextPriorityId})`);
+            await changePriority([currId, currPriorityId], [nextId, nextPriorityId]);
             revalidatePath('/manage');
         }
     }
@@ -76,6 +93,16 @@ export function Manage({ pieces, deletedPieces, activeTab }: ManageProps) {
                                 Deleted Pieces
                             </Link>
                         )}
+                        <Link
+                            href="/manage?tab=priority"
+                            className={`rounded-t-md px-2 py-1 ${
+                                activeTab === 'priority'
+                                    ? 'bg-secondary_dark text-primary'
+                                    : 'bg-secondary_light text-primary_dark hover:bg-secondary_dark hover:text-primary'
+                            }`}
+                        >
+                            Piece Priority
+                        </Link>
                     </div>
                 </div>
 
@@ -130,6 +157,53 @@ export function Manage({ pieces, deletedPieces, activeTab }: ManageProps) {
                                             <MdDeleteForever className="h-10 w-10 rounded-lg bg-secondary fill-red-700 p-1 hover:bg-primary hover:fill-red-900" />
                                         </button>
                                     </form>
+                                    <div className="flex-grow">
+                                        <h3 className="font-bold text-secondary_dark">{piece.title}</h3>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    {prioritized_pieces.length > 0 &&
+                        activeTab === 'priority' &&
+                        prioritized_pieces.map((piece, i) => {
+                            const last_piece = prioritized_pieces[i - 1] ?? prioritized_pieces[prioritized_pieces.length - 1];
+                            const next_piece = prioritized_pieces[i + 1] ?? prioritized_pieces[0];
+
+                            return (
+                                <div
+                                    key={piece.id.toString()}
+                                    className="flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 border-primary_dark bg-primary p-1 hover:bg-secondary_light"
+                                >
+                                    <div className="flex h-24 w-24 items-center justify-center rounded bg-secondary p-1">
+                                        <Image
+                                            src={piece.image_path}
+                                            alt={piece.title}
+                                            width={96}
+                                            height={96}
+                                            className="h-full w-full object-contain"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <form action={handlePriorityChange}>
+                                            <input type="hidden" name="currId" value={piece.id.toString()} />
+                                            <input type="hidden" name="currPriorityId" value={piece.p_id.toString()} />
+                                            <input type="hidden" name="nextId" value={last_piece.id.toString()} />
+                                            <input type="hidden" name="nextPriorityId" value={last_piece.p_id.toString()} />
+                                            <button type="submit">
+                                                <IoIosArrowForward className="h-8 w-8 -rotate-90 transform cursor-pointer rounded-lg bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark" />
+                                            </button>
+                                        </form>
+
+                                        <form action={handlePriorityChange}>
+                                            <input type="hidden" name="currId" value={piece.id.toString()} />
+                                            <input type="hidden" name="currPriorityId" value={piece.p_id.toString()} />
+                                            <input type="hidden" name="nextId" value={next_piece.id.toString()} />
+                                            <input type="hidden" name="nextPriorityId" value={next_piece.p_id.toString()} />
+                                            <button type="submit">
+                                                <IoIosArrowForward className="h-8 w-8 rotate-90 transform cursor-pointer rounded-lg bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark" />
+                                            </button>
+                                        </form>
+                                    </div>
                                     <div className="flex-grow">
                                         <h3 className="font-bold text-secondary_dark">{piece.title}</h3>
                                     </div>

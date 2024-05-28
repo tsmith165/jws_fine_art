@@ -44,7 +44,7 @@ async function fetchHomepageImages(limit: number) {
         })
         .from(piecesTable)
         .where(eq(piecesTable.active, true))
-        .orderBy(desc(piecesTable.o_id))
+        .orderBy(desc(piecesTable.p_id))
         .limit(limit);
 
     return pieces;

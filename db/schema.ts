@@ -4,6 +4,7 @@ import { type InferInsertModel, type InferSelectModel } from 'drizzle-orm';
 export const piecesTable = pgTable('Pieces', {
     id: serial('id').notNull().primaryKey(),
     o_id: integer('o_id').notNull(),
+    p_id: integer('p_id').notNull().default(0),
     class_name: text('class_name').notNull(),
     title: text('title').notNull(),
     image_path: text('image_path').notNull(),
@@ -22,6 +23,9 @@ export const piecesTable = pgTable('Pieces', {
     framed: boolean('framed').default(false),
     comments: text('comments'),
 });
+
+export type Pieces = InferSelectModel<typeof piecesTable>;
+export type InsertPieces = InferInsertModel<typeof piecesTable>;
 
 export type Pieces = InferSelectModel<typeof piecesTable>;
 export type InsertPieces = InferInsertModel<typeof piecesTable>;
