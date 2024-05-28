@@ -27,6 +27,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [isScrolling, setIsScrolling] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -68,8 +69,16 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
         resetInterval();
     };
 
+    const handleScrollStart = () => {
+        setIsScrolling(true);
+    };
+
+    const handleScrollEnd = () => {
+        setIsScrolling(false);
+    };
+
     return (
-        <div className="relative flex h-full w-full flex-col space-y-2">
+        <div className="relative flex h-full w-full flex-col space-y-2" onClick={handlePause}>
             <AnimatePresence>
                 {homepage_data.map((data, index) => {
                     const isEven = index % 2 === 0;
@@ -88,6 +97,8 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                     const current_paragraph_div = (
                         <p
                             className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 stroke-secondary_light stroke-1 p-2 text-lg text-primary md:max-h-fit`}
+                            onTouchStart={handleScrollStart}
+                            onTouchEnd={handleScrollEnd}
                         >
                             {data.bio_paragraph}
                         </p>
@@ -111,7 +122,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                                 className="absolute inset-0 h-full"
                                 onClick={handlePause}
                                 onPanEnd={(e, { offset, velocity }) => {
-                                    if (Math.abs(offset.x) > 100 || Math.abs(velocity.x) > 1) {
+                                    if (!isScrolling && (Math.abs(offset.x) > 100 || Math.abs(velocity.x) > 1)) {
                                         offset.x > 0 ? handlePrev() : handleNext();
                                     }
                                 }}
