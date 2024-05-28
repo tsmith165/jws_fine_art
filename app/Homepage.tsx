@@ -69,7 +69,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
     };
 
     return (
-        <div className="relative h-full w-full">
+        <div className="relative flex h-full w-full flex-col space-y-2">
             <AnimatePresence>
                 {homepage_data.map((data, index) => {
                     const isEven = index % 2 === 0;
@@ -82,12 +82,12 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                             width={300}
                             height={400}
                             quality={100}
-                            className="h-[calc((100% -100px)/2)] w-auto rounded-lg bg-secondary p-1 md:h-full md:w-full"
+                            className="h-[calc(calc(100%-50px)/2)] w-auto rounded-lg bg-secondary p-1 md:h-full md:w-full"
                         />
                     );
                     const current_paragraph_div = (
                         <p
-                            className={`max-h-[calc((100% - 100px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-70 stroke-secondary_light stroke-1 p-2 text-lg text-primary md:h-full`}
+                            className={`max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-75 stroke-secondary_light stroke-1 p-2 text-lg text-primary md:h-full`}
                         >
                             {data.bio_paragraph}
                         </p>
@@ -126,7 +126,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                                     onLoadingComplete={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex flex-col items-center justify-center space-y-2 bg-secondary_dark bg-opacity-40 p-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-2 bg-secondary_dark bg-opacity-40 px-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
@@ -135,7 +135,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                     );
                 })}
             </AnimatePresence>
-            <div className="absolute bottom-8 flex w-full items-center justify-center space-x-4">
+            <div className="absolute bottom-0 flex h-[50px] w-full items-center justify-center space-x-4">
                 <button onClick={handlePrev} className="text-4xl text-secondary_dark">
                     <IoIosArrowBack />
                 </button>
