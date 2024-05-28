@@ -2,12 +2,9 @@ import PROJECT_CONSTANTS from '@/lib/constants';
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-
 import SiteMenu from './SiteMenu';
 
 export default function Navbar({ page }: { page: string }) {
-    console.log('Navbar: page=', page);
-
     return (
         <nav className={'min-h-[80px] overflow-hidden bg-primary_dark p-0'}>
             <div className={'flex flex-row'}>
@@ -33,7 +30,7 @@ export default function Navbar({ page }: { page: string }) {
                             height={40}
                         />
                     </Link>
-                    <SiteMenu />
+                    <SiteMenu currentPage={page} />
                 </div>
             </div>
         </nav>

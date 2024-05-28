@@ -9,7 +9,7 @@ import MenuOverlay from './menu/MenuOverlay';
 import { IoMenu } from 'react-icons/io5';
 import { MdAccountCircle } from 'react-icons/md';
 
-const SiteMenu = () => {
+const SiteMenu = ({ currentPage }: { currentPage: string }) => {
     const [isMenuOpen, setMenuOpen] = useState(false);
 
     const handleMenuToggle = (e: { preventDefault: () => void }) => {
@@ -60,7 +60,7 @@ const SiteMenu = () => {
                             'absolute right-0 top-[40px] z-50 h-fit w-[200px] rounded-bl-md border-b-2 border-l-2 border-primary_dark bg-secondary_light'
                         }
                     >
-                        <MenuOverlay />
+                        <MenuOverlay currentPage={currentPage} />
                     </div>
                 )}
             </div>

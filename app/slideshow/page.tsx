@@ -20,7 +20,7 @@ export default async function Page() {
     const pieceList: Pieces[] = await fetchPieces();
 
     return (
-        <PageLayout page="Gallery Slideshow">
+        <PageLayout page="/slideshow">
             <Slideshow piece_list={pieceList} />
         </PageLayout>
     );

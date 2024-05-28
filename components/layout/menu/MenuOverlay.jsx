@@ -3,7 +3,7 @@ import { useUser } from '@clerk/nextjs';
 import MenuOverlayButton from './MenuOverlayButton';
 import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from '@/lib/menu_list.js';
 
-const MenuOverlay = (props) => {
+const MenuOverlay = ({ currentPage }) => {
     const [menuItems, setMenuItems] = useState([]);
     const { isLoaded, isSignedIn, user } = useUser();
 
@@ -20,8 +20,9 @@ const MenuOverlay = (props) => {
     const generateMenu = (menuList) => {
         return menuList.map((menuItem, i) => {
             const [className, menuItemString, , urlEndpoint] = menuItem;
-            console.log(`Creating Menu Item for: ${menuItemString}`);
-            return <MenuOverlayButton key={i} id={i} menu_name={menuItemString} url_endpoint={urlEndpoint} />;
+            console.log(`Url endpoint: ${urlEndpoint} | Current page: ${currentPage}`);
+            const isActive = urlEndpoint === currentPage;
+            return <MenuOverlayButton key={i} id={i} menu_name={menuItemString} url_endpoint={urlEndpoint} isActive={isActive} />;
         });
     };
 
