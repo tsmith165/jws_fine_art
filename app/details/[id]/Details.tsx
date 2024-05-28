@@ -68,8 +68,8 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
 
     const mainImage = allImages[selectedIndex];
     const extraImagesCard = (
-        <div className="flex min-w-[300px] flex-col">
-            <div className="text-dark rounded-t-md bg-primary text-lg font-bold">
+        <div className="z-0 flex min-w-[300px] flex-col">
+            <div className="z-0 rounded-t-md bg-primary">
                 <div className="flex pt-1">
                     {using_extra_images.length !== 0 && (
                         <Link
