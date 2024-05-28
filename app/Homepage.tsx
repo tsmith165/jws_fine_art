@@ -96,7 +96,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                     );
                     const current_paragraph_div = (
                         <p
-                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 stroke-secondary_light stroke-1 p-2 text-lg text-primary md:max-h-fit`}
+                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 p-2 text-lg text-primary md:max-h-fit`}
                             onTouchStart={handleScrollStart}
                             onTouchEnd={handleScrollEnd}
                         >
@@ -158,7 +158,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                         }`}
                     ></div>
                 ))}
-                <button onClick={handleNext} className="text-4xl text-secondary_dark">
+                <button onClick={handleNext} className="border-2 border-secondary_dark text-4xl text-secondary_dark">
                     <IoIosArrowForward />
                 </button>
             </div>
