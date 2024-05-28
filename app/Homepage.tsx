@@ -147,8 +147,8 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                 })}
             </AnimatePresence>
             <div className="absolute bottom-0 flex h-[50px] w-full items-center justify-center space-x-4">
-                <button onClick={handlePrev}>
-                    <IoIosArrowBack className="text-4xl" />
+                <button onClick={handlePrev} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
+                    <IoIosArrowBack className="text-2xl" />
                 </button>
                 {homepage_data.map((_, index) => (
                     <div
@@ -158,8 +158,8 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                         }`}
                     ></div>
                 ))}
-                <button onClick={handleNext}>
-                    <IoIosArrowForward className="text-4xl" />
+                <button onClick={handleNext} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
+                    <IoIosArrowForward className="text-2xl" />
                 </button>
             </div>
         </div>
