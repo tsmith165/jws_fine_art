@@ -27,9 +27,6 @@ export const piecesTable = pgTable('Pieces', {
 export type Pieces = InferSelectModel<typeof piecesTable>;
 export type InsertPieces = InferInsertModel<typeof piecesTable>;
 
-export type Pieces = InferSelectModel<typeof piecesTable>;
-export type InsertPieces = InferInsertModel<typeof piecesTable>;
-
 export const extraImagesTable = pgTable('ExtraImages', {
     id: serial('id').notNull().primaryKey(),
     piece_id: integer('piece_id')
