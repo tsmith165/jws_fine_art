@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import Image from 'next/image';
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
 
@@ -46,15 +46,6 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
         setImageLoaded(true);
     };
 
-    const handlePause = () => {
-        setIsPaused((prev) => !prev);
-        if (!isPaused) {
-            clearInterval(intervalRef.current!);
-        } else {
-            startInterval();
-        }
-    };
-
     const handleNext = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
         startInterval();
@@ -65,7 +56,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
         startInterval();
     };
 
-    const handlePanEnd = (e, { offset, velocity }) => {
+    const handlePanEnd = (e: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
         if (Math.abs(offset.y) < Math.abs(offset.x)) {
             if (offset.x > 100 || velocity.x > 1) {
                 handlePrev();
@@ -76,7 +67,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
     };
 
     return (
-        <div className="relative flex h-full w-full flex-col space-y-2" onClick={handlePause}>
+        <div className="relative flex h-full w-full flex-col space-y-2">
             <AnimatePresence>
                 {homepage_data.map((data, index) => {
                     const isEven = index % 2 === 0;
