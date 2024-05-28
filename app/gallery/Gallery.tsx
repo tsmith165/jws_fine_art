@@ -213,7 +213,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         for (var i = 0; i < column_bottom_list.length; i++) {
             if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
         }
-        if (state.window_width < 600) lowest_height = lowest_height + 60;
+        if (state.window_width < 600) lowest_height = lowest_height + 20;
 
         console.log(`Create gallery complete.  Pieces: `, gallery_pieces);
 
@@ -233,17 +233,13 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
 
     return (
         <>
-            <div className={`max-h-full min-h-full min-w-full max-w-full bg-secondary_dark`}>
-                <div
-                    className={`relative !max-h-[calc(100%-80px)] w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
-                    onClick={(e) => {
-                        gallery_clicked(e);
-                    }}
-                >
-                    <div className={`max-h-full w-full`} style={{ height: state.lowest_height }}>
-                        {state.gallery_pieces}
-                    </div>
-                </div>
+            <div
+                className={`relative !max-h-[calc(100vh-80px)] w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
+                onClick={(e) => {
+                    gallery_clicked(e);
+                }}
+            >
+                <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
             </div>
 
             <FilterMenu />
