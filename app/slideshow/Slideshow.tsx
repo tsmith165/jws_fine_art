@@ -9,20 +9,30 @@ import { FaPause } from 'react-icons/fa';
 import { IoIosArrowForward, IoIosSpeedometer } from 'react-icons/io';
 
 type SlideshowProps = {
-    piece_list: any[];
+    piece_list: { title: string; image_path: string }[];
 };
 
 export default function Slideshow({ piece_list }: SlideshowProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [nextIndex, setNextIndex] = useState(1);
     const [isPlaying, setIsPlaying] = useState(true);
-    const [speed, setSpeed] = useState(1200);
+    const [speed, setSpeed] = useState(2000);
     const [showSlider, setShowSlider] = useState(false);
+    const [isImageLoaded, setIsImageLoaded] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    const preloadNextImage = () => {
+        const img = new window.Image();
+        img.src = piece_list[nextIndex].image_path;
+        img.onload = () => setIsImageLoaded(true);
+    };
+
     useEffect(() => {
-        if (isPlaying) {
+        if (isPlaying && isImageLoaded) {
             timeoutRef.current = setTimeout(() => {
-                setCurrentIndex((prevIndex) => (prevIndex + 1) % piece_list.length);
+                setCurrentIndex(nextIndex);
+                setNextIndex((nextIndex + 1) % piece_list.length);
+                setIsImageLoaded(false);
             }, speed);
         }
 
@@ -31,18 +41,26 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [currentIndex, isPlaying, speed, piece_list.length]);
+    }, [nextIndex, isPlaying, speed, piece_list.length, isImageLoaded]);
+
+    useEffect(() => {
+        preloadNextImage();
+    }, [nextIndex]);
 
     const handlePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
     };
 
     const handlePrev = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + piece_list.length) % piece_list.length);
+        const newIndex = (currentIndex - 1 + piece_list.length) % piece_list.length;
+        setNextIndex(newIndex);
+        setIsImageLoaded(false);
     };
 
     const handleNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % piece_list.length);
+        const newIndex = (currentIndex + 1) % piece_list.length;
+        setNextIndex(newIndex);
+        setIsImageLoaded(false);
     };
 
     const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +75,7 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
     }
 
     const { title, image_path } = current_piece;
+
     return (
         <div className="relative flex h-full w-full flex-col overflow-hidden bg-secondary_dark">
             <div className="h-full w-full">

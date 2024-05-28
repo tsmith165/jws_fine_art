@@ -32,7 +32,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
     const startInterval = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
-            setImageLoaded(false); // Reset image loaded state
+            setImageLoaded(false);
             setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
         }, 7500);
     };
@@ -85,7 +85,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                     );
                     const current_paragraph_div = (
                         <p
-                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 p-2 text-lg text-primary md:max-h-fit`}
+                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit`}
                         >
                             {data.bio_paragraph}
                         </p>
