@@ -17,12 +17,13 @@ function MenuOverlayButton({ menu_name, id, url_endpoint, isActive }) {
     }
 
     return (
-        <Link
-            href={url_endpoint}
-            className={`flex h-[50px] items-center justify-center border-b-2 border-primary_dark bg-primary px-[5px] font-bold text-secondary_dark last:rounded-bl-md last:border-b-0 hover:bg-secondary_dark hover:text-primary ${isActive ? 'bg-secondary text-primary' : ''}`}
+        <div
+            className={`relative z-50 flex h-[50px] items-center justify-center border-b-2 border-primary_dark bg-primary px-[5px] font-bold text-secondary_dark last:rounded-bl-md last:border-b-0 hover:bg-secondary_dark hover:text-primary ${isActive ? 'bg-secondary text-primary' : ''}`}
+            id={id}
+            onClick={() => clerk.signOut()}
         >
             {menu_name}
-        </Link>
+        </div>
     );
 }
 

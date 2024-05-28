@@ -68,8 +68,8 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
 
     const mainImage = allImages[selectedIndex];
     const extraImagesCard = (
-        <div className="z-0 flex min-w-[300px] flex-col">
-            <div className="z-0 rounded-t-md bg-primary">
+        <div className="relative z-0 flex min-w-[300px] flex-col">
+            <div className="relative z-0 rounded-t-md bg-primary">
                 <div className="flex pt-1">
                     {using_extra_images.length !== 0 && (
                         <Link
@@ -97,7 +97,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                     )}
                 </div>
             </div>
-            <div className="h-fit overflow-y-hidden overflow-x-scroll rounded-b-md bg-secondary_dark">
+            <div className="relative z-0 h-fit overflow-y-hidden overflow-x-scroll rounded-b-md bg-secondary_dark">
                 <div className="flex min-h-[120px] w-fit flex-row space-x-2 p-2">
                     {type === 'gallery' &&
                         using_extra_images.map((image: any, index: number) => (
@@ -140,8 +140,8 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
     );
 
     return (
-        <div className="z-0 flex h-full w-full flex-col lg:flex-row">
-            <div className="flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
+        <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
+            <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
                 {/* Main Image */}
                 <div className={`flex h-full max-w-full items-center justify-center`}>
                     <div className="flex h-full w-full items-center justify-center">
@@ -158,7 +158,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                     </div>
                 </div>
             </div>
-            <div className="z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
+            <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
                 <TitleComponent title={title ? `"${title}"` : ''} next_id={next_id} last_id={last_id} />
 
                 <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">

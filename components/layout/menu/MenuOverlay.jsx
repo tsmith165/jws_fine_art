@@ -43,7 +43,7 @@ const MenuOverlay = ({ currentPage }) => {
         return SIGNED_IN_MENU_LIST;
     };
 
-    return <div className="flex flex-col">{menuItems}</div>;
+    return <div className="relative z-50 flex flex-col">{menuItems}</div>;
 };
 
 export default MenuOverlay;
