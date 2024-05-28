@@ -118,12 +118,12 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                     key={piece.id.toString()}
                                     className="flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 border-primary_dark bg-primary p-1 hover:bg-secondary_light"
                                 >
-                                    <div className="flex h-24 w-24 items-center justify-center rounded bg-secondary p-1">
+                                    <div className="flex max-h-24 min-h-24 min-w-24 max-w-24 items-center justify-center rounded bg-secondary p-1">
                                         <Image
                                             src={piece.image_path}
                                             alt={piece.title}
-                                            width={96}
-                                            height={96}
+                                            width={piece.width}
+                                            height={piece.height}
                                             className="h-full w-full object-contain"
                                         />
                                     </div>
@@ -174,12 +174,12 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                     key={piece.id.toString()}
                                     className="flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 border-primary_dark bg-primary p-1 hover:bg-secondary_light"
                                 >
-                                    <div className="flex h-24 w-24 items-center justify-center rounded bg-secondary p-1">
+                                    <div className="flex max-h-24 min-h-24 min-w-24 max-w-24 items-center justify-center rounded bg-secondary p-1">
                                         <Image
                                             src={piece.image_path}
                                             alt={piece.title}
-                                            width={96}
-                                            height={96}
+                                            width={piece.width}
+                                            height={piece.height}
                                             className="h-full w-full object-contain"
                                         />
                                     </div>
@@ -217,12 +217,12 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                 key={piece.id.toString()}
                                 className="flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 border-primary_dark bg-primary p-1 hover:bg-secondary_light"
                             >
-                                <div className="flex h-24 w-24 items-center justify-center rounded bg-secondary p-1">
+                                <div className="flex max-h-24 min-h-24 min-w-24 max-w-24 items-center justify-center rounded bg-secondary p-1">
                                     <Image
                                         src={piece.image_path}
                                         alt={piece.title}
-                                        width={96}
-                                        height={96}
+                                        width={piece.width}
+                                        height={piece.height}
                                         className="h-full w-full object-contain"
                                     />
                                 </div>

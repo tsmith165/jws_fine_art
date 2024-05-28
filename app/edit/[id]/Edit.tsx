@@ -18,7 +18,7 @@ const Edit: React.FC<EditProps> = ({ piece, current_id, next_id, last_id }) => {
     console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${current_id}`);
 
     return (
-        <div className="flex h-[calc(100vh-80px)] w-full flex-col lg:flex-row">
+        <div className="flex h-[calc(100%-80px)] w-full flex-col lg:flex-row">
             <div className="h-1/3 bg-secondary_dark lg:h-full lg:w-2/3">
                 <Image
                     src={piece.image_path}

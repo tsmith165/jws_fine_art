@@ -235,7 +235,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         <>
             <div className={`max-h-full min-h-full min-w-full max-w-full bg-secondary_dark`}>
                 <div
-                    className={`relative !max-h-[calc(100vh-80px)] w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
+                    className={`relative !max-h-[calc(100%-80px)] w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
                     onClick={(e) => {
                         gallery_clicked(e);
                     }}
