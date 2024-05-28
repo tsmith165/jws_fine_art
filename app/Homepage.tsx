@@ -53,26 +53,33 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                             width={300}
                             height={400}
                             quality={100}
-                            className="rounded-lg bg-secondary p-1"
+                            className="h-[calc((100%-80px)/2)] w-auto rounded-lg bg-secondary p-1 md:h-full md:w-full"
                         />
                     );
                     const current_paragraph_div = (
                         <p
-                            className={`max-w-prose rounded-lg bg-secondary_dark bg-opacity-70 stroke-secondary_light stroke-1 p-2 text-lg text-primary`}
+                            className={`max-h-[calc((100%-80px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-70 stroke-secondary_light stroke-1 p-2 text-lg text-primary md:h-full`}
                         >
                             {data.bio_paragraph}
                         </p>
                     );
 
+                    const variants = {
+                        initial: direction,
+                        animate: { x: 0, y: 0, opacity: 1 },
+                        exit: { opacity: 0 },
+                    };
+
                     return (
                         index === currentIndex && (
                             <motion.div
                                 key={data.id}
-                                initial={direction}
-                                animate={imageLoaded ? { x: 0, y: 0, opacity: 1 } : {}}
-                                exit={direction}
+                                initial="initial"
+                                animate={imageLoaded ? 'animate' : {}}
+                                exit="exit"
+                                variants={variants}
                                 transition={{ duration: 1 }}
-                                className="absolute inset-0"
+                                className="absolute inset-0 h-[calc(100%-80px)]"
                             >
                                 <Image
                                     src={data.image_path}
@@ -84,7 +91,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                                     onLoadingComplete={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex flex-col items-center justify-center space-x-4 bg-secondary_dark bg-opacity-40 p-4 text-center text-white md:flex-row">
+                                <div className="absolute inset-0 flex flex-col items-center justify-center space-y-2 bg-secondary_dark bg-opacity-40 p-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
