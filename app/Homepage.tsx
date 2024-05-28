@@ -82,12 +82,12 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                             width={300}
                             height={400}
                             quality={100}
-                            className="h-[calc(calc(100%-50px)/2)] w-auto rounded-lg bg-secondary p-1 md:h-full md:w-full"
+                            className="max-h-[calc(calc(100%-50px)/2)] w-auto rounded-lg bg-secondary p-1 md:h-full md:w-auto"
                         />
                     );
                     const current_paragraph_div = (
                         <p
-                            className={`max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-75 stroke-secondary_light stroke-1 p-2 text-lg text-primary md:h-full`}
+                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 stroke-secondary_light stroke-1 p-2 text-lg text-primary md:max-h-fit`}
                         >
                             {data.bio_paragraph}
                         </p>
@@ -126,7 +126,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                                     onLoadingComplete={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-2 bg-secondary_dark bg-opacity-40 px-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-2 px-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
