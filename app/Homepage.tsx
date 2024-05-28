@@ -27,29 +27,20 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
-    const [isScrolling, setIsScrolling] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    useEffect(() => {
-        if (!isPaused) {
-            intervalRef.current = setInterval(() => {
-                setImageLoaded(false); // Reset image loaded state
-                setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
-            }, 7500);
-
-            return () => clearInterval(intervalRef.current!);
-        }
-    }, [homepage_data.length, isPaused]);
-
-    const resetInterval = () => {
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = setInterval(() => {
-                setImageLoaded(false);
-                setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
-            }, 7500);
-        }
+    const startInterval = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
+            setImageLoaded(false); // Reset image loaded state
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
+        }, 7500);
     };
+
+    useEffect(() => {
+        if (!isPaused) startInterval();
+        return () => clearInterval(intervalRef.current!);
+    }, [homepage_data.length, isPaused]);
 
     const handleImageLoad = () => {
         setImageLoaded(true);
@@ -57,24 +48,31 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
 
     const handlePause = () => {
         setIsPaused((prev) => !prev);
+        if (!isPaused) {
+            clearInterval(intervalRef.current!);
+        } else {
+            startInterval();
+        }
     };
 
     const handleNext = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
-        resetInterval();
+        startInterval();
     };
 
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + homepage_data.length) % homepage_data.length);
-        resetInterval();
+        startInterval();
     };
 
-    const handleScrollStart = () => {
-        setIsScrolling(true);
-    };
-
-    const handleScrollEnd = () => {
-        setIsScrolling(false);
+    const handlePanEnd = (e, { offset, velocity }) => {
+        if (Math.abs(offset.y) < Math.abs(offset.x)) {
+            if (offset.x > 100 || velocity.x > 1) {
+                handlePrev();
+            } else if (offset.x < -100 || velocity.x < -1) {
+                handleNext();
+            }
+        }
     };
 
     return (
@@ -97,8 +95,6 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                     const current_paragraph_div = (
                         <p
                             className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 p-2 text-lg text-primary md:max-h-fit`}
-                            onTouchStart={handleScrollStart}
-                            onTouchEnd={handleScrollEnd}
                         >
                             {data.bio_paragraph}
                         </p>
@@ -120,12 +116,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                                 variants={variants}
                                 transition={{ duration: 1 }}
                                 className="absolute inset-0 h-full"
-                                onClick={handlePause}
-                                onPanEnd={(e, { offset, velocity }) => {
-                                    if (!isScrolling && (Math.abs(offset.x) > 100 || Math.abs(velocity.x) > 1)) {
-                                        offset.x > 0 ? handlePrev() : handleNext();
-                                    }
-                                }}
+                                onPanEnd={handlePanEnd}
                             >
                                 <Image
                                     src={data.image_path}
