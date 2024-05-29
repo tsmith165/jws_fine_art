@@ -24,11 +24,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
         });
     }, [pieceDataPromise]);
 
-    if (!pieceData) {
-        return <LoadingSpinner page="Details" />;
-    }
-
-    const description_raw = pieceData?.description?.length > 2 ? pieceData.description : '';
+    const description_raw = pieceData?.description?.length > 2 ? pieceData?.description : '';
     const db_id = pieceData?.id ?? -1;
     const o_id = pieceData?.o_id ?? '';
     const title = pieceData?.title ?? '';
@@ -36,19 +32,19 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
     const width = pieceData?.width ?? '';
     const height = pieceData?.height ?? '';
     const theme = pieceData?.theme ?? 'None';
-    const framed = pieceData?.framed === true || pieceData.framed.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const sold = pieceData?.sold === true || pieceData.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const available = pieceData?.available === true || pieceData.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
+    const framed = pieceData?.framed === true ? 'True' : pieceData?.framed === false ? 'False' : '';
+    const sold = pieceData?.sold === true ? 'True' : pieceData?.sold === false ? 'False' : '';
+    const available = pieceData?.available === true ? 'True' : pieceData?.available === false ? 'False' : '';
     const piece_type = pieceData?.piece_type ?? '';
     const comments = pieceData?.comments ?? '';
     const description = description_raw.split('<br>').join('\n');
     const real_width = pieceData?.real_width ?? '';
     const real_height = pieceData?.real_height ?? '';
-    const image_path = pieceData.image_path;
+    const image_path = pieceData?.image_path ?? '';
     const instagram = pieceData?.instagram ?? '';
 
-    const extra_images = pieceData.extraImages || [];
-    const progress_images = pieceData.progressImages || [];
+    const extra_images = pieceData?.extraImages || [];
+    const progress_images = pieceData?.progressImages || [];
 
     const using_extra_images = [
         { image_path: image_path, width, height },
@@ -142,27 +138,88 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
         </div>
     );
 
-    return (
-        <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
-            <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
-                {/* Main Image */}
-                <div className={`flex h-full max-w-full items-center justify-center`}>
-                    <div className="flex h-full w-full items-center justify-center">
-                        <Image
-                            src={mainImage.image_path}
-                            alt={title}
-                            quality={100}
-                            priority
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            width={mainImage.width}
-                            height={mainImage.height}
-                            className="h-full w-full object-contain"
+    if (pieceData) {
+        return (
+            <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
+                <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
+                    {/* Main Image */}
+                    <div className={`flex h-full max-w-full items-center justify-center`}>
+                        <div className="flex h-full w-full items-center justify-center">
+                            <Image
+                                src={mainImage.image_path}
+                                alt={title}
+                                quality={100}
+                                priority
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                width={mainImage.width}
+                                height={mainImage.height}
+                                className="h-full w-full object-contain"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
+                    <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData?.next_id} last_id={pieceData?.last_id} />
+
+                    <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
+                        <div className="flex max-w-full flex-row space-x-1.5">
+                            {sold_text === '' ? (
+                                <StripeBrandedButton url={'/checkout/' + db_id} price={price} text="Checkout" />
+                            ) : (
+                                <div className="py-1 text-xl font-[600] text-red-800">{sold_text}</div>
+                            )}
+                            {instagram === null || instagram === '' || instagram.length <= 5 ? null : (
+                                <Link
+                                    className="flex items-center justify-center rounded-md bg-secondary_dark p-1.5 hover:bg-secondary_light"
+                                    href={`https://www.instagram.com/p/${instagram}`}
+                                >
+                                    <Image
+                                        src="/instagram_icon_100.png"
+                                        alt="Instagram Link"
+                                        priority
+                                        width={25}
+                                        height={25}
+                                        className="h-6 w-6"
+                                    />
+                                </Link>
+                            )}
+                            <SignedIn>
+                                <Link href={`/edit/${db_id}`} className="flex h-full w-fit">
+                                    <div className="flex h-full items-center justify-center rounded-md border-2 border-primary_dark bg-primary px-3 font-bold text-secondary_dark hover:border-primary hover:bg-secondary_dark hover:text-primary">
+                                        Edit Piece
+                                    </div>
+                                </Link>
+                            </SignedIn>
+                        </div>
+
+                        {extraImagesCard}
+
+                        <PieceSpecificationTable
+                            realWidth={real_width}
+                            realHeight={real_height}
+                            framed={framed}
+                            comments={comments}
+                            piece_type={piece_type}
+                            with_header={false}
                         />
+                        {description === null || description.length <= 2 ? null : (
+                            <div className="px-2.5 py-2.5">
+                                <h3 className="whitespace-pre-wrap text-lg font-[600] text-primary_dark">{description}</h3>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
+        );
+    }
+
+    return (
+        <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
+            <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
+                <LoadingSpinner page="Details" />
+            </div>
             <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
-                <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData.next_id} last_id={pieceData.last_id} />
+                <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData?.next_id} last_id={pieceData?.last_id} />
 
                 <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
                     <div className="flex max-w-full flex-row space-x-1.5">
@@ -195,7 +252,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                         </SignedIn>
                     </div>
 
-                    {(using_extra_images.length > 0 || using_progress_images.length > 0) && extraImagesCard}
+                    {extraImagesCard}
 
                     <PieceSpecificationTable
                         realWidth={real_width}
