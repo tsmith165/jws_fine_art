@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Pieces } from '@/db/schema';
 import useGalleryStore from '@/stores/gallery_store';
@@ -22,7 +22,8 @@ interface GalleryState {
     gallery_loaded: boolean;
 }
 
-const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
+const Gallery = ({ piecesPromise }: { piecesPromise: Promise<Pieces[]> }) => {
+    const pieces = React.use(piecesPromise);
     const { theme, filterMenuOpen, setFilterMenuOpen } = useGalleryStore((state) => ({
         theme: state.theme,
         filterMenuOpen: state.filterMenuOpen,
@@ -207,7 +208,9 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                     gallery_clicked(e);
                 }}
             >
-                <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
+                <Suspense fallback={<LoadingSpinner />}>
+                    <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
+                </Suspense>
             </div>
             <FilterMenu />
         </>
