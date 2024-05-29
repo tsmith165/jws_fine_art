@@ -1,4 +1,12 @@
 import type { Metadata } from 'next';
+import React, { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import PageLayout from '@/components/layout/PageLayout';
+import Homepage from '@/app/Homepage';
+import { BIOGRAPHY_TEXT } from '@/lib/biography_text';
+import { db, piecesTable } from '@/db/db';
+import { eq, desc } from 'drizzle-orm';
+
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Homepage',
     description: 'Jill Weeks Smith Biography',
@@ -9,36 +17,6 @@ export const metadata: Metadata = {
         images: '/opengraph-image.png',
     },
 };
-
-import { db, piecesTable } from '@/db/db';
-import { eq, desc } from 'drizzle-orm';
-
-import React, { Suspense } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import PageLayout from '@/components/layout/PageLayout';
-import Homepage from '@/app/Homepage';
-import { BIOGRAPHY_TEXT } from '@/lib/biography_text';
-
-export default async function Page() {
-    const numParagraphs = BIOGRAPHY_TEXT.length;
-    const homepage_pieces = await fetchHomepageImages(numParagraphs);
-    const homepage_data = homepage_pieces.map((piece, index) => ({
-        id: piece.id,
-        title: piece.title,
-        image_path: piece.imagePath,
-        width: piece.width,
-        height: piece.height,
-        bio_paragraph: BIOGRAPHY_TEXT[index],
-    }));
-
-    return (
-        <PageLayout page="/">
-            <Suspense fallback={<LoadingSpinner />}>
-                <Homepage homepage_data={homepage_data} />
-            </Suspense>
-        </PageLayout>
-    );
-}
 
 async function fetchHomepageImages(limit: number) {
     console.log(`Fetching pieces with Drizzle`);
@@ -56,4 +34,30 @@ async function fetchHomepageImages(limit: number) {
         .limit(limit);
 
     return pieces;
+}
+
+async function fetchHomepageData() {
+    const numParagraphs = BIOGRAPHY_TEXT.length;
+    const homepage_pieces = await fetchHomepageImages(numParagraphs);
+    return homepage_pieces.map((piece, index) => ({
+        id: piece.id,
+        title: piece.title,
+        image_path: piece.imagePath,
+        width: piece.width,
+        height: piece.height,
+        bio_paragraph: BIOGRAPHY_TEXT[index],
+    }));
+}
+
+export default function Page() {
+    const homepageDataPromise = fetchHomepageData();
+    const homepageData = React.use(homepageDataPromise);
+
+    return (
+        <PageLayout page="/">
+            <Suspense fallback={<LoadingSpinner />}>
+                <Homepage homepage_data={homepageData} />
+            </Suspense>
+        </PageLayout>
+    );
 }

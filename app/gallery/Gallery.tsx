@@ -213,7 +213,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
     };
 
     if (!state.gallery_loaded) {
-        return <LoadingSpinner />;
+        return <LoadingSpinner page="Gallery" />;
     }
 
     return (

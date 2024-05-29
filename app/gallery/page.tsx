@@ -25,13 +25,13 @@ function GalleryWrapper({ pieces }: { pieces: Pieces[] }) {
     return <Gallery pieces={pieces} />;
 }
 
-export default async function Page() {
-    const pieces = await fetchPiecesData();
+export default function Page() {
+    const piecesPromise = fetchPiecesData();
 
     return (
         <PageLayout page="/gallery">
-            <Suspense fallback={<LoadingSpinner />}>
-                <GalleryWrapper pieces={pieces} />
+            <Suspense fallback={<LoadingSpinner page="Gallery" />}>
+                <GalleryWrapper pieces={React.use(piecesPromise)} />
             </Suspense>
         </PageLayout>
     );
