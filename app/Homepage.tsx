@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import Image from 'next/image';
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 interface HomepageData {
     id: number;
@@ -76,7 +77,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
     };
 
     if (homepageData.length === 0) {
-        return <div>Loading...</div>;
+        return <LoadingSpinner page="Biography" />;
     }
 
     return (

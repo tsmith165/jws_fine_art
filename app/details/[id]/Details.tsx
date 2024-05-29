@@ -28,8 +28,6 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
         return <LoadingSpinner page="Details" />;
     }
 
-    console.log(pieceData);
-
     const description_raw = pieceData?.description?.length > 2 ? pieceData.description : '';
     const db_id = pieceData?.id ?? -1;
     const o_id = pieceData?.o_id ?? '';

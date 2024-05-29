@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
-
-// React Icons
 import { MdPlayArrow } from 'react-icons/md';
 import { FaPause } from 'react-icons/fa';
 import { IoIosArrowForward, IoIosSpeedometer } from 'react-icons/io';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 type SlideshowProps = {
-    piece_list: { title: string; image_path: string }[];
+    pieceListPromise: Promise<{ title: string; image_path: string }[]>;
 };
 
-export default function Slideshow({ piece_list }: SlideshowProps) {
+export default function Slideshow({ pieceListPromise }: SlideshowProps) {
+    const [pieceList, setPieceList] = useState<{ title: string; image_path: string }[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextIndex, setNextIndex] = useState(1);
     const [isPlaying, setIsPlaying] = useState(true);
@@ -21,18 +21,28 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const preloadNextImage = () => {
-        const img = new window.Image();
-        img.src = piece_list[nextIndex].image_path;
-        img.onload = () => setIsImageLoaded(true);
+    useEffect(() => {
+        pieceListPromise.then((data) => {
+            setPieceList(data);
+            preloadNextImage(data);
+        });
+    }, [pieceListPromise]);
+
+    const preloadNextImage = (list: { title: string; image_path: string }[]) => {
+        if (list.length > 0) {
+            const img = new window.Image();
+            img.src = list[nextIndex].image_path;
+            img.onload = () => setIsImageLoaded(true);
+        }
     };
 
     useEffect(() => {
         if (isPlaying && isImageLoaded) {
             timeoutRef.current = setTimeout(() => {
                 setCurrentIndex(nextIndex);
-                setNextIndex((nextIndex + 1) % piece_list.length);
+                setNextIndex((nextIndex + 1) % pieceList.length);
                 setIsImageLoaded(false);
+                preloadNextImage(pieceList);
             }, speed);
         }
 
@@ -41,26 +51,24 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [nextIndex, isPlaying, speed, piece_list.length, isImageLoaded]);
-
-    useEffect(() => {
-        preloadNextImage();
-    }, [nextIndex]);
+    }, [nextIndex, isPlaying, speed, pieceList.length, isImageLoaded]);
 
     const handlePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
     };
 
     const handlePrev = () => {
-        const newIndex = (currentIndex - 1 + piece_list.length) % piece_list.length;
+        const newIndex = (currentIndex - 1 + pieceList.length) % pieceList.length;
         setNextIndex(newIndex);
         setIsImageLoaded(false);
+        preloadNextImage(pieceList);
     };
 
     const handleNext = () => {
-        const newIndex = (currentIndex + 1) % piece_list.length;
+        const newIndex = (currentIndex + 1) % pieceList.length;
         setNextIndex(newIndex);
         setIsImageLoaded(false);
+        preloadNextImage(pieceList);
     };
 
     const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,10 +76,14 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
         setSpeed(speed);
     };
 
-    const current_piece = piece_list[currentIndex];
+    if (pieceList.length === 0) {
+        return <LoadingSpinner page="Slideshow" />;
+    }
+
+    const current_piece = pieceList[currentIndex];
 
     if (!current_piece) {
-        return <div>Loading...</div>;
+        return <LoadingSpinner page="Slideshow" />;
     }
 
     const { title, image_path } = current_piece;
@@ -84,7 +96,6 @@ export default function Slideshow({ piece_list }: SlideshowProps) {
                 </div>
             </div>
 
-            {/* Slideshow Menu */}
             <div className="flex h-[50px] w-full items-center justify-between bg-primary_dark px-4 py-2">
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl text-primary">{title}</div>
                 <div className="flex items-center space-x-4">

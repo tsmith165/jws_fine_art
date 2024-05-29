@@ -54,9 +54,7 @@ export default function Page() {
 
     return (
         <PageLayout page="/">
-            <Suspense fallback={<LoadingSpinner />}>
-                <Homepage homepageDataPromise={homepageDataPromise} />
-            </Suspense>
+            <Homepage homepageDataPromise={homepageDataPromise} />
         </PageLayout>
     );
 }
