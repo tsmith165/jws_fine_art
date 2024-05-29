@@ -54,14 +54,12 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
     }, []);
 
     useEffect(() => {
-        console.log('Checking theme change...');
         if (state.window_width && state.window_height) {
             createGallery(state.piece_list, theme);
         }
     }, [theme, state.window_width, state.window_height, state.piece_list]);
 
     const createGallery = async (piece_list: Pieces[], selected_theme: string) => {
-        console.log('Begin create gallery');
         const piece_list_length = piece_list.length;
 
         if (piece_list == null || piece_list.length < 1) {
@@ -69,7 +67,6 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                 `Cannot create gallery, passed piece_list invalid.  Width: ${state.window_width == undefined ? null : state.window_width}`,
             );
         }
-        console.log(`Passed piece_list length: ${piece_list_length}`);
 
         if (state.window_width == undefined) {
             console.error(
@@ -92,8 +89,6 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         // Calculate piece width and max columns based on window width
         var piece_width = state.window_width < MOBILE_SCREEN_MAX_WIDTH ? (state.window_width - 40 - 60 - 20) / 2 : DEFAULT_PIECE_WIDTH;
         var max_columns = Math.trunc(state.window_width / (piece_width + BORDER_MARGIN_WIDTH * 2 + INNER_MARGIN_WIDTH));
-
-        console.log(`PIECE WIDTH: ${piece_width} | MAX COLUMNS: ${max_columns}`);
 
         // Calculate width of one row of images
         var gallery_width = (piece_width + BORDER_MARGIN_WIDTH * 2) * max_columns + 10 * max_columns;
