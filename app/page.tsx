@@ -13,6 +13,8 @@ export const metadata: Metadata = {
 import { db, piecesTable } from '@/db/db';
 import { eq, desc } from 'drizzle-orm';
 
+import React, { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import PageLayout from '@/components/layout/PageLayout';
 import Homepage from '@/app/Homepage';
 import { BIOGRAPHY_TEXT } from '@/lib/biography_text';
@@ -31,7 +33,9 @@ export default async function Page() {
 
     return (
         <PageLayout page="/">
-            <Homepage homepage_data={homepage_data} />
+            <Suspense fallback={<LoadingSpinner />}>
+                <Homepage homepage_data={homepage_data} />
+            </Suspense>
         </PageLayout>
     );
 }

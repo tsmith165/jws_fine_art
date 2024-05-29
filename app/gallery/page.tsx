@@ -1,8 +1,10 @@
 import { Metadata } from 'next';
 import { Pieces } from '@/db/schema';
 import { fetchPieces } from '@/app/actions';
-import Gallery from './Gallery';
+import React, { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import PageLayout from '@/components/layout/PageLayout';
+import Gallery from './Gallery';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery',
@@ -15,12 +17,22 @@ export const metadata: Metadata = {
     },
 };
 
+async function fetchPiecesData(): Promise<Pieces[]> {
+    return await fetchPieces();
+}
+
+function GalleryWrapper({ pieces }: { pieces: Pieces[] }) {
+    return <Gallery pieces={pieces} />;
+}
+
 export default async function Page() {
-    const pieces: Pieces[] = await fetchPieces();
+    const pieces = await fetchPiecesData();
 
     return (
         <PageLayout page="/gallery">
-            <Gallery pieces={pieces} />
+            <Suspense fallback={<LoadingSpinner />}>
+                <GalleryWrapper pieces={pieces} />
+            </Suspense>
         </PageLayout>
     );
 }

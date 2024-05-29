@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { SignedIn, SignedOut, UserButton, ClerkLoading } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 
 import MenuOverlay from './menu/MenuOverlay';
 
@@ -17,11 +17,14 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
         setMenuOpen(!isMenuOpen);
     };
 
+    // get user signed in / signed out state
+    const { user, isSignedIn } = useUser();
+
     return (
         <div className="flex w-fit flex-row">
             {/* Account Profile Button */}
             <div className="hover:!fill-dark !h-[40px] !w-[40px] rounded-t-md bg-secondary_dark !fill-secondary_light p-1 hover:bg-secondary_light">
-                <SignedIn>
+                {isSignedIn ? (
                     <UserButton
                         appearance={{
                             userProfile: {
@@ -31,12 +34,11 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
                             },
                         }}
                     />
-                </SignedIn>
-                <SignedOut>
+                ) : (
                     <Link href="/signin">
                         <MdAccountCircle className="h-full w-full" />
                     </Link>
-                </SignedOut>
+                )}
             </div>
 
             {/* Hamburger Button */}

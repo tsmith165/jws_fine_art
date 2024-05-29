@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Pieces } from '@/db/schema';
-
 import useGalleryStore from '@/stores/gallery_store';
-
-import Piece from './Piece';
 import FilterMenu from './FilterMenu';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
+const Piece = React.lazy(() => import('./Piece'));
 
 const DEFAULT_PIECE_WIDTH = 250;
 const MOBILE_SCREEN_MAX_WIDTH = 500 + 40 + 60 + 30;
@@ -20,6 +19,7 @@ interface GalleryState {
     piece_list: Pieces[];
     gallery_pieces: JSX.Element[];
     lowest_height: number;
+    gallery_loaded: boolean;
 }
 
 const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
@@ -35,11 +35,11 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         piece_list: pieces,
         gallery_pieces: [],
         lowest_height: 0,
+        gallery_loaded: false,
     });
 
     useEffect(() => {
         const handleResize = () => {
-            // console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState((prevState) => ({
                 ...prevState,
                 window_width: window.innerWidth,
@@ -80,25 +80,22 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                 }`,
             );
         }
-        console.log(`Window Width: ${state.window_width} | Window height: ${state.window_height}`);
 
         var gallery_pieces: JSX.Element[] = [];
         var column_bottom_list: number[] = [];
         var lowest_height = 0;
 
-        // Calculate piece width and max columns based on window width
         var piece_width = state.window_width < MOBILE_SCREEN_MAX_WIDTH ? (state.window_width - 40 - 60 - 20) / 2 : DEFAULT_PIECE_WIDTH;
         var max_columns = Math.trunc(state.window_width / (piece_width + BORDER_MARGIN_WIDTH * 2 + INNER_MARGIN_WIDTH));
 
-        // Calculate width of one row of images
         var gallery_width = (piece_width + BORDER_MARGIN_WIDTH * 2) * max_columns + 10 * max_columns;
         if (max_columns < 3) gallery_width -= 20;
 
-        var leftover_width = state.window_width - gallery_width; // Leftover width for margins
-        var margin = leftover_width / 2; // Margin width for left and right
+        var leftover_width = state.window_width - gallery_width;
+        var margin = leftover_width / 2;
 
-        var [cur_x, cur_y] = [margin, INNER_MARGIN_WIDTH]; // Initial X / Y Coords
-        var [row, col] = [0, 0]; // Initial Row / Col
+        var [cur_x, cur_y] = [margin, INNER_MARGIN_WIDTH];
+        var [row, col] = [0, 0];
 
         var row_starting_height = INNER_MARGIN_WIDTH;
         var skip_col = false;
@@ -115,18 +112,15 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
             if (selected_theme != 'None' && selected_theme != undefined && selected_theme != null) {
                 if (selected_theme == 'Available') {
                     if (piece_sold) {
-                        // Skipping piece as it is sold
                         i += 1;
                         continue;
                     }
                     if (!piece_available) {
-                        // Skipping piece as it is not available
                         i += 1;
                         continue;
                     }
                 } else {
                     if (piece_theme !== undefined && !piece_theme.includes(selected_theme)) {
-                        // Skipping piece as it does not match theme
                         i += 1;
                         continue;
                     }
@@ -157,24 +151,19 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                 row_starting_height = column_bottom_list[index] + INNER_MARGIN_WIDTH;
                 skip_col = row_starting_height > column_bottom_list[index + 1] + INNER_MARGIN_WIDTH ? true : false;
             } else {
-                // Y from last row intercepts current row.  Skipping column...
                 skip_col = cur_y > row_starting_height ? true : false;
             }
 
             if (skip_col == true) {
-                // Skipping column since it would collide with previous row
                 if (col < max_columns - 1) {
-                    // set next x coord at end of current piece
                     col += 1;
                     cur_x += piece_width + INNER_MARGIN_WIDTH;
                 } else {
-                    // Reset row / col / cur_x / cur_y to move to next row
                     [row, col] = [row + 1, 0];
                     [cur_x, cur_y] = [margin, 0];
                 }
             } else if (skip_col == false) {
-                // Generate dimensions and create Piece component
-                column_bottom_list[index] = column_bottom_list[index] + scaled_height + INNER_MARGIN_WIDTH; // Current bottom
+                column_bottom_list[index] = column_bottom_list[index] + scaled_height + INNER_MARGIN_WIDTH;
 
                 var dimensions: [number, number, number, number] = [cur_x, cur_y, scaled_width, scaled_height];
 
@@ -193,11 +182,9 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                 );
 
                 if (col < max_columns - 1) {
-                    // set next x coord at end of current piece
                     cur_x += scaled_width + INNER_MARGIN_WIDTH;
                     col += 1;
                 } else {
-                    // Reset row / col / cur_x / cur_y to move to next row
                     [row, col] = [row + 1, 0];
                     [cur_x, cur_y] = [margin, 0];
                 }
@@ -210,13 +197,12 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         }
         if (state.window_width < 600) lowest_height = lowest_height + 20;
 
-        // console.log(`Create gallery complete.  Pieces: `, gallery_pieces);
-
         setState((prevState) => ({
             ...prevState,
             piece_list: piece_list,
             gallery_pieces: gallery_pieces,
             lowest_height: lowest_height,
+            gallery_loaded: true,
         }));
     };
 
@@ -225,6 +211,10 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
             setFilterMenuOpen(false);
         }
     };
+
+    if (!state.gallery_loaded) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <>
@@ -236,7 +226,6 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
             >
                 <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
             </div>
-
             <FilterMenu />
         </>
     );
