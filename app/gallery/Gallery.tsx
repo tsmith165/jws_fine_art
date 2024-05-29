@@ -208,7 +208,7 @@ const Gallery = ({ piecesPromise }: { piecesPromise: Promise<Pieces[]> }) => {
                     gallery_clicked(e);
                 }}
             >
-                <Suspense fallback={<LoadingSpinner />}>
+                <Suspense fallback={<LoadingSpinner page="Gallery" />}>
                     <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
                 </Suspense>
             </div>
