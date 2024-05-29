@@ -51,12 +51,11 @@ async function fetchHomepageData() {
 
 export default function Page() {
     const homepageDataPromise = fetchHomepageData();
-    const homepageData = React.use(homepageDataPromise);
 
     return (
         <PageLayout page="/">
             <Suspense fallback={<LoadingSpinner />}>
-                <Homepage homepage_data={homepageData} />
+                <Homepage homepageDataPromise={homepageDataPromise} />
             </Suspense>
         </PageLayout>
     );

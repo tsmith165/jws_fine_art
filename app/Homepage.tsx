@@ -15,7 +15,7 @@ interface HomepageData {
 }
 
 interface HomepageProps {
-    homepage_data: HomepageData[];
+    homepageDataPromise: Promise<HomepageData[]>;
 }
 
 const slideDirections = [
@@ -25,36 +25,43 @@ const slideDirections = [
     { y: '100vh', opacity: 0 },
 ];
 
-const Homepage = ({ homepage_data }: HomepageProps) => {
+const Homepage = ({ homepageDataPromise }: HomepageProps) => {
+    const [homepageData, setHomepageData] = useState<HomepageData[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    useEffect(() => {
+        homepageDataPromise.then((data) => {
+            setHomepageData(data);
+        });
+    }, [homepageDataPromise]);
+
     const startInterval = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
             setImageLoaded(false);
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % homepageData.length);
         }, 7500);
     };
 
     useEffect(() => {
         if (!isPaused) startInterval();
         return () => clearInterval(intervalRef.current!);
-    }, [homepage_data.length, isPaused]);
+    }, [homepageData.length, isPaused]);
 
     const handleImageLoad = () => {
         setImageLoaded(true);
     };
 
     const handleNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % homepage_data.length);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % homepageData.length);
         startInterval();
     };
 
     const handlePrev = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + homepage_data.length) % homepage_data.length);
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + homepageData.length) % homepageData.length);
         startInterval();
     };
 
@@ -68,10 +75,14 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
         }
     };
 
+    if (homepageData.length === 0) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="relative flex h-full w-full flex-col space-y-2">
             <AnimatePresence>
-                {homepage_data.map((data, index) => {
+                {homepageData.map((data, index) => {
                     const isEven = index % 2 === 0;
                     const direction = slideDirections[index % slideDirections.length];
 
@@ -135,7 +146,7 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                 <button onClick={handlePrev} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
                     <IoIosArrowBack className="text-2xl" />
                 </button>
-                {homepage_data.map((_, index) => (
+                {homepageData.map((_, index) => (
                     <div
                         key={index}
                         className={`h-4 w-4 rounded-full border-2 ${

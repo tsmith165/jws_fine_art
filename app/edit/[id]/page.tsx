@@ -14,15 +14,34 @@ import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 import PageLayout from '@/components/layout/PageLayout';
 import Edit from '@/app/edit/[id]/Edit';
 import { SignedIn } from '@clerk/nextjs';
+import React, { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
-export default async function Page({ params }: { params: { id: string } }) {
-    const piece = await fetchPieceById(parseInt(params.id));
-    const { next_id, last_id } = await fetchAdjacentPieceIds(parseInt(params.id));
+async function fetchPieceData(id: number) {
+    const piece = await fetchPieceById(id);
+    const { next_id, last_id } = await fetchAdjacentPieceIds(id);
+    return { ...piece, next_id, last_id };
+}
+
+const pieceDataCache: { [key: number]: Promise<any> } = {};
+
+function usePieceData(id: number) {
+    if (!pieceDataCache[id]) {
+        pieceDataCache[id] = fetchPieceData(id);
+    }
+    return pieceDataCache[id];
+}
+
+export default function Page({ params }: { params: { id: string } }) {
+    const id = parseInt(params.id, 10);
+    const pieceDataPromise = usePieceData(id);
 
     return (
-        <PageLayout page={`/edit/${params.id}`}>
+        <PageLayout page={`/edit/${id}`}>
             <SignedIn>
-                <Edit piece={piece} current_id={params.id} next_id={next_id || 0} last_id={last_id || 0} />
+                <Suspense fallback={<LoadingSpinner page="Edit" />}>
+                    <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
+                </Suspense>
             </SignedIn>
         </PageLayout>
     );

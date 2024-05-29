@@ -8,23 +8,41 @@ import PieceOrderPanel from './PieceOrderPanel';
 import { handleTitleUpdate } from '../actions';
 
 interface EditProps {
-    piece: any;
-    current_id: string;
-    next_id: number;
-    last_id: number;
+    pieceDataPromise: Promise<any>;
+    current_id: number;
 }
 
-const Edit: React.FC<EditProps> = ({ piece, current_id, next_id, last_id }) => {
+const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
+    let pieceData: any;
+    try {
+        pieceData = React.use(pieceDataPromise);
+    } catch (error) {
+        console.error('Error fetching piece data:', error);
+        return <div>Error loading piece data.</div>;
+    }
+
+    console.log('Piece Data:', pieceData); // Debugging log
+
+    if (!pieceData) {
+        return <div>Loading...</div>;
+    }
+
+    const { next_id, last_id } = pieceData;
+
+    if (!pieceData.id || !pieceData.image_path) {
+        return <div>Piece data is missing.</div>;
+    }
+
     console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${current_id}`);
 
     return (
-        <div className="flex h-[calc(100%-80px)] w-full flex-col lg:flex-row">
+        <div className="flex h-full w-full flex-col lg:flex-row">
             <div className="h-1/3 bg-secondary_dark lg:h-full lg:w-2/3">
                 <Image
-                    src={piece.image_path}
-                    alt={piece.title}
-                    width={piece.width}
-                    height={piece.height}
+                    src={pieceData.image_path}
+                    alt={pieceData.title}
+                    width={pieceData.width}
+                    height={pieceData.height}
                     quality={100}
                     className="h-full w-full object-contain"
                 />
@@ -42,12 +60,12 @@ const Edit: React.FC<EditProps> = ({ piece, current_id, next_id, last_id }) => {
                     <Link href={`/details/${current_id}`}>
                         <MdPageview className="h-[48px] w-[48px] cursor-pointer rounded-lg bg-secondary fill-secondary_dark p-1 hover:bg-secondary_dark hover:fill-primary" />
                     </Link>
-                    <form action={handleTitleUpdate} method="POST" className="flex w-full flex-grow flex-row rounded-lg bg-secondary_dark">
-                        <input type="hidden" name="pieceId" value={piece.id} />
+                    <form action={handleTitleUpdate} className="flex w-full flex-grow flex-row rounded-lg bg-secondary_dark">
+                        <input type="hidden" name="pieceId" value={pieceData.id} />
                         <input
                             type="text"
                             name="newTitle"
-                            defaultValue={piece.title}
+                            defaultValue={pieceData.title}
                             className="m-0 flex w-full flex-grow rounded-lg border-none bg-secondary_dark px-3 py-1 text-2xl font-bold text-primary outline-none"
                         />
                         <button
@@ -58,8 +76,8 @@ const Edit: React.FC<EditProps> = ({ piece, current_id, next_id, last_id }) => {
                         </button>
                     </form>
                 </div>
-                <EditForm current_piece={piece} />
-                <PieceOrderPanel current_piece={piece} />
+                <EditForm current_piece={pieceData} />
+                <PieceOrderPanel current_piece={pieceData} />
             </div>
         </div>
     );
