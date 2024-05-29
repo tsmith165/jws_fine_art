@@ -203,14 +203,12 @@ const Gallery = ({ piecesPromise }: { piecesPromise: Promise<Pieces[]> }) => {
     return (
         <>
             <div
-                className={`relative !max-h-[calc(100vh-80px)] w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
+                className={`relative !h-[calc(100vh-80px)] w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
                 onClick={(e) => {
                     gallery_clicked(e);
                 }}
             >
-                <Suspense fallback={<LoadingSpinner page="Gallery" />}>
-                    <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
-                </Suspense>
+                <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
             </div>
             <FilterMenu />
         </>

@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { Pieces } from '@/db/schema';
 import { fetchPieces } from '@/app/actions';
-import React from 'react';
+import React, { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import PageLayout from '@/components/layout/PageLayout';
 import Gallery from './Gallery';
 
@@ -22,10 +23,13 @@ async function fetchPiecesData(): Promise<Pieces[]> {
 
 export default function Page() {
     const piecesPromise = fetchPiecesData();
+    console.log(`Fetched pieces with Drizzle`);
 
     return (
         <PageLayout page="/gallery">
-            <Gallery piecesPromise={piecesPromise} />
+            <Suspense fallback={<LoadingSpinner page="Gallery" />}>
+                <Gallery piecesPromise={piecesPromise} />
+            </Suspense>
         </PageLayout>
     );
 }
