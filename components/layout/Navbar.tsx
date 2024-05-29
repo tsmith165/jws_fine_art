@@ -17,6 +17,7 @@ export default function Navbar({ page }: { page: string }) {
                             width={274}
                             height={80}
                             sizes="250px"
+                            priority
                         />
                     </div>
                 </Link>

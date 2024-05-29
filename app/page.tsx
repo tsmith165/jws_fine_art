@@ -22,8 +22,10 @@ export default async function Page() {
     const homepage_pieces = await fetchHomepageImages(numParagraphs);
     const homepage_data = homepage_pieces.map((piece, index) => ({
         id: piece.id,
-        title: piece.name,
+        title: piece.title,
         image_path: piece.imagePath,
+        width: piece.width,
+        height: piece.height,
         bio_paragraph: BIOGRAPHY_TEXT[index],
     }));
 
@@ -38,9 +40,11 @@ async function fetchHomepageImages(limit: number) {
     console.log(`Fetching pieces with Drizzle`);
     const pieces = await db
         .select({
-            imagePath: piecesTable.image_path,
             id: piecesTable.id,
-            name: piecesTable.title,
+            title: piecesTable.title,
+            imagePath: piecesTable.image_path,
+            width: piecesTable.width,
+            height: piecesTable.height,
         })
         .from(piecesTable)
         .where(eq(piecesTable.active, true))

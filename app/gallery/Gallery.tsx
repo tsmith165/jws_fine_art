@@ -39,7 +39,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
 
     useEffect(() => {
         const handleResize = () => {
-            console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
+            // console.log(`Window Width: ${window.innerWidth} | Height: ${window.innerHeight}`);
             setState((prevState) => ({
                 ...prevState,
                 window_width: window.innerWidth,
@@ -215,7 +215,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         }
         if (state.window_width < 600) lowest_height = lowest_height + 20;
 
-        console.log(`Create gallery complete.  Pieces: `, gallery_pieces);
+        // console.log(`Create gallery complete.  Pieces: `, gallery_pieces);
 
         setState((prevState) => ({
             ...prevState,

@@ -10,9 +10,6 @@ const MenuOverlay = ({ currentPage }) => {
     useEffect(() => {
         const usingMenu = selectMenu(isLoaded, isSignedIn, user);
 
-        console.log('Menu List (Next Line):');
-        console.log(usingMenu);
-
         const items = generateMenu(usingMenu);
         setMenuItems(items);
     }, [isLoaded, isSignedIn, user]);
@@ -20,7 +17,7 @@ const MenuOverlay = ({ currentPage }) => {
     const generateMenu = (menuList) => {
         return menuList.map((menuItem, i) => {
             const [className, menuItemString, , urlEndpoint] = menuItem;
-            console.log(`Url endpoint: ${urlEndpoint} | Current page: ${currentPage}`);
+            // console.log(`Url endpoint: ${urlEndpoint} | Current page: ${currentPage}`);
             const isActive = urlEndpoint === currentPage;
             return <MenuOverlayButton key={i} id={i} menu_name={menuItemString} url_endpoint={urlEndpoint} isActive={isActive} />;
         });

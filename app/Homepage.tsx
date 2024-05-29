@@ -9,6 +9,8 @@ interface HomepageData {
     id: number;
     title: string;
     image_path: string;
+    width: number;
+    height: number;
     bio_paragraph: string;
 }
 
@@ -112,11 +114,12 @@ const Homepage = ({ homepage_data }: HomepageProps) => {
                                 <Image
                                     src={data.image_path}
                                     alt={data.title}
-                                    layout="fill"
-                                    objectFit="cover"
+                                    width={data.width}
+                                    height={data.height}
+                                    className="h-full w-full object-cover"
                                     quality={100}
                                     priority
-                                    onLoadingComplete={handleImageLoad}
+                                    onLoad={handleImageLoad}
                                 />
 
                                 <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-2 px-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">

@@ -10,7 +10,18 @@ const nextConfig = {
         defaultLocale: 'en',
     },
     images: {
-        domains: [AWS_BUCKET_URL.replace('https://', ''), 'utfs.io'],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: AWS_BUCKET_URL.replace('https://', ''),
+                pathname: '**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'utfs.io',
+                pathname: '**',
+            },
+        ],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
     },
     async rewrites() {
