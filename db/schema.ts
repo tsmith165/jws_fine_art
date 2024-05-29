@@ -92,4 +92,6 @@ export type InsertVerifiedTransactions = InferInsertModel<typeof verifiedTransac
 export type PiecesWithImages = Pieces & {
     extraImages: ExtraImages[];
     progressImages: ProgressImages[];
+    next_id?: number;
+    last_id?: number;
 };

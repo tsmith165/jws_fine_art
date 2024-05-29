@@ -1,47 +1,54 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
 import { SignedIn } from '@clerk/nextjs';
-
 import PieceSpecificationTable from '@/app/details/[id]/PieceSpecificationTable';
 import TitleComponent from '@/app/details/[id]/TitleComponent';
-
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 interface DetailsProps {
-    piece: any;
+    pieceDataPromise: Promise<any>;
     selectedIndex: number;
     type: string;
-    next_id: number;
-    last_id: number;
 }
 
-const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, last_id }) => {
-    const description_raw = piece?.description?.length > 2 ? piece.description : '';
-    const db_id = piece?.id ?? -1;
-    const o_id = piece?.o_id ?? '';
-    const title = piece?.title ?? '';
-    const price = piece?.price ?? '';
-    const width = piece?.width ?? '';
-    const height = piece?.height ?? '';
-    const theme = piece?.theme ?? 'None';
-    const framed = piece?.framed === true || piece.framed.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const sold = piece?.sold === true || piece.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const available = piece?.available === true || piece.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
-    const piece_type = piece?.piece_type ?? '';
-    const comments = piece?.comments ?? '';
+const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type }) => {
+    const [pieceData, setPieceData] = useState<any>(null);
+
+    useEffect(() => {
+        pieceDataPromise.then((data) => {
+            setPieceData(data);
+        });
+    }, [pieceDataPromise]);
+
+    if (!pieceData) {
+        return <LoadingSpinner page="Details" />;
+    }
+
+    const description_raw = pieceData?.description?.length > 2 ? pieceData.description : '';
+    const db_id = pieceData?.id ?? -1;
+    const o_id = pieceData?.o_id ?? '';
+    const title = pieceData?.title ?? '';
+    const price = pieceData?.price ?? '';
+    const width = pieceData?.width ?? '';
+    const height = pieceData?.height ?? '';
+    const theme = pieceData?.theme ?? 'None';
+    const framed = pieceData?.framed === true || pieceData.framed.toString().toLowerCase() === 'true' ? 'True' : 'False';
+    const sold = pieceData?.sold === true || pieceData.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
+    const available = pieceData?.available === true || pieceData.sold.toString().toLowerCase() === 'true' ? 'True' : 'False';
+    const piece_type = pieceData?.piece_type ?? '';
+    const comments = pieceData?.comments ?? '';
     const description = description_raw.split('<br>').join('\n');
-    const real_width = piece?.real_width ?? '';
-    const real_height = piece?.real_height ?? '';
-    const image_path = piece.image_path;
-    const instagram = piece?.instagram ?? '';
+    const real_width = pieceData?.real_width ?? '';
+    const real_height = pieceData?.real_height ?? '';
+    const image_path = pieceData.image_path;
+    const instagram = pieceData?.instagram ?? '';
 
-    const extra_images = piece.extraImages || [];
-    const progress_images = piece.progressImages || [];
-
-    console.log(`Using Extra Images: ` + JSON.stringify(extra_images));
-    console.log(`Using Progress Images: ` + JSON.stringify(progress_images));
+    const extra_images = pieceData.extraImages || [];
+    const progress_images = pieceData.progressImages || [];
 
     const using_extra_images = [
         { src: image_path, width, height },
@@ -57,14 +64,9 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
         height: image.height,
     }));
 
-    console.log(`Using Extra Images: ${using_extra_images.length !== 0} | Using Progress Images: ${using_progress_images.length !== 0}`);
-
     const sold_text = sold.toLowerCase() === 'true' ? 'Sold' : available.toLowerCase() === 'false' ? 'Not For Sale' : '';
 
     const allImages = [...using_extra_images, ...using_progress_images];
-
-    console.log(`Type: '${type}'`);
-    console.log(`Current DB Id: ${db_id}`);
 
     const mainImage = allImages[selectedIndex];
     const extraImagesCard = (
@@ -159,7 +161,7 @@ const Details: React.FC<DetailsProps> = ({ piece, selectedIndex, type, next_id, 
                 </div>
             </div>
             <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
-                <TitleComponent title={title ? `"${title}"` : ''} next_id={next_id} last_id={last_id} />
+                <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData.next_id} last_id={pieceData.last_id} />
 
                 <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
                     <div className="flex max-w-full flex-row space-x-1.5">
