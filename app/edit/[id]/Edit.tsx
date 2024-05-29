@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
@@ -6,6 +8,7 @@ import { MdPageview } from 'react-icons/md';
 import EditForm from './EditForm';
 import PieceOrderPanel from './PieceOrderPanel';
 import { handleTitleUpdate } from '../actions';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 interface EditProps {
     pieceDataPromise: Promise<any>;
@@ -13,18 +16,16 @@ interface EditProps {
 }
 
 const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
-    let pieceData: any;
-    try {
-        pieceData = React.use(pieceDataPromise);
-    } catch (error) {
-        console.error('Error fetching piece data:', error);
-        return <div>Error loading piece data.</div>;
-    }
+    const [pieceData, setPieceData] = useState<any>(null);
 
-    console.log('Piece Data:', pieceData); // Debugging log
+    useEffect(() => {
+        pieceDataPromise.then((data) => {
+            setPieceData(data);
+        });
+    }, [pieceDataPromise]);
 
     if (!pieceData) {
-        return <div>Loading...</div>;
+        return <LoadingSpinner page="Edit Details" />;
     }
 
     const { next_id, last_id } = pieceData;

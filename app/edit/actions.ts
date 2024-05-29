@@ -173,7 +173,7 @@ export async function handleImageTitleEdit(imageId: number, newTitle: string, im
     revalidatePath(`/edit/${imageId}`);
 }
 
-export async function handleImageDeleteAction(pieceId: number, imagePath: string, imageType: string) {
+export async function handleImageDelete(pieceId: number, imagePath: string, imageType: string) {
     const deleteTable = imageType === 'extra' ? extraImagesTable : progressImagesTable;
     await db.delete(deleteTable).where(and(eq(deleteTable.piece_id, pieceId), eq(deleteTable.image_path, imagePath)));
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { IoIosArrowUp, IoIosArrowDown, IoIosTrash } from 'react-icons/io';
-import { MdModeEdit } from 'react-icons/md';
-import { handleImageReorder, handleImageDeleteAction, handleImageTitleEdit } from '../actions';
+import { handleImageReorder, handleImageDelete, handleImageTitleEdit } from '../actions';
 import { PiecesWithImages, ExtraImages, ProgressImages } from '@/db/schema';
 import Image from 'next/image';
 
@@ -14,7 +13,6 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
     const progress_images: ProgressImages[] = current_piece.progressImages || [];
 
     async function handleImageReorderAction(formData: FormData) {
-        'use server';
         const pieceId = Number(formData.get('pieceId'));
         const currentPieceId = Number(formData.get('currentPieceId'));
         const targetPieceId = Number(formData.get('targetPieceId'));
@@ -28,8 +26,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         await handleImageReorder(pieceId, currentPieceId, targetPieceId, imageType);
     }
 
-    async function handleImageDelete(formData: FormData) {
-        'use server';
+    async function handleImageDeleteAction(formData: FormData) {
         const pieceId = Number(formData.get('pieceId'));
         const imageType = formData.get('imageType')?.toString();
         const imagePath = formData.get('imagePath')?.toString();
@@ -39,11 +36,10 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
             return;
         }
 
-        await handleImageDeleteAction(pieceId, imagePath, imageType);
+        await handleImageDelete(pieceId, imagePath, imageType);
     }
 
     async function handleImageTitleEditAction(formData: FormData) {
-        'use server';
         const imageId = Number(formData.get('imageId'));
         const newTitle = formData.get('newTitle')?.toString();
         const imageType = formData.get('imageType')?.toString();
@@ -98,7 +94,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                     </div>
 
                     <div className="flex h-[58px] items-center justify-center">
-                        <form action={handleImageDelete} className="h-6 w-6">
+                        <form action={handleImageDeleteAction} className="h-6 w-6">
                             <input type="hidden" name="pieceId" value={current_piece.id.toString()} />
                             <input type="hidden" name="imagePath" value={image.image_path} />
                             <input type="hidden" name="imageType" value={imageType} />

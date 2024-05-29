@@ -56,7 +56,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
     return (
         <PageLayout page={`/edit/${firstId}`}>
-            <Suspense fallback={<LoadingSpinner page="Edit" />}>
+            <Suspense fallback={<LoadingSpinner page="Edit Details" />}>
                 <Edit pieceDataPromise={pieceDataPromise} current_id={firstId} />
             </Suspense>
         </PageLayout>

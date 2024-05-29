@@ -28,6 +28,8 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
         return <LoadingSpinner page="Details" />;
     }
 
+    console.log(pieceData);
+
     const description_raw = pieceData?.description?.length > 2 ? pieceData.description : '';
     const db_id = pieceData?.id ?? -1;
     const o_id = pieceData?.o_id ?? '';
@@ -51,15 +53,15 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
     const progress_images = pieceData.progressImages || [];
 
     const using_extra_images = [
-        { src: image_path, width, height },
+        { image_path: image_path, width, height },
         ...extra_images.map((image: any) => ({
-            src: image.image_path,
+            image_path: image.image_path,
             width: image.width,
             height: image.height,
         })),
     ];
     const using_progress_images = progress_images.map((image: any) => ({
-        src: image.image_path,
+        image_path: image.image_path,
         width: image.width,
         height: image.height,
     }));
@@ -69,6 +71,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
     const allImages = [...using_extra_images, ...using_progress_images];
 
     const mainImage = allImages[selectedIndex];
+    console.log(`Main Image: ${mainImage}`);
     const extraImagesCard = (
         <div className="relative z-0 flex min-w-[300px] flex-col">
             <div className="relative z-0 rounded-t-md bg-primary">
@@ -111,7 +114,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                     flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                             >
                                 <Image
-                                    src={image.src}
+                                    src={image.image_path}
                                     priority
                                     alt=""
                                     width={image.width}
@@ -132,7 +135,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                     className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
                                     flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                                 >
-                                    <Image src={image.src} alt="" width={image.width} height={image.height} quality={75} />
+                                    <Image src={image.image_path} alt="" width={image.width} height={image.height} quality={75} />
                                 </Link>
                             );
                         })}
@@ -148,7 +151,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                 <div className={`flex h-full max-w-full items-center justify-center`}>
                     <div className="flex h-full w-full items-center justify-center">
                         <Image
-                            src={mainImage.src}
+                            src={mainImage.image_path}
                             alt={title}
                             quality={100}
                             priority

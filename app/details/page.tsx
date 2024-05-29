@@ -45,27 +45,18 @@ function usePieceData(id: number) {
 }
 
 export default function Page({ params, searchParams }: PageProps) {
-    const { id: idParam } = params;
-    let id = idParam ? parseInt(idParam, 10) : undefined;
-
-    if (!id) {
-        const firstIdPromise = fetchFirstPieceId();
-        const firstId = React.use(firstIdPromise);
-        if (firstId) {
-            redirect(`/details/${firstId}`);
-        } else {
-            return <div>No pieces available.</div>;
-        }
+    const firstIdPromise = fetchFirstPieceId();
+    const firstId = React.use(firstIdPromise);
+    if (!firstId) {
+        return <div>No pieces available.</div>;
     }
 
-    const pieceDataPromise = usePieceData(id as number);
-    const selectedIndex = parseInt(searchParams?.selected || '0', 10);
-    const type = searchParams?.type || 'gallery';
+    const pieceDataPromise = usePieceData(firstId);
 
     return (
-        <PageLayout page={`/details/${id}`}>
+        <PageLayout page={`/details/${firstId}`}>
             <Suspense fallback={<LoadingSpinner page="Details" />}>
-                <Details pieceDataPromise={pieceDataPromise} selectedIndex={selectedIndex} type={type} />
+                <Details pieceDataPromise={pieceDataPromise} selectedIndex={0} type={'gallery'} />
             </Suspense>
         </PageLayout>
     );
