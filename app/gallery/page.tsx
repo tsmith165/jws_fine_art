@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
 import { Pieces } from '@/db/schema';
 import { fetchPieces } from '@/app/actions';
-import React, { Suspense } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import React from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import Gallery from './Gallery';
 
@@ -21,18 +20,12 @@ async function fetchPiecesData(): Promise<Pieces[]> {
     return await fetchPieces();
 }
 
-function GalleryWrapper({ pieces }: { pieces: Pieces[] }) {
-    return <Gallery pieces={pieces} />;
-}
-
 export default function Page() {
     const piecesPromise = fetchPiecesData();
 
     return (
         <PageLayout page="/gallery">
-            <Suspense fallback={<LoadingSpinner page="Gallery" />}>
-                <GalleryWrapper pieces={React.use(piecesPromise)} />
-            </Suspense>
+            <Gallery piecesPromise={piecesPromise} />
         </PageLayout>
     );
 }
