@@ -95,8 +95,8 @@ export async function fetchFirstPieceId(): Promise<number | null> {
             id: piecesTable.id,
         })
         .from(piecesTable)
-        .where(eq(piecesTable.active, true))
-        .orderBy(piecesTable.o_id)
+        .where(and(eq(piecesTable.active, true), eq(piecesTable.sold, false), eq(piecesTable.available, true)))
+        .orderBy(desc(piecesTable.o_id))
         .limit(1);
 
     return piece.length > 0 ? piece[0].id : null;
