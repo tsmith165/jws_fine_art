@@ -111,7 +111,7 @@ const Gallery = ({ piecesPromise }: { piecesPromise: Promise<Pieces[]> }) => {
                         continue;
                     }
                 } else {
-                    if (piece_theme !== selected_theme) {
+                    if (!piece_theme.includes(selected_theme)) {
                         i += 1;
                         continue;
                     }
