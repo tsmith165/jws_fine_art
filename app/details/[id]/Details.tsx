@@ -29,8 +29,8 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
     const o_id = pieceData?.o_id ?? '';
     const title = pieceData?.title ?? '';
     const price = pieceData?.price ?? '';
-    const width = pieceData?.width ?? '';
-    const height = pieceData?.height ?? '';
+    const width = pieceData?.width ?? 0;
+    const height = pieceData?.height ?? 0;
     const theme = pieceData?.theme ?? 'None';
     const framed = pieceData?.framed === true ? 'True' : pieceData?.framed === false ? 'False' : '';
     const sold = pieceData?.sold === true ? 'True' : pieceData?.sold === false ? 'False' : '';
@@ -65,7 +65,6 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
     const allImages = [...using_extra_images, ...using_progress_images];
 
     const mainImage = allImages[selectedIndex];
-    console.log(`Main Image: ${mainImage}`);
     const extraImagesCard = (
         <div className="relative z-0 flex min-w-[300px] flex-col">
             <div className="relative z-0 rounded-t-md bg-primary">
@@ -107,15 +106,17 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                 className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
                                     flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                             >
-                                <Image
-                                    src={image.image_path}
-                                    priority
-                                    alt=""
-                                    width={image.width}
-                                    height={image.height}
-                                    quality={75}
-                                    className="max-h-full max-w-full object-contain"
-                                />
+                                {image.image_path === null || image.image_path === undefined || image.image_path === '' ? null : (
+                                    <Image
+                                        src={image.image_path}
+                                        priority
+                                        alt=""
+                                        width={image.width}
+                                        height={image.height}
+                                        quality={75}
+                                        className="max-h-full max-w-full object-contain"
+                                    />
+                                )}
                             </Link>
                         ))}
                     {type === 'progress' &&
@@ -129,7 +130,9 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                     className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
                                     flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                                 >
-                                    <Image src={image.image_path} alt="" width={image.width} height={image.height} quality={75} />
+                                    {image.image_path === null || image.image_path === undefined || image.image_path === '' ? null : (
+                                        <Image src={image.image_path} alt="" width={image.width} height={image.height} quality={75} />
+                                    )}
                                 </Link>
                             );
                         })}
