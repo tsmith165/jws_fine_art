@@ -66,8 +66,8 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
 
     return (
         <div className="flex h-full w-full flex-col items-center overflow-y-auto py-4">
-            <div className="w-4/5 rounded-lg bg-primary text-lg font-bold text-secondary_dark">
-                <div className="w-full rounded-t-md bg-secondary text-lg font-bold text-secondary_dark">
+            <div className="w-[95%] rounded-lg bg-primary_dark text-lg font-bold text-secondary_dark md:w-4/5">
+                <div className="w-full rounded-t-md bg-primary_dark text-lg font-bold text-secondary_dark">
                     <div className="flex pt-1">
                         {pieces.length > 0 && (
                             <Link
@@ -75,10 +75,10 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                 className={`rounded-t-md px-2 py-1 ${
                                     activeTab === 'manage'
                                         ? 'bg-secondary_dark text-primary'
-                                        : 'bg-secondary_light text-primary_dark hover:bg-secondary_dark hover:text-primary'
+                                        : 'bg-primary text-secondary_dark hover:bg-secondary_dark hover:text-primary'
                                 }`}
                             >
-                                Piece Management
+                                Order
                             </Link>
                         )}
                         {deletedPieces.length > 0 && (
@@ -87,10 +87,10 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                 className={`rounded-t-md px-2 py-1 ${
                                     activeTab === 'deleted'
                                         ? 'bg-secondary_dark text-primary'
-                                        : 'bg-secondary_light text-primary_dark hover:bg-secondary_dark hover:text-primary'
+                                        : 'bg-primary text-secondary_dark hover:bg-secondary_dark hover:text-primary'
                                 }`}
                             >
-                                Deleted Pieces
+                                Archive
                             </Link>
                         )}
                         <Link
@@ -98,10 +98,10 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                             className={`rounded-t-md px-2 py-1 ${
                                 activeTab === 'priority'
                                     ? 'bg-secondary_dark text-primary'
-                                    : 'bg-secondary_light text-primary_dark hover:bg-secondary_dark hover:text-primary'
+                                    : 'bg-primary text-secondary_dark hover:bg-secondary_dark hover:text-primary'
                             }`}
                         >
-                            Piece Priority
+                            Priority
                         </Link>
                     </div>
                 </div>
@@ -116,7 +116,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                             return (
                                 <div
                                     key={piece.id.toString()}
-                                    className="flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 border-primary_dark bg-primary p-1 hover:bg-secondary_light"
+                                    className="flex w-full flex-row items-center space-x-4 rounded-b-lg border-b-2 border-primary_dark bg-secondary p-1 hover:bg-primary"
                                 >
                                     <div className="flex max-h-24 min-h-24 min-w-24 max-w-24 items-center justify-center rounded bg-secondary p-1">
                                         <Image
@@ -134,7 +134,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             <input type="hidden" name="nextId" value={last_piece.id.toString()} />
                                             <input type="hidden" name="nextOrderId" value={last_piece.o_id.toString()} />
                                             <button type="submit">
-                                                <IoIosArrowForward className="h-8 w-8 -rotate-90 transform cursor-pointer rounded-lg bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark" />
+                                                <IoIosArrowForward className="h-8 w-8 -rotate-90 transform cursor-pointer rounded-lg bg-secondary_dark fill-primary hover:bg-primary_dark hover:fill-secondary_dark" />
                                             </button>
                                         </form>
 
@@ -144,19 +144,21 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             <input type="hidden" name="nextId" value={next_piece.id.toString()} />
                                             <input type="hidden" name="nextOrderId" value={next_piece.o_id.toString()} />
                                             <button type="submit">
-                                                <IoIosArrowForward className="h-8 w-8 rotate-90 transform cursor-pointer rounded-lg bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark" />
+                                                <IoIosArrowForward className="h-8 w-8 rotate-90 transform cursor-pointer rounded-lg bg-secondary_dark fill-primary hover:bg-primary_dark hover:fill-secondary_dark" />
                                             </button>
                                         </form>
                                     </div>
-                                    <Link href={`/edit/${piece.id.toString()}`} className="">
-                                        <FaEdit className="h-10 w-10 rounded-lg bg-secondary fill-primary p-1.5 hover:bg-primary hover:fill-secondary_dark" />
-                                    </Link>
-                                    <form action={handleSetInactive} className="flex h-fit w-fit">
-                                        <input type="hidden" name="id" value={piece.id.toString()} />
-                                        <button type="submit" className="h-full w-full">
-                                            <MdDeleteForever className="h-10 w-10 rounded-lg bg-secondary fill-red-700 p-1 hover:bg-primary hover:fill-red-900" />
-                                        </button>
-                                    </form>
+                                    <div className="flex flex-col items-center space-y-2">
+                                        <Link href={`/edit/${piece.id.toString()}`} className="">
+                                            <FaEdit className="h-10 w-10 rounded-lg bg-secondary_dark fill-primary p-1.5 hover:bg-primary_dark hover:fill-secondary_dark" />
+                                        </Link>
+                                        <form action={handleSetInactive} className="flex h-fit w-fit">
+                                            <input type="hidden" name="id" value={piece.id.toString()} />
+                                            <button type="submit" className="h-full w-full">
+                                                <MdDeleteForever className="h-10 w-10 rounded-lg bg-secondary_dark fill-red-700 p-1 hover:bg-primary_dark hover:fill-red-900" />
+                                            </button>
+                                        </form>
+                                    </div>
                                     <div className="flex-grow">
                                         <h3 className="font-bold text-secondary_dark">{piece.title}</h3>
                                     </div>
