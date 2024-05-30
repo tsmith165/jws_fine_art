@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { authMiddleware } from '@clerk/nextjs/server';
-import { clerkClient, getAuth } from '@clerk/nextjs/server';
+import { clerkClient } from '@clerk/nextjs/server';
 
 const publicRoutes = [
     '/',
@@ -43,5 +43,5 @@ export default authMiddleware({
 });
 
 export const config = {
-    matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+    matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/((?!.+\\.[\\w]+$|_next|api/checkout/webhook).*)', '/', '/(api|trpc)(.*)'],
 };
