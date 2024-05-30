@@ -24,29 +24,28 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
         });
     }, [pieceDataPromise]);
 
-    if (!pieceData) {
-        return <LoadingSpinner page="Edit Details" />;
-    }
-
-    const { next_id, last_id } = pieceData;
-
-    if (!pieceData.id || !pieceData.image_path) {
-        return <div>Piece data is missing.</div>;
-    }
+    const next_id = pieceData?.next_id ?? -1;
+    const last_id = pieceData?.last_id ?? -1;
+    const piece_title = pieceData?.title ?? '';
+    const price = pieceData?.price ?? '';
 
     console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${current_id}`);
 
     return (
         <div className="flex h-full w-full flex-col lg:flex-row">
             <div className="h-1/3 bg-secondary_dark lg:h-full lg:w-2/3">
-                <Image
-                    src={pieceData.image_path}
-                    alt={pieceData.title}
-                    width={pieceData.width}
-                    height={pieceData.height}
-                    quality={100}
-                    className="h-full w-full object-contain"
-                />
+                {pieceData ? (
+                    <Image
+                        src={pieceData.image_path}
+                        alt={pieceData.title}
+                        width={pieceData.width}
+                        height={pieceData.height}
+                        quality={100}
+                        className="h-full w-full object-contain"
+                    />
+                ) : (
+                    <LoadingSpinner page="Edit Details" />
+                )}
             </div>
             <div className="h-2/3 overflow-y-auto bg-secondary lg:h-full lg:w-1/3">
                 <div className="flex h-fit flex-row items-center space-x-2 bg-primary p-2">
@@ -62,11 +61,11 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
                         <MdPageview className="h-[48px] w-[48px] cursor-pointer rounded-lg bg-secondary fill-secondary_dark p-1 hover:bg-secondary_dark hover:fill-primary" />
                     </Link>
                     <form action={handleTitleUpdate} className="flex w-full flex-grow flex-row rounded-lg bg-secondary_dark">
-                        <input type="hidden" name="pieceId" value={pieceData.id} />
+                        <input type="hidden" name="pieceId" value={current_id} />
                         <input
                             type="text"
                             name="newTitle"
-                            defaultValue={pieceData.title}
+                            defaultValue={piece_title}
                             className="m-0 flex w-full flex-grow rounded-lg border-none bg-secondary_dark px-3 py-1 text-2xl font-bold text-primary outline-none"
                         />
                         <button
