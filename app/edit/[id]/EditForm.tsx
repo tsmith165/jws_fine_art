@@ -108,7 +108,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 5.) Available / Sold Selects */}
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
                         <InputSelect
                             name="available"
@@ -134,7 +134,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 6.) Instagram URL Textbox / Price Textbox */}
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
                         <InputTextbox name="instagram" value={formData.instagram} onChange={handleChange} />
                     </div>
@@ -144,7 +144,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 7.) Real Width / Height Text Box */}
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
                         <InputTextbox name="real_width" value={formData.real_width.toString()} onChange={handleChange} />
                     </div>
@@ -154,7 +154,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 8.) Width / Height Text Box */}
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
                         <InputTextbox name="width" value={formData.width.toString()} onChange={handleChange} />
                     </div>

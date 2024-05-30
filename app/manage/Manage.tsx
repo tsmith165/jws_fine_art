@@ -124,7 +124,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             alt={piece.title}
                                             width={piece.width}
                                             height={piece.height}
-                                            className="h-full w-full object-contain"
+                                            className="h-[5.5rem] w-[5.5rem] object-contain"
                                         />
                                     </div>
                                     <div className="flex flex-col">
@@ -180,7 +180,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             alt={piece.title}
                                             width={piece.width}
                                             height={piece.height}
-                                            className="h-full w-full object-contain"
+                                            className="h-[5.5rem] w-[5.5rem] object-contain"
                                         />
                                     </div>
                                     <div className="flex flex-col">
@@ -223,7 +223,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                         alt={piece.title}
                                         width={piece.width}
                                         height={piece.height}
-                                        className="h-full w-full object-contain"
+                                        className="h-[5.5rem] w-[5.5rem] object-contain"
                                     />
                                 </div>
                                 <form action={handleSetActive} className="flex h-fit w-fit">
