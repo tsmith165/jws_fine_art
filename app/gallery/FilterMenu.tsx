@@ -41,18 +41,18 @@ const FilterMenu: React.FC = () => {
                 <FaSlidersH className="h-[30px] w-[30px]" />
             </div>
             {filterMenuOpen === true && (
-                <div className="absolute right-0 top-[80px] flex h-[40px] w-fit flex-row md:right-[160px] md:top-[40px]">
+                <div className="absolute right-0 top-[80px] flex h-[40px] w-fit flex-row rounded-bl-lg bg-secondary_light md:right-[160px] md:top-[40px] md:rounded-bl-none md:rounded-tl-lg md:bg-secondary_dark">
                     {THEME_FILTERS.map(([filter, Icon], i) => (
                         <div
                             key={i}
-                            className={`group p-[5px]  ${filter === theme ? 'bg-secondary hover:bg-secondary_dark' : 'bg-secondary_dark hover:bg-secondary'} ${i === 0 ? 'rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg' : ''}`}
+                            className={`group p-[5px] ${filter === theme ? 'bg-secondary' : ' hover:bg-secondary'} ${i === 0 ? 'rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg' : ''}`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 setTheme(filter);
                             }}
                         >
                             <Icon
-                                className={`h-[30px] w-[30px] ${filter === theme ? 'fill-primary group-hover:fill-primary_dark' : 'fill-primary_dark group-hover:fill-primary'}`}
+                                className={`h-[30px] w-[30px] ${filter === theme ? 'fill-primary' : 'fill-primary_dark group-hover:fill-primary'}`}
                             />
                         </div>
                     ))}
