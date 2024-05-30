@@ -12,9 +12,6 @@ export const metadata: Metadata = {
     icons: {
         icon: '/JWS_ICON.png',
     },
-    openGraph: {
-        images: '/opengraph-image.png',
-    },
 };
 
 async function fetchPiecesData(): Promise<Pieces[]> {

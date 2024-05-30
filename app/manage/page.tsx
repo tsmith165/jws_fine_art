@@ -5,9 +5,6 @@ export const metadata: Metadata = {
     icons: {
         icon: '/JWS_ICON.png',
     },
-    openGraph: {
-        images: '/opengraph-image.png',
-    },
 };
 
 import { getPieces, getDeletedPieces, getPrioritizedPieces } from './actions';

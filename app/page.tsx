@@ -8,13 +8,10 @@ import { db, piecesTable } from '@/db/db';
 import { eq, desc } from 'drizzle-orm';
 
 export const metadata: Metadata = {
-    title: 'JWS Fine Art - Homepage',
+    title: 'JWS Fine Art - Biography',
     description: 'Jill Weeks Smith Biography',
     icons: {
         icon: '/JWS_ICON.png',
-    },
-    openGraph: {
-        images: '/opengraph-image.png',
     },
 };
 

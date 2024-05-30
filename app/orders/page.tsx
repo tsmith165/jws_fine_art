@@ -5,9 +5,6 @@ export const metadata: Metadata = {
     icons: {
         icon: '/JWS_ICON.png',
     },
-    openGraph: {
-        images: '/opengraph-image.png',
-    },
 };
 
 import { db, verifiedTransactionsTable } from '@/db/db';

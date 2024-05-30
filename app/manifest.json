@@ -1,0 +1,13 @@
+{
+    "name": "JWS Fine Art Gallery",
+    "short_name": "JWS Fine Art",
+    "description": " JWS Fine Art Gallery - Browse and Purchase online!",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        }
+    ]
+}

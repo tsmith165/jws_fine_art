@@ -3,8 +3,18 @@ import 'tailwindcss/tailwind.css';
 import '@/styles/globals/globals.scss';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
+import { Metadata } from 'next';
 
-// import '@/lib/suppress_console';
+export const metadata: Metadata = {
+    title: 'JWS Fine Art',
+    description: 'Jill Weeks Smith',
+    icons: {
+        icon: '/JWS_ICON.png',
+    },
+    openGraph: {
+        images: '/opengraph-image.png',
+    },
+};
 
 interface RootLayoutProps {
     children: React.ReactNode;
