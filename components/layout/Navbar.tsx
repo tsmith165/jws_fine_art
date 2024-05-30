@@ -14,8 +14,8 @@ export default function Navbar({ page }: { page: string }) {
                             className={`max-h-[80px] min-h-[80px] p-2.5`}
                             src="/jws_logo_small.png"
                             alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
-                            width={274}
-                            height={80}
+                            width={230}
+                            height={60}
                             sizes="250px"
                             priority
                         />
