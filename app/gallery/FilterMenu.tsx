@@ -23,14 +23,11 @@ const FilterMenu: React.FC = () => {
         setFilterMenuOpen: state.setFilterMenuOpen,
     }));
 
-    // console.log('Selected Theme: ', theme);
-
     return (
         <div onMouseEnter={() => setFilterMenuOpen(true)} onMouseLeave={() => setFilterMenuOpen(false)}>
             <div
                 className={
-                    `group absolute right-[125px] top-[40px] z-10 flex flex-row overflow-visible bg-secondary_dark p-[5px] text-secondary_light ` +
-                    `hover:bg-secondary hover:text-secondary_dark ` +
+                    `group absolute right-[125px] top-[40px] z-10 flex flex-row overflow-visible bg-secondary_dark p-[5px] text-secondary_light hover:bg-secondary_light ` +
                     `${filterMenuOpen ? 'rounded-t-lg bg-secondary_light text-secondary hover:bg-secondary_light md:rounded-t-none md:rounded-tr-lg' : 'rounded-t-lg'}`
                 }
                 onClick={(e) => {
@@ -43,7 +40,7 @@ const FilterMenu: React.FC = () => {
                 />
             </div>
             {filterMenuOpen === true && (
-                <div className="absolute right-0 top-[80px] flex h-[40px] w-fit flex-row rounded-bl-lg bg-secondary_light md:right-[165px] md:top-[40px] md:rounded-bl-none md:rounded-tl-lg md:bg-secondary_dark">
+                <div className="absolute right-0 top-[80px] flex h-[40px] w-fit flex-row rounded-bl-lg bg-secondary md:right-[165px] md:top-[40px] md:rounded-bl-none md:rounded-tl-lg md:bg-secondary_dark">
                     {THEME_FILTERS.map(([filter, Icon], i) => (
                         <div
                             key={i}
