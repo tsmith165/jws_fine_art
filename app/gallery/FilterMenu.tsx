@@ -23,13 +23,15 @@ const FilterMenu: React.FC = () => {
         setFilterMenuOpen: state.setFilterMenuOpen,
     }));
 
+    // console.log('Selected Theme: ', theme);
+
     return (
         <div onMouseEnter={() => setFilterMenuOpen(true)} onMouseLeave={() => setFilterMenuOpen(false)}>
             <div
                 className={
                     `absolute right-[120px] top-[40px] z-10 flex flex-row overflow-visible bg-secondary_dark p-[5px] text-secondary_light ` +
-                    `hover:bg-secondary_light hover:text-secondary_dark ` +
-                    `${filterMenuOpen ? 'rounded-t-lg bg-secondary_light text-secondary_dark md:rounded-t-none md:rounded-tr-lg' : 'rounded-t-lg'}`
+                    `hover:bg-secondary hover:text-secondary_dark ` +
+                    `${filterMenuOpen ? 'rounded-t-lg bg-secondary text-secondary_dark md:rounded-t-none md:rounded-tr-lg' : 'rounded-t-lg'}`
                 }
                 onClick={(e) => {
                     e.preventDefault();
@@ -43,13 +45,15 @@ const FilterMenu: React.FC = () => {
                     {THEME_FILTERS.map(([filter, Icon], i) => (
                         <div
                             key={i}
-                            className={`p-[5px] ${filter === theme ? 'bg-secondary' : 'bg-secondary_light'} ${i === 0 ? 'rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg' : ''}`}
+                            className={`group p-[5px]  ${filter === theme ? 'bg-secondary hover:bg-secondary_dark' : 'bg-secondary_dark hover:bg-secondary'} ${i === 0 ? 'rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg' : ''}`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 setTheme(filter);
                             }}
                         >
-                            <Icon className={`h-[30px] w-[30px] ${filter === theme ? 'fill-primary' : 'fill-primary_dark'}`} />
+                            <Icon
+                                className={`h-[30px] w-[30px] ${filter === theme ? 'fill-primary group-hover:fill-primary_dark' : 'fill-primary_dark group-hover:fill-primary'}`}
+                            />
                         </div>
                     ))}
                     {THEME_FILTERS.map(([filter, icon], i) => (

@@ -76,10 +76,6 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
         }
     };
 
-    if (homepageData.length === 0) {
-        return <LoadingSpinner page="Biography" />;
-    }
-
     return (
         <div className="relative flex h-full w-full flex-col space-y-2">
             <AnimatePresence>

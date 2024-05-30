@@ -18,17 +18,17 @@ export const metadata: Metadata = {
 };
 
 async function fetchPiecesData(): Promise<Pieces[]> {
-    return await fetchPieces();
+    const pieces = fetchPieces();
+    return pieces;
 }
 
 export default function Page() {
-    const piecesPromise = fetchPiecesData();
-    console.log(`Fetched pieces with Drizzle`);
+    const piecesData = fetchPiecesData();
 
     return (
         <PageLayout page="/gallery">
             <Suspense fallback={<LoadingSpinner page="Gallery" />}>
-                <Gallery piecesPromise={piecesPromise} />
+                <Gallery piecesData={piecesData} />
             </Suspense>
         </PageLayout>
     );

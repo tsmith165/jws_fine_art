@@ -5,7 +5,9 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { Pieces } from '@/db/schema';
 import useGalleryStore from '@/stores/gallery_store';
 import FilterMenu from './FilterMenu';
+import { use } from 'react';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+
 const Piece = React.lazy(() => import('./Piece'));
 
 const DEFAULT_PIECE_WIDTH = 250;
@@ -22,8 +24,8 @@ interface GalleryState {
     gallery_loaded: boolean;
 }
 
-const Gallery = ({ piecesPromise }: { piecesPromise: Promise<Pieces[]> }) => {
-    const pieces = React.use(piecesPromise);
+const Gallery = ({ piecesData }: { piecesData: Promise<Pieces[]> }) => {
+    const pieces = use(piecesData);
     const { theme, filterMenuOpen, setFilterMenuOpen } = useGalleryStore((state) => ({
         theme: state.theme,
         filterMenuOpen: state.filterMenuOpen,
@@ -56,9 +58,9 @@ const Gallery = ({ piecesPromise }: { piecesPromise: Promise<Pieces[]> }) => {
 
     useEffect(() => {
         if (state.window_width && state.window_height) {
-            createGallery(state.piece_list, theme);
+            createGallery(pieces, theme);
         }
-    }, [theme, state.window_width, state.window_height, state.piece_list]);
+    }, [theme, state.window_width, state.window_height, pieces]);
 
     const createGallery = async (piece_list: Pieces[], selected_theme: string) => {
         const piece_list_length = piece_list.length;
@@ -111,7 +113,7 @@ const Gallery = ({ piecesPromise }: { piecesPromise: Promise<Pieces[]> }) => {
                         continue;
                     }
                 } else {
-                    if (piece_theme !== selected_theme) {
+                    if (!piece_theme.includes(selected_theme)) {
                         i += 1;
                         continue;
                     }
