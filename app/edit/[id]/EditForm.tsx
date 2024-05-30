@@ -17,26 +17,13 @@ interface EditFormProps {
 const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
     const [formData, setFormData] = React.useState({
         ...current_piece,
-        piece_id: current_piece?.id ?? -1,
-        piece_title: current_piece?.title ?? '',
-        piece_type: current_piece?.piece_type ?? '',
-        piece_available: current_piece?.available ?? false,
-        piece_sold: current_piece?.sold ?? false,
-        piece_price: current_piece?.price ?? 0,
-        piece_framed: current_piece?.framed ?? false,
-        piece_instagram: current_piece?.instagram ?? '',
-        piece_theme: current_piece?.theme ?? '',
-        image_path: current_piece?.image_path ?? '',
-        extra_images: current_piece?.extra_images ?? [],
-        piece_width: current_piece?.width ?? 0,
-        piece_height: current_piece?.height ?? 0,
-        piece_real_width: current_piece?.real_width ?? 0,
-        piece_real_height: current_piece?.real_height ?? 0,
-        piece_comments: current_piece?.comments ?? '',
-        piece_description: current_piece?.description ?? '',
-        progress_images: current_piece?.progress_images ?? [],
-        extra_images_count: current_piece?.extra_images?.length.toString() ?? '0',
-        progress_images_count: current_piece?.progress_images?.length.toString() ?? '0',
+        piece_id: current_piece.id,
+        piece_title: current_piece.title,
+        image_path: current_piece.image_path,
+        extra_images: current_piece.extra_images,
+        progress_images: current_piece.progress_images,
+        extra_images_count: current_piece.extra_images?.length.toString(),
+        progress_images_count: current_piece.progress_images?.length.toString(),
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -63,7 +50,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
     };
 
     const themeOptions =
-        formData.piece_theme
+        formData.theme
             ?.split(',')
             .filter((option: string) => option.trim() !== '') // Filter out blank options
             .map((option: string) => ({ value: option, label: option })) || [];
@@ -111,7 +98,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 <div className="flex h-fit w-full">
                     <InputSelect
                         name="framed"
-                        value={formData.piece_framed ? 'True' : 'False'}
+                        value={formData.framed ? 'True' : 'False'}
                         onChange={handleChange}
                         select_options={[
                             ['True', 'True'],
@@ -125,7 +112,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     <div className="w-full md:w-1/2">
                         <InputSelect
                             name="available"
-                            value={formData.piece_available ? 'True' : 'False'}
+                            value={formData.available ? 'True' : 'False'}
                             onChange={handleChange}
                             select_options={[
                                 ['True', 'True'],
@@ -136,7 +123,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     <div className="w-full md:w-1/2">
                         <InputSelect
                             name="sold"
-                            value={formData.piece_sold ? 'True' : 'False'}
+                            value={formData.sold ? 'True' : 'False'}
                             onChange={handleChange}
                             select_options={[
                                 ['True', 'Sold'],
@@ -149,41 +136,41 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 {/* Row 6.) Instagram URL Textbox / Price Textbox */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="instagram" value={formData.piece_instagram} onChange={handleChange} />
+                        <InputTextbox name="instagram" value={formData.instagram} onChange={handleChange} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="price" value={formData.piece_price.toString()} onChange={handleChange} />
+                        <InputTextbox name="price" value={formData.price.toString()} onChange={handleChange} />
                     </div>
                 </div>
 
                 {/* Row 7.) Real Width / Height Text Box */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="real_width" value={formData.piece_real_width.toString()} onChange={handleChange} />
+                        <InputTextbox name="real_width" value={formData.real_width.toString()} onChange={handleChange} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="real_height" value={formData.piece_real_height.toString()} onChange={handleChange} />
+                        <InputTextbox name="real_height" value={formData.real_height.toString()} onChange={handleChange} />
                     </div>
                 </div>
 
                 {/* Row 8.) Width / Height Text Box */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="width" value={formData.piece_width.toString()} onChange={handleChange} />
+                        <InputTextbox name="width" value={formData.width.toString()} onChange={handleChange} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="height" value={formData.piece_height.toString()} onChange={handleChange} />
+                        <InputTextbox name="height" value={formData.height.toString()} onChange={handleChange} />
                     </div>
                 </div>
 
                 {/* Row 9.) Comments Text Area */}
                 <div className="flex h-fit w-full">
-                    <InputTextArea name="comments" value={formData.piece_comments} rows={2} onChange={handleChange} />
+                    <InputTextArea name="comments" value={formData.comments} rows={2} onChange={handleChange} />
                 </div>
 
                 {/* Row 10.) Description Text Area */}
                 <div className="flex h-fit w-full">
-                    <InputTextArea name="description" value={formData.piece_description} rows={5} onChange={handleChange} />
+                    <InputTextArea name="description" value={formData.description} rows={5} onChange={handleChange} />
                 </div>
 
                 <div className="flex flex-row items-center space-x-2">

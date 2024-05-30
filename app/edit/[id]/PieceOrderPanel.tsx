@@ -9,8 +9,8 @@ interface PieceOrderPanelProps {
 }
 
 const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
-    const extra_images: ExtraImages[] = current_piece?.extraImages || [];
-    const progress_images: ProgressImages[] = current_piece?.progressImages || [];
+    const extra_images: ExtraImages[] = current_piece.extraImages || [];
+    const progress_images: ProgressImages[] = current_piece.progressImages || [];
 
     async function handleImageReorderAction(formData: FormData) {
         const pieceId = Number(formData.get('pieceId'));

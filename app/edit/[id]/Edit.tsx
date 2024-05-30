@@ -76,8 +76,14 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
                         </button>
                     </form>
                 </div>
-                <EditForm current_piece={pieceData} />
-                <PieceOrderPanel current_piece={pieceData} />
+                {pieceData ? (
+                    <>
+                        <EditForm current_piece={pieceData} />
+                        <PieceOrderPanel current_piece={pieceData} />
+                    </>
+                ) : (
+                    <LoadingSpinner page="" />
+                )}
             </div>
         </div>
     );
