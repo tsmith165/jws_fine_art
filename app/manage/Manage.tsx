@@ -109,7 +109,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                 <div className="flex h-fit w-full flex-col items-center">
                     {pieces.length > 0 &&
                         activeTab === 'manage' &&
-                        pieces.map((piece, i) => {
+                        pieces.reverse().map((piece, i) => {
                             const last_piece = pieces[i - 1] ?? pieces[pieces.length - 1];
                             const next_piece = pieces[i + 1] ?? pieces[0];
 
