@@ -6,6 +6,8 @@ export const metadata: Metadata = {
         icon: '/JWS_ICON_MAIN.png',
     },
     openGraph: {
+        siteName: 'JWS Fine Art',
+        url: 'https://www.jwsfineart.com',
         images: '/og-image.png',
     },
 };
