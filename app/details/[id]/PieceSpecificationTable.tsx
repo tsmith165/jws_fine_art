@@ -17,7 +17,6 @@ const PieceSpecificationTable: React.FC<PieceSpecificationTableProps> = ({
     piece_type,
     with_header = false,
 }) => {
-    console.log('Commments: ', comments);
     return (
         <div className="w-fit rounded-md">
             {with_header && (

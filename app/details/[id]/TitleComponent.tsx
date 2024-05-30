@@ -9,7 +9,6 @@ interface TitleComponentProps {
 }
 
 const TitleComponent: React.FC<TitleComponentProps> = ({ title, next_id, last_id }) => {
-    console.log(`Using next id: ${next_id} / last id: ${last_id}`);
     return (
         <div className="z-0 flex h-fit flex-row items-center space-x-2 bg-secondary p-2">
             <div className="flex h-[48px] flex-col space-y-1">
