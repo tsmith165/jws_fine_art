@@ -3,7 +3,7 @@ export const metadata: Metadata = {
     title: 'JWS Fine Art - Checkout',
     description: 'Checkout for JWS Fine Art',
     icons: {
-        icon: '/JWS_ICON.png',
+        icon: '/JWS_ICON_MAIN.png',
     },
     openGraph: {
         images: '/og-image.png',

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps) {
         title: 'JWS Fine Art - Gallery Piece Details',
         description: 'View gallery piece details for JWS Fine Art',
         icons: {
-            icon: '/JWS_ICON.png',
+            icon: '/JWS_ICON_MAIN.png',
         },
         openGraph: {
             images: '/og-image.png',

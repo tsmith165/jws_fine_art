@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: 'JWS Fine Art - Admin',
     description: 'Display admin info for authenticated users',
     icons: {
-        icon: '/JWS_ICON.png',
+        icon: '/JWS_ICON_MAIN.png',
     },
     openGraph: {
         images: '/og-image.png',
