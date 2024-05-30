@@ -47,7 +47,7 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
                     className={`group h-full w-full rounded-t-md bg-secondary_dark p-[2.5px] hover:bg-secondary_light ${isMenuOpen ? 'bg-secondary' : 'bg-secondary_dark'}`}
                     onClick={handleMenuToggle}
                 >
-                    <IoIosMenu className={`h-full w-full group-hover:fill-primary_dark`} />
+                    <IoIosMenu className={`h-full w-[40px] group-hover:fill-primary_dark`} />
                 </div>
 
                 {isMenuOpen && (
