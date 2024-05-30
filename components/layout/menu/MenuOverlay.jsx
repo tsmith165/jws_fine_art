@@ -18,7 +18,7 @@ const MenuOverlay = ({ currentPage }) => {
         return menuList.map((menuItem, i) => {
             const [className, menuItemString, , urlEndpoint] = menuItem;
             console.log(`Url endpoint: ${urlEndpoint} | Current page: ${currentPage}`);
-            const isActive = urlEndpoint === currentPage;
+            const isActive = urlEndpoint !== '' && urlEndpoint !== '/' ? currentPage.includes(urlEndpoint) : false;
             return <MenuOverlayButton key={i} id={i} menu_name={menuItemString} url_endpoint={urlEndpoint} isActive={isActive} />;
         });
     };
