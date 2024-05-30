@@ -108,8 +108,8 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 5.) Available / Sold Selects */}
-                <div className="flex h-fit w-full flex-row space-x-2.5">
-                    <div className="w-1/2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                    <div className="w-full md:w-1/2">
                         <InputSelect
                             name="available"
                             value={formData.available ? 'True' : 'False'}
@@ -120,7 +120,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                             ]}
                         />
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <InputSelect
                             name="sold"
                             value={formData.sold ? 'True' : 'False'}
@@ -134,31 +134,31 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 </div>
 
                 {/* Row 6.) Instagram URL Textbox / Price Textbox */}
-                <div className="flex h-fit w-full flex-row space-x-2.5">
-                    <div className="w-1/2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                    <div className="w-full md:w-1/2">
                         <InputTextbox name="instagram" value={formData.instagram} onChange={handleChange} />
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <InputTextbox name="price" value={formData.price.toString()} onChange={handleChange} />
                     </div>
                 </div>
 
                 {/* Row 7.) Real Width / Height Text Box */}
-                <div className="flex h-fit w-full flex-row space-x-2.5">
-                    <div className="w-1/2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                    <div className="w-full md:w-1/2">
                         <InputTextbox name="real_width" value={formData.real_width.toString()} onChange={handleChange} />
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <InputTextbox name="real_height" value={formData.real_height.toString()} onChange={handleChange} />
                     </div>
                 </div>
 
                 {/* Row 8.) Width / Height Text Box */}
-                <div className="flex h-fit w-full max-w-full flex-row space-x-2.5">
-                    <div className="w-1/2">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2">
+                    <div className="w-full md:w-1/2">
                         <InputTextbox name="width" value={formData.width.toString()} onChange={handleChange} />
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <InputTextbox name="height" value={formData.height.toString()} onChange={handleChange} />
                     </div>
                 </div>
