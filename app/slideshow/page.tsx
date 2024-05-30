@@ -11,6 +11,9 @@ export const metadata: Metadata = {
     icons: {
         icon: '/JWS_ICON.png',
     },
+    openGraph: {
+        images: '/og-image.png',
+    },
 };
 
 export default function Page() {

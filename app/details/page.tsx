@@ -23,6 +23,9 @@ export async function generateMetadata({ params }: PageProps) {
         icons: {
             icon: '/JWS_ICON.png',
         },
+        openGraph: {
+            images: '/og-image.png',
+        },
     };
 }
 

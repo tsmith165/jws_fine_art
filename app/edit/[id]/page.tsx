@@ -5,6 +5,9 @@ export const metadata: Metadata = {
     icons: {
         icon: '/JWS_ICON.png',
     },
+    openGraph: {
+        images: '/og-image.png',
+    },
 };
 
 import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
