@@ -140,7 +140,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
                 })}
             </AnimatePresence>
             <div className="absolute bottom-0 flex h-[50px] w-full items-center justify-center space-x-4">
-                <button onClick={handlePrev} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
+                <button aria-label="Previous" onClick={handlePrev} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
                     <IoIosArrowBack className="text-2xl" />
                 </button>
                 {homepageData.map((_, index) => (
@@ -151,7 +151,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
                         }`}
                     ></div>
                 ))}
-                <button onClick={handleNext} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
+                <button aria-label="Next" onClick={handleNext} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
                     <IoIosArrowForward className="text-2xl" />
                 </button>
             </div>
