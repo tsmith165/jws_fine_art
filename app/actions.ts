@@ -1,4 +1,6 @@
-import { eq, desc, asc, gt, lt, and } from 'drizzle-orm';
+'use server';
+
+import { eq, desc, asc, gt, lt, and, inArray } from 'drizzle-orm';
 import { db, piecesTable, extraImagesTable, progressImagesTable, verifiedTransactionsTable } from '@/db/db';
 import { PiecesWithImages, ExtraImages, ProgressImages, VerifiedTransactions } from '@/db/schema';
 
@@ -25,6 +27,11 @@ export async function fetchPieces(): Promise<PiecesWithImages[]> {
     return piecesWithImages;
 }
 
+export async function fetchPieceIds(): Promise<number[]> {
+    const pieceList = await db.select({ id: piecesTable.id }).from(piecesTable).where(eq(piecesTable.active, true));
+    return pieceList.map((piece) => piece.id);
+}
+
 export async function fetchPieceById(id: number) {
     const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, id)).execute();
     const extraImages = await db
@@ -47,6 +54,34 @@ export async function fetchPieceById(id: number) {
     };
 
     return pieceData;
+}
+
+export async function fetchPiecesByIds(ids: number[]) {
+    const pieces = await db.select().from(piecesTable).where(inArray(piecesTable.id, ids)).execute();
+    const piecesWithImages = await Promise.all(
+        pieces.map(async (piece) => {
+            const extraImages = await db
+                .select()
+                .from(extraImagesTable)
+                .where(eq(extraImagesTable.piece_id, piece.id))
+                .orderBy(asc(extraImagesTable.id))
+                .execute();
+            const progressImages = await db
+                .select()
+                .from(progressImagesTable)
+                .where(eq(progressImagesTable.piece_id, piece.id))
+                .orderBy(asc(progressImagesTable.id))
+                .execute();
+
+            return {
+                ...piece,
+                extraImages,
+                progressImages,
+            };
+        }),
+    );
+
+    return piecesWithImages;
 }
 
 export async function fetchAdjacentPieceIds(currentId: number) {

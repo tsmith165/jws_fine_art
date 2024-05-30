@@ -138,11 +138,10 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
         </div>
     );
 
-    if (pieceData) {
-        return (
-            <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
-                <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
-                    {/* Main Image */}
+    return (
+        <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
+            <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
+                {pieceData ? (
                     <div className={`flex h-full max-w-full items-center justify-center`}>
                         <div className="flex h-full w-full items-center justify-center">
                             <Image
@@ -157,66 +156,9 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                             />
                         </div>
                     </div>
-                </div>
-                <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
-                    <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData?.next_id} last_id={pieceData?.last_id} />
-
-                    <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
-                        <div className="flex max-w-full flex-row space-x-1.5">
-                            {sold_text === '' ? (
-                                <StripeBrandedButton url={'/checkout/' + db_id} price={price} text="Checkout" />
-                            ) : (
-                                <div className="py-1 text-xl font-[600] text-red-800">{sold_text}</div>
-                            )}
-                            {instagram === null || instagram === '' || instagram.length <= 5 ? null : (
-                                <Link
-                                    className="flex items-center justify-center rounded-md bg-secondary_dark p-1.5 hover:bg-secondary_light"
-                                    href={`https://www.instagram.com/p/${instagram}`}
-                                >
-                                    <Image
-                                        src="/instagram_icon_100.png"
-                                        alt="Instagram Link"
-                                        priority
-                                        width={25}
-                                        height={25}
-                                        className="h-6 w-6"
-                                    />
-                                </Link>
-                            )}
-                            <SignedIn>
-                                <Link href={`/edit/${db_id}`} className="flex h-full w-fit">
-                                    <div className="flex h-full items-center justify-center rounded-md border-2 border-primary_dark bg-primary px-3 font-bold text-secondary_dark hover:border-primary hover:bg-secondary_dark hover:text-primary">
-                                        Edit Piece
-                                    </div>
-                                </Link>
-                            </SignedIn>
-                        </div>
-
-                        {extraImagesCard}
-
-                        <PieceSpecificationTable
-                            realWidth={real_width}
-                            realHeight={real_height}
-                            framed={framed}
-                            comments={comments}
-                            piece_type={piece_type}
-                            with_header={false}
-                        />
-                        {description === null || description.length <= 2 ? null : (
-                            <div className="px-2.5 py-2.5">
-                                <h3 className="whitespace-pre-wrap text-lg font-[600] text-primary_dark">{description}</h3>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
-            <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
-                <LoadingSpinner page="Details" />
+                ) : (
+                    <LoadingSpinner page="Details" />
+                )}
             </div>
             <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
                 <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData?.next_id} last_id={pieceData?.last_id} />

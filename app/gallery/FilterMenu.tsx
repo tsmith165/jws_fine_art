@@ -23,7 +23,7 @@ const FilterMenu: React.FC = () => {
         setFilterMenuOpen: state.setFilterMenuOpen,
     }));
 
-    console.log('Selected Theme: ', theme);
+    // console.log('Selected Theme: ', theme);
 
     return (
         <div onMouseEnter={() => setFilterMenuOpen(true)} onMouseLeave={() => setFilterMenuOpen(false)}>
