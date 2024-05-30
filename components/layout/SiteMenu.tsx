@@ -42,7 +42,7 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
             </div>
 
             {/* Hamburger Button */}
-            <div className={`p-0`} onMouseLeave={() => setMenuOpen(false)}>
+            <div className={`p-0`}>
                 <div
                     className={`group h-full w-full rounded-t-md bg-secondary_dark p-[2.5px] hover:bg-secondary_light ${isMenuOpen ? 'bg-secondary' : 'bg-secondary_dark'}`}
                     onClick={handleMenuToggle}
