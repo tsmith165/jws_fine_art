@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { authMiddleware } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
 
-const publicRoutes = [
+const ignoredRoutes = [
     '/',
     '/gallery',
     '/signin',
@@ -22,17 +22,8 @@ const publicRoutes = [
     '/api/uploadthing',
 ];
 
-const googleCrawlerUserAgents = [
-    'Googlebot',
-    'Googlebot-Image',
-    'Googlebot-News',
-    'Googlebot-Video',
-    'AdsBot-Google',
-    'AdsBot-Google-Mobile',
-];
-
 export default authMiddleware({
-    publicRoutes,
+    ignoredRoutes,
     async afterAuth(auth, req, evt) {
         const sign_in_page = new URL('/signin', req.url);
 
@@ -41,11 +32,6 @@ export default authMiddleware({
 
         // Check if the user agent matches the Google crawler
         const userAgent = req.headers.get('user-agent');
-        const isGoogleCrawler = googleCrawlerUserAgents.some((crawlerUserAgent) => userAgent?.includes(crawlerUserAgent));
-
-        if (isPublicRoute && isGoogleCrawler) {
-            return NextResponse.next();
-        }
 
         if (isPublicRoute) {
             return NextResponse.next();
