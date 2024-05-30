@@ -3,7 +3,6 @@
 import React from 'react';
 import Select, { components } from 'react-select';
 import { FaArrowDown } from 'react-icons/fa';
-import { v4 as uuidv4 } from 'uuid';
 
 interface InputMultiSelectProps {
     defaultValue?: { value: string; label: string }[];
@@ -22,7 +21,7 @@ const DropdownIndicator = (props: any) => {
 };
 
 const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name, select_options, onChange, inputId }) => {
-    const id = inputId || uuidv4();
+    const id = inputId;
     const formatted_name = name
         .split('_')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
