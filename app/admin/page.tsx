@@ -8,11 +8,26 @@ import path from 'path';
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Admin',
     description: 'Display admin info for authenticated users',
+    keywords: 'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Checkout, Admin',
+    applicationName: 'JWS Fine Art',
     icons: {
         icon: '/JWS_ICON_MAIN.png',
     },
     openGraph: {
-        images: '/og-image.png',
+        title: 'JWS Fine Art - Admin',
+        description: 'Admin for JWS Fine Art',
+        siteName: 'JWS Fine Art',
+        url: 'https://www.jwsfineart.com',
+        images: [
+            {
+                url: '/og-image.png',
+                width: 1200,
+                height: 630,
+                alt: 'JWS Fine Art',
+            },
+        ],
+        locale: 'en_US',
+        type: 'website',
     },
 };
 

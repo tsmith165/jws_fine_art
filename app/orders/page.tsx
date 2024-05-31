@@ -2,13 +2,26 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Order Management',
     description: 'Order management for JWS Fine Art',
+    keywords: 'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Order, Management',
+    applicationName: 'JWS Fine Art',
     icons: {
         icon: '/JWS_ICON_MAIN.png',
     },
     openGraph: {
+        title: 'JWS Fine Art - Orders',
+        description: 'Orders for JWS Fine Art',
         siteName: 'JWS Fine Art',
         url: 'https://www.jwsfineart.com',
-        images: '/og-image.png',
+        images: [
+            {
+                url: '/og-image.png',
+                width: 1200,
+                height: 630,
+                alt: 'JWS Fine Art',
+            },
+        ],
+        locale: 'en_US',
+        type: 'website',
     },
 };
 

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import React, { Suspense } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import React from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import Homepage from '@/app/Homepage';
 import { BIOGRAPHY_TEXT } from '@/lib/biography_text';
@@ -10,13 +9,27 @@ import { eq, desc } from 'drizzle-orm';
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Biography',
     description: 'Jill Weeks Smith Biography',
+    keywords:
+        'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Biographical, Biography',
+    applicationName: 'JWS Fine Art',
     icons: {
         icon: '/JWS_ICON_MAIN.png',
     },
     openGraph: {
+        title: 'JWS Fine Art - Biography',
+        description: 'Biography for JWS Fine Art',
         siteName: 'JWS Fine Art',
         url: 'https://www.jwsfineart.com',
-        images: '/og-image.png',
+        images: [
+            {
+                url: '/og-image.png',
+                width: 1200,
+                height: 630,
+                alt: 'JWS Fine Art',
+            },
+        ],
+        locale: 'en_US',
+        type: 'website',
     },
 };
 
