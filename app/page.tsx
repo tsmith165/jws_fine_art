@@ -13,8 +13,8 @@ export const metadata: Metadata = {
         'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Biographical, Biography',
     applicationName: 'JWS Fine Art',
     icons: {
-        icon: '/JWS_ICON_MAIN.jpg',
-        shortcut: '/JWS_ICON_MAIN.jpg',
+        icon: '/JWS_ICON_MAIN.png',
+        shortcut: '/JWS_ICON_MAIN.png',
         apple: '/apple-icon.png',
     },
     openGraph: {

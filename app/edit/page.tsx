@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PageProps) {
         keywords: 'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Edit',
         applicationName: 'JWS Fine Art',
         icons: {
-            icon: '/JWS_ICON_MAIN.jpg',
+            icon: '/JWS_ICON_MAIN.png',
         },
         openGraph: {
             title: 'JWS Fine Art - Edit Details',
