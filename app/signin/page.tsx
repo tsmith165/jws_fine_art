@@ -6,6 +6,8 @@ export const metadata: Metadata = {
     applicationName: 'JWS Fine Art',
     icons: {
         icon: '/JWS_ICON_MAIN.png',
+        shortcut: '/JWS_ICON_MAIN.png',
+        apple: '/apple-icon.png',
     },
     openGraph: {
         title: 'JWS Fine Art - Sign In',
