@@ -93,7 +93,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
                                 width={300}
                                 height={400}
                                 quality={100}
-                                className="h-auto w-48 rounded-lg p-1 md:max-h-fit md:w-auto"
+                                className="h-auto w-48 rounded-lg p-1 pb-0 md:max-h-fit md:w-auto"
                             />
                             <Link
                                 href={'/gallery'}
