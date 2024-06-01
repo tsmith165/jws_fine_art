@@ -79,7 +79,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
     };
 
     return (
-        <div className="relative flex h-full w-full flex-col space-y-2">
+        <div className="relative flex h-full w-full flex-col space-y-2 py-2">
             <AnimatePresence>
                 {homepageData.map((data, index) => {
                     const isEven = index % 2 === 0;

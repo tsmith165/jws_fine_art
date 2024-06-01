@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { MdPlayArrow } from 'react-icons/md';
 import { FaPause } from 'react-icons/fa';
 import { IoIosArrowForward, IoIosSpeedometer } from 'react-icons/io';
+import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 type SlideshowProps = {
@@ -88,12 +89,28 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
 
     const { title, image_path } = current_piece;
 
+    const variants = {
+        initial: { opacity: 0, x: -100 },
+        animate: { opacity: 1, x: 0 },
+        exit: { opacity: 0, x: 100 },
+    };
+
     return (
         <div className="relative flex h-full w-full flex-col overflow-hidden bg-secondary_dark">
             <div className="h-full w-full">
-                <div className="relative h-full w-full">
-                    <Image src={image_path} alt={title} fill className="object-contain" />
-                </div>
+                <AnimatePresence>
+                    <motion.div
+                        key={currentIndex}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        variants={variants}
+                        transition={{ duration: 1 }}
+                        className="relative h-full w-full"
+                    >
+                        <Image src={image_path} alt={title} fill className="object-contain" />
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
             <div className="flex h-[50px] w-full items-center justify-between bg-primary_dark px-4 py-2">
