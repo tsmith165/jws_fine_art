@@ -106,7 +106,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
 
                     const current_paragraph_div = (
                         <p
-                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit`}
+                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit`}
                         >
                             {data.bio_paragraph}
                         </p>
