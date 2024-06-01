@@ -20,7 +20,7 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, placeholder, o
     return (
         <div className="m-0 flex h-full w-full max-w-full flex-row overflow-hidden p-0">
             <div
-                className="flex min-w-28 max-w-28 items-center justify-center rounded-l-md bg-secondary_dark px-2.5 py-1.5 font-semibold"
+                className="flex h-8 min-w-28 max-w-28 items-center justify-center rounded-l-md bg-secondary_dark px-2.5 font-semibold"
                 data-tooltip-id={`tooltip-${id}`}
                 data-tooltip-content={formatted_name}
             >
@@ -30,7 +30,7 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, placeholder, o
             <input
                 id={id}
                 name={id}
-                className="flex h-full w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
+                className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
                 value={value}
                 placeholder={placeholder || ''}
                 onChange={onChange}

@@ -20,7 +20,7 @@ const InputDatePicker: React.FC<InputDatePickerProps> = ({ defaultValue, name })
     return (
         <div className="m-0 flex w-full p-0">
             <div
-                className="flex min-w-28 max-w-28 items-center justify-center rounded-l-md bg-secondary_dark px-2.5 py-1.5 font-semibold"
+                className="flex h-8 min-w-28 max-w-28 items-center justify-center rounded-l-md bg-secondary_dark px-2.5 font-semibold"
                 data-tooltip-id={`tooltip-${id}`}
                 data-tooltip-content={formatted_name}
             >
@@ -29,7 +29,7 @@ const InputDatePicker: React.FC<InputDatePickerProps> = ({ defaultValue, name })
             <Tooltip id={`tooltip-${id}`} place="top" />
             <DatePicker
                 id={id}
-                className="h-full rounded-r-md border-none bg-primary px-2.5 py-1.5 text-sm font-bold text-secondary_dark"
+                className="h-8 rounded-r-md border-none bg-primary px-2.5 text-sm font-bold text-secondary_dark"
                 selected={defaultValue}
                 onChange={() => {}} // Add this line
             />
