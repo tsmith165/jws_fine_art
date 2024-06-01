@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Admin Management',
     description: 'Jill Weeks Smith Admin Management',
-    keywords: 'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Manage',
+    keywords:
+        'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Manage',
     applicationName: 'JWS Fine Art',
     icons: {
         icon: '/JWS_ICON_MAIN.png',

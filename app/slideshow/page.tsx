@@ -8,7 +8,8 @@ import { fetchPieces } from '@/app/actions';
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery Slideshow',
     description: 'Gallery slideshow for JWS Fine Art',
-    keywords: 'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Slideshow',
+    keywords:
+        'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Slideshow',
     applicationName: 'JWS Fine Art',
     icons: {
         icon: '/JWS_ICON_MAIN.png',

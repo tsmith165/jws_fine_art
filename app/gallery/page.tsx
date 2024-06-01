@@ -9,7 +9,8 @@ import Gallery from './Gallery';
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery',
     description: 'Gallery page for JWS Fine Art',
-    keywords: 'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Masonry',
+    keywords:
+        'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Masonry',
     applicationName: 'JWS Fine Art',
     icons: {
         icon: '/JWS_ICON_MAIN.png',

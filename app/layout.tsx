@@ -3,7 +3,6 @@ import 'tailwindcss/tailwind.css';
 import '@/styles/globals/globals.scss';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
-import { Metadata } from 'next';
 
 interface RootLayoutProps {
     children: React.ReactNode;

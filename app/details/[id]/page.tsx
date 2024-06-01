@@ -20,7 +20,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
         title: 'JWS Fine Art - Gallery Piece Details',
         description: 'View gallery piece details for JWS Fine Art',
-        keywords: 'Jill Weeks Smith, JWS Fine Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Piece Details',
+        keywords:
+            'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Piece Details',
         applicationName: 'JWS Fine Art',
         icons: {
             icon: '/JWS_ICON_MAIN.png',
