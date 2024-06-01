@@ -31,6 +31,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [firstLoad, setFirstLoad] = useState(true);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -44,6 +45,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
         intervalRef.current = setInterval(() => {
             setImageLoaded(false);
             setCurrentIndex((prevIndex) => (prevIndex + 1) % homepageData.length);
+            setFirstLoad(false);
         }, 7500);
     };
 
@@ -81,7 +83,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
             <AnimatePresence>
                 {homepageData.map((data, index) => {
                     const isEven = index % 2 === 0;
-                    const direction = index === 0 ? { opacity: 0 } : slideDirections[index % slideDirections.length];
+                    const direction = firstLoad && index === 0 ? { opacity: 0 } : slideDirections[index % slideDirections.length];
 
                     const current_image_div = (
                         <div className="flex h-fit flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
