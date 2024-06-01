@@ -90,14 +90,14 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
     const { title, image_path } = current_piece;
 
     const variants = {
-        initial: { opacity: 0, x: -100 },
+        initial: { opacity: 0, x: 100 },
         animate: { opacity: 1, x: 0 },
-        exit: { opacity: 0, x: 100 },
+        exit: { opacity: 0, x: -100 },
     };
 
     return (
         <div className="relative flex h-full w-full flex-col overflow-hidden bg-secondary_dark">
-            <div className="h-full w-full">
+            <div className="relative h-full w-full">
                 <AnimatePresence initial={false}>
                     <motion.div
                         key={currentIndex}
@@ -106,9 +106,9 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
                         exit="exit"
                         variants={variants}
                         transition={{ duration: 1 }}
-                        className="relative h-full w-full"
+                        className="absolute inset-0"
                     >
-                        <Image src={image_path} alt={title} fill className="object-contain" />
+                        <Image src={image_path} alt={title} layout="fill" objectFit="contain" className="object-contain" />
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -134,7 +134,7 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
                                     <div className="flex items-center space-x-2">
                                         <input
                                             type="range"
-                                            min={100}
+                                            min={1500}
                                             max={10000}
                                             step={100}
                                             value={speed}
