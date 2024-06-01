@@ -27,14 +27,24 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, placeholder, o
                 <div className="text-primary">{formatted_name}</div>
             </div>
             <Tooltip id={`tooltip-${id}`} place="top" />
-            <input
-                id={id}
-                name={id}
-                className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
-                value={value}
-                placeholder={placeholder || ''}
-                onChange={onChange}
-            />
+            {onChange ? (
+                <input
+                    id={id}
+                    name={id}
+                    className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
+                    value={value}
+                    placeholder={placeholder || ''}
+                    onChange={onChange}
+                />
+            ) : (
+                <input
+                    id={id}
+                    name={id}
+                    className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
+                    defaultValue={value}
+                    placeholder={placeholder || ''}
+                />
+            )}
         </div>
     );
 };
