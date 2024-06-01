@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import Image from 'next/image';
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import Link from 'next/link';
 
 interface HomepageData {
     id: number;
@@ -81,18 +81,27 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
             <AnimatePresence>
                 {homepageData.map((data, index) => {
                     const isEven = index % 2 === 0;
-                    const direction = slideDirections[index % slideDirections.length];
+                    const direction = index === 0 ? { opacity: 0 } : slideDirections[index % slideDirections.length];
 
                     const current_image_div = (
-                        <Image
-                            src="/bio_pic_updated_small.jpg"
-                            alt="Bio Pic"
-                            width={300}
-                            height={400}
-                            quality={100}
-                            className="max-h-[calc(calc(100%-50px)/2)] w-auto rounded-lg bg-secondary p-1 md:h-full md:w-auto"
-                        />
+                        <div className="flex h-fit flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
+                            <Image
+                                src="/bio_pic_updated_small.jpg"
+                                alt="Bio Pic"
+                                width={300}
+                                height={400}
+                                quality={100}
+                                className="rounded-lg p-1"
+                            />
+                            <Link
+                                href={'/gallery'}
+                                className="w-full rounded rounded-b-lg rounded-t-none py-2 text-gray-400 hover:bg-secondary_dark hover:bg-opacity-25 hover:font-bold hover:text-primary"
+                            >
+                                Enter Gallery
+                            </Link>
+                        </div>
                     );
+
                     const current_paragraph_div = (
                         <p
                             className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary_dark bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit`}
@@ -130,7 +139,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
                                     onLoad={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-2 px-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-4 px-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
