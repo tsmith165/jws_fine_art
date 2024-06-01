@@ -98,7 +98,7 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
     return (
         <div className="relative flex h-full w-full flex-col overflow-hidden bg-secondary_dark">
             <div className="h-full w-full">
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                     <motion.div
                         key={currentIndex}
                         initial="initial"

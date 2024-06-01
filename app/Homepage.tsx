@@ -79,7 +79,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
     };
 
     return (
-        <div className="relative flex h-full w-full flex-col space-y-2 py-2">
+        <div className="relative flex h-full w-full flex-col space-y-2">
             <AnimatePresence>
                 {homepageData.map((data, index) => {
                     const isEven = index % 2 === 0;
@@ -93,11 +93,11 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
                                 width={300}
                                 height={400}
                                 quality={100}
-                                className="rounded-lg p-1"
+                                className="h-auto w-48 rounded-lg p-1 md:max-h-fit md:w-auto"
                             />
                             <Link
                                 href={'/gallery'}
-                                className="w-full rounded rounded-b-lg rounded-t-none py-2 text-gray-400 hover:bg-secondary_dark hover:bg-opacity-25 hover:font-bold hover:text-primary"
+                                className="w-full rounded rounded-b-lg rounded-t-none py-1 text-gray-400 hover:bg-secondary_dark hover:bg-opacity-25 hover:font-bold hover:text-primary"
                             >
                                 Enter Gallery
                             </Link>
@@ -141,7 +141,7 @@ const Homepage = ({ homepageDataPromise }: HomepageProps) => {
                                     onLoad={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-4 px-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
