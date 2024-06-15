@@ -45,9 +45,7 @@ export default function Page() {
 
     return (
         <PageLayout page="/gallery">
-            <Suspense fallback={<LoadingSpinner page="Gallery" />}>
-                <Gallery piecesData={piecesData} />
-            </Suspense>
+            <Gallery piecesData={piecesData} />
         </PageLayout>
     );
 }

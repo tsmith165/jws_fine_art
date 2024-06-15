@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SignedIn } from '@clerk/nextjs';
@@ -15,14 +13,8 @@ interface DetailsProps {
     type: string;
 }
 
-const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type }) => {
-    const [pieceData, setPieceData] = useState<any>(null);
-
-    useEffect(() => {
-        pieceDataPromise.then((data) => {
-            setPieceData(data);
-        });
-    }, [pieceDataPromise]);
+const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex, type }) => {
+    const pieceData = await pieceDataPromise;
 
     const description_raw = pieceData?.description?.length > 2 ? pieceData?.description : '';
     const db_id = pieceData?.id ?? -1;
@@ -107,15 +99,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                     flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                             >
                                 {image.image_path === null || image.image_path === undefined || image.image_path === '' ? null : (
-                                    <Image
-                                        src={image.image_path}
-                                        priority
-                                        alt=""
-                                        width={image.width}
-                                        height={image.height}
-                                        quality={75}
-                                        className="max-h-full max-w-full object-contain"
-                                    />
+                                    <Image src={image.image_path} alt="" width={110} height={110} quality={75} />
                                 )}
                             </Link>
                         ))}
@@ -131,7 +115,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                     flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                                 >
                                     {image.image_path === null || image.image_path === undefined || image.image_path === '' ? null : (
-                                        <Image src={image.image_path} alt="" width={image.width} height={image.height} quality={75} />
+                                        <Image src={image.image_path} alt="" width={110} height={110} quality={75} />
                                     )}
                                 </Link>
                             );
@@ -155,7 +139,6 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 width={mainImage.width}
                                 height={mainImage.height}
-                                className="h-full w-full object-contain"
                             />
                         </div>
                     </div>

@@ -76,3 +76,5 @@ export default async function Page({ params }: { params: { id: string } }) {
         </PageLayout>
     );
 }
+
+export const revalidate = 60;
