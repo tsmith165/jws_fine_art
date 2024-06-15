@@ -107,6 +107,7 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                                         height={110}
                                         quality={75}
                                         className="h-full w-full object-contain"
+                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 10vw"
                                     />
                                 )}
                             </Link>
@@ -131,6 +132,7 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                                             height={110}
                                             quality={75}
                                             className="h-full w-full object-contain"
+                                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 10vw"
                                         />
                                     )}
                                 </Link>
@@ -152,7 +154,7 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                                 alt={title}
                                 quality={100}
                                 priority
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                 width={mainImage.width}
                                 height={mainImage.height}
                                 className="h-full w-full object-contain"
