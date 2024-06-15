@@ -7,6 +7,7 @@ const ignoredRoutes = [
     '/gallery',
     '/signin',
     '/signup',
+    '/details',
     '/details/:id*',
     '/checkout/:id*',
     '/checkout/cancel/:id*',

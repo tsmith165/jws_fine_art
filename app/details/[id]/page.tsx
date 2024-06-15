@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
-import React, { Suspense } from 'react';
+import React from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import Details from '@/app/details/[id]/Details';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 import { PiecesWithImages } from '@/db/schema';
 
@@ -51,27 +50,16 @@ async function fetchPieceData(id: number): Promise<PiecesWithImages> {
     return { ...piece, next_id, last_id };
 }
 
-const pieceDataCache: { [key: number]: Promise<PiecesWithImages> } = {};
-
-function usePieceData(id: number) {
-    if (!pieceDataCache[id]) {
-        pieceDataCache[id] = fetchPieceData(id);
-    }
-    return pieceDataCache[id];
-}
-
 export default function Page({ params, searchParams }: PageProps) {
     const { id: idParam } = params;
     const id = parseInt(idParam, 10);
-    const pieceDataPromise = usePieceData(id);
+    const pieceData = fetchPieceData(id);
     const selectedIndex = parseInt(searchParams?.selected || '0', 10);
     const type = searchParams?.type || 'gallery';
 
     return (
         <PageLayout page={`/details/${id}`}>
-            <Suspense fallback={<LoadingSpinner page="Details" />}>
-                <Details pieceDataPromise={pieceDataPromise} selectedIndex={selectedIndex} type={type} />
-            </Suspense>
+            <Details pieceDataPromise={pieceData} selectedIndex={selectedIndex} type={type} />
         </PageLayout>
     );
 }

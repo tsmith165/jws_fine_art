@@ -11,6 +11,7 @@
         "prettier": "prettier --write \"**/*.{js,jsx,json,md,ts,tsx}\""
     },
     "dependencies": {
+        "@clerk/clerk-react": "^5.2.4",
         "@clerk/nextjs": "^4.24.1",
         "@clerk/themes": "^1.2.41",
         "@emotion/react": "^11.10.6",
