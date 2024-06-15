@@ -5,7 +5,6 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { Pieces } from '@/db/schema';
 import useGalleryStore from '@/stores/gallery_store';
 import FilterMenu from './FilterMenu';
-import { use } from 'react';
 
 const Piece = React.lazy(() => import('./Piece'));
 
@@ -22,8 +21,7 @@ interface GalleryState {
     lowest_height: number;
 }
 
-const Gallery = ({ piecesData }: { piecesData: Promise<Pieces[]> }) => {
-    const pieces = use(piecesData);
+const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
     const { theme, filterMenuOpen, setFilterMenuOpen } = useGalleryStore((state) => ({
         theme: state.theme,
         filterMenuOpen: state.filterMenuOpen,

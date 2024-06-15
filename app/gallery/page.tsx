@@ -40,12 +40,12 @@ async function fetchPiecesData(): Promise<Pieces[]> {
     return pieces;
 }
 
-export default function Page() {
-    const piecesData = fetchPiecesData();
+export default async function Page() {
+    const piecesData = await fetchPiecesData();
 
     return (
         <PageLayout page="/gallery">
-            <Gallery piecesData={piecesData} />
+            <Gallery pieces={piecesData} />
         </PageLayout>
     );
 }
