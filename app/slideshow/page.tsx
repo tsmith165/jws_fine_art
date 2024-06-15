@@ -45,3 +45,5 @@ export default function Page() {
         </PageLayout>
     );
 }
+
+export const revalidate = 60;

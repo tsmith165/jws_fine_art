@@ -1,5 +1,3 @@
-// File 5: /middleware.ts
-
 import { NextResponse } from 'next/server';
 import { authMiddleware } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
@@ -9,6 +7,7 @@ const ignoredRoutes = [
     '/gallery',
     '/signin',
     '/signup',
+    '/details',
     '/details/:id*',
     '/checkout/:id*',
     '/checkout/cancel/:id*',

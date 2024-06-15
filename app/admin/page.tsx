@@ -67,3 +67,5 @@ export default async function AdminPage() {
         </SignedIn>
     );
 }
+
+export const revalidate = 60;

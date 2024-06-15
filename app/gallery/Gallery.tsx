@@ -5,8 +5,6 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { Pieces } from '@/db/schema';
 import useGalleryStore from '@/stores/gallery_store';
 import FilterMenu from './FilterMenu';
-import { use } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 const Piece = React.lazy(() => import('./Piece'));
 
@@ -21,11 +19,9 @@ interface GalleryState {
     piece_list: Pieces[];
     gallery_pieces: JSX.Element[];
     lowest_height: number;
-    gallery_loaded: boolean;
 }
 
-const Gallery = ({ piecesData }: { piecesData: Promise<Pieces[]> }) => {
-    const pieces = use(piecesData);
+const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
     const { theme, filterMenuOpen, setFilterMenuOpen } = useGalleryStore((state) => ({
         theme: state.theme,
         filterMenuOpen: state.filterMenuOpen,
@@ -38,7 +34,6 @@ const Gallery = ({ piecesData }: { piecesData: Promise<Pieces[]> }) => {
         piece_list: pieces,
         gallery_pieces: [],
         lowest_height: 0,
-        gallery_loaded: false,
     });
 
     useEffect(() => {
@@ -79,7 +74,6 @@ const Gallery = ({ piecesData }: { piecesData: Promise<Pieces[]> }) => {
             return;
         }
 
-        const gallery_pieces: JSX.Element[] = [];
         const column_bottom_list: number[] = [];
         let lowest_height = 0;
 
@@ -157,19 +151,23 @@ const Gallery = ({ piecesData }: { piecesData: Promise<Pieces[]> }) => {
 
                 const dimensions: [number, number, number, number] = [cur_x, cur_y, scaled_width, scaled_height];
 
-                gallery_pieces.push(
-                    <Piece
-                        key={i}
-                        id={`${id}`}
-                        o_id={o_id}
-                        className={class_name}
-                        image_path={image_path}
-                        dimensions={dimensions}
-                        title={title}
-                        sold={piece_sold}
-                        available={piece_available}
-                    />,
-                );
+                setState((prevState) => ({
+                    ...prevState,
+                    gallery_pieces: [
+                        ...prevState.gallery_pieces,
+                        <Piece
+                            key={i}
+                            id={`${id}`}
+                            o_id={o_id}
+                            className={class_name}
+                            image_path={image_path}
+                            dimensions={dimensions}
+                            title={title}
+                            sold={piece_sold}
+                            available={piece_available}
+                        />,
+                    ],
+                }));
 
                 if (col < max_columns - 1) {
                     cur_x += scaled_width + INNER_MARGIN_WIDTH;
@@ -189,10 +187,7 @@ const Gallery = ({ piecesData }: { piecesData: Promise<Pieces[]> }) => {
 
         setState((prevState) => ({
             ...prevState,
-            piece_list: piece_list,
-            gallery_pieces: gallery_pieces,
             lowest_height: lowest_height,
-            gallery_loaded: true,
         }));
     };
 

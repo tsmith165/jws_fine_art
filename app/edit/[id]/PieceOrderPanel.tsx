@@ -70,7 +70,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                         alt={image.image_path}
                         width={image.width}
                         height={image.height}
-                        className="h-[40x] w-[40px] object-cover"
+                        className="h-[40x] w-[40px] object-contain"
                     />
                     <div className="flex h-[58px] flex-col space-y-1">
                         <form action={handleImageReorderAction}>

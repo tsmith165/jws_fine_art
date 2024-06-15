@@ -1,34 +1,43 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import MenuOverlayButton from './MenuOverlayButton';
-import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from '@/lib/menu_list.js';
+import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from '@/lib/menu_list';
 
-const MenuOverlay = ({ currentPage }) => {
-    const [menuItems, setMenuItems] = useState([]);
+const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
+    const [menuItems, setMenuItems] = useState<React.ReactNode[]>([]);
     const { isLoaded, isSignedIn, user } = useUser();
 
     useEffect(() => {
-        const usingMenu = selectMenu(isLoaded, isSignedIn, user);
+        const usingMenu = selectMenu(isLoaded, !!isSignedIn, user);
 
         const items = generateMenu(usingMenu);
         setMenuItems(items);
     }, [isLoaded, isSignedIn, user]);
 
-    const generateMenu = (menuList) => {
+    const generateMenu = (menuList: typeof SIGNED_OUT_MENU_LIST) => {
         return menuList.map((menuItem, i) => {
             const [className, menuItemString, , urlEndpoint] = menuItem;
-            // console.log(`Url endpoint: ${urlEndpoint} | Current page: ${currentPage}`);
             let isActive = false;
             if (urlEndpoint === '/') {
                 isActive = currentPage === '/';
             } else {
                 isActive = currentPage.includes(urlEndpoint);
             }
-            return <MenuOverlayButton key={i} id={i} menu_name={menuItemString} url_endpoint={urlEndpoint} isActive={isActive} />;
+            return (
+                <MenuOverlayButton
+                    key={className}
+                    id={className}
+                    menu_name={menuItemString}
+                    url_endpoint={urlEndpoint}
+                    isActive={isActive}
+                />
+            );
         });
     };
 
-    const selectMenu = (isLoaded, isSignedIn, user) => {
+    const selectMenu = (isLoaded: boolean, isSignedIn: boolean, user: any) => {
         if (!isLoaded) {
             console.log('User not loaded - returning signed out menu...');
             return SIGNED_OUT_MENU_LIST;

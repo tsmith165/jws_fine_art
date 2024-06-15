@@ -1,13 +1,11 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SignedIn } from '@clerk/nextjs';
 import PieceSpecificationTable from '@/app/details/[id]/PieceSpecificationTable';
 import TitleComponent from '@/app/details/[id]/TitleComponent';
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import EditPieceButton from '@/app/details/[id]/EditPieceButton';
 
 interface DetailsProps {
     pieceDataPromise: Promise<any>;
@@ -15,14 +13,8 @@ interface DetailsProps {
     type: string;
 }
 
-const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type }) => {
-    const [pieceData, setPieceData] = useState<any>(null);
-
-    useEffect(() => {
-        pieceDataPromise.then((data) => {
-            setPieceData(data);
-        });
-    }, [pieceDataPromise]);
+const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex, type }) => {
+    const pieceData = await pieceDataPromise;
 
     const description_raw = pieceData?.description?.length > 2 ? pieceData?.description : '';
     const db_id = pieceData?.id ?? -1;
@@ -103,18 +95,19 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                 key={`extra_image_container_${index}`}
                                 href={`/details/${db_id}?selected=${index}&type=gallery`}
                                 prefetch={true}
-                                className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
-                                    flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
+                                className={`${
+                                    selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
+                                } flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                             >
                                 {image.image_path === null || image.image_path === undefined || image.image_path === '' ? null : (
                                     <Image
                                         src={image.image_path}
-                                        priority
                                         alt=""
-                                        width={image.width}
-                                        height={image.height}
+                                        width={110}
+                                        height={110}
                                         quality={75}
-                                        className="max-h-full max-w-full object-contain"
+                                        className="h-full w-full object-contain"
+                                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 10vw"
                                     />
                                 )}
                             </Link>
@@ -127,11 +120,20 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                     key={`progress_image_${index}`}
                                     href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress`}
                                     prefetch={true}
-                                    className={`${selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'}
-                                    flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
+                                    className={`${
+                                        selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
+                                    } flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
                                 >
                                     {image.image_path === null || image.image_path === undefined || image.image_path === '' ? null : (
-                                        <Image src={image.image_path} alt="" width={image.width} height={image.height} quality={75} />
+                                        <Image
+                                            src={image.image_path}
+                                            alt=""
+                                            width={110}
+                                            height={110}
+                                            quality={75}
+                                            className="h-full w-full object-contain"
+                                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 10vw"
+                                        />
                                     )}
                                 </Link>
                             );
@@ -152,7 +154,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                 alt={title}
                                 quality={100}
                                 priority
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                 width={mainImage.width}
                                 height={mainImage.height}
                                 className="h-full w-full object-contain"
@@ -188,13 +190,7 @@ const Details: React.FC<DetailsProps> = ({ pieceDataPromise, selectedIndex, type
                                 />
                             </Link>
                         )}
-                        <SignedIn>
-                            <Link href={`/edit/${db_id}`} className="flex h-full w-fit">
-                                <div className="flex h-full items-center justify-center rounded-md border-2 border-primary_dark bg-primary px-3 font-bold text-secondary_dark hover:border-primary hover:bg-secondary_dark hover:text-primary">
-                                    Edit Piece
-                                </div>
-                            </Link>
-                        </SignedIn>
+                        <EditPieceButton db_id={db_id} />
                     </div>
 
                     {extraImagesCard}

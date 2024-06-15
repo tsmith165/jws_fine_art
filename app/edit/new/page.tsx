@@ -41,3 +41,5 @@ export default function NewPiecePage() {
         </SignedIn>
     );
 }
+
+export const revalidate = 3660;

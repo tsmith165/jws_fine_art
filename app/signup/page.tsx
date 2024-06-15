@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: 'JWS Fine Art - Sign Up',
-        description: 'Sign Up for JWS Fine Art',
+        description: 'Sign Up fsor JWS Fine Art',
         siteName: 'JWS Fine Art',
         url: 'https://www.jwsfineart.com',
         images: [
@@ -38,3 +38,5 @@ export default async function Page() {
         </PageLayout>
     );
 }
+
+export const revalidate = 3600;
