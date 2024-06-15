@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import MenuOverlayButton from './MenuOverlayButton';
+import MenuOverlaySignOutButton from './MenuOverlaySignOutButton';
 import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from '@/lib/menu_list';
 
 const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
@@ -24,6 +25,9 @@ const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
                 isActive = currentPage === '/';
             } else {
                 isActive = currentPage.includes(urlEndpoint);
+            }
+            if (menuItemString === 'Sign Out') {
+                return <MenuOverlaySignOutButton />;
             }
             return (
                 <MenuOverlayButton
