@@ -149,25 +149,20 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
     return (
         <div className="relative z-0 flex h-full w-full flex-col lg:flex-row">
             <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
-                {pieceData ? (
-                    <div className={`flex h-full max-w-full items-center justify-center`}>
-                        <div className="flex h-full w-full items-center justify-center">
-                            <Image
-                                src={mainImage.image_path}
-                                alt={title}
-                                quality={70}
-                                priority
-                                sizes="(max-width: 640px) 100vw, 66vw"
-                                width={mainImage.width}
-                                height={mainImage.height}
-                                className="h-full w-full object-contain"
-                                placeholder="blur"
-                            />
-                        </div>
+                <div className={`flex h-full max-w-full items-center justify-center`}>
+                    <div className="flex h-full w-full items-center justify-center">
+                        <Image
+                            src={mainImage.image_path}
+                            alt={title}
+                            quality={70}
+                            priority
+                            sizes="(max-width: 640px) 100vw, 66vw"
+                            width={mainImage.width}
+                            height={mainImage.height}
+                            className="h-full w-full object-contain"
+                        />
                     </div>
-                ) : (
-                    <LoadingSpinner page="Details" />
-                )}
+                </div>
             </div>
             <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
                 <TitleComponent
