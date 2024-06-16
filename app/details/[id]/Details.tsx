@@ -158,8 +158,8 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                                 quality={100}
                                 priority
                                 sizes="(max-width: 640px) 100vw, 66vw"
-                                width={mainImage.width}
-                                height={mainImage.height}
+                                width={mainImage.width / 2}
+                                height={mainImage.height / 2}
                                 className="h-full w-full object-contain"
                             />
                         </div>
