@@ -155,7 +155,7 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                             <Image
                                 src={mainImage.image_path}
                                 alt={title}
-                                quality={100}
+                                quality={70}
                                 priority
                                 sizes="(max-width: 640px) 100vw, 66vw"
                                 width={mainImage.width}
