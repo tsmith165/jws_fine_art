@@ -2,8 +2,13 @@ import { Metadata } from 'next';
 import React from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import Details from '@/app/details/[id]/Details';
-import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
+import { fetchPieceById, fetchAdjacentPieceIds, fetchPieceImageById } from '@/app/actions';
 import { PiecesWithImages } from '@/db/schema';
+
+interface PiecesWithImagesAndAdjacentImages extends PiecesWithImages {
+    nextPieceImage: { image_path: string; width: number; height: number } | null;
+    lastPieceImage: { image_path: string; width: number; height: number } | null;
+}
 
 interface PageProps {
     params: {
@@ -44,10 +49,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
-async function fetchPieceData(id: number): Promise<PiecesWithImages> {
+async function fetchPieceData(id: number): Promise<PiecesWithImagesAndAdjacentImages> {
     const piece = await fetchPieceById(id);
     const { next_id, last_id } = await fetchAdjacentPieceIds(id);
-    return { ...piece, next_id, last_id };
+
+    // Fetch the next and last piece images
+    const nextPieceImage = await fetchPieceImageById(next_id);
+    const lastPieceImage = await fetchPieceImageById(last_id);
+
+    return {
+        ...piece,
+        next_id,
+        last_id,
+        nextPieceImage,
+        lastPieceImage,
+    };
 }
 
 export default function Page({ params, searchParams }: PageProps) {

@@ -166,3 +166,17 @@ export async function fetchVerifiedPayments(): Promise<VerifiedTransactions[]> {
 
     return formattedList;
 }
+
+export async function fetchPieceImageById(id: number) {
+    const piece = await db
+        .select({
+            image_path: piecesTable.image_path,
+            width: piecesTable.width,
+            height: piecesTable.height,
+        })
+        .from(piecesTable)
+        .where(eq(piecesTable.id, id))
+        .execute();
+
+    return piece[0] || null;
+}
