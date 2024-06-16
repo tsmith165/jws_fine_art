@@ -161,6 +161,7 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                                 width={mainImage.width}
                                 height={mainImage.height}
                                 className="h-full w-full object-contain"
+                                placeholder="blur"
                             />
                         </div>
                     </div>
