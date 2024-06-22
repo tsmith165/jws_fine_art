@@ -6,6 +6,7 @@ import TitleComponent from '@/app/details/[id]/TitleComponent';
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import EditPieceButton from '@/app/details/[id]/EditPieceButton';
+import { getPlaiceholder } from 'plaiceholder';
 
 interface DetailsProps {
     pieceDataPromise: Promise<any>;
@@ -60,6 +61,8 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
     const allImages = [...using_extra_images, ...using_progress_images];
 
     const mainImage = allImages[selectedIndex];
+    const { base64 } = await getPlaiceholder(mainImage.image_path);
+
     const extraImagesCard = (
         <div className="relative z-0 flex min-w-[300px] flex-col">
             <div className="relative z-0 rounded-t-md bg-primary">
@@ -160,6 +163,8 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                             width={mainImage.width}
                             height={mainImage.height}
                             className="h-full w-full object-contain"
+                            placeholder="blur"
+                            blurDataURL={base64}
                         />
                     </div>
                 </div>
