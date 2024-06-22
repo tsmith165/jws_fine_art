@@ -4,19 +4,15 @@ import Link from 'next/link';
 import PieceSpecificationTable from '@/app/details/[id]/PieceSpecificationTable';
 import TitleComponent from '@/app/details/[id]/TitleComponent';
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import EditPieceButton from '@/app/details/[id]/EditPieceButton';
-import { getPlaiceholder } from 'plaiceholder';
 
 interface DetailsProps {
-    pieceDataPromise: Promise<any>;
+    pieceData: any;
     selectedIndex: number;
     type: string;
 }
 
-const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex, type }) => {
-    const pieceData = await pieceDataPromise;
-
+const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => {
     const description_raw = pieceData?.description?.length > 2 ? pieceData?.description : '';
     const db_id = pieceData?.id ?? -1;
     const o_id = pieceData?.o_id ?? '';
@@ -40,7 +36,7 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
     const progress_images = pieceData?.progressImages || [];
 
     const nextPieceImage = pieceData?.nextPieceImage;
-    const lastPieceImage = await pieceData?.lastPieceImage;
+    const lastPieceImage = pieceData?.lastPieceImage;
 
     const using_extra_images = [
         { image_path: image_path, width, height },
@@ -61,8 +57,6 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
     const allImages = [...using_extra_images, ...using_progress_images];
 
     const mainImage = allImages[selectedIndex];
-    const { base64 } = await getPlaiceholder(mainImage.image_path);
-
     const extraImagesCard = (
         <div className="relative z-0 flex min-w-[300px] flex-col">
             <div className="relative z-0 rounded-t-md bg-primary">
@@ -138,6 +132,7 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                                             height={110}
                                             quality={75}
                                             className="h-full w-full object-contain"
+                                            placeholder="blur"
                                             sizes="110px"
                                         />
                                     )}
@@ -163,8 +158,6 @@ const Details: React.FC<DetailsProps> = async ({ pieceDataPromise, selectedIndex
                             width={mainImage.width}
                             height={mainImage.height}
                             className="h-full w-full object-contain"
-                            placeholder="blur"
-                            blurDataURL={base64}
                         />
                     </div>
                 </div>

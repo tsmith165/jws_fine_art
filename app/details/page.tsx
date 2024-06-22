@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import { fetchFirstPieceId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
@@ -51,28 +50,18 @@ async function fetchPieceData(id: number): Promise<PiecesWithImages> {
     return { ...piece, next_id, last_id };
 }
 
-const pieceDataCache: { [key: number]: Promise<PiecesWithImages> } = {};
-
-function usePieceData(id: number) {
-    if (!pieceDataCache[id]) {
-        pieceDataCache[id] = fetchPieceData(id);
-    }
-    return pieceDataCache[id];
-}
-
-export default function Page({ params, searchParams }: PageProps) {
-    const firstIdPromise = fetchFirstPieceId();
-    const firstId = React.use(firstIdPromise);
+export default async function Page({ params, searchParams }: PageProps) {
+    const firstId = await fetchFirstPieceId();
     if (!firstId) {
         return <div>No pieces available.</div>;
     }
 
-    const pieceDataPromise = usePieceData(firstId);
+    const pieceData = await fetchPieceData(firstId);
 
     return (
         <PageLayout page={`/details/${firstId}`}>
             <Suspense fallback={<LoadingSpinner page="Details" />}>
-                <Details pieceDataPromise={pieceDataPromise} selectedIndex={0} type={'gallery'} />
+                <Details pieceData={pieceData} selectedIndex={0} type={'gallery'} />
             </Suspense>
         </PageLayout>
     );

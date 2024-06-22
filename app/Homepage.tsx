@@ -16,7 +16,7 @@ interface HomepageData {
 }
 
 interface HomepageProps {
-    homepageDataPromise: Promise<HomepageData[]>;
+    homepageData: HomepageData[];
 }
 
 const slideDirections = [
@@ -26,19 +26,12 @@ const slideDirections = [
     { y: '100vh', opacity: 0 },
 ];
 
-const Homepage = ({ homepageDataPromise }: HomepageProps) => {
-    const [homepageData, setHomepageData] = useState<HomepageData[]>([]);
+const Homepage = ({ homepageData }: HomepageProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [firstLoad, setFirstLoad] = useState(true);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        homepageDataPromise.then((data) => {
-            setHomepageData(data);
-        });
-    }, [homepageDataPromise]);
 
     const startInterval = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);

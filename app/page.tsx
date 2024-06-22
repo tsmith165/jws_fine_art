@@ -66,12 +66,12 @@ async function fetchHomepageData() {
     }));
 }
 
-export default function Page() {
-    const homepageDataPromise = fetchHomepageData();
+export default async function Page() {
+    const homepageData = await fetchHomepageData();
 
     return (
         <PageLayout page="/">
-            <Homepage homepageDataPromise={homepageDataPromise} />
+            <Homepage homepageData={homepageData} />
         </PageLayout>
     );
 }

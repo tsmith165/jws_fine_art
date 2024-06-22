@@ -66,16 +66,16 @@ async function fetchPieceData(id: number): Promise<PiecesWithImagesAndAdjacentIm
     };
 }
 
-export default function Page({ params, searchParams }: PageProps) {
+export default async function Page({ params, searchParams }: PageProps) {
     const { id: idParam } = params;
     const id = parseInt(idParam, 10);
-    const pieceData = fetchPieceData(id);
+    const pieceData = await fetchPieceData(id);
     const selectedIndex = parseInt(searchParams?.selected || '0', 10);
     const type = searchParams?.type || 'gallery';
 
     return (
         <PageLayout page={`/details/${id}`}>
-            <Details pieceDataPromise={pieceData} selectedIndex={selectedIndex} type={type} />
+            <Details pieceData={pieceData} selectedIndex={selectedIndex} type={type} />
         </PageLayout>
     );
 }
