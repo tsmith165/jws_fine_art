@@ -69,6 +69,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                                     ? 'bg-secondary text-primary'
                                     : 'bg-secondary_light text-primary_dark hover:bg-secondary hover:text-primary'
                             }`}
+                            prefetch={false}
                         >
                             Gallery Images
                         </Link>
@@ -81,6 +82,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                                     ? 'bg-secondary text-primary'
                                     : 'bg-secondary_light text-primary_dark hover:bg-secondary hover:text-primary'
                             }`}
+                            prefetch={false}
                         >
                             Progress Images
                         </Link>
@@ -94,7 +96,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                             <Link
                                 key={`extra_image_container_${index}`}
                                 href={`/details/${db_id}?selected=${index}&type=gallery`}
-                                prefetch={true}
+                                prefetch={false}
                                 className={`${
                                     selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
                                 } flex h-[110px] max-h-[110px] min-h-[110px] w-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
@@ -119,7 +121,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                                 <Link
                                     key={`progress_image_${index}`}
                                     href={`/details/${db_id}?selected=${using_extra_images.length + index}&type=progress`}
-                                    prefetch={true}
+                                    prefetch={false}
                                     className={`${
                                         selectedIndex === index ? 'bg-primary' : 'bg-primary_dark'
                                     } flex max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px] items-center justify-center rounded-md p-1`}
@@ -182,6 +184,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                             <Link
                                 className="flex items-center justify-center rounded-md bg-secondary_dark p-1.5 hover:bg-secondary_light"
                                 href={`https://www.instagram.com/p/${instagram}`}
+                                prefetch={false}
                             >
                                 <Image
                                     src="/instagram_icon_100.png"

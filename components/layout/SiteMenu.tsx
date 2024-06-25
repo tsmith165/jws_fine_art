@@ -35,7 +35,7 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
                         }}
                     />
                 ) : (
-                    <Link href="/signin" aria-label="Sign in">
+                    <Link href="/signin" aria-label="Sign in" prefetch={false}>
                         <MdAccountCircle className="h-full w-full group-hover:fill-primary_dark" />
                     </Link>
                 )}

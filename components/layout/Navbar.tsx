@@ -8,7 +8,7 @@ export default function Navbar({ page }: { page: string }) {
     return (
         <nav className={'min-h-[80px] overflow-hidden bg-primary_dark p-0'}>
             <div className={'flex flex-row'}>
-                <Link href="/gallery">
+                <Link href="/gallery" prefetch={page === '/gallery' ? false : true}>
                     <div className={`!h-full w-[250px] max-w-[250px]`}>
                         <Image
                             className={`max-h-[80px] min-h-[80px] p-2.5`}
@@ -22,7 +22,7 @@ export default function Navbar({ page }: { page: string }) {
                     </div>
                 </Link>
                 <div className={'absolute right-0 top-[40px] flex h-[40px] w-fit flex-row'}>
-                    <Link href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer">
+                    <Link href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer" prefetch={false}>
                         <Image
                             className={'w-[40px] rounded-t-md bg-secondary_dark p-2 hover:bg-secondary_light'}
                             src="/instagram_icon_50.png"

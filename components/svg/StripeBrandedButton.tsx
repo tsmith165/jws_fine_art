@@ -29,7 +29,7 @@ const StripeBrandedButton: React.FC<StripeBrandedButtonProps> = ({ url, price, t
     }
     return (
         <div className="flex items-center space-x-2">
-            <Link href={url}>
+            <Link href={url} prefetch={false}>
                 <div className="group flex items-center rounded-lg bg-primary pr-2 font-bold hover:bg-secondary_dark">
                     <div className="flex items-center rounded-l-lg bg-primary_dark p-1 px-2 text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-secondary_dark">
                         {`$${price}`}

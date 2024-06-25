@@ -91,6 +91,7 @@ const Homepage = ({ homepageData }: HomepageProps) => {
                             <Link
                                 href={'/gallery'}
                                 className="w-full rounded rounded-b-lg rounded-t-none py-1 text-gray-400 hover:bg-secondary_dark hover:bg-opacity-25 hover:font-bold hover:text-primary"
+                                prefetch={false}
                             >
                                 Enter Gallery
                             </Link>
