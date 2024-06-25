@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import DetailsPage from './DetailsPage';
+import TitleComponent from './TitleComponent';
 
 interface PageProps {
     params: {
@@ -48,9 +49,18 @@ export default async function Page({ params, searchParams }: PageProps) {
     const selectedIndex = parseInt(searchParams?.selected || '0', 10);
     const type = searchParams?.type || 'gallery';
 
+    const fallback = (
+        <div className="relative z-0 flex h-[calc(100dvh-80px)] w-full flex-col lg:flex-row">
+            <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]"></div>
+            <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
+                <TitleComponent title={''} next_id={-1} last_id={-1} />
+            </div>
+        </div>
+    );
+
     return (
         <PageLayout page={`/details/${id}`}>
-            <Suspense fallback={''}>
+            <Suspense fallback={fallback}>
                 <DetailsPage id={id} selectedIndex={selectedIndex} type={type} />
             </Suspense>
         </PageLayout>
