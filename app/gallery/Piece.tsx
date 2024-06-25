@@ -12,9 +12,10 @@ type PieceProps = {
     title: string;
     sold: boolean;
     available: boolean;
+    index: number;
 };
 
-const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_path, title, sold, available }) => {
+const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_path, title, sold, available, index }) => {
     var [x, y, img_width, img_height] = dimensions;
     x = x == null || x < 0 ? 0 : x;
 
@@ -26,9 +27,10 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
                     src={image_path}
                     width={img_width}
                     height={img_height}
-                    sizes="(min-width: 768px) 30vw, (max-width: 769px) 45vw"
+                    sizes="(min-width: 1291px) calc(20vw - 30px), (min-width: 1031px) calc(25vw - 30px), (min-width: 771px) calc(33vw - 20px), (min-width: 611px) calc(50vw - 10px), calc(calc(100vw - 120px) / 2)"
+                    quality={70}
                     alt={title}
-                    priority
+                    priority={index < 10}
                 />
                 {sold === true || available === false ? (
                     <div className={`absolute !bottom-2.5 right-2.5`}>

@@ -171,6 +171,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
                             title={title}
                             sold={piece_sold}
                             available={piece_available}
+                            index={i}
                         />,
                     ],
                 }));
