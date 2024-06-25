@@ -183,7 +183,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         for (let i = 0; i < column_bottom_list.length; i++) {
             if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
         }
-        if (state.window_width < 600) lowest_height = lowest_height + 20;
+        // if (state.window_width < 600) lowest_height = lowest_height + 20;
 
         setState((prevState) => ({
             ...prevState,
