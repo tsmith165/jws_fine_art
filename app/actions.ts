@@ -6,25 +6,46 @@ import { PiecesWithImages, ExtraImages, ProgressImages, VerifiedTransactions } f
 
 export async function fetchPieces(): Promise<PiecesWithImages[]> {
     console.log(`Fetching pieces with Drizzle`);
-    const pieceList = await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(desc(piecesTable.o_id));
+    const piecesWithImages = await db
+        .select({
+            piece: piecesTable,
+            extraImages: extraImagesTable,
+            progressImages: progressImagesTable,
+        })
+        .from(piecesTable)
+        .where(eq(piecesTable.active, true))
+        .leftJoin(extraImagesTable, eq(extraImagesTable.piece_id, piecesTable.id))
+        .leftJoin(progressImagesTable, eq(progressImagesTable.piece_id, piecesTable.id))
+        .orderBy(desc(piecesTable.o_id));
 
-    const piecesWithImages = await Promise.all(
-        pieceList.map(async (piece) => {
-            const extraImages: ExtraImages[] = await db.select().from(extraImagesTable).where(eq(extraImagesTable.piece_id, piece.id));
-            const progressImages: ProgressImages[] = await db
-                .select()
-                .from(progressImagesTable)
-                .where(eq(progressImagesTable.piece_id, piece.id));
+    console.log(`Captured pieces successfully`);
 
-            return {
+    const formattedPieces = piecesWithImages.reduce<PiecesWithImages[]>((acc, curr) => {
+        const piece = curr.piece;
+        const extraImage = curr.extraImages;
+        const progressImage = curr.progressImages;
+
+        const existingPiece = acc.find((p) => p.id === piece.id);
+
+        if (existingPiece) {
+            if (extraImage) {
+                existingPiece.extraImages.push(extraImage);
+            }
+            if (progressImage) {
+                existingPiece.progressImages.push(progressImage);
+            }
+        } else {
+            acc.push({
                 ...piece,
-                extraImages,
-                progressImages,
-            };
-        }),
-    );
+                extraImages: extraImage ? [extraImage] : [],
+                progressImages: progressImage ? [progressImage] : [],
+            });
+        }
 
-    return piecesWithImages;
+        return acc;
+    }, []);
+
+    return formattedPieces;
 }
 
 export async function fetchPieceIds(): Promise<number[]> {
