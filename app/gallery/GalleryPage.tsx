@@ -1,6 +1,6 @@
 import { Pieces } from '@/db/schema';
 import { fetchPieces } from '@/app/actions';
-import React, { Suspense } from 'react';
+import React from 'react';
 import Gallery from './Gallery';
 
 async function fetchPiecesData(): Promise<Pieces[]> {
@@ -11,11 +11,7 @@ async function fetchPiecesData(): Promise<Pieces[]> {
 export default async function GalleryPage() {
     const piecesData = await fetchPiecesData();
 
-    return (
-        <Suspense fallback={''}>
-            <Gallery pieces={piecesData} />
-        </Suspense>
-    );
+    return <Gallery pieces={piecesData} />;
 }
 
 export const revalidate = 60;

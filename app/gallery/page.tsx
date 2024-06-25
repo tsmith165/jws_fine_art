@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import React from 'react';
+import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import GalleryPage from './GalleryPage';
 
@@ -35,7 +35,9 @@ export const metadata: Metadata = {
 export default async function Page() {
     return (
         <PageLayout page="/gallery">
-            <GalleryPage />
+            <Suspense fallback={''}>
+                <GalleryPage />
+            </Suspense>
         </PageLayout>
     );
 }
