@@ -35,9 +35,6 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
     const extra_images = pieceData?.extraImages || [];
     const progress_images = pieceData?.progressImages || [];
 
-    const nextPieceImage = pieceData?.nextPieceImage;
-    const lastPieceImage = pieceData?.lastPieceImage;
-
     const using_extra_images = [
         { image_path: image_path, width, height },
         ...extra_images.map((image: any) => ({
@@ -165,13 +162,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                 </div>
             </div>
             <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
-                <TitleComponent
-                    title={title ? `"${title}"` : ''}
-                    next_id={pieceData?.next_id}
-                    last_id={pieceData?.last_id}
-                    nextPieceImage={nextPieceImage}
-                    lastPieceImage={lastPieceImage}
-                />
+                <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData?.next_id} last_id={pieceData?.last_id} />
 
                 <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
                     <div className="flex max-w-full flex-row space-x-1.5">

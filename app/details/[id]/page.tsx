@@ -1,14 +1,7 @@
 import { Metadata } from 'next';
-import React from 'react';
+import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
-import Details from '@/app/details/[id]/Details';
-import { fetchPieceById, fetchAdjacentPieceIds, fetchPieceImageById } from '@/app/actions';
-import { PiecesWithImages } from '@/db/schema';
-
-interface PiecesWithImagesAndAdjacentImages extends PiecesWithImages {
-    nextPieceImage: { image_path: string; width: number; height: number } | null;
-    lastPieceImage: { image_path: string; width: number; height: number } | null;
-}
+import DetailsPage from './DetailsPage';
 
 interface PageProps {
     params: {
@@ -49,33 +42,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
-async function fetchPieceData(id: number): Promise<PiecesWithImagesAndAdjacentImages> {
-    const piece = await fetchPieceById(id);
-    const { next_id, last_id } = await fetchAdjacentPieceIds(id);
-
-    // Fetch the next and last piece images
-    const nextPieceImage = await fetchPieceImageById(next_id);
-    const lastPieceImage = await fetchPieceImageById(last_id);
-
-    return {
-        ...piece,
-        next_id,
-        last_id,
-        nextPieceImage,
-        lastPieceImage,
-    };
-}
-
 export default async function Page({ params, searchParams }: PageProps) {
     const { id: idParam } = params;
     const id = parseInt(idParam, 10);
-    const pieceData = await fetchPieceData(id);
     const selectedIndex = parseInt(searchParams?.selected || '0', 10);
     const type = searchParams?.type || 'gallery';
 
     return (
         <PageLayout page={`/details/${id}`}>
-            <Details pieceData={pieceData} selectedIndex={selectedIndex} type={type} />
+            <Suspense fallback={''}>
+                <DetailsPage id={id} selectedIndex={selectedIndex} type={type} />
+            </Suspense>
         </PageLayout>
     );
 }

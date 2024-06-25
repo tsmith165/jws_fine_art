@@ -6,11 +6,9 @@ interface TitleComponentProps {
     title: string;
     next_id: number;
     last_id: number;
-    nextPieceImage: { image_path: string; width: number; height: number } | null;
-    lastPieceImage: { image_path: string; width: number; height: number } | null;
 }
 
-const TitleComponent: React.FC<TitleComponentProps> = ({ title, next_id, last_id, nextPieceImage, lastPieceImage }) => {
+const TitleComponent: React.FC<TitleComponentProps> = ({ title, next_id, last_id }) => {
     return (
         <div className="z-0 flex h-fit flex-row items-center space-x-2 bg-secondary p-2">
             <div className="flex h-[48px] flex-col space-y-1">
