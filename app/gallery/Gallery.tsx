@@ -92,6 +92,12 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         let row_starting_height = INNER_MARGIN_WIDTH;
         let skip_col = false;
 
+        // Set gallery pieces to empty array
+        setState((prevState) => ({
+            ...prevState,
+            gallery_pieces: [],
+        }));
+
         let i = 0;
         while (i < piece_list_length) {
             const current_piece_json = piece_list[i];
