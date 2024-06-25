@@ -10,7 +10,7 @@ export default function PageLayout({ children, page }: PageLayoutProps) {
     return (
         <div className="min-h-screen bg-secondary_dark">
             <Navbar page={page} />
-            <main className="h-[calc(100vh-80px)]">{children}</main>
+            <main className="h-[calc(100dvh-80px)]">{children}</main>
         </div>
     );
 }

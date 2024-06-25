@@ -22,8 +22,8 @@ interface HomepageProps {
 const slideDirections = [
     { x: '-100vw', opacity: 0 },
     { x: '100vw', opacity: 0 },
-    { y: '-100vh', opacity: 0 },
-    { y: '100vh', opacity: 0 },
+    { y: '-100dvh', opacity: 0 },
+    { y: '100dvh', opacity: 0 },
 ];
 
 const Homepage = ({ homepageData }: HomepageProps) => {
@@ -99,7 +99,7 @@ const Homepage = ({ homepageData }: HomepageProps) => {
 
                     const current_paragraph_div = (
                         <p
-                            className={`h-fit max-h-[calc(calc(100%-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit`}
+                            className={`h-fit max-h-[calc(calc(100dvh-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit`}
                         >
                             {data.bio_paragraph}
                         </p>
@@ -134,7 +134,7 @@ const Homepage = ({ homepageData }: HomepageProps) => {
                                     onLoad={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex h-[calc(100%-50px)] flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 flex h-[calc(100dvh-50px)] flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
