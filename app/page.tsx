@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
-import React from 'react';
+import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
-import Homepage from '@/app/Homepage';
-import { BIOGRAPHY_TEXT } from '@/lib/biography_text';
-import { db, piecesTable } from '@/db/db';
-import { eq, desc } from 'drizzle-orm';
+import HomepagePage from '@/app/HomepagePage';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Biography',
@@ -35,45 +32,33 @@ export const metadata: Metadata = {
     },
 };
 
-async function fetchHomepageImages(limit: number) {
-    console.log(`Fetching pieces with Drizzle`);
-    const pieces = await db
-        .select({
-            id: piecesTable.id,
-            title: piecesTable.title,
-            imagePath: piecesTable.image_path,
-            width: piecesTable.width,
-            height: piecesTable.height,
-        })
-        .from(piecesTable)
-        .where(eq(piecesTable.active, true))
-        .orderBy(desc(piecesTable.p_id))
-        .limit(limit);
-
-    return pieces;
-}
-
-async function fetchHomepageData() {
-    const numParagraphs = BIOGRAPHY_TEXT.length;
-    const homepage_pieces = await fetchHomepageImages(numParagraphs);
-    return homepage_pieces.map((piece, index) => ({
-        id: piece.id,
-        title: piece.title,
-        image_path: piece.imagePath,
-        width: piece.width,
-        height: piece.height,
-        bio_paragraph: BIOGRAPHY_TEXT[index],
-    }));
-}
-
 export default async function Page() {
-    const homepageData = await fetchHomepageData();
-
     return (
         <PageLayout page="/">
-            <Homepage homepageData={homepageData} />
+            <Suspense fallback={<HomepageSkeleton />}>
+                <HomepagePage />
+            </Suspense>
         </PageLayout>
     );
 }
+
+const HomepageSkeleton = () => {
+    return (
+        <div className="relative flex h-full w-full flex-col space-y-2">
+            <div className="absolute inset-0 h-full animate-pulse bg-gray-300"></div>
+            <div className="absolute bottom-0 flex h-[50px] w-full items-center justify-center space-x-4">
+                <div className="rounded-lg bg-gray-400 p-1">
+                    <div className="h-6 w-6 animate-pulse"></div>
+                </div>
+                {Array.from({ length: 7 }).map((_, index) => (
+                    <div key={index} className={`h-4 w-4 animate-pulse rounded-full bg-gray-400`}></div>
+                ))}
+                <div className="rounded-lg bg-gray-400 p-1">
+                    <div className="h-6 w-6 animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export const revalidate = 60;
