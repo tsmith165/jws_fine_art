@@ -2,9 +2,9 @@ import { Metadata } from 'next';
 import { Pieces } from '@/db/schema';
 import { fetchPieces } from '@/app/actions';
 import React, { Suspense } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import PageLayout from '@/components/layout/PageLayout';
 import Gallery from './Gallery';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery',
@@ -45,7 +45,9 @@ export default async function Page() {
 
     return (
         <PageLayout page="/gallery">
-            <Gallery pieces={piecesData} />
+            <Suspense fallback={''}>
+                <Gallery pieces={piecesData} />
+            </Suspense>
         </PageLayout>
     );
 }
