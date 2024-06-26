@@ -50,7 +50,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     const type = searchParams?.type || 'gallery';
 
     const fallback = (
-        <div className="relative z-0 flex h-[calc(100dvh-80px)] w-full flex-col lg:flex-row">
+        <div className="relative z-0 flex h-[calc(100dvh-50px)] w-full flex-col lg:flex-row">
             <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]"></div>
             <div className="relative z-0 flex h-1/2 w-full flex-col overflow-x-hidden bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
                 <TitleComponent title={''} next_id={-1} last_id={-1} />
