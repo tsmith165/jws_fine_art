@@ -20,7 +20,7 @@ export default function Navbar({ page }: { page: string }) {
                 key={menu_class_name}
                 href={url_endpoint}
                 className={
-                    `h-full cursor-pointer bg-clip-text pb-1 font-bold text-transparent ${is_hidden} ` +
+                    `h-full cursor-pointer bg-clip-text pb-1 pl-4 font-bold text-transparent first:pl-0 ${is_hidden} ` +
                     `bg-gradient-to-r ${gradient} ${gradient_hover}`
                 }
             >
@@ -45,7 +45,7 @@ export default function Navbar({ page }: { page: string }) {
                     className="h-[40px] max-h-[50px] w-fit object-contain"
                 />
             </Link>
-            <div className="hidden flex-1 flex-row items-center justify-end space-x-4 md:flex">{leftNavbar}</div>
+            <div className="hidden flex-1 flex-row items-center justify-end md:flex">{leftNavbar}</div>
             <Link href="/" className="mx-4 hidden h-[50px] items-center justify-center md:flex">
                 <Image
                     src="/logo/jws_logo_small.png"
@@ -56,10 +56,10 @@ export default function Navbar({ page }: { page: string }) {
                     className="h-[40px] max-h-[50px] w-fit object-contain"
                 />
             </Link>
-            <div className="hidden flex-1 flex-row items-center justify-start space-x-4 md:flex">{rightNavbar}</div>
-            <div className="flex w-full flex-row items-center justify-end space-x-4 md:hidden">{navbar}</div>
+            <div className="hidden flex-1 flex-row items-center justify-start md:flex">{rightNavbar}</div>
+            <div className="flex w-full flex-row items-center justify-end md:hidden">{navbar}</div>
 
-            <div className={'flex justify-end'}>
+            <div className={'flex justify-end pl-4'}>
                 <SiteMenu currentPage={page} />
             </div>
         </nav>
