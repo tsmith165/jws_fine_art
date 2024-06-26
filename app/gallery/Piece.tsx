@@ -34,7 +34,14 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
                 />
                 {sold === true || available === false ? (
                     <div className={`absolute !bottom-2.5 right-2.5`}>
-                        <Image className={`!left-auto !top-auto`} src="/redDot.png" alt="Piece Sold" width={30} height={30} priority />
+                        <Image
+                            className={`!left-auto !top-auto`}
+                            src="/extra/redDot.png"
+                            alt="Piece Sold"
+                            width={30}
+                            height={30}
+                            priority
+                        />
                     </div>
                 ) : null}
             </Link>

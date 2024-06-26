@@ -2,7 +2,7 @@
 
 This is a Next.js 14 project for Jill Weeks Smith, an artist showcasing and selling her artwork through a full-featured online gallery and sales platform.
 
-![Jill Weeks Smith Artwork GIF](public/jws_pieces.gif)
+![Jill Weeks Smith Artwork GIF](public/marketing/jws_pieces.gif)
 
 ## Features
 

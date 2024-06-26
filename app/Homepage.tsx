@@ -81,7 +81,7 @@ const Homepage = ({ homepageData }: HomepageProps) => {
                     const current_image_div = (
                         <div className="flex h-fit flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
                             <Image
-                                src="/bio_pic_updated_small.jpg"
+                                src="/bio/bio_pic_updated_small.jpg"
                                 alt="Bio Pic"
                                 width={300}
                                 height={400}

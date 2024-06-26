@@ -12,7 +12,7 @@ export default function Navbar({ page }: { page: string }) {
                     <div className={`!h-full w-[250px] max-w-[250px]`}>
                         <Image
                             className={`max-h-[80px] min-h-[80px] p-2.5`}
-                            src="/jws_logo_small.png"
+                            src="/logo/jws_logo_small.png"
                             alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
                             width={230}
                             height={60}
@@ -25,7 +25,7 @@ export default function Navbar({ page }: { page: string }) {
                     <Link href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer" prefetch={false}>
                         <Image
                             className={'w-[40px] rounded-t-md bg-secondary_dark p-2 hover:bg-secondary_light'}
-                            src="/instagram_icon_50.png"
+                            src="/icon/instagram_icon_50.png"
                             alt="Instagram Link"
                             width={40}
                             height={40}

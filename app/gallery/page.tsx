@@ -10,9 +10,9 @@ export const metadata: Metadata = {
         'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Fine Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Masonry',
     applicationName: 'JWS Fine Art',
     icons: {
-        icon: '/JWS_ICON_MAIN.png',
-        shortcut: '/JWS_ICON_MAIN.png',
-        apple: '/apple-icon.png',
+        icon: '/logo/JWS_ICON_MAIN.png',
+        shortcut: '/logo/JWS_ICON_MAIN.png',
+        apple: '/favicon/apple-icon.png',
     },
     openGraph: {
         title: 'JWS Fine Art - Gallery',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         url: 'https://www.jwsfineart.com',
         images: [
             {
-                url: '/og-image.png',
+                url: '/favicon/og-image.png',
                 width: 1200,
                 height: 630,
                 alt: 'JWS Fine Art',

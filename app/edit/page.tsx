@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PageProps) {
             'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Edit',
         applicationName: 'JWS Fine Art',
         icons: {
-            icon: '/JWS_ICON_MAIN.png',
+            icon: '/logo/JWS_ICON_MAIN.png',
         },
         openGraph: {
             title: 'JWS Fine Art - Edit Details',
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: PageProps) {
             url: 'https://www.jwsfineart.com',
             images: [
                 {
-                    url: '/og-image.png',
+                    url: '/favicon/og-image.png',
                     width: 1200,
                     height: 630,
                     alt: 'JWS Fine Art',

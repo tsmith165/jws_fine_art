@@ -178,7 +178,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                                 prefetch={false}
                             >
                                 <Image
-                                    src="/instagram_icon_100.png"
+                                    src="/icon/instagram_icon_100.png"
                                     alt="Instagram Link"
                                     priority
                                     width={25}
