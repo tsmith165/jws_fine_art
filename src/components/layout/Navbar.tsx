@@ -6,10 +6,10 @@ import SiteMenu from './SiteMenu';
 import { menu_list } from '@/lib/menu_list';
 
 export default function Navbar({ page }: { page: string }) {
-    const non_selected_gradient = `from-secondary via-secondary_dark to-secondary `;
-    const non_selected_gradient_hover = `hover:from-primary hover:via-primary_dark hover:to-primary`;
-    const selected_gradient = `from-primary via-primary_dark to-primary`;
-    const selected_gradient_hover = `hover:from-secondary hover:via-secondary_dark hover:to-secondary`;
+    const non_selected_gradient = `from-secondary via-primary_dark to-secondary `;
+    const non_selected_gradient_hover = `hover:from-primary_dark hover:via-primary hover:to-primary_dark`;
+    const selected_gradient = `from-primary_dark via-primary to-primary_dark`;
+    const selected_gradient_hover = `hover:from-secondary hover:via-primary_dark hover:to-secondary`;
 
     const navbar = menu_list.map(([menu_class_name, menu_full_name, url_endpoint]) => {
         let is_hidden = menu_class_name === 'slideshow' ? 'hidden md:flex' : menu_class_name === 'gallery' ? 'hidden xs:flex' : '';
