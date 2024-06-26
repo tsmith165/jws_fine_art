@@ -8,7 +8,7 @@ type PageLayoutProps = {
 
 export default function PageLayout({ children, page }: PageLayoutProps) {
     return (
-        <div className="min-h-screen bg-secondary_dark">
+        <div className="h-[calc(100dvh-50px)] bg-secondary_dark">
             <Navbar page={page} />
             <main className="h-[calc(100dvh-50px)]">{children}</main>
         </div>

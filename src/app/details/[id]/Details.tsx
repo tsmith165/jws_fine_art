@@ -165,8 +165,9 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                 <div className="flex h-full w-full flex-col overflow-x-hidden">
                     <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData?.next_id} last_id={pieceData?.last_id} />
 
-                    <div className="flex w-full flex-col space-y-2 overflow-y-auto rounded-md p-2">
+                    <div className="flex h-fit w-full flex-grow flex-col space-y-2 overflow-y-auto rounded-md p-2">
                         <div className="flex max-w-full flex-row space-x-1.5">
+                            s
                             {sold_text === '' ? (
                                 <StripeBrandedButton url={'/checkout/' + db_id} price={price} text="Checkout" />
                             ) : (
