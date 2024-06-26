@@ -135,7 +135,7 @@ const Homepage = ({ homepageData }: HomepageProps) => {
                                     onLoad={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex h-[calc(100dvh-50px)] flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 flex h-full flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export default function Contact() {
     return (
-        <div className="flex h-[calc(100dvh-50px)] w-full items-center p-4 first-line:justify-center">
+        <div className="flex h-full w-full items-center p-4 first-line:justify-center">
             <div className="relative flex h-full max-h-full w-full flex-col overflow-y-scroll ">
                 <Image
                     src="/bio/bio_pic_updated_small.jpg"
