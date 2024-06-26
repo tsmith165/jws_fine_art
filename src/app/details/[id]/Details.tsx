@@ -145,7 +145,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
 
     return (
         <div className="relative z-0 flex h-[calc(100dvh-50px)] w-full flex-col lg:flex-row">
-            <div className="relative z-0 flex h-[calc(calc(100dvh-50px)/2)] w-full flex-col bg-secondary_dark md:h-[calc(0.6*calc(100dvh-50px))] lg:h-full lg:w-[65%]">
+            <div className="relative z-0 flex h-1/2 w-full flex-col bg-secondary_dark md:h-3/5 lg:h-full lg:w-[65%]">
                 <div className={`flex h-full max-w-full items-center justify-center`}>
                     <div className="flex h-full w-full items-center justify-center">
                         <Image
@@ -161,7 +161,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                     </div>
                 </div>
             </div>
-            <div className="relative z-0 flex h-[calc(calc(100dvh-50px)/2)] w-full bg-secondary_light md:h-[calc(0.4*calc(100dvh-50px))] lg:h-full lg:w-[35%]">
+            <div className="relative z-0 flex h-1/2 w-full bg-secondary_light md:h-2/5 lg:h-full lg:w-[35%]">
                 <div className="flex h-full w-full flex-col overflow-x-hidden">
                     <TitleComponent title={title ? `"${title}"` : ''} next_id={pieceData?.next_id} last_id={pieceData?.last_id} />
 
