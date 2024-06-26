@@ -35,7 +35,7 @@ export default function Navbar({ page }: { page: string }) {
 
     return (
         <nav className="flex h-[50px] w-full flex-row items-center justify-between bg-neutral-900 p-0">
-            <Link href="/gallery" className="mx-4 flex h-[50px] md:hidden">
+            <Link href="/" className="mx-4 flex h-[50px] md:hidden">
                 <Image
                     src="/logo/jws_logo_small.png"
                     alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
@@ -46,7 +46,7 @@ export default function Navbar({ page }: { page: string }) {
                 />
             </Link>
             <div className="hidden flex-1 flex-row items-center justify-end space-x-4 md:flex">{leftNavbar}</div>
-            <Link href="/gallery" className="mx-4 hidden h-[50px] items-center justify-center md:flex">
+            <Link href="/" className="mx-4 hidden h-[50px] items-center justify-center md:flex">
                 <Image
                     src="/logo/jws_logo_small.png"
                     alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
