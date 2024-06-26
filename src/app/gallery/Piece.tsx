@@ -20,7 +20,12 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
     x = x == null || x < 0 ? 0 : x;
 
     return (
-        <div id={id} className={`absolute rounded-md ${className}`} style={{ width: img_width, height: img_height, top: y, left: x }}>
+        <div
+            key={index}
+            id={id}
+            className={`absolute rounded-md ${className}`}
+            style={{ width: img_width, height: img_height, top: y, left: x }}
+        >
             <Link href={`/details/${id}`} prefetch={false}>
                 <Image
                     className={`rounded-md bg-secondary_light p-1`}

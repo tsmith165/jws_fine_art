@@ -27,31 +27,29 @@ const FilterMenu: React.FC = () => {
         <div onMouseEnter={() => setFilterMenuOpen(true)} onMouseLeave={() => setFilterMenuOpen(false)}>
             <div
                 className={
-                    `group absolute right-[125px] top-[40px] z-10 flex flex-row overflow-visible bg-secondary_dark p-[5px] text-secondary_light hover:bg-secondary_light ` +
-                    `${filterMenuOpen ? 'rounded-t-lg bg-secondary_light text-secondary hover:bg-secondary_light md:rounded-t-none md:rounded-tr-lg' : 'rounded-t-lg'}`
+                    `group absolute left-0 top-[50px] z-10 flex flex-row p-[5px] ` +
+                    `${filterMenuOpen ? 'bg-primary_dark ' : 'rounded-br-lg bg-primary'}`
                 }
                 onClick={(e) => {
                     e.preventDefault();
                     setFilterMenuOpen(!filterMenuOpen);
                 }}
             >
-                <FaSlidersH
-                    className={`${filterMenuOpen ? 'fill-primary_dark' : 'fill-primary'} h-[30px] w-[30px] p-0.5 group-hover:fill-primary_dark`}
-                />
+                <FaSlidersH className={`${filterMenuOpen ? 'fill-primary' : 'fill-primary_dark '} h-[30px] w-[30px] p-0.5`} />
             </div>
             {filterMenuOpen === true && (
-                <div className="absolute right-0 top-[80px] flex h-[40px] w-fit flex-row rounded-bl-lg bg-secondary md:right-[165px] md:top-[40px] md:rounded-bl-none md:rounded-tl-lg md:bg-secondary_dark">
+                <div className="absolute left-0 top-[50px] flex h-[40px] w-fit flex-row rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg">
                     {THEME_FILTERS.map(([filter, Icon], i) => (
                         <div
                             key={i}
-                            className={`group p-[5px] ${filter === theme ? 'bg-secondary_light' : 'hover:bg-secondary_light'} ${i === 0 ? 'rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg' : ''}`}
+                            className={`group p-[5px] last:rounded-br-lg ${filter === theme ? 'bg-primary_dark' : 'bg-primary hover:bg-primary_dark'}`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 setTheme(filter);
                             }}
                         >
                             <Icon
-                                className={`h-[30px] w-[30px] ${filter === theme ? 'fill-primary_dark' : 'fill-primary group-hover:fill-primary_dark'}`}
+                                className={`h-[30px] w-[30px] ${filter === theme ? 'fill-primary' : 'fill-primary_dark group-hover:fill-primary'}`}
                             />
                         </div>
                     ))}

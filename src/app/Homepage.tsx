@@ -79,7 +79,7 @@ const Homepage = ({ homepageData }: HomepageProps) => {
                     const direction = firstLoad && index === 0 ? { opacity: 0 } : slideDirections[index % slideDirections.length];
 
                     const current_image_div = (
-                        <div className="flex h-fit flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
+                        <div className="flex h-fit min-w-[20%] flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
                             <Image
                                 src="/bio/bio_pic_updated_small.jpg"
                                 alt="Bio Pic"
@@ -100,7 +100,7 @@ const Homepage = ({ homepageData }: HomepageProps) => {
 
                     const current_paragraph_div = (
                         <p
-                            className={`h-fit max-h-[calc(calc(100dvh-50px)/2)] max-w-prose overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit`}
+                            className={`h-fit max-h-[30%] max-w-[80%] overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 text-lg text-gray-400 md:max-h-fit md:max-w-[60%]`}
                         >
                             {data.bio_paragraph}
                         </p>

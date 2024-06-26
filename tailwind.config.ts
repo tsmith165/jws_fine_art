@@ -3,7 +3,7 @@ import typography from '@tailwindcss/typography';
 import { withUt } from 'uploadthing/tw';
 
 export default withUt({
-    content: ['./app/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+    content: ['./src/app/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
     theme: {
         extend: {
             fontFamily: {
@@ -21,6 +21,7 @@ export default withUt({
                 visited: '#be23ae', // visited link color
             },
             screens: {
+                xs: '480px',
                 'md-nav': '833px',
             },
             keyframes: {

@@ -22,13 +22,13 @@
         ],
         "baseUrl": ".",
         "paths": {
-            "@/components/*": ["components/*"],
-            "@/styles/*": ["styles/*"],
-            "@/lib/*": ["lib/*"],
-            "@/app/*": ["app/*"],
-            "@/stores/*": ["stores/*"],
-            "@/utils/*": ["utils/*"],
-            "@/db/*": ["db/*"]
+            "@/components/*": ["src/components/*"],
+            "@/styles/*": ["src/styles/*"],
+            "@/lib/*": ["src/lib/*"],
+            "@/app/*": ["src/app/*"],
+            "@/stores/*": ["src/stores/*"],
+            "@/utils/*": ["src/utils/*"],
+            "@/db/*": ["src/db/*"]
         }
     },
     "include": [
@@ -37,9 +37,8 @@
         "**/*.tsx",
         ".next/types/**/*.ts",
         "middleware.js",
-        "app/api/checkout/webhook/route.js",
-        "app/api/checkout/webhook/route.js",
-        "lib/*"
+        "src/app/api/checkout/webhook/route.js",
+        "src/lib/*"
     ],
-    "exclude": ["node_modules"]
+    "exclude": ["src/node_modules"]
 }

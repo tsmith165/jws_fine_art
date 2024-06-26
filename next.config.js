@@ -1,4 +1,4 @@
-import constants from './lib/constants.js';
+import constants from './src/lib/constants.js';
 
 const { AWS_BUCKET_URL } = constants;
 

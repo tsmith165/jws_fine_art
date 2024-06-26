@@ -29,3 +29,10 @@ export const ADMIN_MENU_LIST: MenuItem[] = [
     ['admin', 'Admin', true, '/admin'],
     ['sign_out', 'Sign Out', false, '/signout'],
 ];
+
+export const menu_list: [string, string, string][] = [
+    ['gallery', 'Gallery', '/gallery'],
+    ['details', 'Details', '/details'],
+    ['slideshow', 'Slideshow', '/slideshow'],
+    ['contact', 'Contact', '/contact'],
+];
