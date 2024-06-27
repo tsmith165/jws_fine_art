@@ -45,18 +45,7 @@ export default async function Page() {
 const HomepageSkeleton = () => {
     return (
         <div className="relative flex h-full w-full flex-col space-y-2">
-            <div className="absolute inset-0 h-full animate-pulse bg-gray-300"></div>
-            <div className="absolute bottom-0 flex h-[50px] w-full items-center justify-center space-x-4">
-                <div className="rounded-lg bg-gray-400 p-1">
-                    <div className="h-6 w-6 animate-pulse"></div>
-                </div>
-                {Array.from({ length: 7 }).map((_, index) => (
-                    <div key={index} className={`h-4 w-4 animate-pulse rounded-full bg-gray-400`}></div>
-                ))}
-                <div className="rounded-lg bg-gray-400 p-1">
-                    <div className="h-6 w-6 animate-pulse"></div>
-                </div>
-            </div>
+            <div className="absolute inset-0 h-full animate-pulse bg-stone-800"></div>
         </div>
     );
 };

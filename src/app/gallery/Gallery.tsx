@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, Suspense, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
@@ -65,11 +65,18 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, [theme, pieceList]);
 
+    const selectedImageRef = useRef<HTMLDivElement>(null);
+
     const handlePieceClick = (index: number) => {
         console.log('Handle Piece Click:', index);
         setCurrentImageIndex(0);
         setSelectedPieceIndex(index);
         setImageLoadStates({}); // Reset all image load states
+
+        // Use setTimeout to ensure the DOM has updated before scrolling
+        setTimeout(() => {
+            selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     };
 
     const handleImageChange = (direction: 'next' | 'prev') => {
@@ -271,7 +278,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         <>
             <div className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-300`} onClick={gallery_clicked}>
                 {selectedPiece && (
-                    <div className={`flex h-fit w-full flex-col items-center space-y-4 p-4 pb-0`}>
+                    <div className={`flex h-fit w-full flex-col items-center space-y-4 p-4 pb-0`} ref={selectedImageRef}>
                         <h1 className="font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
                         <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2">
                             <AnimatePresence mode="wait">
