@@ -88,7 +88,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
     };
 
     return (
-        <div className="relative flex h-full w-full flex-col overflow-hidden bg-stone-300">
+        <div className="relative flex h-full w-full flex-col overflow-hidden bg-stone-800">
             <div className="relative h-full w-full">
                 <AnimatePresence initial={false}>
                     <motion.div
