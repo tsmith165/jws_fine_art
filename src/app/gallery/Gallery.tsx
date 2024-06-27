@@ -289,7 +289,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         alt={selectedPiece.title}
                                         width={imageList[currentImageIndex].width}
                                         height={imageList[currentImageIndex].height}
-                                        quality={100}
+                                        quality={80}
                                         className="max-h-[300px] w-auto rounded-md bg-secondary_dark object-contain p-1"
                                         onLoad={handleImageLoad}
                                     />
