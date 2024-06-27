@@ -3,6 +3,7 @@ import 'tailwindcss/tailwind.css';
 import '@/styles/globals.scss';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { cinzel } from './fonts';
 
@@ -16,6 +17,7 @@ export default function RootLayout({ children, params }: RootLayoutProps) {
         <html lang="en" className={`${cinzel.variable}`}>
             <body className="font-cinzel">
                 <ClerkProvider appearance={{ baseTheme: dark }}>{children}</ClerkProvider>
+                <SpeedInsights />
             </body>
         </html>
     );
