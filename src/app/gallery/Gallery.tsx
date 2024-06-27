@@ -43,6 +43,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     const [fullScreenImage, setFullScreenImage] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [imageLoadStates, setImageLoadStates] = useState<{ [key: number]: boolean }>({});
 
     let windowWidth = 0;
     let windowHeight = 0;
@@ -68,6 +69,23 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         console.log('Handle Piece Click:', index);
         setCurrentImageIndex(0);
         setSelectedPieceIndex(index);
+        setImageLoadStates({}); // Reset all image load states
+    };
+
+    const handleImageChange = (direction: 'next' | 'prev') => {
+        setIsImageChanging(true);
+        setTimeout(() => {
+            if (direction === 'next') {
+                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
+            } else {
+                setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
+            }
+        }, 300);
+    };
+
+    const handleImageLoad = () => {
+        setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
+        setIsImageChanging(false);
     };
 
     const gallery_clicked = (e: React.MouseEvent) => {
@@ -229,20 +247,6 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     const [isImageChanging, setIsImageChanging] = useState(false);
 
-    const handleImageChange = (direction: 'next' | 'prev') => {
-        setIsImageChanging(true);
-        setTimeout(() => {
-            if (direction === 'next') {
-                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
-            } else {
-                setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
-            }
-            setTimeout(() => {
-                setIsImageChanging(false);
-            }, 500);
-        }, 500);
-    };
-
     const handleNext = () => handleImageChange('next');
     const handlePrev = () => handleImageChange('prev');
 
@@ -272,14 +276,13 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2">
                             <AnimatePresence mode="wait">
                                 <motion.div
-                                    key={currentImageIndex}
-                                    initial="hidden"
-                                    animate="visible"
-                                    exit="hidden"
-                                    variants={fadeVariants}
-                                    transition={{ duration: 0.5 }}
+                                    key={`${selectedPieceIndex}-${currentImageIndex}`}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: imageLoadStates[currentImageIndex] ? 1 : 0 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
                                     onClick={() => setFullScreenImage(true)}
-                                    className="flex max-h-[300px] min-h-[300px] w-auto items-center justify-center rounded-md "
+                                    className="flex max-h-[300px] min-h-[300px] w-auto items-center justify-center rounded-md"
                                 >
                                     <Image
                                         src={imageList[currentImageIndex].src}
@@ -288,6 +291,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         height={imageList[currentImageIndex].height}
                                         quality={100}
                                         className="max-h-[300px] w-auto rounded-md bg-secondary_dark object-contain p-1"
+                                        onLoad={handleImageLoad}
                                     />
                                 </motion.div>
                             </AnimatePresence>
