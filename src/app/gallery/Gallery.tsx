@@ -1,10 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense, useState } from 'react';
+import Image from 'next/image';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
+
 import 'react-tooltip/dist/react-tooltip.css';
-import { Pieces } from '@/db/schema';
+import { PiecesWithImages } from '@/db/schema';
 import useGalleryStore from '@/stores/gallery_store';
 import FilterMenu from './FilterMenu';
+import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
 const Piece = React.lazy(() => import('./Piece'));
 
@@ -13,51 +18,83 @@ const MOBILE_SCREEN_MAX_WIDTH = 500 + 40 + 60 + 30;
 const INNER_MARGIN_WIDTH = 30;
 const BORDER_MARGIN_WIDTH = 10;
 
-interface GalleryState {
-    window_width: number;
-    window_height: number;
-    piece_list: Pieces[];
-    gallery_pieces: JSX.Element[];
-    lowest_height: number;
-}
-
-const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
-    const { theme, filterMenuOpen, setFilterMenuOpen } = useGalleryStore((state) => ({
+const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
+    const {
+        theme,
+        filterMenuOpen,
+        setFilterMenuOpen,
+        pieceList,
+        galleryPieces,
+        selectedPieceIndex,
+        setPieceList,
+        setGalleryPieces,
+        setSelectedPieceIndex,
+    } = useGalleryStore((state) => ({
         theme: state.theme,
         filterMenuOpen: state.filterMenuOpen,
         setFilterMenuOpen: state.setFilterMenuOpen,
+        pieceList: state.pieceList,
+        galleryPieces: state.galleryPieces,
+        selectedPieceIndex: state.selectedPieceIndex,
+        setPieceList: state.setPieceList,
+        setGalleryPieces: state.setGalleryPieces,
+        setSelectedPieceIndex: state.setSelectedPieceIndex,
     }));
 
-    const [state, setState] = useState<GalleryState>({
-        window_width: 0,
-        window_height: 0,
-        piece_list: pieces,
-        gallery_pieces: [],
-        lowest_height: 0,
-    });
+    const [fullScreenImage, setFullScreenImage] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [imageLoadStates, setImageLoadStates] = useState<{ [key: number]: boolean }>({});
+
+    let windowWidth = 0;
+    let windowHeight = 0;
+
+    useEffect(() => {
+        setPieceList(pieces);
+    }, [pieces]);
 
     useEffect(() => {
         const handleResize = () => {
-            setState((prevState) => ({
-                ...prevState,
-                window_width: window.innerWidth,
-                window_height: window.innerHeight,
-            }));
+            windowWidth = window.innerWidth;
+            windowHeight = window.innerHeight;
+            createGallery(pieceList, theme);
         };
 
         window.addEventListener('resize', handleResize);
         handleResize();
 
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    }, [theme, pieceList]);
 
-    useEffect(() => {
-        if (state.window_width && state.window_height) {
-            createGallery(pieces, theme);
+    const handlePieceClick = (index: number) => {
+        console.log('Handle Piece Click:', index);
+        setCurrentImageIndex(0);
+        setSelectedPieceIndex(index);
+        setImageLoadStates({}); // Reset all image load states
+    };
+
+    const handleImageChange = (direction: 'next' | 'prev') => {
+        setIsImageChanging(true);
+        setTimeout(() => {
+            if (direction === 'next') {
+                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
+            } else {
+                setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
+            }
+        }, 300);
+    };
+
+    const handleImageLoad = () => {
+        setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
+        setIsImageChanging(false);
+    };
+
+    const gallery_clicked = (e: React.MouseEvent) => {
+        if (filterMenuOpen && windowWidth < 768) {
+            setFilterMenuOpen(false);
         }
-    }, [theme, state.window_width, state.window_height, pieces]);
+    };
 
-    const createGallery = async (piece_list: Pieces[], selected_theme: string) => {
+    const createGallery = async (piece_list: PiecesWithImages[], selected_theme: string) => {
         const piece_list_length = piece_list.length;
 
         if (!piece_list || piece_list.length < 1) {
@@ -65,25 +102,24 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
             return;
         }
 
-        if (state.window_width === undefined) {
-            console.error(`Cannot create gallery, state.window_width invalid.`);
+        if (windowWidth === undefined) {
+            console.error(`Cannot create gallery, windowWidth invalid.`);
             return;
         }
-        if (state.window_height === undefined) {
-            console.error(`Cannot create gallery, state.window_height invalid.`);
+        if (windowHeight === undefined) {
+            console.error(`Cannot create gallery, windowHeight invalid.`);
             return;
         }
 
         const column_bottom_list: number[] = [];
-        let lowest_height = 0;
 
-        const piece_width = state.window_width < MOBILE_SCREEN_MAX_WIDTH ? (state.window_width - 40 - 60 - 20) / 2 : DEFAULT_PIECE_WIDTH;
-        const max_columns = Math.trunc(state.window_width / (piece_width + BORDER_MARGIN_WIDTH * 2 + INNER_MARGIN_WIDTH));
+        const piece_width = windowWidth < MOBILE_SCREEN_MAX_WIDTH ? (windowWidth - 40 - 60 - 20) / 2 : DEFAULT_PIECE_WIDTH;
+        const max_columns = Math.trunc(windowWidth / (piece_width + BORDER_MARGIN_WIDTH * 2 + INNER_MARGIN_WIDTH));
 
         let gallery_width = (piece_width + BORDER_MARGIN_WIDTH * 2) * max_columns + 10 * max_columns;
         if (max_columns < 3) gallery_width -= 20;
 
-        const leftover_width = state.window_width - gallery_width;
+        const leftover_width = windowWidth - gallery_width;
         const margin = leftover_width / 2;
 
         let [cur_x, cur_y] = [margin, INNER_MARGIN_WIDTH];
@@ -92,11 +128,7 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
         let row_starting_height = INNER_MARGIN_WIDTH;
         let skip_col = false;
 
-        // Set gallery pieces to empty array
-        setState((prevState) => ({
-            ...prevState,
-            gallery_pieces: [],
-        }));
+        setGalleryPieces(() => []);
 
         let i = 0;
         while (i < piece_list_length) {
@@ -157,24 +189,22 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
 
                 const dimensions: [number, number, number, number] = [cur_x, cur_y, scaled_width, scaled_height];
 
-                setState((prevState) => ({
-                    ...prevState,
-                    gallery_pieces: [
-                        ...prevState.gallery_pieces,
-                        <Piece
-                            key={i}
-                            id={`${id}`}
-                            o_id={o_id}
-                            className={class_name}
-                            image_path={image_path}
-                            dimensions={dimensions}
-                            title={title}
-                            sold={piece_sold}
-                            available={piece_available}
-                            index={i}
-                        />,
-                    ],
-                }));
+                setGalleryPieces((prevGalleryPieces) => [
+                    ...prevGalleryPieces,
+                    <Piece
+                        key={id}
+                        id={`${id}`}
+                        o_id={o_id}
+                        className={class_name}
+                        image_path={image_path}
+                        dimensions={dimensions}
+                        title={title}
+                        sold={piece_sold}
+                        available={piece_available}
+                        index={i}
+                        handlePieceClick={handlePieceClick}
+                    />,
+                ]);
 
                 if (col < max_columns - 1) {
                     cur_x += scaled_width + INNER_MARGIN_WIDTH;
@@ -187,34 +217,157 @@ const Gallery = ({ pieces }: { pieces: Pieces[] }) => {
             }
         }
 
+        let lowestHeight = 0;
         for (let i = 0; i < column_bottom_list.length; i++) {
-            if (column_bottom_list[i] > lowest_height) lowest_height = column_bottom_list[i];
-        }
-        // if (state.window_width < 600) lowest_height = lowest_height + 20;
-
-        setState((prevState) => ({
-            ...prevState,
-            lowest_height: lowest_height,
-        }));
-    };
-
-    const gallery_clicked = (e: React.MouseEvent) => {
-        if (filterMenuOpen && state.window_width < 768) {
-            setFilterMenuOpen(false);
+            if (column_bottom_list[i] > lowestHeight) lowestHeight = column_bottom_list[i];
         }
     };
+
+    const selectedPiece = selectedPieceIndex !== null ? pieceList[selectedPieceIndex] : null;
+
+    const imageList = selectedPiece
+        ? [
+              {
+                  src: selectedPiece.image_path,
+                  width: selectedPiece.width,
+                  height: selectedPiece.height,
+              },
+              ...(selectedPiece.extraImages || []).map((image) => ({
+                  src: image.image_path,
+                  width: image.width,
+                  height: image.height,
+              })),
+              ...(selectedPiece.progressImages || []).map((image) => ({
+                  src: image.image_path,
+                  width: image.width,
+                  height: image.height,
+              })),
+          ]
+        : [];
+
+    const [isImageChanging, setIsImageChanging] = useState(false);
+
+    const handleNext = () => handleImageChange('next');
+    const handlePrev = () => handleImageChange('prev');
+
+    const handlePanEnd = (e: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
+        if (Math.abs(offset.y) < Math.abs(offset.x)) {
+            if (offset.x > 100 || velocity.x > 1) {
+                handlePrev();
+            } else if (offset.x < -100 || velocity.x < -1) {
+                handleNext();
+            }
+        }
+    };
+
+    const fadeVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1 },
+    };
+
+    console.log(`Image list length: ${imageList.length}`);
 
     return (
         <>
-            <div
-                className={`relative h-full w-full overflow-y-auto overflow-x-hidden bg-secondary_dark`}
-                onClick={(e) => {
-                    gallery_clicked(e);
-                }}
-            >
-                <div style={{ height: state.lowest_height }}>{state.gallery_pieces}</div>
+            <div className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-300`} onClick={gallery_clicked}>
+                {selectedPiece && (
+                    <div className={`flex h-fit w-full flex-col items-center space-y-4 p-4 pb-0`}>
+                        <h1 className="font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
+                        <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={`${selectedPieceIndex}-${currentImageIndex}`}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: imageLoadStates[currentImageIndex] ? 1 : 0 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    onClick={() => setFullScreenImage(true)}
+                                    className="flex max-h-[300px] min-h-[300px] w-auto items-center justify-center rounded-md"
+                                >
+                                    <Image
+                                        src={imageList[currentImageIndex].src}
+                                        alt={selectedPiece.title}
+                                        width={imageList[currentImageIndex].width}
+                                        height={imageList[currentImageIndex].height}
+                                        quality={100}
+                                        className="max-h-[300px] w-auto rounded-md bg-secondary_dark object-contain p-1"
+                                        onLoad={handleImageLoad}
+                                    />
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+                        {imageList.length > 1 && (
+                            <div className="flex w-full items-center justify-center space-x-4">
+                                <button aria-label="Previous" onClick={handlePrev} className="">
+                                    <IoIosArrowBack className="text-2xl hover:fill-primary" />
+                                </button>
+                                {imageList.map((_, index) => (
+                                    <div
+                                        key={index}
+                                        className={`h-4 w-4 rounded-full border-2 ${
+                                            index === currentImageIndex
+                                                ? 'border-secondary_dark bg-primary'
+                                                : 'border-primary bg-secondary_dark'
+                                        }`}
+                                    ></div>
+                                ))}
+                                <button aria-label="Next" onClick={handleNext} className="">
+                                    <IoIosArrowForward className="text-2xl hover:fill-primary" />
+                                </button>
+                            </div>
+                        )}
+                        <div className="flex h-fit w-full flex-col items-center space-y-0.5">
+                            {selectedPiece.piece_type && <p className="text-lg font-bold text-primary">{selectedPiece.piece_type}</p>}
+                            {selectedPiece.real_width && selectedPiece.real_height && (
+                                <p className="text-lg font-bold text-primary">
+                                    {`${selectedPiece.real_width}" x ${selectedPiece.real_height}"${selectedPiece.framed ? ' Framed' : ''}`}
+                                </p>
+                            )}
+                            {selectedPiece.sold === false && selectedPiece.available === true ? (
+                                <StripeBrandedButton
+                                    url={'/checkout/' + selectedPiece.id}
+                                    price={`${selectedPiece.price}`}
+                                    text="Checkout"
+                                />
+                            ) : (
+                                <div className="text-xl font-[600] text-red-800">{selectedPiece.sold ? 'Sold' : 'Not For Sale'}</div>
+                            )}
+                        </div>
+                    </div>
+                )}
+                <div className="flex h-fit w-full">
+                    <div className="relative h-fit w-full">
+                        <div style={{ height: 'auto' }}>{galleryPieces}</div>
+                    </div>
+                </div>
             </div>
             <FilterMenu />
+
+            <AnimatePresence>
+                {fullScreenImage && selectedPiece && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setFullScreenImage(false)}
+                    >
+                        <AnimatePresence mode="wait">
+                            <motion.img
+                                key={currentImageIndex}
+                                src={imageList[currentImageIndex].src}
+                                alt={selectedPiece.title}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="max-h-[90vh] max-w-[90vw] object-contain"
+                                onPanEnd={handlePanEnd}
+                            />
+                        </AnimatePresence>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 };

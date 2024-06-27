@@ -9,6 +9,7 @@ export default withUt({
             fontFamily: {
                 alegrya: ['Alegreya Sans SC', 'sans-serif'],
                 lato: ['Lato', 'sans-serif'],
+                cinzel: ['var(--font-cinzel)', 'serif'], // Fixed typo and using CSS variable
             },
             colors: {
                 primary: '#54786d',
