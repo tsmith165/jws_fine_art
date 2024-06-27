@@ -76,6 +76,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
             selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             return;
         }
+        setCurrentImageIndex(0);
         setSelectedPieceIndex(index);
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set('piece', `${id}`);
@@ -282,7 +283,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         width={imageList[currentImageIndex].width}
                                         height={imageList[currentImageIndex].height}
                                         quality={80}
-                                        className="max-h-[40dvh] min-h-[40dvh] w-auto rounded-md bg-secondary_dark object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                        className="h-max max-h-[40dvh] w-auto rounded-md bg-secondary_dark object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                         onLoad={handleImageLoad}
                                     />
                                 </motion.div>
