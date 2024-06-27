@@ -5,6 +5,8 @@ export const SIGNED_OUT_MENU_LIST: MenuItem[] = [
     ['gallery', 'Gallery', false, '/gallery'],
     ['biography', 'Biography', false, '/biography'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
+    ['events', 'Events', false, '/events'],
+    ['faq', 'FAQ', false, '/faq'],
     ['sign_in', 'Sign In', false, '/signin'],
 ];
 
@@ -13,6 +15,8 @@ export const SIGNED_IN_MENU_LIST: MenuItem[] = [
     ['gallery', 'Gallery', false, '/gallery'],
     ['biography', 'Biography', false, '/biography'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
+    ['events', 'Events', false, '/events'],
+    ['faq', 'FAQ', false, '/faq'],
     ['profile', 'Profile', false, '/profile'],
     ['sign_out', 'Sign Out', false, '/signout'],
 ];
@@ -22,6 +26,8 @@ export const ADMIN_MENU_LIST: MenuItem[] = [
     ['gallery', 'Gallery', false, '/gallery'],
     ['biography', 'Biography', false, '/biography'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
+    ['events', 'Events', false, '/events'],
+    ['faq', 'FAQ', false, '/faq'],
     ['profile', 'Profile', false, '/profile'],
     ['edit_details', 'Edit Details', true, '/edit'],
     ['management', 'Management', true, '/manage'],

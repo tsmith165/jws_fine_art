@@ -19,6 +19,8 @@ const ignoredRoutes = [
     '/biography',
     '/contact',
     '/api/uploadthing',
+    '/events',
+    '/faq',
 ];
 
 export default authMiddleware({
