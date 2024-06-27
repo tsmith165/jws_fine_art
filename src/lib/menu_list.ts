@@ -33,5 +33,5 @@ export const ADMIN_MENU_LIST: MenuItem[] = [
 export const menu_list: [string, string, string][] = [
     ['gallery', 'Gallery', '/gallery'],
     ['slideshow', 'Slideshow', '/slideshow'],
-    ['contact', 'Contact', '/contact'],
+    ['biography', 'Biography', '/biography'],
 ];
