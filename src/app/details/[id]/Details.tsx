@@ -168,7 +168,7 @@ const Details: React.FC<DetailsProps> = ({ pieceData, selectedIndex, type }) => 
                     <div className="flex h-fit w-full flex-grow flex-col space-y-2 overflow-y-auto rounded-md p-2">
                         <div className="flex max-w-full flex-row space-x-1.5">
                             {sold_text === '' ? (
-                                <StripeBrandedButton url={'/checkout/' + db_id} price={price} text="Checkout" />
+                                <StripeBrandedButton url={'/checkout/' + db_id} price={price} text="checkout" />
                             ) : (
                                 <div className="py-1 text-xl font-[600] text-red-800">{sold_text}</div>
                             )}
