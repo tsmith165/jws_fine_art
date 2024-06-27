@@ -38,11 +38,11 @@ const FilterMenu: React.FC = () => {
                 <FaSlidersH className={`${filterMenuOpen ? 'fill-primary' : 'fill-primary_dark '} h-[30px] w-[30px] p-0.5`} />
             </div>
             {filterMenuOpen === true && (
-                <div className="absolute bottom-0 right-[40px] flex h-[40px] w-fit flex-row rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg">
+                <div className="absolute bottom-0 right-[40px] flex h-[40px] w-fit flex-row rounded-tl-lg md:rounded-bl-none md:rounded-tl-lg">
                     {THEME_FILTERS.reverse().map(([filter, Icon], i) => (
                         <div
                             key={i}
-                            className={`group p-[5px] last:rounded-br-lg ${filter === theme ? 'bg-primary_dark' : 'bg-primary hover:bg-primary_dark'}`}
+                            className={`group p-[5px] first:rounded-tl-lg ${filter === theme ? 'bg-primary_dark' : 'bg-primary hover:bg-primary_dark'}`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 setTheme(filter);
