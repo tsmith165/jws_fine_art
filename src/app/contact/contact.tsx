@@ -28,7 +28,7 @@ export default function Contact() {
                             width={40}
                             height={40}
                         />
-                        <span className="text-md text-center text-lg text-neutral-900 group-hover:text-white"></span>
+                        <span className="text-md text-center text-lg text-neutral-900 group-hover:text-white">Instagram</span>
                     </div>
                 </Link>
             </div>
