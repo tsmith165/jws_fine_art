@@ -20,7 +20,7 @@ export default function sitemap(): SitemapEntry[] {
             priority: 1,
         },
         {
-            url: 'https://www.jwsfineart.com/details',
+            url: 'https://www.jwsfineart.com/biography',
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 1,
@@ -30,6 +30,18 @@ export default function sitemap(): SitemapEntry[] {
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.5,
+        },
+        {
+            url: 'https://www.jwsfineart.com/faq',
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 1,
+        },
+        {
+            url: 'https://www.jwsfineart.com/events',
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 1,
         },
     ];
 }
