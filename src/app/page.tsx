@@ -15,8 +15,8 @@ export const metadata: Metadata = {
         apple: '/favicon/apple-icon.png',
     },
     openGraph: {
-        title: 'JWS Fine Art - Biography',
-        description: 'Biography for JWS Fine Art',
+        title: 'JWS Fine Art - Homepage',
+        description: 'Visit the JWS Fine Art Gallery',
         siteName: 'JWS Fine Art',
         url: 'https://www.jwsfineart.com',
         images: [
