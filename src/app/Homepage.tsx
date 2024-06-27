@@ -88,7 +88,7 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
                     className="absolute inset-0 flex items-center justify-center"
                 >
                     <div className="relative flex h-[350px] w-[350px] items-center justify-center rounded-full bg-neutral-900 opacity-70">
-                        <Image src="/logo/full_logo.png" alt="JWS Fine Art Logo" width={300} height={300} />
+                        <Image src="/logo/full_logo.png" alt="JWS Fine Art Logo" />
                     </div>
                 </motion.div>
             )}
