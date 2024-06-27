@@ -96,7 +96,7 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
     };
 
     return (
-        <div className="relative flex h-full w-full flex-col overflow-hidden bg-secondary_dark">
+        <div className="relative flex h-full w-full flex-col overflow-hidden bg-stone-300">
             <div className="relative h-full w-full">
                 <AnimatePresence initial={false}>
                     <motion.div
@@ -113,7 +113,7 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
                 </AnimatePresence>
             </div>
 
-            <div className="flex h-[50px] w-full items-center justify-between bg-primary_dark px-4 py-2">
+            <div className="flex h-[50px] w-full items-center justify-between bg-stone-400 px-4 py-2">
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl text-primary">{title}</div>
                 <div className="flex items-center space-x-4">
                     {isPlaying ? (
@@ -126,29 +126,24 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
                         onClick={handlePrev}
                     />
                     <IoIosArrowForward className="h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark" onClick={handleNext} />
-                    <div className="relative bg-primary_dark">
-                        <div className="group relative" onMouseEnter={() => setShowSlider(true)} onMouseLeave={() => setShowSlider(false)}>
-                            <IoIosSpeedometer className="relative z-10 h-8 w-8 cursor-pointer fill-primary" />
-                            {showSlider && (
-                                <div className="fixed bottom-10 right-0 z-0 transform rounded-tl-md bg-primary_dark p-2">
-                                    <div className="flex items-center space-x-2">
-                                        <input
-                                            type="range"
-                                            min={1500}
-                                            max={10000}
-                                            step={100}
-                                            value={speed}
-                                            onChange={handleSpeedChange}
-                                            className="h-2 w-24 cursor-pointer appearance-none rounded-full bg-secondary_light"
-                                            style={{
-                                                backgroundImage: 'linear-gradient(to right, #54786d, #365349)',
-                                            }}
-                                        />
-                                        <div className="w-8 text-right text-sm text-primary">{speed / 1000}s</div>
-                                    </div>
+                    <div className="group relative" onMouseEnter={() => setShowSlider(true)} onMouseLeave={() => setShowSlider(false)}>
+                        <IoIosSpeedometer className="relative z-10 h-[50px] w-[50px] cursor-pointer fill-primary p-2 pl-0" />
+                        {showSlider && (
+                            <div className="fixed bottom-[48px] right-0 z-0 transform rounded-tl-md bg-stone-400 p-2">
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="range"
+                                        min={1500}
+                                        max={10000}
+                                        step={100}
+                                        value={speed}
+                                        onChange={handleSpeedChange}
+                                        className="slider w-24 appearance-none bg-transparent"
+                                    />
+                                    <div className="w-8 text-center text-sm text-primary">{speed / 1000}s</div>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

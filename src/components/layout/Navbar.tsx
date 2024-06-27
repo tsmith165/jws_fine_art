@@ -27,7 +27,7 @@ export default function Navbar({ page }: { page: string }) {
     });
 
     return (
-        <nav className="flex h-[50px] w-full flex-row items-center justify-between bg-neutral-400 p-0">
+        <nav className="flex h-[50px] w-full flex-row items-center justify-between bg-stone-400 p-0">
             <div className="flex w-full flex-row items-center justify-center space-x-3">{navbar}</div>
             <div className={'absolute right-0'}>
                 <SiteMenu currentPage={page} />
