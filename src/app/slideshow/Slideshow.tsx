@@ -113,7 +113,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
             </div>
 
             <div className="flex h-[50px] w-full items-center justify-between bg-stone-400 px-2 py-2">
-                <div className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl text-primary">{title}</div>
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap pl-1 text-2xl text-primary">{title}</div>
                 <div className="flex items-center space-x-2">
                     {isPlaying ? (
                         <FaPause className="h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark" onClick={handlePlayPause} />
