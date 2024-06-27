@@ -90,13 +90,11 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     };
 
     const handleImageChange = (direction: 'next' | 'prev') => {
-        setTimeout(() => {
-            if (direction === 'next') {
-                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
-            } else {
-                setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
-            }
-        }, 300);
+        if (direction === 'next') {
+            setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
+        } else {
+            setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
+        }
     };
 
     const gallery_clicked = (e: React.MouseEvent) => {
