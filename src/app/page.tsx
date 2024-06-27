@@ -4,8 +4,8 @@ import PageLayout from '@/components/layout/PageLayout';
 import HomepagePage from '@/app/HomepagePage';
 
 export const metadata: Metadata = {
-    title: 'JWS Fine Art - Biography',
-    description: 'Jill Weeks Smith Biography',
+    title: 'JWS Fine Art - Home',
+    description: 'Jill Weeks Smith Home Page',
     keywords:
         'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Biographical, Biography',
     applicationName: 'JWS Fine Art',
