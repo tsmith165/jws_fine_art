@@ -3,7 +3,7 @@ type MenuItem = [string, string, boolean, string];
 export const SIGNED_OUT_MENU_LIST: MenuItem[] = [
     ['home', 'Home', false, '/'],
     ['gallery', 'Gallery', false, '/gallery'],
-    // ['details', 'Piece Details', false, '/details'],
+    ['biography', 'Biography', false, '/biography'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
     ['sign_in', 'Sign In', false, '/signin'],
 ];
@@ -11,7 +11,7 @@ export const SIGNED_OUT_MENU_LIST: MenuItem[] = [
 export const SIGNED_IN_MENU_LIST: MenuItem[] = [
     ['home', 'Home', false, '/'],
     ['gallery', 'Gallery', false, '/gallery'],
-    // ['details', 'Piece Details', false, '/details'],
+    ['biography', 'Biography', false, '/biography'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
     ['profile', 'Profile', false, '/profile'],
     ['sign_out', 'Sign Out', false, '/signout'],
@@ -20,7 +20,7 @@ export const SIGNED_IN_MENU_LIST: MenuItem[] = [
 export const ADMIN_MENU_LIST: MenuItem[] = [
     ['home', 'Home', false, '/'],
     ['gallery', 'Gallery', false, '/gallery'],
-    // ['details', 'Details', false, '/details'],
+    ['biography', 'Biography', false, '/biography'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
     ['profile', 'Profile', false, '/profile'],
     ['edit_details', 'Edit Details', true, '/edit'],
