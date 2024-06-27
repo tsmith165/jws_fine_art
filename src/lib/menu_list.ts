@@ -1,7 +1,7 @@
 type MenuItem = [string, string, boolean, string];
 
 export const SIGNED_OUT_MENU_LIST: MenuItem[] = [
-    ['biography', 'Biography', false, '/'],
+    ['home', 'Home', false, '/'],
     ['gallery', 'Gallery', false, '/gallery'],
     // ['details', 'Piece Details', false, '/details'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
@@ -9,7 +9,7 @@ export const SIGNED_OUT_MENU_LIST: MenuItem[] = [
 ];
 
 export const SIGNED_IN_MENU_LIST: MenuItem[] = [
-    ['biography', 'Biography', false, '/'],
+    ['home', 'Home', false, '/'],
     ['gallery', 'Gallery', false, '/gallery'],
     // ['details', 'Piece Details', false, '/details'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
@@ -18,9 +18,9 @@ export const SIGNED_IN_MENU_LIST: MenuItem[] = [
 ];
 
 export const ADMIN_MENU_LIST: MenuItem[] = [
-    ['biography', 'Biography', false, '/'],
+    ['home', 'Home', false, '/'],
     ['gallery', 'Gallery', false, '/gallery'],
-    ['details', 'Details', false, '/details'],
+    // ['details', 'Details', false, '/details'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
     ['profile', 'Profile', false, '/profile'],
     ['edit_details', 'Edit Details', true, '/edit'],
