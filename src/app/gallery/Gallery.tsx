@@ -278,9 +278,9 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         <>
             <div className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-300`} onClick={gallery_clicked}>
                 {selectedPiece && (
-                    <div className={`flex h-fit w-full flex-col items-center space-y-4 p-4 pb-0`} ref={selectedImageRef}>
-                        <h1 className="font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
-                        <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2">
+                    <div className={`flex h-fit w-full flex-col items-center p-4 pb-0`} ref={selectedImageRef}>
+                        <h1 className="font-cinzel pb-2 text-2xl font-bold text-primary">{selectedPiece.title}</h1>
+                        <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2 pb-2">
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={`${selectedPieceIndex}-${currentImageIndex}`}
@@ -289,7 +289,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.3 }}
                                     onClick={() => setFullScreenImage(true)}
-                                    className="flex max-h-[300px] min-h-[300px] w-auto items-center justify-center rounded-md"
+                                    className="flex max-h-[50dvh] min-h-[50dvh] w-auto items-center justify-center rounded-md"
                                 >
                                     <Image
                                         src={imageList[currentImageIndex].src}
@@ -297,14 +297,14 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         width={imageList[currentImageIndex].width}
                                         height={imageList[currentImageIndex].height}
                                         quality={80}
-                                        className="max-h-[300px] w-auto rounded-md bg-secondary_dark object-contain p-1"
+                                        className="max-h-[50dvh] min-h-[50dvh] w-auto rounded-md bg-secondary_dark object-contain p-1"
                                         onLoad={handleImageLoad}
                                     />
                                 </motion.div>
                             </AnimatePresence>
                         </div>
                         {imageList.length > 1 && (
-                            <div className="flex w-full items-center justify-center space-x-4">
+                            <div className="flex w-full items-center justify-center space-x-4 pb-1">
                                 <button aria-label="Previous" onClick={handlePrev} className="">
                                     <IoIosArrowBack className="text-2xl hover:fill-primary" />
                                 </button>
