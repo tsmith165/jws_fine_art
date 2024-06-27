@@ -95,7 +95,7 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
                 <Link
                     href="/gallery"
-                    className="rounded-full bg-secondary px-6 py-2 text-primary transition-colors duration-300 hover:bg-secondary_dark"
+                    className="rounded-full bg-secondary px-6 py-2 text-secondary_dark transition-colors duration-300 hover:bg-secondary_dark hover:text-primary"
                 >
                     Enter Gallery
                 </Link>

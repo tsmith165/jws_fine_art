@@ -24,7 +24,7 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
                 <IoIosMenu className={`h-[50px] w-[50px] fill-primary py-[5px] group-hover:fill-primary_dark`} />
                 <div
                     className={
-                        'absolute right-0 top-[50px] z-50 hidden h-fit w-[200px] rounded-bl-md border-b-2 border-l-2 border-primary_dark bg-secondary_light group-hover:flex'
+                        'absolute right-0 top-[50px] z-50 hidden h-fit w-[160px] rounded-bl-md border-b-2 border-l-2 border-primary_dark bg-secondary_light group-hover:flex'
                     }
                 >
                     <MenuOverlay currentPage={currentPage} />
