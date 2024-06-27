@@ -265,7 +265,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
             <div className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-300`} onClick={gallery_clicked}>
                 {selectedPiece && (
                     <div className={`flex h-fit w-full flex-col items-center p-4 pb-0`} ref={selectedImageRef}>
-                        <h1 className="font-cinzel pb-2 text-2xl font-bold text-primary">{selectedPiece.title}</h1>
+                        <h1 className="pb-2 font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
                         <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2 pb-2">
                             <AnimatePresence mode="wait">
                                 <motion.div
