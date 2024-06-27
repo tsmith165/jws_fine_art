@@ -1,3 +1,5 @@
+// File 1: /src/app/gallery/Gallery.tsx
+
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -22,19 +24,19 @@ const BORDER_MARGIN_WIDTH = 10;
 const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const selectedPieceId = searchParams.get('piece');
+    const [selectedPieceIndex, setSelectedPieceIndex] = useState<number | null>(null);
 
-    const { theme, filterMenuOpen, setFilterMenuOpen, pieceList, galleryPieces, selectedPieceIndex, setPieceList, setGalleryPieces } =
-        useGalleryStore((state) => ({
+    const { theme, filterMenuOpen, setFilterMenuOpen, pieceList, galleryPieces, setPieceList, setGalleryPieces } = useGalleryStore(
+        (state) => ({
             theme: state.theme,
             filterMenuOpen: state.filterMenuOpen,
             setFilterMenuOpen: state.setFilterMenuOpen,
             pieceList: state.pieceList,
             galleryPieces: state.galleryPieces,
-            selectedPieceIndex: state.selectedPieceIndex,
             setPieceList: state.setPieceList,
             setGalleryPieces: state.setGalleryPieces,
-        }));
+        }),
+    );
 
     const [fullScreenImage, setFullScreenImage] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -47,6 +49,12 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     useEffect(() => {
         setPieceList(pieces);
     }, [pieces]);
+
+    useEffect(() => {
+        const selectedPieceId = searchParams.get('piece');
+        const initialSelectedIndex = pieces.findIndex((piece) => piece.id.toString() === selectedPieceId);
+        setSelectedPieceIndex(initialSelectedIndex !== -1 ? initialSelectedIndex : null);
+    }, [pieces, searchParams]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -64,18 +72,16 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     const selectedImageRef = useRef<HTMLDivElement>(null);
 
     const handlePieceClick = (id: number, index: number) => {
-        console.log('Handle Piece Click:', id);
-        setCurrentImageIndex(0);
-        if (selectedPieceId === id.toString()) {
-            // If the clicked piece is already selected, dont change the selected piece
+        if (selectedPieceIndex === index) {
             selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             return;
         }
-        selectedImageRef.current?.scrollIntoView({ behavior: 'smooth' });
+        setSelectedPieceIndex(index);
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set('piece', `${id}`);
-        router.push(`/gallery?${newSearchParams.toString()}`);
+        router.replace(`/gallery?${newSearchParams.toString()}`);
         setImageLoadStates({}); // Reset all image load states
+        selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     const handleImageLoad = () => {
@@ -228,7 +234,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         setLowestHeight(lowestHeight);
     };
 
-    const selectedPiece = selectedPieceId ? pieceList.find((piece) => piece.id.toString() === selectedPieceId) : null;
+    const selectedPiece = selectedPieceIndex !== null ? pieces[selectedPieceIndex] : null;
 
     const imageList = selectedPiece
         ? [
@@ -319,7 +325,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                     text="Checkout"
                                 />
                             ) : (
-                                <div className="text-xl font-[600] text-red-800">{selectedPiece.sold ? 'Sold' : 'Not For Sale'}</div>
+                                <div className="h-9 text-xl font-[600] text-red-800">{selectedPiece.sold ? 'Sold' : 'Not For Sale'}</div>
                             )}
                         </div>
                     </div>
