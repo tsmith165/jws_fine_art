@@ -36,7 +36,13 @@ export const metadata: Metadata = {
 export default function Page() {
     return (
         <PageLayout page="/slideshow">
-            <Suspense fallback={<LoadingSpinner page="Slideshow" />}>
+            <Suspense
+                fallback={
+                    <div className="flex h-full w-full bg-stone-300">
+                        <div className="flex h-[50px] w-full justify-end bg-stone-400"></div>
+                    </div>
+                }
+            >
                 <SlideshowPage />
             </Suspense>
         </PageLayout>

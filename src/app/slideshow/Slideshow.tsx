@@ -100,7 +100,14 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                         transition={{ duration: 1 }}
                         className="absolute inset-0"
                     >
-                        <Image src={image_path} alt={title} layout="fill" objectFit="contain" className="object-contain" />
+                        <Image
+                            src={image_path}
+                            alt={title}
+                            layout="fill"
+                            objectFit="contain"
+                            className="object-contain"
+                            onLoad={() => setIsImageLoaded(true)}
+                        />
                     </motion.div>
                 </AnimatePresence>
             </div>
