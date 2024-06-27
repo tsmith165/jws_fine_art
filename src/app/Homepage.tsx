@@ -87,18 +87,20 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
                     transition={{ duration: 1 }}
                     className="absolute inset-0 flex items-center justify-center"
                 >
-                    <div className="relative flex h-[350px] w-[350px] items-center justify-center rounded-full bg-neutral-900 opacity-70">
-                        <Image src="/logo/full_logo.png" alt="JWS Fine Art Logo" width={300} height={300} />
+                    <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-neutral-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
+                        <Image src="/logo/full_logo.png" alt="JWS Fine Art Logo" width={1335} height={541} />
                     </div>
                 </motion.div>
             )}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
-                <Link
-                    href="/gallery"
-                    className="rounded-full bg-secondary px-6 py-2 text-secondary_dark transition-colors duration-300 hover:bg-secondary_dark hover:text-primary"
-                >
-                    Enter Gallery
-                </Link>
+            <div className="absolute bottom-8 left-0 w-full">
+                <div className="flex h-fit w-full items-center justify-center space-x-2">
+                    <Link
+                        href="/gallery"
+                        className="rounded-full bg-primary px-6 py-2 text-secondary_dark opacity-55 transition-colors duration-300 hover:opacity-90 active:opacity-90"
+                    >
+                        Enter Gallery
+                    </Link>
+                </div>
             </div>
         </div>
     );
