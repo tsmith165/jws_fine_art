@@ -12,7 +12,7 @@ type PieceProps = {
     sold: boolean;
     available: boolean;
     index: number;
-    handlePieceClick: (index: number) => void;
+    handlePieceClick: (id: number, index: number) => void;
 };
 
 const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_path, title, sold, available, index, handlePieceClick }) => {
@@ -21,11 +21,10 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
 
     return (
         <div
-            key={index}
             id={id}
             className={`absolute rounded-md ${className}`}
             style={{ width: img_width, height: img_height, top: y, left: x }}
-            onClick={() => handlePieceClick(index)}
+            onClick={() => handlePieceClick(parseInt(id), index)}
         >
             <Image
                 className={`rounded-md bg-secondary_dark p-1`}

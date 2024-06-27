@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
@@ -19,31 +20,26 @@ const INNER_MARGIN_WIDTH = 30;
 const BORDER_MARGIN_WIDTH = 10;
 
 const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
-    const {
-        theme,
-        filterMenuOpen,
-        setFilterMenuOpen,
-        pieceList,
-        galleryPieces,
-        selectedPieceIndex,
-        setPieceList,
-        setGalleryPieces,
-        setSelectedPieceIndex,
-    } = useGalleryStore((state) => ({
-        theme: state.theme,
-        filterMenuOpen: state.filterMenuOpen,
-        setFilterMenuOpen: state.setFilterMenuOpen,
-        pieceList: state.pieceList,
-        galleryPieces: state.galleryPieces,
-        selectedPieceIndex: state.selectedPieceIndex,
-        setPieceList: state.setPieceList,
-        setGalleryPieces: state.setGalleryPieces,
-        setSelectedPieceIndex: state.setSelectedPieceIndex,
-    }));
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const selectedPieceId = searchParams.get('piece');
+
+    const { theme, filterMenuOpen, setFilterMenuOpen, pieceList, galleryPieces, selectedPieceIndex, setPieceList, setGalleryPieces } =
+        useGalleryStore((state) => ({
+            theme: state.theme,
+            filterMenuOpen: state.filterMenuOpen,
+            setFilterMenuOpen: state.setFilterMenuOpen,
+            pieceList: state.pieceList,
+            galleryPieces: state.galleryPieces,
+            selectedPieceIndex: state.selectedPieceIndex,
+            setPieceList: state.setPieceList,
+            setGalleryPieces: state.setGalleryPieces,
+        }));
 
     const [fullScreenImage, setFullScreenImage] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [imageLoadStates, setImageLoadStates] = useState<{ [key: number]: boolean }>({});
+    const [lowestHeight, setLowestHeight] = useState(0);
 
     let windowWidth = 0;
     let windowHeight = 0;
@@ -67,20 +63,26 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     const selectedImageRef = useRef<HTMLDivElement>(null);
 
-    const handlePieceClick = (index: number) => {
-        console.log('Handle Piece Click:', index);
+    const handlePieceClick = (id: number, index: number) => {
+        console.log('Handle Piece Click:', id);
         setCurrentImageIndex(0);
-        setSelectedPieceIndex(index);
-        setImageLoadStates({}); // Reset all image load states
-
-        // Use setTimeout to ensure the DOM has updated before scrolling
-        setTimeout(() => {
+        if (selectedPieceId === id.toString()) {
+            // If the clicked piece is already selected, dont change the selected piece
             selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+            return;
+        }
+        selectedImageRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('piece', `${id}`);
+        router.push(`/gallery?${newSearchParams.toString()}`);
+        setImageLoadStates({}); // Reset all image load states
+    };
+
+    const handleImageLoad = () => {
+        setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
     };
 
     const handleImageChange = (direction: 'next' | 'prev') => {
-        setIsImageChanging(true);
         setTimeout(() => {
             if (direction === 'next') {
                 setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
@@ -88,11 +90,6 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                 setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
             }
         }, 300);
-    };
-
-    const handleImageLoad = () => {
-        setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
-        setIsImageChanging(false);
     };
 
     const gallery_clicked = (e: React.MouseEvent) => {
@@ -228,9 +225,10 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         for (let i = 0; i < column_bottom_list.length; i++) {
             if (column_bottom_list[i] > lowestHeight) lowestHeight = column_bottom_list[i];
         }
+        setLowestHeight(lowestHeight);
     };
 
-    const selectedPiece = selectedPieceIndex !== null ? pieceList[selectedPieceIndex] : null;
+    const selectedPiece = selectedPieceId ? pieceList.find((piece) => piece.id.toString() === selectedPieceId) : null;
 
     const imageList = selectedPiece
         ? [
@@ -252,27 +250,8 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
           ]
         : [];
 
-    const [isImageChanging, setIsImageChanging] = useState(false);
-
     const handleNext = () => handleImageChange('next');
     const handlePrev = () => handleImageChange('prev');
-
-    const handlePanEnd = (e: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
-        if (Math.abs(offset.y) < Math.abs(offset.x)) {
-            if (offset.x > 100 || velocity.x > 1) {
-                handlePrev();
-            } else if (offset.x < -100 || velocity.x < -1) {
-                handleNext();
-            }
-        }
-    };
-
-    const fadeVariants = {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1 },
-    };
-
-    console.log(`Image list length: ${imageList.length}`);
 
     return (
         <>
@@ -297,7 +276,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         width={imageList[currentImageIndex].width}
                                         height={imageList[currentImageIndex].height}
                                         quality={80}
-                                        className="max-h-[50dvh] min-h-[50dvh] w-auto rounded-md bg-secondary_dark object-contain p-1"
+                                        className="max-h-[50dvh] min-h-[50dvh] w-auto rounded-md bg-secondary_dark object-contain p-1 hover:cursor-pointer"
                                         onLoad={handleImageLoad}
                                     />
                                 </motion.div>
@@ -344,37 +323,11 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                 )}
                 <div className="flex h-fit w-full">
                     <div className="relative h-fit w-full">
-                        <div style={{ height: 'auto' }}>{galleryPieces}</div>
+                        <div style={{ height: lowestHeight }}>{galleryPieces}</div>
                     </div>
                 </div>
             </div>
             <FilterMenu />
-
-            <AnimatePresence>
-                {fullScreenImage && selectedPiece && (
-                    <motion.div
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setFullScreenImage(false)}
-                    >
-                        <AnimatePresence mode="wait">
-                            <motion.img
-                                key={currentImageIndex}
-                                src={imageList[currentImageIndex].src}
-                                alt={selectedPiece.title}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="max-h-[90vh] max-w-[90vw] object-contain"
-                                onPanEnd={handlePanEnd}
-                            />
-                        </AnimatePresence>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </>
     );
 };
