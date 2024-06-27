@@ -282,26 +282,29 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                 </motion.div>
                             </AnimatePresence>
                         </div>
-                        {imageList.length > 1 && (
-                            <div className="flex w-full items-center justify-center space-x-4 pb-1">
+
+                        <div className="flex h-7 w-full items-center justify-center space-x-4 pb-1">
+                            {imageList.length > 1 && (
                                 <button aria-label="Previous" onClick={handlePrev} className="">
                                     <IoIosArrowBack className="text-2xl hover:fill-primary" />
                                 </button>
-                                {imageList.map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className={`h-4 w-4 rounded-full border-2 ${
-                                            index === currentImageIndex
-                                                ? 'border-secondary_dark bg-primary'
-                                                : 'border-primary bg-secondary_dark'
-                                        }`}
-                                    ></div>
-                                ))}
+                            )}
+                            {imageList.map((_, index) => (
+                                <div
+                                    key={index}
+                                    className={`h-4 w-4 rounded-full border-2 text-2xl ${
+                                        index === currentImageIndex
+                                            ? 'border-secondary_dark bg-primary'
+                                            : 'border-primary bg-secondary_dark'
+                                    }`}
+                                ></div>
+                            ))}
+                            {imageList.length > 1 && (
                                 <button aria-label="Next" onClick={handleNext} className="">
                                     <IoIosArrowForward className="text-2xl hover:fill-primary" />
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                         <div className="flex h-fit w-full flex-col items-center space-y-0.5">
                             {selectedPiece.piece_type && <p className="text-lg font-bold text-primary">{selectedPiece.piece_type}</p>}
                             {selectedPiece.real_width && selectedPiece.real_height && (
