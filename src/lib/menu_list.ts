@@ -35,3 +35,9 @@ export const menu_list: [string, string, string][] = [
     ['slideshow', 'Slideshow', '/slideshow'],
     ['biography', 'Biography', '/biography'],
 ];
+
+export const short_menu_list: [string, string, string][] = [
+    ['gallery', 'Gallery', '/gallery'],
+    ['slideshow', 'Slideshow', '/slideshow'],
+    ['biography', 'Bio', '/biography'],
+];

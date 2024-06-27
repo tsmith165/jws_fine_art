@@ -9,11 +9,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 type SlideshowProps = {
-    pieceListPromise: Promise<{ title: string; image_path: string }[]>;
+    pieceList: { title: string; image_path: string }[];
 };
 
-export default function Slideshow({ pieceListPromise }: SlideshowProps) {
-    const [pieceList, setPieceList] = useState<{ title: string; image_path: string }[]>([]);
+export default function Slideshow({ pieceList }: SlideshowProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextIndex, setNextIndex] = useState(1);
     const [isPlaying, setIsPlaying] = useState(true);
@@ -21,13 +20,6 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
     const [showSlider, setShowSlider] = useState(false);
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        pieceListPromise.then((data) => {
-            setPieceList(data);
-            preloadNextImage(data);
-        });
-    }, [pieceListPromise]);
 
     const preloadNextImage = (list: { title: string; image_path: string }[]) => {
         if (list.length > 0) {
@@ -113,21 +105,24 @@ export default function Slideshow({ pieceListPromise }: SlideshowProps) {
                 </AnimatePresence>
             </div>
 
-            <div className="flex h-[50px] w-full items-center justify-between bg-stone-400 px-4 py-2">
+            <div className="flex h-[50px] w-full items-center justify-between bg-stone-400 px-2 py-2">
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl text-primary">{title}</div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
                     {isPlaying ? (
                         <FaPause className="h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark" onClick={handlePlayPause} />
                     ) : (
                         <MdPlayArrow className="h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark" onClick={handlePlayPause} />
                     )}
                     <IoIosArrowForward
-                        className="h-8 w-8 rotate-180 transform cursor-pointer fill-primary hover:fill-primary"
+                        className="hidden h-8 w-8 rotate-180 transform cursor-pointer fill-primary hover:fill-primary xs:flex"
                         onClick={handlePrev}
                     />
-                    <IoIosArrowForward className="h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark" onClick={handleNext} />
+                    <IoIosArrowForward
+                        className="hidden h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark xs:flex"
+                        onClick={handleNext}
+                    />
                     <div className="group relative" onMouseEnter={() => setShowSlider(true)} onMouseLeave={() => setShowSlider(false)}>
-                        <IoIosSpeedometer className="relative z-10 h-[50px] w-[50px] cursor-pointer fill-primary p-2 pl-0" />
+                        <IoIosSpeedometer className="relative z-10 h-[40px] w-[40px] cursor-pointer fill-primary p-1" />
                         {showSlider && (
                             <div className="fixed bottom-[48px] right-0 z-0 transform rounded-tl-md bg-stone-400 p-2">
                                 <div className="flex items-center space-x-2">

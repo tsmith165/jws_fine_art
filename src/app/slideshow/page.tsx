@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import PageLayout from '@/components/layout/PageLayout';
-import Slideshow from '@/app/slideshow/Slideshow';
-import { fetchPieces } from '@/app/actions';
+import SlideshowPage from '@/app/slideshow/SlideshowPage';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery Slideshow',
@@ -35,12 +34,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-    const pieceListPromise = fetchPieces();
-
     return (
         <PageLayout page="/slideshow">
             <Suspense fallback={<LoadingSpinner page="Slideshow" />}>
-                <Slideshow pieceListPromise={pieceListPromise} />
+                <SlideshowPage />
             </Suspense>
         </PageLayout>
     );

@@ -22,6 +22,7 @@ export default withUt({
                 visited: '#be23ae', // visited link color
             },
             screens: {
+                xxs: '375px',
                 xs: '480px',
                 'md-nav': '833px',
             },

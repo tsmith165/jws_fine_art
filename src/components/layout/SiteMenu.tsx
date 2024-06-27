@@ -9,7 +9,7 @@ import { IoIosMenu } from 'react-icons/io';
 const SiteMenu = ({ currentPage }: { currentPage: string }) => {
     return (
         <div className="flex h-full w-fit flex-row">
-            <div className={`group hidden p-0 md:flex`}>
+            <div className={`group hidden p-0 pr-1 xs:flex`}>
                 <Link href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer" prefetch={false}>
                     <Image
                         className={'my-[10px] h-[30px] w-[30px] rounded-t-md'}
@@ -21,7 +21,7 @@ const SiteMenu = ({ currentPage }: { currentPage: string }) => {
                 </Link>
             </div>
             <div className={`group p-0`}>
-                <IoIosMenu className={`h-[50px] w-[50px] fill-primary py-[5px] group-hover:fill-primary_dark`} />
+                <IoIosMenu className={`h-[50px] w-[50px] fill-primary py-[5px] pr-2 group-hover:fill-primary_dark`} />
                 <div
                     className={
                         'absolute right-0 top-[50px] z-50 hidden h-fit w-[160px] rounded-bl-md border-b-2 border-l-2 border-primary_dark bg-secondary_light group-hover:flex'
