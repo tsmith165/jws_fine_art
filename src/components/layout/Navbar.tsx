@@ -1,7 +1,5 @@
-import PROJECT_CONSTANTS from '@/lib/constants';
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import SiteMenu from './SiteMenu';
 import { menu_list } from '@/lib/menu_list';
 
@@ -12,7 +10,6 @@ export default function Navbar({ page }: { page: string }) {
     const selected_gradient_hover = `hover:from-secondary hover:via-primary_dark hover:to-secondary`;
 
     const navbar = menu_list.map(([menu_class_name, menu_full_name, url_endpoint]) => {
-        let is_hidden = menu_class_name === 'slideshow' ? 'hidden md:flex' : menu_class_name === 'gallery' ? 'hidden xs:flex' : '';
         let gradient = page.includes(url_endpoint) ? selected_gradient : non_selected_gradient;
         let gradient_hover = page.includes(url_endpoint) ? selected_gradient_hover : non_selected_gradient_hover;
         return (
@@ -20,7 +17,7 @@ export default function Navbar({ page }: { page: string }) {
                 key={menu_class_name}
                 href={url_endpoint}
                 className={
-                    `h-full cursor-pointer bg-clip-text pb-1 pl-4 font-bold text-transparent first:pl-0 ${is_hidden} ` +
+                    `h-full cursor-pointer bg-clip-text font-bold text-transparent first:pl-0 ` +
                     `bg-gradient-to-r ${gradient} ${gradient_hover}`
                 }
             >
@@ -29,37 +26,10 @@ export default function Navbar({ page }: { page: string }) {
         );
     });
 
-    const halfLength = Math.ceil(navbar.length / 2);
-    const leftNavbar = navbar.slice(0, halfLength);
-    const rightNavbar = navbar.slice(halfLength);
-
     return (
-        <nav className="flex h-[50px] w-full flex-row items-center justify-between bg-neutral-900 p-0">
-            <Link href="/" className="mx-4 flex h-[40px] md:hidden">
-                <Image
-                    src="/logo/jws_logo_small.png"
-                    alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
-                    width={230}
-                    height={60}
-                    sizes="250px"
-                    className="h-[40px] max-h-[50px] w-fit object-contain"
-                />
-            </Link>
-            <div className="hidden flex-1 flex-row items-center justify-end md:flex">{leftNavbar}</div>
-            <Link href="/" className="mx-4 hidden h-[50px] items-center justify-center md:flex">
-                <Image
-                    src="/logo/jws_logo_small.png"
-                    alt={`${PROJECT_CONSTANTS.SITE_FULL_NAME} logo`}
-                    width={230}
-                    height={60}
-                    sizes="250px"
-                    className="h-[40px] max-h-[50px] w-fit object-contain"
-                />
-            </Link>
-            <div className="hidden flex-1 flex-row items-center justify-start md:flex">{rightNavbar}</div>
-            <div className="flex w-full flex-row items-center justify-end md:hidden">{navbar}</div>
-
-            <div className={'flex justify-end pl-4'}>
+        <nav className="flex h-[50px] w-full flex-row items-center justify-between bg-neutral-400 p-0">
+            <div className="flex w-full flex-row items-center justify-center space-x-3">{navbar}</div>
+            <div className={'absolute right-0'}>
                 <SiteMenu currentPage={page} />
             </div>
         </nav>

@@ -27,8 +27,8 @@ const FilterMenu: React.FC = () => {
         <div onMouseEnter={() => setFilterMenuOpen(true)} onMouseLeave={() => setFilterMenuOpen(false)}>
             <div
                 className={
-                    `group absolute left-0 top-[50px] z-10 flex flex-row p-[5px] ` +
-                    `${filterMenuOpen ? 'bg-primary_dark ' : 'rounded-br-lg bg-primary'}`
+                    `group absolute bottom-0 right-0 z-10 flex flex-row p-[5px] ` +
+                    `${filterMenuOpen ? 'bg-primary_dark ' : 'rounded-tl-lg bg-primary'}`
                 }
                 onClick={(e) => {
                     e.preventDefault();
@@ -38,8 +38,8 @@ const FilterMenu: React.FC = () => {
                 <FaSlidersH className={`${filterMenuOpen ? 'fill-primary' : 'fill-primary_dark '} h-[30px] w-[30px] p-0.5`} />
             </div>
             {filterMenuOpen === true && (
-                <div className="absolute left-0 top-[50px] flex h-[40px] w-fit flex-row rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg">
-                    {THEME_FILTERS.map(([filter, Icon], i) => (
+                <div className="absolute bottom-0 right-[40px] flex h-[40px] w-fit flex-row rounded-bl-lg md:rounded-bl-none md:rounded-tl-lg">
+                    {THEME_FILTERS.reverse().map(([filter, Icon], i) => (
                         <div
                             key={i}
                             className={`group p-[5px] last:rounded-br-lg ${filter === theme ? 'bg-primary_dark' : 'bg-primary hover:bg-primary_dark'}`}
@@ -53,7 +53,7 @@ const FilterMenu: React.FC = () => {
                             />
                         </div>
                     ))}
-                    {THEME_FILTERS.map(([filter, icon], i) => (
+                    {THEME_FILTERS.reverse().map(([filter, icon], i) => (
                         <Tooltip key={i} anchorSelect={`.filter-icon-${filter}`} place="top">
                             {filter}
                         </Tooltip>
