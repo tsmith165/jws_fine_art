@@ -25,7 +25,7 @@ const Checkout: React.FC<CheckoutProps> = ({ piece_list, current_id, most_recent
 
     return (
         <div className="flex h-full w-full flex-col md:flex-row">
-            <div className="bg-secondary_dark md:w-[65%]">
+            <div className="h-1/2 bg-secondary_dark md:h-full md:w-[65%]">
                 <Image
                     src={current_piece.image_path}
                     alt={current_piece.title}
@@ -35,7 +35,7 @@ const Checkout: React.FC<CheckoutProps> = ({ piece_list, current_id, most_recent
                     className="h-full w-full object-contain"
                 />
             </div>
-            <div className="bg-secondary_light md:w-[35%]">
+            <div className="h-1/2 bg-secondary_light md:h-full md:w-[35%]">
                 <div className="flex flex-row items-center justify-center bg-secondary px-4 py-1">
                     <h1 className="text-2xl font-bold text-primary">{current_piece.title}</h1>
                 </div>
