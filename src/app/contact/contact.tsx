@@ -20,7 +20,7 @@ export default function Contact() {
                     jwsfineart@gmail.com
                 </Link>
                 <Link href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer" prefetch={false}>
-                    <div className="group flex flex-row items-center justify-center space-x-2 rounded-lg p-2 hover:bg-stone-500">
+                    <div className="group flex flex-row items-center justify-center space-x-2 rounded-lg p-2 hover:bg-stone-300">
                         <Image
                             className={'h-[30px] w-[30px] rounded-t-md'}
                             src="/icon/instagram_icon_50.png"
@@ -28,7 +28,7 @@ export default function Contact() {
                             width={40}
                             height={40}
                         />
-                        <span className="text-md text-center text-lg text-neutral-900 group-hover:text-white">Instagram</span>
+                        <span className="text-md text-center text-lg text-stone-300 group-hover:text-primary">Instagram</span>
                     </div>
                 </Link>
             </div>

@@ -33,9 +33,18 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
+    const isComingSoon = true; // Set this to true to display the coming soon text
+
+    return <PageLayout page="events">{isComingSoon ? <ComingSoon /> : <Events />}</PageLayout>;
+}
+
+function ComingSoon() {
     return (
-        <PageLayout page="events">
-            <Events />
-        </PageLayout>
+        <div className="flex h-full w-full flex-col items-center justify-center space-y-4 bg-stone-800 p-4">
+            <h1 className="bg-gradient-to-r from-primary via-primary_dark to-primary bg-clip-text text-center text-4xl font-bold text-transparent">
+                Events
+            </h1>
+            <p className="text-center text-lg text-stone-300">Coming Soon!</p>
+        </div>
     );
 }
