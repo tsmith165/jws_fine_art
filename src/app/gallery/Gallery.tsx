@@ -260,7 +260,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     return (
         <>
-            <div className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-300`} onClick={gallery_clicked}>
+            <div className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-800`} onClick={gallery_clicked}>
                 {selectedPiece && (
                     <div className={`flex h-fit w-full flex-col items-center p-4 pb-0`} ref={selectedImageRef}>
                         <h1 className="pb-2 font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
