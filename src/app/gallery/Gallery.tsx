@@ -273,7 +273,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.3 }}
                                     onClick={() => setFullScreenImage(true)}
-                                    className="flex max-h-[40dvh] min-h-[40dvh] w-auto items-center justify-center rounded-md md:max-h-[50dvh] md:min-h-[50dvh]"
+                                    className="flex max-h-[40dvh] min-h-[40dvh] w-auto items-center justify-center rounded-lg md:max-h-[50dvh] md:min-h-[50dvh]"
                                 >
                                     <Image
                                         src={imageList[currentImageIndex].src}
@@ -281,7 +281,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         width={imageList[currentImageIndex].width}
                                         height={imageList[currentImageIndex].height}
                                         quality={80}
-                                        className="h-max max-h-[40dvh] w-auto rounded-md bg-secondary_dark object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                        className="h-max max-h-[40dvh] w-auto rounded-lg bg-secondary_dark object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                         onLoad={handleImageLoad}
                                     />
                                 </motion.div>
