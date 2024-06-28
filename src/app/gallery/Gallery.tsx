@@ -298,9 +298,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                 <div
                                     key={index}
                                     className={`h-4 w-4 rounded-full border-2 text-2xl ${
-                                        index === currentImageIndex
-                                            ? 'border-secondary_dark bg-primary'
-                                            : 'border-primary bg-secondary_dark'
+                                        index === currentImageIndex ? 'border-stone-600 bg-primary' : 'border-primary bg-stone-600'
                                     }`}
                                 ></div>
                             ))}
