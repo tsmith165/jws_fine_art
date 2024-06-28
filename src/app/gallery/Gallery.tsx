@@ -336,6 +336,30 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                 </div>
             </div>
             <FilterMenu />
+            <AnimatePresence>
+                {fullScreenImage && selectedPiece && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setFullScreenImage(false)}
+                    >
+                        <AnimatePresence mode="wait">
+                            <motion.img
+                                key={currentImageIndex}
+                                src={imageList[currentImageIndex].src}
+                                alt={selectedPiece.title}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="max-h-[90vh] max-w-[90vw] object-contain"
+                            />
+                        </AnimatePresence>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 };
