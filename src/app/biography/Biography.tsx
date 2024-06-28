@@ -135,7 +135,7 @@ const Biography = ({ biographyData }: BiographyProps) => {
                                     onLoad={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex h-[calc(100dvh-50px)] flex-col items-center justify-start space-y-4 px-4 py-4 text-center text-stone-300 md:flex-row md:justify-center md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 top-0 flex h-[calc(100dvh-50px-50px)] flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-stone-300 md:flex-row md:justify-center md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
