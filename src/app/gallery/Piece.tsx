@@ -22,12 +22,12 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
     return (
         <div
             id={id}
-            className={`absolute rounded-lg ${className} bg-stone-600 p-1`}
+            className={`absolute rounded-lg ${className} h-fit w-fit `}
             style={{ width: img_width, height: img_height, top: y, left: x }}
             onClick={() => handlePieceClick(parseInt(id), index)}
         >
             <Image
-                className={`rounded-md `}
+                className={`rounded-lg bg-stone-600 p-1`}
                 src={image_path}
                 width={img_width}
                 height={img_height}
