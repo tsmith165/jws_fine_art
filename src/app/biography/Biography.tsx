@@ -100,7 +100,7 @@ const Biography = ({ biographyData }: BiographyProps) => {
 
                     const current_paragraph_div = (
                         <p
-                            className={`h-fit max-h-[30%] max-w-[80%] overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 font-sans text-lg text-gray-400 md:max-h-fit md:max-w-[60%]`}
+                            className={`h-fit max-h-[50%] max-w-[95%] overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 font-sans text-lg text-gray-400 md:max-h-fit md:max-w-[60%]`}
                         >
                             {data.bio_paragraph}
                         </p>
@@ -135,7 +135,7 @@ const Biography = ({ biographyData }: BiographyProps) => {
                                     onLoad={handleImageLoad}
                                 />
 
-                                <div className="absolute inset-0 flex h-[calc(100dvh-50px)] flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-white md:flex-row md:space-x-4 md:space-y-0">
+                                <div className="absolute inset-0 flex h-[calc(100dvh-50px)] flex-col items-center justify-start space-y-4 px-4 py-4 text-center text-white md:flex-row md:justify-center md:space-x-4 md:space-y-0">
                                     {isEven ? current_image_div : current_paragraph_div}
                                     {!isEven ? current_image_div : current_paragraph_div}
                                 </div>
