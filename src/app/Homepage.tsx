@@ -52,7 +52,7 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
     };
 
     return (
-        <div className="relative h-[calc(100dvh-50px)] w-full overflow-hidden bg-stone-800">
+        <div className="relative h-[calc(100dvh-50px)] w-full overflow-hidden bg-neutral-900">
             <AnimatePresence>
                 {isImageVisible && (
                     <motion.div
