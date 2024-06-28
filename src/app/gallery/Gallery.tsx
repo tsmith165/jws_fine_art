@@ -281,7 +281,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         width={imageList[currentImageIndex].width}
                                         height={imageList[currentImageIndex].height}
                                         quality={80}
-                                        className="h-max max-h-[40dvh] w-auto rounded-lg bg-secondary_dark object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                        className="h-max max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                         onLoad={handleImageLoad}
                                     />
                                 </motion.div>
