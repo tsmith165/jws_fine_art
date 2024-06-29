@@ -51,6 +51,12 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     }, [pieces]);
 
     useEffect(() => {
+        if (pieceList.length > 0) {
+            createGallery(pieceList, theme);
+        }
+    }, [pieceList, theme]);
+
+    useEffect(() => {
         const selectedPieceId = searchParams.get('piece');
         const initialSelectedIndex = pieces.findIndex((piece) => piece.id.toString() === selectedPieceId);
         setSelectedPieceIndex(initialSelectedIndex !== -1 ? initialSelectedIndex : null);
@@ -60,7 +66,9 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         const handleResize = () => {
             windowWidth = window.innerWidth;
             windowHeight = window.innerHeight;
-            createGallery(pieceList, theme);
+            if (pieceList.length > 0) {
+                createGallery(pieceList, theme);
+            }
         };
 
         window.addEventListener('resize', handleResize);
@@ -193,7 +201,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                 setGalleryPieces((prevGalleryPieces) => [
                     ...prevGalleryPieces,
                     <Piece
-                        key={id}
+                        key={`piece-${id}`}
                         id={`${id}`}
                         o_id={o_id}
                         className={class_name}
@@ -235,11 +243,13 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                   height: selectedPiece.height,
               },
               ...(selectedPiece.extraImages || []).map((image) => ({
+                  key: `extra-${image.id}`,
                   src: image.image_path,
                   width: image.width,
                   height: image.height,
               })),
               ...(selectedPiece.progressImages || []).map((image) => ({
+                  key: `progress-${image.id}`,
                   src: image.image_path,
                   width: image.width,
                   height: image.height,
@@ -268,25 +278,32 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: imageLoadStates[currentImageIndex] ? 1 : 0 }}
                                     exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
+                                    transition={{ duration: fullScreenImage ? 0.5 : 0.3 }}
                                     onClick={() => setFullScreenImage(true)}
                                     className="flex max-h-[40dvh] min-h-[40dvh] w-auto items-center justify-center rounded-lg md:max-h-[50dvh] md:min-h-[50dvh]"
                                 >
                                     {imageList.map((image, index) =>
                                         index === currentImageIndex ? (
                                             <Image
+                                                key={`selected-${index}`}
                                                 src={image.src}
                                                 alt={selectedPiece.title}
                                                 width={image.width}
                                                 height={image.height}
                                                 quality={80}
-                                                className="h-max max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                                className="max-h-[40dvh] min-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                                 onLoad={handleImageLoad}
                                             />
                                         ) : (
-                                            <div
-                                                key={index}
-                                                className="hidden h-max max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                            <Image
+                                                key={`selected-${index}`}
+                                                src={image.src}
+                                                alt={selectedPiece.title}
+                                                width={image.width}
+                                                height={image.height}
+                                                quality={80}
+                                                className="hidden max-h-[40dvh] min-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                                onLoad={handleImageLoad}
                                             />
                                         ),
                                     )}
@@ -302,7 +319,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                             )}
                             {imageList.map((_, index) => (
                                 <div
-                                    key={index}
+                                    key={`dot-${index}`}
                                     className={`h-4 w-4 rounded-full border-2 text-2xl ${
                                         index === currentImageIndex ? 'border-stone-600 bg-primary' : 'border-primary bg-stone-600'
                                     }`}
@@ -354,7 +371,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                 {imageList.map((image, index) =>
                                     index === currentImageIndex ? (
                                         <motion.img
-                                            key={currentImageIndex}
+                                            key={`full-${index}`}
                                             src={image.src}
                                             alt={selectedPiece.title}
                                             initial={{ opacity: 0 }}
@@ -365,7 +382,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                         />
                                     ) : (
                                         <motion.img
-                                            key={currentImageIndex}
+                                            key={`full-${index}`}
                                             src={image.src}
                                             alt={selectedPiece.title}
                                             initial={{ opacity: 0 }}

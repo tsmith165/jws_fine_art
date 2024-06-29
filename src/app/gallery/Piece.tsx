@@ -21,6 +21,7 @@ const Piece: React.FC<PieceProps> = ({ dimensions, id, className, o_id, image_pa
 
     return (
         <div
+            key={`piece-${id}`}
             id={id}
             className={`absolute rounded-lg ${className} h-fit w-fit `}
             style={{ width: img_width, height: img_height, top: y, left: x }}
