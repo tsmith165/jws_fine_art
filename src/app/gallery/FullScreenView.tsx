@@ -45,7 +45,6 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onClick={() => setFullScreenImage(false)}
                 >
                     <div className="relative flex h-full w-full items-center justify-center">
                         <AnimatePresence initial={false} mode="wait">
@@ -56,6 +55,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.5 }}
                                 className="h-[80vh] w-[90vw]"
+                                onClick={() => setFullScreenImage(false)}
                             >
                                 <motion.img
                                     src={imageList[currentImageIndex].src}
