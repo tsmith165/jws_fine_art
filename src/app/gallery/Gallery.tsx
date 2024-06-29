@@ -89,14 +89,6 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
     };
 
-    const handleImageChange = (direction: 'next' | 'prev') => {
-        if (direction === 'next') {
-            setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
-        } else {
-            setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
-        }
-    };
-
     const gallery_clicked = (e: React.MouseEvent) => {
         if (filterMenuOpen && windowWidth < 768) {
             setFilterMenuOpen(false);
@@ -255,8 +247,13 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
           ]
         : [];
 
-    const handleNext = () => handleImageChange('next');
-    const handlePrev = () => handleImageChange('prev');
+    const handleNext = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
+    };
+
+    const handlePrev = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imageList.length) % imageList.length);
+    };
 
     return (
         <>
@@ -352,18 +349,59 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         exit={{ opacity: 0 }}
                         onClick={() => setFullScreenImage(false)}
                     >
-                        <AnimatePresence mode="wait">
-                            <motion.img
-                                key={currentImageIndex}
-                                src={imageList[currentImageIndex].src}
-                                alt={selectedPiece.title}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="max-h-[90vh] max-w-[90vw] object-contain"
-                            />
-                        </AnimatePresence>
+                        <div className="relative flex h-full w-full items-center justify-center">
+                            <AnimatePresence mode="wait">
+                                {imageList.map((image, index) =>
+                                    index === currentImageIndex ? (
+                                        <motion.img
+                                            key={currentImageIndex}
+                                            src={image.src}
+                                            alt={selectedPiece.title}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.5 }}
+                                            className="h-[90vh] w-[90vw] object-contain"
+                                        />
+                                    ) : (
+                                        <motion.img
+                                            key={currentImageIndex}
+                                            src={image.src}
+                                            alt={selectedPiece.title}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.5 }}
+                                            className="hidden h-[90vh] w-[90vw] object-contain"
+                                        />
+                                    ),
+                                )}
+                            </AnimatePresence>
+                            {imageList.length > 1 && (
+                                <>
+                                    <button
+                                        aria-label="Previous"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handlePrev();
+                                        }}
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2"
+                                    >
+                                        <IoIosArrowBack className="text-4xl text-white" />
+                                    </button>
+                                    <button
+                                        aria-label="Next"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleNext();
+                                        }}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2"
+                                    >
+                                        <IoIosArrowForward className="text-4xl text-white" />
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
