@@ -284,25 +284,24 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                 >
                                     {imageList.map((image, index) =>
                                         index === currentImageIndex ? (
-                                            <Image
+                                            <motion.img
                                                 key={`selected-${index}`}
                                                 src={image.src}
                                                 alt={selectedPiece.title}
                                                 width={image.width}
                                                 height={image.height}
-                                                quality={80}
                                                 className="max-h-[40dvh] min-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                                 onLoad={handleImageLoad}
                                             />
                                         ) : (
-                                            <Image
+                                            <motion.img
                                                 key={`selected-${index}`}
                                                 src={image.src}
                                                 alt={selectedPiece.title}
                                                 width={image.width}
                                                 height={image.height}
-                                                quality={80}
-                                                className="hidden max-h-[40dvh] min-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                                hidden
+                                                className="max-h-[40dvh] min-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                                 onLoad={handleImageLoad}
                                             />
                                         ),
@@ -367,32 +366,21 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         onClick={() => setFullScreenImage(false)}
                     >
                         <div className="relative flex h-full w-full items-center justify-center">
-                            <AnimatePresence mode="wait">
-                                {imageList.map((image, index) =>
-                                    index === currentImageIndex ? (
-                                        <motion.img
-                                            key={`full-${index}`}
-                                            src={image.src}
-                                            alt={selectedPiece.title}
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            transition={{ duration: 0.5 }}
-                                            className="h-[90vh] w-[90vw] object-contain"
-                                        />
-                                    ) : (
-                                        <motion.img
-                                            key={`full-${index}`}
-                                            src={image.src}
-                                            alt={selectedPiece.title}
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            transition={{ duration: 0.5 }}
-                                            className="hidden h-[90vh] w-[90vw] object-contain"
-                                        />
-                                    ),
-                                )}
+                            <AnimatePresence initial={false} mode="wait">
+                                <motion.div
+                                    key={`${selectedPieceIndex}-${currentImageIndex}`}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="h-[90vh] w-[90vw]"
+                                >
+                                    <motion.img
+                                        src={imageList[currentImageIndex].src}
+                                        alt={selectedPiece.title}
+                                        className="h-full w-full object-contain"
+                                    />
+                                </motion.div>
                             </AnimatePresence>
                             {imageList.length > 1 && (
                                 <>
