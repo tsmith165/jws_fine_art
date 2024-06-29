@@ -277,9 +277,11 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                 <div className="flex h-fit w-full px-8 py-4">
                     <Masonry
                         breakpointCols={{
+                            default: 5,
                             1500: 4,
                             1100: 3,
-                            default: 2,
+                            700: 2,
+                            300: 1,
                         }}
                         className="my-masonry-grid"
                         columnClassName="my-masonry-grid_column"
