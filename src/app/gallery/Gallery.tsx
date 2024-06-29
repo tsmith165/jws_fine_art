@@ -222,28 +222,30 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         </div>
 
                         <div className="flex h-7 w-full items-center justify-center space-x-4 pb-1">
-                            {imageList.length > 1 && (
-                                <div className="flex w-full flex-row">
-                                    <div className="flex w-full flex-grow"></div>
-                                    <div className="flex w-fit items-center justify-center space-x-2">
+                            <div className="flex w-full flex-row">
+                                <div className="flex w-full flex-grow"></div>
+                                <div className="flex w-fit items-center justify-center space-x-2">
+                                    {imageList.length > 1 && (
                                         <button aria-label="Previous" onClick={handlePrev} className="">
                                             <IoIosArrowBack className="text-2xl hover:fill-primary" />
                                         </button>
-                                        {imageList.map((_, index) => (
-                                            <div
-                                                key={`dot-${index}`}
-                                                className={`h-4 w-4 rounded-full border-2 text-2xl ${
-                                                    index === currentImageIndex
-                                                        ? 'border-stone-600 bg-primary'
-                                                        : 'border-primary bg-stone-600'
-                                                }`}
-                                            ></div>
-                                        ))}
+                                    )}
+                                    {imageList.map((_, index) => (
+                                        <div
+                                            key={`dot-${index}`}
+                                            className={`h-4 w-4 rounded-full border-2 text-2xl ${
+                                                index === currentImageIndex ? 'border-stone-600 bg-primary' : 'border-primary bg-stone-600'
+                                            }`}
+                                        ></div>
+                                    ))}
+                                    {imageList.length > 1 && (
                                         <button aria-label="Next" onClick={handleNext} className="">
                                             <IoIosArrowForward className="text-2xl hover:fill-primary" />
                                         </button>
-                                    </div>
-                                    <div className="flex w-full flex-grow">
+                                    )}
+                                </div>
+                                <div className="flex w-full flex-grow">
+                                    {imageList.length > 1 && (
                                         <button aria-label={isPlaying ? 'Pause' : 'Play'} onClick={togglePlayPause} className="ml-2">
                                             {isPlaying ? (
                                                 <FaPause className="fill-primary text-xl hover:fill-primary_dark" />
@@ -251,9 +253,9 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                                 <FaPlay className="fill-primary text-xl hover:fill-primary_dark" />
                                             )}
                                         </button>
-                                    </div>
+                                    )}
                                 </div>
-                            )}
+                            </div>
                         </div>
                         <div className="flex h-fit w-full flex-col items-center space-y-0.5">
                             {selectedPiece.piece_type && <p className="text-lg font-bold text-primary">{selectedPiece.piece_type}</p>}
