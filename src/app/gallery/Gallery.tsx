@@ -201,7 +201,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                                 alt={selectedPiece.title}
                                                 width={image.width}
                                                 height={image.height}
-                                                className="max-h-[40dvh] min-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                                className="max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                                 onLoad={handleImageLoad}
                                             />
                                         ) : (
@@ -212,7 +212,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                                 width={image.width}
                                                 height={image.height}
                                                 hidden
-                                                className="max-h-[40dvh] min-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                                className="max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                                 onLoad={handleImageLoad}
                                             />
                                         ),
