@@ -46,7 +46,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
                         onClick={() => setFullScreenImage(true)}
-                        className="flex max-h-[40dvh] min-h-[40dvh] w-auto items-center justify-center rounded-lg md:max-h-[50dvh] md:min-h-[50dvh]"
+                        className="flex max-h-[40dvh] min-h-[40dvh] w-auto items-center justify-center rounded-md md:max-h-[50dvh] md:min-h-[50dvh]"
                     >
                         {imageList.map((image, index) =>
                             index === currentImageIndex ? (
@@ -56,7 +56,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                                     alt={selectedPiece.title}
                                     width={image.width}
                                     height={image.height}
-                                    className="max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                    className="max-h-[40dvh] w-auto rounded-md bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                     onLoad={handleImageLoad}
                                 />
                             ) : (
@@ -67,7 +67,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                                     width={image.width}
                                     height={image.height}
                                     hidden
-                                    className="max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                    className="max-h-[40dvh] w-auto rounded-md bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
                                     onLoad={handleImageLoad}
                                 />
                             ),

@@ -24,7 +24,7 @@ const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
     return (
         <div
             key={`piece-${piece.id}`}
-            className="group relative cursor-pointer overflow-hidden rounded-lg bg-stone-600 shadow-md transition duration-300 ease-in-out hover:shadow-lg"
+            className="group relative cursor-pointer overflow-hidden rounded-md bg-stone-600 shadow-md transition duration-300 ease-in-out hover:shadow-lg"
             onClick={() => handlePieceClick(piece.id, piece.index)}
         >
             <Image
@@ -32,7 +32,7 @@ const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
                 alt={piece.title}
                 width={300}
                 height={200}
-                className="h-auto w-full rounded-lg bg-stone-600 object-cover p-1"
+                className="h-auto w-full rounded-md bg-stone-600 object-cover p-1"
                 priority
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 p-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
