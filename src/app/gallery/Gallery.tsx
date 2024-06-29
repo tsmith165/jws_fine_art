@@ -275,15 +275,24 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                                     onClick={() => setFullScreenImage(true)}
                                     className="flex max-h-[40dvh] min-h-[40dvh] w-auto items-center justify-center rounded-lg md:max-h-[50dvh] md:min-h-[50dvh]"
                                 >
-                                    <Image
-                                        src={imageList[currentImageIndex].src}
-                                        alt={selectedPiece.title}
-                                        width={imageList[currentImageIndex].width}
-                                        height={imageList[currentImageIndex].height}
-                                        quality={80}
-                                        className="h-max max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
-                                        onLoad={handleImageLoad}
-                                    />
+                                    {imageList.map((image, index) =>
+                                        index === currentImageIndex ? (
+                                            <Image
+                                                src={image.src}
+                                                alt={selectedPiece.title}
+                                                width={image.width}
+                                                height={image.height}
+                                                quality={80}
+                                                className="h-max max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                                onLoad={handleImageLoad}
+                                            />
+                                        ) : (
+                                            <div
+                                                key={index}
+                                                className="hidden h-max max-h-[40dvh] w-auto rounded-lg bg-stone-600 object-contain p-1 hover:cursor-pointer md:max-h-[50dvh] md:min-h-[50dvh]"
+                                            />
+                                        ),
+                                    )}
                                 </motion.div>
                             </AnimatePresence>
                         </div>
