@@ -276,7 +276,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         </div>
                     </div>
                 )}
-                <div className="flex h-fit w-full px-8 py-4">
+                <div className={`flex h-fit w-full px-8 ${selectedPiece ? 'py-8' : 'py-8'}`}>
                     <Masonry
                         breakpointCols={{
                             default: 5,
