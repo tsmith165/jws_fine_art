@@ -124,7 +124,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         {imageList.map((_, index) => (
                             <div
                                 key={`dot-${index}`}
-                                className={`h-4 w-4 rounded-full ${index === currentImageIndex ? 'bg-primary' : 'bg-stone-600'}`}
+                                className={`h-2 w-2 rounded-full ${index === currentImageIndex ? 'bg-primary' : 'bg-stone-600'}`}
                             />
                         ))}
                         {imageList.length > 1 && (

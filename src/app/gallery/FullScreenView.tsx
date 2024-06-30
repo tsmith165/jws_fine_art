@@ -100,7 +100,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                                         {imageList.map((_, index) => (
                                             <div
                                                 key={`dot-${index}`}
-                                                className={`h-4 w-4 rounded-full text-2xl ${
+                                                className={`h-2 w-2 rounded-full text-2xl ${
                                                     index === currentImageIndex ? ' bg-primary' : 'bg-stone-600'
                                                 }`}
                                             ></div>
