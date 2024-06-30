@@ -86,7 +86,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
 
     return (
         <div className="flex h-full w-full flex-col overflow-y-auto">
-            <form onSubmit={handleStripePurchaseClick} className="flex flex-col p-4">
+            <form onSubmit={handleStripePurchaseClick} className="flex flex-col">
                 <input type="hidden" name="piece_id" value={current_piece.id} />
 
                 <div className="flex flex-col space-y-2">
