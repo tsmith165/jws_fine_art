@@ -15,7 +15,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                     const inputProps: ReturnType<typeof getInputProps> = getInputProps({
                         placeholder: 'Enter Address...',
                         className:
-                            'w-full h-8 px-2.5text-secondary_dark bg-primary rounded-r-md border-none pl-1.5 font-bold placeholder-secondary',
+                            'w-full h-8 px-2.5 text-secondary_dark bg-primary rounded-r-md border-none pl-1.5 font-bold placeholder-secondary',
                         autoComplete: 'rutjfkde',
                         name,
                     });
@@ -35,7 +35,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                         : { backgroundColor: '#ffffff', cursor: 'pointer' };
                                     const suggestionItemProps: ReturnType<typeof getSuggestionItemProps> = getSuggestionItemProps(
                                         suggestion,
-                                        'w-full h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none pl-1.5 font-bold placeholder-secondary',
+                                        'w-full h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none pl-1.5 font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis',
                                     );
                                     return (
                                         <div
