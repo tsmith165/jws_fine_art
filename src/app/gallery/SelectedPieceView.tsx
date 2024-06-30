@@ -124,10 +124,8 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         {imageList.map((_, index) => (
                             <div
                                 key={`dot-${index}`}
-                                className={`h-4 w-4 rounded-full border-2 text-2xl ${
-                                    index === currentImageIndex ? 'border-stone-600 bg-primary' : 'border-primary bg-stone-600'
-                                }`}
-                            ></div>
+                                className={`h-4 w-4 rounded-full ${index === currentImageIndex ? 'bg-primary' : 'bg-stone-600'}`}
+                            />
                         ))}
                         {imageList.length > 1 && (
                             <button aria-label="Next" onClick={handleNext} className="">
@@ -144,12 +142,12 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                             <>
                                 <IoIosSpeedometer
                                     className={`${
-                                        showSlider ? 'fill-primary_dark' : 'fill-primary'
-                                    } relative z-10 h-[24px] w-[24px] cursor-pointer hover:fill-primary_dark`}
+                                        showSlider ? 'fill-primary' : 'fill-stone-600'
+                                    } relative z-10 h-[24px] w-[24px] cursor-pointer fill-stone-600 hover:fill-primary`}
                                 />
                                 {showSlider && (
-                                    <div className="z-0 h-[24px] transform rounded-md px-2">
-                                        <div className="flex items-center space-x-2">
+                                    <div className="z-0 flex h-[24px] transform items-center justify-center rounded-md px-2">
+                                        <div className="jutify-center flex items-center justify-center">
                                             <input
                                                 type="range"
                                                 min={2000}
@@ -157,9 +155,11 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                                                 step={100}
                                                 value={speed}
                                                 onChange={handleSpeedChange}
-                                                className="slider h-[24px] w-12 appearance-none bg-transparent xs:w-16 md:w-24"
+                                                className="h-2 w-12 cursor-pointer appearance-none rounded-lg bg-stone-600 accent-primary hover:accent-primary active:accent-primary xs:w-16 md:w-24"
                                             />
-                                            <div className="hidden w-8 text-center text-sm text-primary xs:flex">{speed / 1000}s</div>
+                                            <div className="ml-2 hidden w-6 text-center leading-6 text-primary xs:flex">
+                                                {speed / 1000}s
+                                            </div>
                                         </div>
                                     </div>
                                 )}
