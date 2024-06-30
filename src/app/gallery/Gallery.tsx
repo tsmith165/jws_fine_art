@@ -37,6 +37,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     const [isMasonryLoaded, setIsMasonryLoaded] = useState(false);
     const [isPlaying, setIsPlaying] = useState(true);
+    const [speed, setSpeed] = useState(3000);
     const [isFullScreenImage, setIsFullScreenImage] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [imageLoadStates, setImageLoadStates] = useState<{ [key: number]: boolean }>({});
@@ -90,7 +91,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         if (isPlaying) {
             interval = setInterval(() => {
                 setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
-            }, 3000);
+            }, speed);
         }
 
         return () => {
@@ -98,7 +99,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                 clearInterval(interval);
             }
         };
-    }, [isPlaying, imageList]);
+    }, [speed, isPlaying, imageList]);
 
     const createGallery = async (piece_list: PiecesWithImages[], selected_theme: string) => {
         setGalleryPieces(() => []);
@@ -199,6 +200,8 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         handlePrev={handlePrev}
                         togglePlayPause={togglePlayPause}
                         isPlaying={isPlaying}
+                        speed={speed}
+                        setSpeed={setSpeed}
                     />
                 )}
                 <motion.div

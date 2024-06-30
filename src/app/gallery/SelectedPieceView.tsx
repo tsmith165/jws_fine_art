@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
+import { IoIosArrowForward, IoIosArrowBack, IoIosSpeedometer } from 'react-icons/io';
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { PiecesWithImages } from '@/db/schema';
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
@@ -18,6 +20,8 @@ interface SelectedPieceViewProps {
     handlePrev: () => void;
     togglePlayPause: () => void;
     isPlaying: boolean;
+    speed: number;
+    setSpeed: (speed: number) => void;
 }
 
 const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
@@ -33,7 +37,16 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
     handlePrev,
     togglePlayPause,
     isPlaying,
+    speed,
+    setSpeed,
 }) => {
+    const [showSlider, setShowSlider] = useState(false);
+
+    const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newSpeed = parseInt(e.target.value, 10);
+        setSpeed(newSpeed);
+    };
+
     return (
         <motion.div
             className={`flex h-fit w-full flex-col items-center p-4 pb-0`}
@@ -91,7 +104,17 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
             </div>
             <div className="flex h-7 w-full items-center justify-center space-x-4 pb-1">
                 <div className="flex w-full flex-row">
-                    <div className="flex w-full flex-grow"></div>
+                    <div className="flex w-full flex-grow justify-end">
+                        {imageList.length > 1 && (
+                            <button aria-label={isPlaying ? 'Pause' : 'Play'} onClick={togglePlayPause} className="ml-2">
+                                {isPlaying ? (
+                                    <FaPause className="fill-primary text-xl hover:fill-primary_dark" />
+                                ) : (
+                                    <FaPlay className="fill-primary text-xl hover:fill-primary_dark" />
+                                )}
+                            </button>
+                        )}
+                    </div>
                     <div className="flex w-fit items-center justify-center space-x-2">
                         {imageList.length > 1 && (
                             <button aria-label="Previous" onClick={handlePrev} className="">
@@ -112,15 +135,31 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                             </button>
                         )}
                     </div>
-                    <div className="flex w-full flex-grow">
-                        {imageList.length > 1 && (
-                            <button aria-label={isPlaying ? 'Pause' : 'Play'} onClick={togglePlayPause} className="ml-2">
-                                {isPlaying ? (
-                                    <FaPause className="fill-primary text-xl hover:fill-primary_dark" />
-                                ) : (
-                                    <FaPlay className="fill-primary text-xl hover:fill-primary_dark" />
-                                )}
-                            </button>
+                    <div
+                        className="group relative flex w-full flex-grow flex-row justify-start"
+                        onMouseEnter={() => setShowSlider(true)}
+                        onMouseLeave={() => setShowSlider(false)}
+                    >
+                        <IoIosSpeedometer
+                            className={`${
+                                showSlider ? 'fill-primary_dark' : 'fill-primary'
+                            } relative z-10 h-[24px] w-[24px] cursor-pointer hover:fill-primary_dark`}
+                        />
+                        {showSlider && (
+                            <div className="z-0 h-[24px] transform rounded-md px-2">
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="range"
+                                        min={2000}
+                                        max={10000}
+                                        step={100}
+                                        value={speed}
+                                        onChange={handleSpeedChange}
+                                        className="slider h-[24px] w-24 appearance-none bg-transparent"
+                                    />
+                                    <div className="w-8 text-center text-sm text-primary">{speed / 1000}s</div>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
