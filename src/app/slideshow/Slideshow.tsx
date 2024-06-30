@@ -113,23 +113,26 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
             </div>
 
             <div className="flex h-[50px] w-full items-center justify-between bg-stone-400 px-2 py-2">
-                <div className="overflow-hidden text-ellipsis whitespace-nowrap pl-1 text-2xl text-primary">{title}</div>
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap pl-1 text-2xl text-primary_dark">{title}</div>
                 <div className="flex items-center space-x-2">
                     {isPlaying ? (
-                        <FaPause className="h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark" onClick={handlePlayPause} />
+                        <FaPause className="h-8 w-8 cursor-pointer fill-primary_dark hover:fill-primary_dark" onClick={handlePlayPause} />
                     ) : (
-                        <MdPlayArrow className="h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark" onClick={handlePlayPause} />
+                        <MdPlayArrow
+                            className="h-8 w-8 cursor-pointer fill-primary_dark hover:fill-primary_dark"
+                            onClick={handlePlayPause}
+                        />
                     )}
                     <IoIosArrowForward
-                        className="hidden h-8 w-8 rotate-180 transform cursor-pointer fill-primary hover:fill-primary xs:flex"
+                        className="hidden h-8 w-8 rotate-180 transform cursor-pointer fill-primary_dark hover:fill-primary_dark xs:flex"
                         onClick={handlePrev}
                     />
                     <IoIosArrowForward
-                        className="hidden h-8 w-8 cursor-pointer fill-primary hover:fill-secondary_dark xs:flex"
+                        className="hidden h-8 w-8 cursor-pointer fill-primary_dark hover:fill-primary_dark xs:flex"
                         onClick={handleNext}
                     />
                     <div className="group relative" onMouseEnter={() => setShowSlider(true)} onMouseLeave={() => setShowSlider(false)}>
-                        <IoIosSpeedometer className="relative z-10 h-[40px] w-[40px] cursor-pointer fill-primary p-1" />
+                        <IoIosSpeedometer className="relative z-10 h-[40px] w-[40px] cursor-pointer fill-primary_dark p-1 hover:fill-primary_dark" />
                         {showSlider && (
                             <div className="fixed bottom-[48px] right-0 z-0 transform rounded-tl-md bg-stone-400 p-2">
                                 <div className="flex items-center space-x-2">
