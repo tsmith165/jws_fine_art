@@ -43,8 +43,8 @@ export default async function Page({ params }: { params: { id: string } }) {
     return (
         <PageLayout page={`/checkout/cancel/${passed_o_id}`}>
             <div className="flex h-full w-full overflow-y-auto bg-stone-900 p-4">
-                <div className="flex h-fit flex-col items-center justify-center space-y-4 md:h-full md:flex-row md:space-x-4 md:space-y-0">
-                    <div className="md:max-w-1/3 flex h-full w-full items-center justify-center rounded-md md:h-auto md:w-fit">
+                <div className="flex h-fit w-full flex-col items-center justify-center space-y-4 md:h-full md:flex-row md:space-x-4 md:space-y-0">
+                    <div className="flex h-full w-full flex-grow items-center justify-center rounded-md md:h-auto">
                         {current_piece && (
                             <Image
                                 src={current_piece.image_path}
@@ -56,7 +56,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                             />
                         )}
                     </div>
-                    <div className="flex h-full w-full flex-col items-center justify-center rounded-lg text-white shadow-lg md:w-2/3">
+                    <div className="flex h-full w-fit items-center justify-center rounded-lg text-white shadow-lg md:w-2/3 md:justify-start">
                         <h1 className="mb-4 w-full py-2 text-center text-2xl font-bold text-primary">
                             {current_piece ? `"${current_piece.title}"` : ''}
                         </h1>
