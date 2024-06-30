@@ -16,7 +16,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextIndex, setNextIndex] = useState(1);
     const [isPlaying, setIsPlaying] = useState(true);
-    const [speed, setSpeed] = useState(2000);
+    const [speed, setSpeed] = useState(3000);
     const [showSlider, setShowSlider] = useState(false);
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -81,9 +81,9 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                         key={currentIndex}
                         initial="initial"
                         animate="animate"
-                        exit="exit"
+                        exit="exit-slide"
                         variants={variants}
-                        transition={{ duration: 1 }}
+                        transition={{ duration: 2 }}
                         className="absolute inset-0"
                     >
                         <Image
@@ -124,7 +124,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                                 <div className="flex items-center space-x-2">
                                     <input
                                         type="range"
-                                        min={1500}
+                                        min={2000}
                                         max={10000}
                                         step={100}
                                         value={speed}
