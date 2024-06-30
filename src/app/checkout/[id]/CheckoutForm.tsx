@@ -93,7 +93,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
                     <InputTextbox name="full_name" placeholder="Enter Full Name..." />
                     <InputTextbox name="phone" placeholder="Enter Phone Number..." />
                     <InputTextbox name="email" placeholder="Enter Email Address..." />
-                    {isLoaded && <InputAutoComplete name="address" value={address} onChange={handleAddressChange} />}
+                    {isLoaded ? (
+                        <InputAutoComplete name="address" value={address} onChange={handleAddressChange} />
+                    ) : (
+                        <InputTextbox name="address" placeholder="Enter Address..." />
+                    )}
                 </div>
 
                 <div className="mt-4">

@@ -14,8 +14,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                 {({ getInputProps, suggestions, getSuggestionItemProps }) => {
                     const inputProps: ReturnType<typeof getInputProps> = getInputProps({
                         placeholder: 'Enter Address...',
-                        className:
-                            'w-full h-8 px-2.5 text-secondary_dark bg-primary rounded-r-md border-none pl-1.5 font-bold placeholder-secondary',
+                        className: 'w-full h-8 px-2.5 text-secondary_dark bg-primary rounded-r-md border-none pl-1.5 placeholder-secondary',
                         autoComplete: 'rutjfkde',
                         name,
                     });
