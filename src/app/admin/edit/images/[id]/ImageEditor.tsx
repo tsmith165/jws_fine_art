@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { UploadButton } from '@/utils/uploadthing';
-import { handleImageUpload } from '@/app/edit/actions';
+
+import { handleImageUpload } from '@/app/admin/edit/actions';
+
 import InputTextbox from '@/components/inputs/InputTextbox';
 import InputSelect from '@/components/inputs/InputSelect';
 
