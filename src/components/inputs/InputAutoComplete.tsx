@@ -28,14 +28,14 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                 </div>
                                 <input {...inputProps} />
                             </div>
-                            <div className="w-[calc(100%-20px)] md:ml-[calc(20%+5px)] md:w-[calc(80%-20px)] ">
+                            <div className="w-full px-2.5 md:ml-[calc(20%+5px)] md:w-[calc(80%-20px)] ">
                                 {suggestions.map((suggestion: Suggestion) => {
                                     const style = suggestion.active
                                         ? { backgroundColor: '#42a5f5', cursor: 'pointer' }
                                         : { backgroundColor: '#ffffff', cursor: 'pointer' };
                                     const suggestionItemProps: ReturnType<typeof getSuggestionItemProps> = getSuggestionItemProps(
                                         suggestion,
-                                        'w-full h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none pl-1.5 font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
+                                        'w-full h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
                                     );
                                     return (
                                         <div
