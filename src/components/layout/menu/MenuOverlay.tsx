@@ -39,7 +39,7 @@ const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
             );
         });
 
-        if (!isSignedIn || user == null || !user.publicMetadata || !user.publicMetadata.role) {
+        if (isSignedIn && user != null && user.publicMetadata && user.publicMetadata.role) {
             menu_items.push(<MenuOverlaySignOutButton />);
         } else {
             if (ADD_SIGN_IN_OUT_BUTTON) {
