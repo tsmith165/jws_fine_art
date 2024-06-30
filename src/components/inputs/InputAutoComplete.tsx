@@ -35,11 +35,11 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                         : { backgroundColor: '#ffffff', cursor: 'pointer' };
                                     const suggestionItemProps: ReturnType<typeof getSuggestionItemProps> = getSuggestionItemProps(
                                         suggestion,
-                                        'w-full h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
+                                        'w-[90vw] md:w-full h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
                                     );
                                     return (
                                         <div
-                                            className="h-8 overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary px-3 text-secondary_dark last:rounded-b-md hover:bg-secondary_dark hover:text-primary"
+                                            className="h-8 w-full overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary px-3 text-secondary_dark last:rounded-b-md hover:bg-secondary_dark hover:text-primary"
                                             {...suggestionItemProps}
                                         >
                                             {suggestion.description}
