@@ -24,22 +24,22 @@ const Checkout: React.FC<CheckoutProps> = ({ piece_list, current_id, most_recent
     const current_piece = piece_list[piece_position];
 
     return (
-        <div className="flex h-full w-full flex-col md:flex-row">
-            <div className="h-1/2 bg-secondary_dark md:h-full md:w-[65%]">
+        <div className="flex h-[calc(100dvh-50px)] w-full flex-col items-center justify-center bg-stone-900 p-4 md:flex-row">
+            <div className="md:max-w-1/3 flex h-full w-full items-center justify-center rounded-md md:h-auto md:w-fit">
                 <Image
                     src={current_piece.image_path}
                     alt={current_piece.title}
                     width={current_piece.width}
                     height={current_piece.height}
                     quality={100}
-                    className="h-full w-full object-contain"
+                    className="h-full w-full rounded-md bg-stone-600 object-contain p-1"
                 />
             </div>
-            <div className="h-1/2 bg-secondary_light md:h-full md:w-[35%]">
-                <div className="flex flex-row items-center justify-center bg-secondary px-4 py-1">
+            <div className="flex h-full w-full items-center justify-center rounded-lg p-4 text-white shadow-lg md:w-2/3">
+                <div className="flex flex-col items-center justify-center space-y-2">
                     <h1 className="text-2xl font-bold text-primary">{current_piece.title}</h1>
+                    <CheckoutForm current_piece={current_piece} />
                 </div>
-                <CheckoutForm current_piece={current_piece} />
             </div>
         </div>
     );

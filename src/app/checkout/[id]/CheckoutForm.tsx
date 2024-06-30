@@ -103,7 +103,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
                         text="Purchase"
                     />
                     <div className="mt-2">
-                        <div className="text-secondary_dark">
+                        <div className="text-stone-300">
                             {`Pieces ship within 5 days. ${isInternational ? 'International shipping costs $25 and can take up to 1 month.' : 'Domestic shipping can take up to a week.'}`}
                         </div>
                     </div>
