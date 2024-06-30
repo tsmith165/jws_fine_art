@@ -36,7 +36,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
                     transition={{ duration: 0.3 }}
                     className="mt-2"
                 >
-                    <p>{answer}</p>
+                    <p className="font-sans text-stone-300">{answer}</p>
                 </motion.div>
             )}
         </div>

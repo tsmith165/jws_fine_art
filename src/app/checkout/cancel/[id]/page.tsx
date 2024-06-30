@@ -42,32 +42,38 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     return (
         <PageLayout page={`/checkout/cancel/${passed_o_id}`}>
-            <div className="flex min-h-screen flex-col md:flex-row">
-                <div className="flex items-center justify-center bg-secondary_dark md:w-[65%]">
-                    {current_piece && (
-                        <Image
-                            src={current_piece.image_path}
-                            alt={current_piece.title}
-                            width={current_piece.width}
-                            height={current_piece.height}
-                            quality={100}
-                            className="h-full w-full object-contain"
-                        />
-                    )}
-                </div>
-                <div className="flex flex-col items-center bg-secondary_light md:w-[35%]">
-                    <h1 className="mb-4 w-full bg-secondary py-2 text-center text-2xl font-bold text-primary">
-                        {current_piece ? `"${current_piece.title}"` : ''}
-                    </h1>
-                    <div className="w-full px-4 text-left ">
-                        <p className="mb-2 text-lg font-bold text-red-900">Purchase Unsuccessful!</p>
-                        <p className="mb-2 text-lg font-bold text-red-900">Try reloading the home page and selecting the piece again.</p>
-                        <p className="text-secondary_dark">
-                            If problems persist, feel free to reach out at{' '}
-                            <a className="text-blue-400 hover:text-blue-300" href={`mailto:${PROJECT_CONSTANTS.CONTACT_EMAIL}`}>
-                                {` ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}
-                            </a>
-                        </p>
+            <div className="flex h-full w-full overflow-y-auto bg-stone-900 p-4">
+                <div className="flex h-fit flex-col items-center justify-center space-y-4 md:h-full md:flex-row md:space-x-4 md:space-y-0">
+                    <div className="md:max-w-1/3 flex h-full w-full items-center justify-center rounded-md md:h-auto md:w-fit">
+                        {current_piece && (
+                            <Image
+                                src={current_piece.image_path}
+                                alt={current_piece.title}
+                                width={current_piece.width}
+                                height={current_piece.height}
+                                quality={100}
+                                className="h-full w-full rounded-md bg-stone-600 object-contain p-1"
+                            />
+                        )}
+                    </div>
+                    <div className="flex h-full w-full items-center justify-center rounded-lg text-white shadow-lg md:w-2/3">
+                        <div className="flex flex-col items-center justify-center space-y-2">
+                            <h1 className="mb-4 w-full py-2 text-center text-2xl font-bold text-primary">
+                                {current_piece ? `"${current_piece.title}"` : ''}
+                            </h1>
+                            <div className="w-full px-4 text-left ">
+                                <p className="mb-2 font-sans text-lg font-bold text-red-600">Purchase was not successful.</p>
+                                <p className="mb-2 font-sans text-lg font-bold text-red-600">
+                                    Try reloading the home page and selecting the piece again.
+                                </p>
+                                <p className="font-sans text-stone-300">
+                                    If problems persist, feel free to reach out at{' '}
+                                    <a className="text-blue-400 hover:text-blue-300" href={`mailto:${PROJECT_CONSTANTS.CONTACT_EMAIL}`}>
+                                        {` ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
