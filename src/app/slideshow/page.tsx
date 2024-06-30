@@ -38,8 +38,8 @@ export default function Page() {
         <PageLayout page="/slideshow">
             <Suspense
                 fallback={
-                    <div className="flex h-full w-full bg-stone-800">
-                        <div className="flex h-[50px] w-full justify-end bg-stone-400"></div>
+                    <div className="flex h-full w-full items-end bg-stone-800">
+                        <div className="flex h-[50px] w-full bg-stone-400"></div>
                     </div>
                 }
             >
