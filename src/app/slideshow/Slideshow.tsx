@@ -100,7 +100,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
 
             <div className="flex h-[50px] w-full flex-row bg-stone-400">
                 <div className="flex !w-[108px] min-w-[108px]"></div>
-                <div className="flex w-full flex-grow items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap text-2xl text-primary_dark">
+                <div className="flex w-full flex-grow items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-[600] text-primary_dark">
                     {title}
                 </div>
                 <div className="flex w-fit flex-grow items-center">
