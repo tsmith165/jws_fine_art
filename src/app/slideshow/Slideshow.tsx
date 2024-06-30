@@ -65,7 +65,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
         return <LoadingSpinner page="Slideshow" />;
     }
 
-    const { title, image_path } = current_piece;
+    const { title, image_path, width, height } = current_piece;
 
     const variants = {
         initial: { opacity: 0, x: 100 },
@@ -88,10 +88,10 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                     >
                         <Image
                             src={image_path}
+                            width={width}
+                            height={height}
                             alt={title}
-                            layout="fill"
-                            objectFit="contain"
-                            className="object-contain"
+                            className="h-full w-full object-contain"
                             onLoad={() => setIsImageLoaded(true)}
                         />
                     </motion.div>
