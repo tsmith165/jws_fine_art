@@ -35,10 +35,11 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         }),
     );
 
-    const [fullScreenImage, setFullScreenImage] = useState(false);
+    const [isMasonryLoaded, setIsMasonryLoaded] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [isFullScreenImage, setIsFullScreenImage] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [imageLoadStates, setImageLoadStates] = useState<{ [key: number]: boolean }>({});
-    const [isPlaying, setIsPlaying] = useState(true);
 
     const selectedPiece = selectedPieceIndex !== null ? pieces[selectedPieceIndex] : null;
     const selectedImageRef = useRef<HTMLDivElement>(null);
@@ -69,7 +70,11 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     useEffect(() => {
         if (pieceList.length > 0) {
-            createGallery(pieceList, theme);
+            createGallery(pieceList, theme).then(() => {
+                setTimeout(() => {
+                    setIsMasonryLoaded(true);
+                }, 500);
+            });
         }
     }, [pieceList, theme]);
 
@@ -158,6 +163,16 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
     };
 
+    if (!isMasonryLoaded) {
+        return (
+            <div className="inset-0 flex h-full w-full items-center justify-center">
+                <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-neutral-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
+                    <Image src="/logo/full_logo.png" alt="JWS Fine Art Logo" width={1335} height={541} />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
             <motion.div
@@ -174,7 +189,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         imageList={imageList}
                         imageLoadStates={imageLoadStates}
                         handleImageLoad={handleImageLoad}
-                        setFullScreenImage={setFullScreenImage}
+                        setIsFullScreenImage={setIsFullScreenImage}
                         selectedPieceIndex={selectedPieceIndex}
                         selectedImageRef={selectedImageRef}
                         handleNext={handleNext}
@@ -183,7 +198,12 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         isPlaying={isPlaying}
                     />
                 )}
-                <div className={`flex h-fit w-full px-8 ${selectedPiece ? 'py-4 md:py-8' : 'py-8'}`}>
+                <motion.div
+                    className={`flex h-fit w-full px-8 ${selectedPiece ? 'py-4 md:py-8' : 'py-8'}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 2 }}
+                >
                     <Masonry
                         breakpointCols={{
                             default: 5,
@@ -192,15 +212,15 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                             700: 2,
                             300: 1,
                         }}
-                        className="my-masonry-grid"
+                        className="my-masonry-grid w-full"
                         columnClassName="my-masonry-grid_column"
                     >
                         {galleryPieces}
                     </Masonry>
-                </div>
+                </motion.div>
             </motion.div>
             <FilterMenu />
-            {fullScreenImage && selectedPiece && (
+            {isFullScreenImage && selectedPiece && (
                 <FullScreenView
                     selectedPiece={selectedPiece}
                     currentImageIndex={currentImageIndex}
@@ -208,7 +228,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                     imageList={imageList}
                     isPlaying={isPlaying}
                     setIsPlaying={setIsPlaying}
-                    setFullScreenImage={setFullScreenImage}
+                    setIsFullScreenImage={setIsFullScreenImage}
                     selectedPieceIndex={selectedPieceIndex}
                 />
             )}

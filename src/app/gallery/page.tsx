@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import GalleryPage from './GalleryPage';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery',
@@ -35,7 +36,15 @@ export const metadata: Metadata = {
 export default async function Page() {
     return (
         <PageLayout page="/gallery">
-            <Suspense fallback={''}>
+            <Suspense
+                fallback={
+                    <div className="inset-0 flex h-full w-full items-center justify-center">
+                        <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-neutral-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
+                            <Image src="/logo/full_logo.png" alt="JWS Fine Art Logo" width={1335} height={541} />
+                        </div>
+                    </div>
+                }
+            >
                 <GalleryPage />
             </Suspense>
         </PageLayout>

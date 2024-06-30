@@ -11,7 +11,7 @@ interface FullScreenViewProps {
     imageList: { src: string; width: number; height: number }[];
     isPlaying: boolean;
     setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-    setFullScreenImage: (isFullScreen: boolean) => void;
+    setIsFullScreenImage: (isFullScreen: boolean) => void;
     selectedPieceIndex: number | null;
 }
 
@@ -22,7 +22,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
     imageList,
     isPlaying,
     setIsPlaying,
-    setFullScreenImage,
+    setIsFullScreenImage,
     selectedPieceIndex,
 }) => {
     const handleNext = () => {
@@ -55,7 +55,7 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.5 }}
                                 className="h-[80vh] w-[90vw]"
-                                onClick={() => setFullScreenImage(false)}
+                                onClick={() => setIsFullScreenImage(false)}
                             >
                                 <motion.img
                                     src={imageList[currentImageIndex].src}

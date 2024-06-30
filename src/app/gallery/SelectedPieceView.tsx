@@ -11,7 +11,7 @@ interface SelectedPieceViewProps {
     imageList: { src: string; width: number; height: number }[];
     imageLoadStates: { [key: number]: boolean };
     handleImageLoad: () => void;
-    setFullScreenImage: (isFullScreen: boolean) => void;
+    setIsFullScreenImage: (isFullScreen: boolean) => void;
     selectedPieceIndex: number | null;
     selectedImageRef: React.RefObject<HTMLDivElement>;
     handleNext: () => void;
@@ -26,7 +26,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
     imageList,
     imageLoadStates,
     handleImageLoad,
-    setFullScreenImage,
+    setIsFullScreenImage,
     selectedPieceIndex,
     selectedImageRef,
     handleNext,
@@ -45,7 +45,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         animate={{ opacity: imageLoadStates[currentImageIndex] ? 1 : 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        onClick={() => setFullScreenImage(true)}
+                        onClick={() => setIsFullScreenImage(true)}
                         className="flex max-h-[40dvh] min-h-[40dvh] w-auto items-center justify-center rounded-md md:max-h-[50dvh] md:min-h-[50dvh]"
                     >
                         {imageList.map((image, index) =>
