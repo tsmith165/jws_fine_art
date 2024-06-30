@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 type SlideshowProps = {
-    pieceList: { title: string; image_path: string }[];
+    pieceList: { title: string; image_path: string; width: number; height: number }[];
 };
 
 export default function Slideshow({ pieceList }: SlideshowProps) {
