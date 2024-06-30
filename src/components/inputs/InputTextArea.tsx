@@ -30,7 +30,7 @@ const InputTextArea: React.FC<InputTextAreaProps> = ({ name, rows, value, onChan
             <textarea
                 id={id}
                 name={id}
-                className="h-full w-full whitespace-pre-wrap rounded-r-md border-none bg-primary py-1.5 pl-2.5 text-sm font-bold text-secondary_dark"
+                className="h-full w-full whitespace-pre-wrap rounded-r-md border-none bg-primary py-1.5 pl-2.5 text-sm font-bold text-secondary_dark outline-none"
                 value={value}
                 rows={rows}
                 onChange={onChange}

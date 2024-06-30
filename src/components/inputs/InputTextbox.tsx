@@ -31,7 +31,7 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, placeholder, o
                 <input
                     id={id}
                     name={id}
-                    className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
+                    className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary outline-none"
                     value={value}
                     placeholder={placeholder || ''}
                     onChange={onChange}
@@ -40,7 +40,7 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ name, value, placeholder, o
                 <input
                     id={id}
                     name={id}
-                    className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary"
+                    className="flex h-8 w-full rounded-r-md border-none bg-primary px-2 text-sm font-bold text-secondary_dark placeholder-secondary outline-none"
                     defaultValue={value}
                     placeholder={placeholder || ''}
                 />
