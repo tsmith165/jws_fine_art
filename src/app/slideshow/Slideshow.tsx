@@ -129,7 +129,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                                         step={100}
                                         value={speed}
                                         onChange={handleSpeedChange}
-                                        className="h-2 w-12 cursor-pointer appearance-none rounded-lg bg-stone-900 accent-primary hover:accent-primary active:accent-primary xs:w-16 md:w-24"
+                                        className="slider-slideshow h-2 w-12 cursor-pointer appearance-none rounded-lg bg-stone-900 accent-primary hover:accent-primary active:accent-primary xs:w-16 md:w-24"
                                     />
                                     <div className="text-md w-8 text-center font-[600] leading-6 text-stone-900">{speed / 1000}s</div>
                                 </div>
