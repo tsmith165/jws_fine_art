@@ -38,7 +38,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                     );
                                     return (
                                         <div
-                                            className="h-8 overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary px-2.5 py-0.5 leading-8 text-secondary_dark first:pt-1 last:rounded-b-md last:pb-1 hover:bg-secondary_dark hover:text-primary"
+                                            className="h-8 overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary px-2.5 py-0.5 leading-8 text-secondary_dark last:rounded-b-md last:pb-1 hover:bg-secondary_dark hover:text-primary"
                                             {...suggestionItemProps}
                                         >
                                             {suggestion.description}
