@@ -38,9 +38,9 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
         <motion.div
             className={`flex h-fit w-full flex-col items-center p-4 pb-0`}
             ref={selectedImageRef}
-            initial={{ y: -100, opacity: 0 }}
+            initial={{ y: -300, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.75 }}
         >
             <h1 className="pb-2 font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
             <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2 pb-2">

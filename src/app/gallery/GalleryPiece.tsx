@@ -17,8 +17,8 @@ const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
             <Image
                 src={piece.image_path}
                 alt={piece.title}
-                width={300}
-                height={200}
+                width={piece.width}
+                height={piece.height}
                 className="h-auto w-full rounded-md bg-stone-600 object-cover p-1"
                 priority
             />
