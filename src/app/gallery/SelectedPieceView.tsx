@@ -35,7 +35,13 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
     isPlaying,
 }) => {
     return (
-        <div className={`flex h-fit w-full flex-col items-center p-4 pb-0`} ref={selectedImageRef}>
+        <motion.div
+            className={`flex h-fit w-full flex-col items-center p-4 pb-0`}
+            ref={selectedImageRef}
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <h1 className="pb-2 font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
             <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2 pb-2">
                 <AnimatePresence mode="wait">
@@ -124,7 +130,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                     <div className="h-9 text-xl font-[600] text-red-800">{selectedPiece.sold ? 'Sold' : 'Not For Sale'}</div>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 };
 

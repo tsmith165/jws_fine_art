@@ -72,7 +72,7 @@ const Biography = ({ biographyData }: BiographyProps) => {
     };
 
     return (
-        <div className="relative flex h-full w-full flex-col space-y-2 bg-stone-800">
+        <div className="relative flex h-full w-full flex-col space-y-2 bg-stone-900">
             <AnimatePresence>
                 {biographyData.map((data, index) => {
                     const isEven = index % 2 === 0;

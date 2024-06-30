@@ -1,8 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import SiteMenu from './SiteMenu';
-import { menu_list } from '@/lib/menu_list';
-import { short_menu_list } from '@/lib/menu_list';
+import { navbar_menu_list, short_navbar_menu_list } from '@/lib/menu_list';
 
 export default function Navbar({ page }: { page: string }) {
     const non_selected_gradient = `from-secondary via-primary_dark to-secondary `;
@@ -10,7 +9,7 @@ export default function Navbar({ page }: { page: string }) {
     const selected_gradient = `from-primary_dark via-primary to-primary_dark`;
     const selected_gradient_hover = `hover:from-secondary hover:via-primary_dark hover:to-secondary`;
 
-    const navbar = menu_list.map(([menu_class_name, menu_full_name, url_endpoint]) => {
+    const navbar = navbar_menu_list.map(([menu_class_name, menu_full_name, url_endpoint]) => {
         let gradient = page.includes(url_endpoint) ? selected_gradient : non_selected_gradient;
         let gradient_hover = page.includes(url_endpoint) ? selected_gradient_hover : non_selected_gradient_hover;
         return (
@@ -28,7 +27,7 @@ export default function Navbar({ page }: { page: string }) {
         );
     });
 
-    const short_navbar = short_menu_list.map(([menu_class_name, menu_full_name, url_endpoint]) => {
+    const short_navbar = short_navbar_menu_list.map(([menu_class_name, menu_full_name, url_endpoint]) => {
         let gradient = page.includes(url_endpoint) ? selected_gradient : non_selected_gradient;
         let gradient_hover = page.includes(url_endpoint) ? selected_gradient_hover : non_selected_gradient_hover;
         return (

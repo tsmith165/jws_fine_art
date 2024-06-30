@@ -45,7 +45,7 @@ export default async function Page() {
 const HomepageSkeleton = () => {
     return (
         <div className="relative flex h-full w-full flex-col space-y-2">
-            <div className="absolute inset-0 h-full animate-pulse bg-stone-800"></div>
+            <div className="absolute inset-0 h-full animate-pulse bg-stone-900"></div>
         </div>
     );
 };

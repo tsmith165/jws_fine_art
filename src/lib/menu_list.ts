@@ -1,6 +1,4 @@
-type MenuItem = [string, string, boolean, string];
-
-export const SIGNED_OUT_MENU_LIST: MenuItem[] = [
+export const DEFAULT_MENU_LIST: [string, string, boolean, string][] = [
     ['home', 'Home', false, '/'],
     ['gallery', 'Gallery', false, '/gallery'],
     ['biography', 'Biography', false, '/biography'],
@@ -8,44 +6,26 @@ export const SIGNED_OUT_MENU_LIST: MenuItem[] = [
     ['events', 'Events', false, '/events'],
     ['faq', 'FAQ', false, '/faq'],
     ['contact', 'Contact', false, '/contact'],
-    ['sign_in', 'Sign In', false, '/signin'],
 ];
 
-export const SIGNED_IN_MENU_LIST: MenuItem[] = [
-    ['home', 'Home', false, '/'],
-    ['gallery', 'Gallery', false, '/gallery'],
-    ['biography', 'Biography', false, '/biography'],
-    ['slideshow', 'Slideshow', false, '/slideshow'],
-    ['events', 'Events', false, '/events'],
-    ['faq', 'FAQ', false, '/faq'],
-    ['contact', 'Contact', false, '/contact'],
+export const SIGNED_IN_MENU_LIST: [string, string, boolean, string][] = [...DEFAULT_MENU_LIST, ['profile', 'Profile', false, '/profile']];
+
+export const ADMIN_MENU_LIST: [string, string, boolean, string][] = [
+    ...DEFAULT_MENU_LIST,
     ['profile', 'Profile', false, '/profile'],
-    ['sign_out', 'Sign Out', false, '/signout'],
+    ['edit_details', 'Edit Details', true, '/admin/edit'],
+    ['management', 'Management', true, '/admin/manage'],
+    ['orders', 'Orders', true, '/admin/orders'],
+    ['tools', 'Tools', true, '/admin/tools'],
 ];
 
-export const ADMIN_MENU_LIST: MenuItem[] = [
-    ['home', 'Home', false, '/'],
-    ['gallery', 'Gallery', false, '/gallery'],
-    ['biography', 'Biography', false, '/biography'],
-    ['slideshow', 'Slideshow', false, '/slideshow'],
-    ['events', 'Events', false, '/events'],
-    ['faq', 'FAQ', false, '/faq'],
-    ['contact', 'Contact', false, '/contact'],
-    ['profile', 'Profile', false, '/profile'],
-    ['edit_details', 'Edit Details', true, '/edit'],
-    ['management', 'Management', true, '/manage'],
-    ['orders', 'Orders', true, '/orders'],
-    ['admin', 'Admin', true, '/admin'],
-    ['sign_out', 'Sign Out', false, '/signout'],
-];
-
-export const menu_list: [string, string, string][] = [
+export const navbar_menu_list: [string, string, string][] = [
     ['gallery', 'Gallery', '/gallery'],
     ['slideshow', 'Slideshow', '/slideshow'],
     ['biography', 'Biography', '/biography'],
 ];
 
-export const short_menu_list: [string, string, string][] = [
+export const short_navbar_menu_list: [string, string, string][] = [
     ['gallery', 'Gallery', '/gallery'],
     ['slideshow', 'Slideshow', '/slideshow'],
     ['biography', 'Bio', '/biography'],

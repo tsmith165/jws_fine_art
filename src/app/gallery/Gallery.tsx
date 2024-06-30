@@ -166,7 +166,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     if (!isMasonryLoaded) {
         return (
             <div className="inset-0 flex h-full w-full items-center justify-center">
-                <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-neutral-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
+                <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-stone-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
                     <Image src="/logo/full_logo.png" alt="JWS Fine Art Logo" width={1335} height={541} />
                 </div>
             </div>
@@ -176,7 +176,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     return (
         <>
             <motion.div
-                className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-800`}
+                className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-900`}
                 onClick={gallery_clicked}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

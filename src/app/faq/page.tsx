@@ -40,7 +40,7 @@ export default async function FAQPage() {
 
 function ComingSoon() {
     return (
-        <div className="flex h-full w-full flex-col items-center justify-center space-y-4 bg-stone-800 p-4">
+        <div className="flex h-full w-full flex-col items-center justify-center space-y-4 bg-stone-900 p-4">
             <h1 className="bg-gradient-to-r from-primary via-primary_dark to-primary bg-clip-text text-center text-4xl font-bold text-transparent">
                 Events
             </h1>

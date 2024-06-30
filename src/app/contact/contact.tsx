@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function Contact() {
     return (
-        <div className="flex h-full w-full items-center bg-stone-800 p-4">
+        <div className="flex h-full w-full items-center bg-stone-900 p-4">
             <div className="flex h-full max-h-full w-full flex-col items-center justify-center space-y-2 overflow-y-scroll">
                 <Image
                     src="/bio/bio_pic_updated_small.jpg"

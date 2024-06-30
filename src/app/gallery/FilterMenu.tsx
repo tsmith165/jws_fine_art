@@ -4,15 +4,15 @@ import { FaSlidersH, FaSnowflake, FaMountain, FaTree, FaCity, FaPortrait, FaShop
 import { FaCircleHalfStroke } from 'react-icons/fa6';
 import useGalleryStore from '@/stores/gallery_store';
 
-const THEME_FILTERS: [string, React.ComponentType<{ className?: string }>][] = [
-    ['Snow', FaSnowflake],
-    ['Mountain', FaMountain],
-    ['Landscape', FaTree],
-    ['City', FaCity],
-    ['Portrait', FaPortrait],
-    ['Black and White', FaCircleHalfStroke],
-    ['Available', FaShoppingCart],
-    ['None', FaBan],
+const THEME_FILTERS: [string, string, React.ComponentType<{ className?: string }>][] = [
+    ['Snow', 'snow', FaSnowflake],
+    ['Mountain', 'mountain', FaMountain],
+    ['Landscape', 'landscape', FaTree],
+    ['City', 'city', FaCity],
+    ['Portrait', 'portrait', FaPortrait],
+    ['Black and White', 'black_and_white', FaCircleHalfStroke],
+    ['Available', 'available', FaShoppingCart],
+    ['None', 'none', FaBan],
 ];
 
 const FilterMenu: React.FC = () => {
@@ -39,7 +39,7 @@ const FilterMenu: React.FC = () => {
             </div>
             {filterMenuOpen === true && (
                 <div className="absolute bottom-0 right-[40px] flex h-[40px] w-fit flex-row rounded-tl-lg md:rounded-bl-none md:rounded-tl-lg">
-                    {THEME_FILTERS.reverse().map(([filter, Icon], i) => (
+                    {THEME_FILTERS.reverse().map(([filter, filter_class, Icon], i) => (
                         <div
                             key={i}
                             className={`group p-[5px] first:rounded-tl-lg ${filter === theme ? 'bg-primary_dark' : 'bg-primary hover:bg-primary_dark'}`}
@@ -49,12 +49,14 @@ const FilterMenu: React.FC = () => {
                             }}
                         >
                             <Icon
-                                className={`h-[30px] w-[30px] ${filter === theme ? 'fill-primary' : 'fill-primary_dark group-hover:fill-primary'}`}
+                                className={`h-[30px] w-[30px] filter-icon-${filter_class} ${
+                                    filter === theme ? 'fill-primary' : 'fill-primary_dark group-hover:fill-primary'
+                                }`}
                             />
                         </div>
                     ))}
-                    {THEME_FILTERS.reverse().map(([filter, icon], i) => (
-                        <Tooltip key={i} anchorSelect={`.filter-icon-${filter}`} place="top">
+                    {THEME_FILTERS.reverse().map(([filter, filter_class, icon], i) => (
+                        <Tooltip key={i} anchorSelect={`.filter-icon-${filter_class}`} place="top">
                             {filter}
                         </Tooltip>
                     ))}

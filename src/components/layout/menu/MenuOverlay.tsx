@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import MenuOverlayButton from './MenuOverlayButton';
 import MenuOverlaySignOutButton from './MenuOverlaySignOutButton';
-import { SIGNED_OUT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from '@/lib/menu_list';
+import { DEFAULT_MENU_LIST, SIGNED_IN_MENU_LIST, ADMIN_MENU_LIST } from '@/lib/menu_list';
+
+const ADD_SIGN_IN_OUT_BUTTON = false;
 
 const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
     const [menuItems, setMenuItems] = useState<React.ReactNode[]>([]);
@@ -17,17 +19,14 @@ const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
         setMenuItems(items);
     }, [isLoaded, isSignedIn, user]);
 
-    const generateMenu = (menuList: typeof SIGNED_OUT_MENU_LIST) => {
-        return menuList.map((menuItem, i) => {
+    const generateMenu = (menuList: typeof DEFAULT_MENU_LIST) => {
+        const menu_items = menuList.map((menuItem, i) => {
             const [className, menuItemString, , urlEndpoint] = menuItem;
             let isActive = false;
             if (urlEndpoint === '/') {
                 isActive = currentPage === '/';
             } else {
                 isActive = currentPage.includes(urlEndpoint);
-            }
-            if (menuItemString === 'Sign Out') {
-                return <MenuOverlaySignOutButton />;
             }
             return (
                 <MenuOverlayButton
@@ -39,16 +38,34 @@ const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
                 />
             );
         });
+
+        if (ADD_SIGN_IN_OUT_BUTTON) {
+            if (!isSignedIn || user == null || !user.publicMetadata || !user.publicMetadata.role) {
+                menu_items.push(<MenuOverlaySignOutButton />);
+            } else {
+                menu_items.push(
+                    <MenuOverlayButton
+                        key={'sign_in'}
+                        id={'sign_in'}
+                        menu_name={'Sign In'}
+                        url_endpoint={'/signin'}
+                        isActive={currentPage.includes('/signin')}
+                    />,
+                );
+            }
+        }
+
+        return menu_items;
     };
 
     const selectMenu = (isLoaded: boolean, isSignedIn: boolean, user: any) => {
         if (!isLoaded) {
             console.log('User not loaded - returning signed out menu...');
-            return SIGNED_OUT_MENU_LIST;
+            return DEFAULT_MENU_LIST;
         }
         if (!isSignedIn || user == null || !user.publicMetadata || !user.publicMetadata.role) {
             console.log('User not signed in or missing metadata - returning signed out menu...');
-            return SIGNED_OUT_MENU_LIST;
+            return DEFAULT_MENU_LIST;
         }
         if (user.publicMetadata.role === 'ADMIN') {
             console.log('User has role Admin - returning admin menu...');
