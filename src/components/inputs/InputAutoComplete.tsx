@@ -27,7 +27,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                 </div>
                                 <input {...inputProps} />
                             </div>
-                            <div className="m-auto flex w-[calc(100vw-40px)] flex-col space-y-2 px-2.5 md:w-[calc(100%-40px)]">
+                            <div className="m-auto flex w-[calc(100vw-40px)] flex-col px-2.5 md:w-[calc(100%-40px)]">
                                 {suggestions.map((suggestion: Suggestion) => {
                                     const style = suggestion.active
                                         ? { backgroundColor: '#42a5f5', cursor: 'pointer' }
@@ -38,7 +38,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                     );
                                     return (
                                         <div
-                                            className="h-8 overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary px-2.5 text-secondary_dark last:rounded-b-md hover:bg-secondary_dark hover:text-primary"
+                                            className="h-8 overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary px-2.5 pt-2 leading-8 text-secondary_dark last:rounded-b-md last:pb-2 hover:bg-secondary_dark hover:text-primary"
                                             {...suggestionItemProps}
                                         >
                                             {suggestion.description}
