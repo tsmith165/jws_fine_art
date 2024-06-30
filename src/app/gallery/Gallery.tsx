@@ -236,6 +236,8 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                     setIsPlaying={setIsPlaying}
                     setIsFullScreenImage={setIsFullScreenImage}
                     selectedPieceIndex={selectedPieceIndex}
+                    setSpeed={setSpeed}
+                    speed={speed}
                 />
             )}
         </>

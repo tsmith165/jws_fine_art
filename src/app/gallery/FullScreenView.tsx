@@ -1,6 +1,8 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
+import { IoIosArrowForward, IoIosArrowBack, IoIosSpeedometer } from 'react-icons/io';
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { PiecesWithImages } from '@/db/schema';
 
@@ -13,6 +15,8 @@ interface FullScreenViewProps {
     setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
     setIsFullScreenImage: (isFullScreen: boolean) => void;
     selectedPieceIndex: number | null;
+    setSpeed: (speed: number) => void;
+    speed: number;
 }
 
 const FullScreenView: React.FC<FullScreenViewProps> = ({
@@ -24,6 +28,8 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
     setIsPlaying,
     setIsFullScreenImage,
     selectedPieceIndex,
+    setSpeed,
+    speed,
 }) => {
     const handleNext = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
@@ -35,6 +41,13 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
 
     const togglePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
+    };
+
+    const [showSlider, setShowSlider] = useState(false);
+
+    const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newSpeed = parseInt(e.target.value, 10);
+        setSpeed(newSpeed);
     };
 
     return (
@@ -67,39 +80,71 @@ const FullScreenView: React.FC<FullScreenViewProps> = ({
                         <div className="absolute bottom-4 left-0 right-0 flex justify-center">
                             <div className="flex h-7 w-full items-center justify-center space-x-4">
                                 <div className="flex w-full flex-row">
-                                    <div className="flex w-full flex-grow"></div>
+                                    <div className="flex w-full flex-grow justify-end pr-1">
+                                        {imageList.length > 1 && (
+                                            <button aria-label={isPlaying ? 'Pause' : 'Play'} onClick={togglePlayPause} className="ml-2">
+                                                {isPlaying ? (
+                                                    <FaPause className="fill-stone-600 text-xl hover:fill-primary" />
+                                                ) : (
+                                                    <FaPlay className="fill-stone-600 text-xl hover:fill-primary" />
+                                                )}
+                                            </button>
+                                        )}
+                                    </div>
                                     <div className="flex w-fit items-center justify-center space-x-2">
                                         {imageList.length > 1 && (
                                             <button aria-label="Previous" onClick={handlePrev} className="">
-                                                <IoIosArrowBack className="text-2xl hover:fill-primary" />
+                                                <IoIosArrowBack className="fill-stone-600 text-2xl hover:fill-primary" />
                                             </button>
                                         )}
                                         {imageList.map((_, index) => (
                                             <div
                                                 key={`dot-${index}`}
-                                                className={`h-4 w-4 rounded-full border-2 text-2xl ${
-                                                    index === currentImageIndex
-                                                        ? 'border-stone-600 bg-primary'
-                                                        : 'border-primary bg-stone-600'
+                                                className={`h-4 w-4 rounded-full text-2xl ${
+                                                    index === currentImageIndex ? ' bg-primary' : 'bg-stone-600'
                                                 }`}
                                             ></div>
                                         ))}
                                         {imageList.length > 1 && (
                                             <button aria-label="Next" onClick={handleNext} className="">
-                                                <IoIosArrowForward className="text-2xl hover:fill-primary" />
+                                                <IoIosArrowForward className="fill-stone-600 text-2xl hover:fill-primary" />
                                             </button>
                                         )}
                                     </div>
                                     <div className="flex w-full flex-grow">
-                                        {imageList.length > 1 && (
-                                            <button aria-label={isPlaying ? 'Pause' : 'Play'} onClick={togglePlayPause} className="ml-2">
-                                                {isPlaying ? (
-                                                    <FaPause className="fill-primary text-xl hover:fill-primary_dark" />
-                                                ) : (
-                                                    <FaPlay className="fill-primary text-xl hover:fill-primary_dark" />
-                                                )}
-                                            </button>
-                                        )}
+                                        <div
+                                            className="group relative flex w-full flex-grow flex-row justify-start pl-1"
+                                            onMouseEnter={() => setShowSlider(true)}
+                                            onMouseLeave={() => setShowSlider(false)}
+                                        >
+                                            {imageList.length > 1 && (
+                                                <>
+                                                    <IoIosSpeedometer
+                                                        className={`${
+                                                            showSlider ? 'fill-primary' : 'fill-stone-600'
+                                                        } relative z-10 h-[24px] w-[24px] cursor-pointer fill-stone-600 hover:fill-primary`}
+                                                    />
+                                                    {showSlider && (
+                                                        <div className="z-0 flex h-[24px] transform items-center justify-center rounded-md px-2">
+                                                            <div className="jutify-center flex items-center justify-center">
+                                                                <input
+                                                                    type="range"
+                                                                    min={2000}
+                                                                    max={10000}
+                                                                    step={100}
+                                                                    value={speed}
+                                                                    onChange={handleSpeedChange}
+                                                                    className="h-2 w-16 cursor-pointer appearance-none rounded-lg bg-stone-600 accent-primary hover:accent-primary active:accent-primary xs:w-20 md:w-24"
+                                                                />
+                                                                <div className="ml-2 hidden w-6 text-center leading-6 text-primary xs:flex">
+                                                                    {speed / 1000}s
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

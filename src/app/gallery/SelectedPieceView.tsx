@@ -108,9 +108,9 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         {imageList.length > 1 && (
                             <button aria-label={isPlaying ? 'Pause' : 'Play'} onClick={togglePlayPause} className="ml-2">
                                 {isPlaying ? (
-                                    <FaPause className="fill-primary text-xl hover:fill-primary_dark" />
+                                    <FaPause className="fill-stone-600 text-xl hover:fill-primary" />
                                 ) : (
-                                    <FaPlay className="fill-primary text-xl hover:fill-primary_dark" />
+                                    <FaPlay className="fill-stone-600 text-xl hover:fill-primary" />
                                 )}
                             </button>
                         )}
@@ -118,7 +118,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                     <div className="flex w-fit items-center justify-center space-x-2">
                         {imageList.length > 1 && (
                             <button aria-label="Previous" onClick={handlePrev} className="">
-                                <IoIosArrowBack className="text-2xl hover:fill-primary_dark" />
+                                <IoIosArrowBack className="fill-stone-600 text-2xl hover:fill-primary" />
                             </button>
                         )}
                         {imageList.map((_, index) => (
@@ -129,7 +129,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         ))}
                         {imageList.length > 1 && (
                             <button aria-label="Next" onClick={handleNext} className="">
-                                <IoIosArrowForward className="text-2xl hover:fill-primary_dark" />
+                                <IoIosArrowForward className="fill-stone-600 text-2xl hover:fill-primary" />
                             </button>
                         )}
                     </div>
@@ -155,7 +155,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                                                 step={100}
                                                 value={speed}
                                                 onChange={handleSpeedChange}
-                                                className="h-2 w-12 cursor-pointer appearance-none rounded-lg bg-stone-600 accent-primary hover:accent-primary active:accent-primary xs:w-16 md:w-24"
+                                                className="h-2 w-16 cursor-pointer appearance-none rounded-lg bg-stone-600 accent-primary hover:accent-primary active:accent-primary xs:w-20 md:w-24"
                                             />
                                             <div className="ml-2 hidden w-6 text-center leading-6 text-primary xs:flex">
                                                 {speed / 1000}s
