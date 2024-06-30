@@ -1,8 +1,9 @@
-import { redirect } from 'next/navigation';
-import { fetchFirstPieceId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 import React, { Suspense } from 'react';
+
+import { fetchFirstPieceId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
+
 import PageLayout from '@/components/layout/PageLayout';
-import Edit from '@/app/edit/[id]/Edit';
+import Edit from '@/app/admin/edit/[id]/Edit';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 async function fetchPieceData(id: number) {

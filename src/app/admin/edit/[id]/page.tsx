@@ -28,11 +28,13 @@ export const metadata: Metadata = {
     },
 };
 
-import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
-import PageLayout from '@/components/layout/PageLayout';
-import Edit from '@/app/edit/[id]/Edit';
-import { SignedIn } from '@clerk/nextjs';
 import React, { Suspense } from 'react';
+import { SignedIn } from '@clerk/nextjs';
+
+import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
+
+import PageLayout from '@/components/layout/PageLayout';
+import Edit from '@/app/admin/edit/[id]/Edit';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 async function fetchPieceData(id: number) {

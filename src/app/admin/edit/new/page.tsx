@@ -1,6 +1,3 @@
-import PageLayout from '@/components/layout/PageLayout';
-import { SignedIn } from '@clerk/nextjs';
-import CreatePiece from './CreatePiece';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -31,6 +28,11 @@ export const metadata: Metadata = {
         type: 'website',
     },
 };
+
+import { SignedIn } from '@clerk/nextjs';
+
+import PageLayout from '@/components/layout/PageLayout';
+import CreatePiece from '@/app/admin/edit/new/CreatePiece';
 
 export default function NewPiecePage() {
     return (

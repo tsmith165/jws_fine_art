@@ -1,10 +1,4 @@
 import type { Metadata } from 'next';
-import { exportPieces } from '@/app/admin/actions';
-import { SignedIn } from '@clerk/nextjs';
-import PageLayout from '@/components/layout/PageLayout';
-import { promises as fs } from 'fs';
-import path from 'path';
-
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Admin',
     description: 'Display admin info for authenticated users',
@@ -33,6 +27,14 @@ export const metadata: Metadata = {
         type: 'website',
     },
 };
+
+import { SignedIn } from '@clerk/nextjs';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+import { exportPieces } from '@/app/admin/tools/actions';
+
+import PageLayout from '@/components/layout/PageLayout';
 
 export default async function AdminPage() {
     const handleExport = async () => {

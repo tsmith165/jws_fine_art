@@ -32,7 +32,7 @@ import { db, verifiedTransactionsTable } from '@/db/db';
 import { VerifiedTransactions } from '@/db/schema';
 
 import PageLayout from '@/components/layout/PageLayout';
-import Orders from '@/app/orders/orders';
+import Orders from '@/app/admin/orders/orders';
 
 export default async function Page() {
     const verified_list = await fetchVerifiedPayments();

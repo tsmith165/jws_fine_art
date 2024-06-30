@@ -28,9 +28,10 @@ export const metadata: Metadata = {
     },
 };
 
-import PageLayout from '@/components/layout/PageLayout';
 import { SignedIn } from '@clerk/nextjs';
-import ImageEditor from './ImageEditor';
+
+import PageLayout from '@/components/layout/PageLayout';
+import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 
 export default async function Page({ params }: { params: { id: string } }) {
     return (

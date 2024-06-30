@@ -33,7 +33,7 @@ import { getPieces, getDeletedPieces, getPrioritizedPieces } from './actions';
 import { SignedIn } from '@clerk/nextjs';
 
 import PageLayout from '@/components/layout/PageLayout';
-import { Manage } from './Manage';
+import { Manage } from '@/app/admin/manage/Manage';
 
 interface PageProps {
     searchParams?: {
