@@ -3,69 +3,19 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
-import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
-import { FaPlay, FaPause } from 'react-icons/fa';
 import Masonry from 'react-masonry-css';
 import 'react-tooltip/dist/react-tooltip.css';
 import { PiecesWithImages } from '@/db/schema';
 import useGalleryStore from '@/stores/gallery_store';
 import FilterMenu from './FilterMenu';
-import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 import FullScreenView from './FullScreenView';
 import SelectedPieceView from './SelectedPieceView';
+import GalleryPiece from './GalleryPiece';
 
 interface GalleryPieceProps {
     piece: PiecesWithImages & { index: number };
     handlePieceClick: (id: number, index: number) => void;
 }
-
-const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
-    return (
-        <div
-            key={`piece-${piece.id}`}
-            className="group relative cursor-pointer overflow-hidden rounded-md bg-stone-600 shadow-md transition duration-300 ease-in-out hover:shadow-lg"
-            onClick={() => handlePieceClick(piece.id, piece.index)}
-        >
-            <Image
-                src={piece.image_path}
-                alt={piece.title}
-                width={300}
-                height={200}
-                className="h-auto w-full rounded-md bg-stone-600 object-cover p-1"
-                priority
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 p-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <p className="text-center text-xl font-bold text-white">{piece.title}</p>
-            </div>
-        </div>
-    );
-};
-
-interface MasonryGalleryProps {
-    galleryPieces: JSX.Element[];
-    selectedPiece: PiecesWithImages | null;
-}
-
-const MasonryGallery: React.FC<MasonryGalleryProps> = ({ galleryPieces, selectedPiece }) => {
-    return (
-        <div className={`flex h-fit w-full px-8 ${selectedPiece ? 'py-4 md:py-8' : 'py-8'}`}>
-            <Masonry
-                breakpointCols={{
-                    default: 5,
-                    1500: 4,
-                    1100: 3,
-                    700: 2,
-                    300: 1,
-                }}
-                className="my-masonry-grid"
-                columnClassName="my-masonry-grid_column"
-            >
-                {galleryPieces}
-            </Masonry>
-        </div>
-    );
-};
 
 const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     const router = useRouter();
@@ -100,13 +50,11 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                   height: selectedPiece.height,
               },
               ...(selectedPiece.extraImages || []).map((image) => ({
-                  key: `extra-${image.id}`,
                   src: image.image_path,
                   width: image.width,
                   height: image.height,
               })),
               ...(selectedPiece.progressImages || []).map((image) => ({
-                  key: `progress-${image.id}`,
                   src: image.image_path,
                   width: image.width,
                   height: image.height,
@@ -146,30 +94,6 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         };
     }, [isPlaying, imageList]);
 
-    const handlePieceClick = (id: number, index: number) => {
-        if (selectedPieceIndex === index) {
-            selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            return;
-        }
-        setCurrentImageIndex(0);
-        setSelectedPieceIndex(index);
-        const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.set('piece', `${id}`);
-        router.replace(`/gallery?${newSearchParams.toString()}`);
-        setImageLoadStates({}); // Reset all image load states
-        selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    const handleImageLoad = () => {
-        setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
-    };
-
-    const gallery_clicked = (e: React.MouseEvent) => {
-        if (filterMenuOpen && window.innerWidth < 768) {
-            setFilterMenuOpen(false);
-        }
-    };
-
     const createGallery = async (piece_list: PiecesWithImages[], selected_theme: string) => {
         setGalleryPieces(() => []);
 
@@ -197,6 +121,26 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         setGalleryPieces((prevGalleryPieces) => [...prevGalleryPieces, ...newGalleryPieces]);
     };
 
+    const gallery_clicked = (e: React.MouseEvent) => {
+        if (filterMenuOpen && window.innerWidth < 768) {
+            setFilterMenuOpen(false);
+        }
+    };
+
+    const handlePieceClick = (id: number, index: number) => {
+        if (selectedPieceIndex === index) {
+            selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+        }
+        setCurrentImageIndex(0);
+        setSelectedPieceIndex(index);
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('piece', `${id}`);
+        router.replace(`/gallery?${newSearchParams.toString()}`);
+        setImageLoadStates({}); // Reset all image load states
+        selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
     const handleNext = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
     };
@@ -207,6 +151,10 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     const togglePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
+    };
+
+    const handleImageLoad = () => {
+        setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
     };
 
     return (
@@ -228,7 +176,21 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         isPlaying={isPlaying}
                     />
                 )}
-                <MasonryGallery galleryPieces={galleryPieces} selectedPiece={selectedPiece} />
+                <div className={`flex h-fit w-full px-8 ${selectedPiece ? 'py-4 md:py-8' : 'py-8'}`}>
+                    <Masonry
+                        breakpointCols={{
+                            default: 5,
+                            1500: 4,
+                            1100: 3,
+                            700: 2,
+                            300: 1,
+                        }}
+                        className="my-masonry-grid"
+                        columnClassName="my-masonry-grid_column"
+                    >
+                        {galleryPieces}
+                    </Masonry>
+                </div>
             </div>
             <FilterMenu />
             {fullScreenImage && selectedPiece && (
