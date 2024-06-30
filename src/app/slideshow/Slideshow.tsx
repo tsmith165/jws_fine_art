@@ -99,11 +99,11 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
             </div>
 
             <div className="flex h-[50px] w-full flex-row bg-stone-400">
-                <div className="hidden !w-[108px] min-w-[108px] md:flex"></div>
-                <div className="flex w-full flex-grow items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-[600] text-primary_dark">
-                    {title}
+                <div className="hidden !w-[100px] min-w-[100px] md:flex"></div>
+                <div className="flex w-full max-w-[calc(100vw-100px)] flex-grow items-center justify-start md:max-w-[calc(100vw-200px)] md:justify-center">
+                    <span className="truncate pl-4 pr-2 text-lg font-[600] text-primary_dark md:pl-0 md:pr-0 md:text-2xl">{title}</span>
                 </div>
-                <div className="flex w-fit flex-grow items-center">
+                <div className="flex w-fit flex-grow items-center pr-2 md:pr-0">
                     {isPlaying ? (
                         <FaPause
                             className="h-[50px] w-[50px] cursor-pointer fill-primary_dark py-2 hover:fill-primary"
@@ -115,7 +115,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                             onClick={handlePlayPause}
                         />
                     )}
-                    <div className="group relative mr-2" onMouseEnter={() => setShowSlider(true)} onMouseLeave={() => setShowSlider(false)}>
+                    <div className="group relative" onMouseEnter={() => setShowSlider(true)} onMouseLeave={() => setShowSlider(false)}>
                         <IoIosSpeedometer
                             className={`${showSlider ? 'fill-primary' : 'fill-primary_dark'} relative z-10 h-[50px] w-[50px] cursor-pointer py-2 hover:fill-primary`}
                         />
