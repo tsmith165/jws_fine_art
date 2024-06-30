@@ -27,7 +27,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                 </div>
                                 <input {...inputProps} />
                             </div>
-                            <div className="m-auto w-[calc(100vw-40px)] px-2.5 md:ml-[calc(20%+5px)] md:w-[calc(80%-20px)] ">
+                            <div className="m-auto w-[calc(100vw-40px)] px-2.5 md:w-[calc(100%-40px)] ">
                                 {suggestions.map((suggestion: Suggestion) => {
                                     const style = suggestion.active
                                         ? { backgroundColor: '#42a5f5', cursor: 'pointer' }
