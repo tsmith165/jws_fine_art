@@ -27,18 +27,18 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                 </div>
                                 <input {...inputProps} />
                             </div>
-                            <div className="ml-[20px] w-[calc(100%-40px)] px-2.5 md:ml-[calc(20%+5px)] md:w-[calc(80%-20px)] ">
+                            <div className="m-auto w-[calc(100vw-40px)] px-2.5 md:ml-[calc(20vw+5px)] md:w-[calc(80vw-20px)] ">
                                 {suggestions.map((suggestion: Suggestion) => {
                                     const style = suggestion.active
                                         ? { backgroundColor: '#42a5f5', cursor: 'pointer' }
                                         : { backgroundColor: '#ffffff', cursor: 'pointer' };
                                     const suggestionItemProps: ReturnType<typeof getSuggestionItemProps> = getSuggestionItemProps(
                                         suggestion,
-                                        'w-full h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
+                                        'h-8 px-2.5 py-1.5 text-secondary_dark bg-primary rounded-b-md border-none font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
                                     );
                                     return (
                                         <div
-                                            className="h-8 w-full overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary text-secondary_dark last:rounded-b-md hover:bg-secondary_dark hover:text-primary"
+                                            className="h-8 overflow-hidden overflow-ellipsis whitespace-nowrap bg-primary text-secondary_dark last:rounded-b-md hover:bg-secondary_dark hover:text-primary"
                                             {...suggestionItemProps}
                                         >
                                             {suggestion.description}
