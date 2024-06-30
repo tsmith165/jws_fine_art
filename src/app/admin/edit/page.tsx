@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { SignedIn } from '@clerk/nextjs';
 
 import { fetchFirstPieceId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 
@@ -72,11 +73,13 @@ export default async function Page({ params, searchParams }: PageProps) {
     const type = searchParams?.type || 'gallery';
 
     return (
-        <PageLayout page={`/edit/${firstId}`}>
-            <Suspense fallback={<LoadingSpinner page="Edit Details" />}>
-                <Edit pieceDataPromise={pieceDataPromise} current_id={firstId} />
-            </Suspense>
-        </PageLayout>
+        <SignedIn>
+            <PageLayout page={`/edit/${firstId}`}>
+                <Suspense fallback={<LoadingSpinner page="Edit Details" />}>
+                    <Edit pieceDataPromise={pieceDataPromise} current_id={firstId} />
+                </Suspense>
+            </PageLayout>
+        </SignedIn>
     );
 }
 

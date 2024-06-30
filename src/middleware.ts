@@ -52,5 +52,12 @@ export default authMiddleware({
 });
 
 export const config = {
-    matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/((?!.+\\.[\\w]+$|_next|api/checkout/webhook).*)', '/', '/(api|trpc)(.*)'],
+    matcher: [
+        '/admin/tools',
+        '/admin/:path*',
+        '/((?!.+\\.[\\w]+$|_next).*)',
+        '/((?!.+\\.[\\w]+$|_next|api/checkout/webhook).*)',
+        '/',
+        '/(api|trpc)(.*)',
+    ],
 };
