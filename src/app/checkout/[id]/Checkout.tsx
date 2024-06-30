@@ -33,7 +33,7 @@ const Checkout: React.FC<CheckoutProps> = ({ piece_list, current_id, most_recent
                         width={current_piece.width}
                         height={current_piece.height}
                         quality={100}
-                        className="h-auto w-full rounded-md bg-stone-600 object-contain p-1"
+                        className="h-full w-auto rounded-md bg-stone-600 object-contain p-1"
                     />
                 </div>
                 <div className="flex h-full w-fit items-center justify-center rounded-lg text-white shadow-lg md:justify-start">
