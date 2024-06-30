@@ -39,10 +39,10 @@ const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
             );
         });
 
-        if (ADD_SIGN_IN_OUT_BUTTON) {
-            if (!isSignedIn || user == null || !user.publicMetadata || !user.publicMetadata.role) {
-                menu_items.push(<MenuOverlaySignOutButton />);
-            } else {
+        if (!isSignedIn || user == null || !user.publicMetadata || !user.publicMetadata.role) {
+            menu_items.push(<MenuOverlaySignOutButton />);
+        } else {
+            if (ADD_SIGN_IN_OUT_BUTTON) {
                 menu_items.push(
                     <MenuOverlayButton
                         key={'sign_in'}
@@ -54,7 +54,6 @@ const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
                 );
             }
         }
-
         return menu_items;
     };
 
