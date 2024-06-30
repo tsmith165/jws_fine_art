@@ -44,7 +44,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         <PageLayout page={`/checkout/cancel/${passed_o_id}`}>
             <div className="flex h-full w-full overflow-y-auto bg-stone-900 p-4">
                 <div className="flex h-fit w-full flex-col items-center justify-center space-y-4 md:h-full md:flex-row md:space-x-4 md:space-y-0">
-                    <div className="flex h-full w-full flex-grow items-center justify-center rounded-md md:h-auto">
+                    <div className="flex h-full w-auto items-center justify-center rounded-md ">
                         {current_piece && (
                             <Image
                                 src={current_piece.image_path}
@@ -56,21 +56,23 @@ export default async function Page({ params }: { params: { id: string } }) {
                             />
                         )}
                     </div>
-                    <div className="flex h-full w-fit items-center justify-center rounded-lg text-white shadow-lg md:w-2/3 md:justify-start">
-                        <h1 className="mb-4 w-full py-2 text-center text-2xl font-bold text-primary">
-                            {current_piece ? `"${current_piece.title}"` : ''}
-                        </h1>
-                        <div className="w-full px-4 text-left">
-                            <p className="mb-2 font-sans text-lg font-bold text-stone-300">Purchase Successful. Thank you!</p>
-                            <p className="mb-2 font-sans text-lg font-bold text-stone-300">
-                                You will receive an email shortly with your receipt and shipping information.
-                            </p>
-                            <p className="font-sans text-stone-300">
-                                If you have any questions, feel free to reach out at
-                                <a className="text-blue-400 hover:text-blue-300" href={`mailto:${PROJECT_CONSTANTS.CONTACT_EMAIL}`}>
-                                    {` ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}
-                                </a>
-                            </p>
+                    <div className="flex h-full w-fit items-center justify-center rounded-lg text-white shadow-lg md:justify-start ">
+                        <div className="flex flex-col items-center justify-center space-y-2">
+                            <h1 className="w-full text-center text-2xl font-bold text-primary">
+                                {current_piece ? `"${current_piece.title}"` : ''}
+                            </h1>
+                            <div className="flex w-full flex-col space-y-2 px-4 text-left">
+                                <p className="font-sans text-lg font-bold text-stone-300">Purchase Successful. Thank you!</p>
+                                <p className="font-sans text-lg font-bold text-stone-300">
+                                    You will receive an email shortly with your receipt and shipping information.
+                                </p>
+                                <p className="font-sans text-stone-300">
+                                    If you have any questions, feel free to reach out at
+                                    <a className="text-blue-400 hover:text-blue-300" href={`mailto:${PROJECT_CONSTANTS.CONTACT_EMAIL}`}>
+                                        {` ${PROJECT_CONSTANTS.CONTACT_EMAIL}`}
+                                    </a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -6,14 +6,18 @@ interface StripeBrandedButtonProps {
     url: string;
     price: string;
     text: string;
+    className?: string;
 }
 
-const StripeBrandedButton: React.FC<StripeBrandedButtonProps> = ({ url, price, text }) => {
+const StripeBrandedButton: React.FC<StripeBrandedButtonProps> = ({ url, price, text, className }) => {
+    className = className || '';
     if (url === 'submit') {
         return (
             <button type="submit" className="flex items-center space-x-1.5">
                 <div className="group flex items-center rounded-lg bg-primary pr-2 font-bold hover:bg-secondary_dark">
-                    <div className="flex items-center rounded-l-lg bg-secondary_dark p-1 px-2 text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900">
+                    <div
+                        className={`flex items-center justify-center rounded-l-lg bg-secondary_dark p-1 px-2 text-center text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900 ${className}`}
+                    >
                         {`$${price}`}
                     </div>
                     <div className="flex p-1 pl-2">
@@ -28,7 +32,9 @@ const StripeBrandedButton: React.FC<StripeBrandedButtonProps> = ({ url, price, t
         <div className="flex items-center space-x-2">
             <Link href={url} prefetch={false}>
                 <div className="group flex items-center rounded-lg bg-primary pr-2 font-bold hover:bg-secondary_dark">
-                    <div className="flex items-center rounded-l-lg bg-secondary_dark p-1 px-2 text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900">
+                    <div
+                        className={`flex items-center justify-center rounded-l-lg bg-secondary_dark p-1 px-2 text-center text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900 ${className}`}
+                    >
                         {`$${price}`}
                     </div>
                     <div className="flex p-1 pl-2">

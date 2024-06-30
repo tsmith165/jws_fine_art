@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
 import { FaPlay, FaPause } from 'react-icons/fa';
@@ -57,6 +57,10 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         {imageList.map((image, index) =>
                             index === currentImageIndex ? (
                                 <motion.img
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: imageLoadStates[index] ? 1 : 0 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
                                     key={`selected-${index}`}
                                     src={image.src}
                                     alt={selectedPiece.title}
@@ -67,6 +71,10 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                                 />
                             ) : (
                                 <motion.img
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: imageLoadStates[index] ? 1 : 0 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
                                     key={`selected-${index}`}
                                     src={image.src}
                                     alt={selectedPiece.title}

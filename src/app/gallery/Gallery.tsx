@@ -147,6 +147,13 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
+    const handleImageLoad = () => {
+        setImageLoadStates((prevLoadStates) => ({
+            ...prevLoadStates,
+            [currentImageIndex]: true,
+        }));
+    };
+
     const handleNext = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
     };
@@ -157,10 +164,6 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     const togglePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
-    };
-
-    const handleImageLoad = () => {
-        setImageLoadStates((prev) => ({ ...prev, [currentImageIndex]: true }));
     };
 
     if (!isMasonryLoaded) {
