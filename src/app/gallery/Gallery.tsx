@@ -11,6 +11,7 @@ import FilterMenu from './FilterMenu';
 import FullScreenView from './FullScreenView';
 import SelectedPieceView from './SelectedPieceView';
 import GalleryPiece from './GalleryPiece';
+import { motion } from 'framer-motion';
 
 interface GalleryPieceProps {
     piece: PiecesWithImages & { index: number };
@@ -159,7 +160,13 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
 
     return (
         <>
-            <div className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-800`} onClick={gallery_clicked}>
+            <motion.div
+                className={`flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-stone-800`}
+                onClick={gallery_clicked}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 2 }}
+            >
                 {selectedPiece && (
                     <SelectedPieceView
                         selectedPiece={selectedPiece}
@@ -191,7 +198,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
                         {galleryPieces}
                     </Masonry>
                 </div>
-            </div>
+            </motion.div>
             <FilterMenu />
             {fullScreenImage && selectedPiece && (
                 <FullScreenView
