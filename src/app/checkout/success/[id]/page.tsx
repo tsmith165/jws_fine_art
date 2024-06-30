@@ -52,7 +52,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                 width={current_piece.width}
                                 height={current_piece.height}
                                 quality={100}
-                                className="h-full w-full rounded-md bg-stone-600 object-contain p-1"
+                                className="h-auto w-full rounded-md bg-stone-600 object-contain p-1"
                             />
                         )}
                     </div>
