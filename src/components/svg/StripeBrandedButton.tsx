@@ -16,14 +16,14 @@ const StripeBrandedButton: React.FC<StripeBrandedButtonProps> = ({ url, price, t
             <button type="submit" className="flex items-center space-x-1.5">
                 <div className="group flex items-center rounded-lg bg-primary pr-2 font-bold hover:bg-secondary_dark">
                     <div
-                        className={`flex items-center justify-center rounded-l-lg bg-secondary_dark p-1 px-2 text-center text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900 ${className}`}
+                        className={`flex items-center justify-center rounded-l-lg bg-secondary_dark p-1 px-2 text-center font-sans text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900 ${className}`}
                     >
                         {`$${price}`}
                     </div>
                     <div className="flex p-1 pl-2">
-                        <StripeSVG svg_className="h-6 w-auto" path_className="fill-stone-900 group-hover:fill-primary" />
+                        <StripeSVG svg_className="h-7 w-auto" path_className="fill-stone-900 group-hover:fill-primary" />
                     </div>
-                    <div className="flex p-1 pl-0 font-sans text-stone-900 group-hover:text-primary">{text}</div>
+                    <div className="flex p-1 pl-0 font-sans text-lg text-stone-900 group-hover:text-primary">{text}</div>
                 </div>
             </button>
         );
@@ -33,14 +33,14 @@ const StripeBrandedButton: React.FC<StripeBrandedButtonProps> = ({ url, price, t
             <Link href={url} prefetch={false}>
                 <div className="group flex items-center rounded-lg bg-primary pr-2 font-bold hover:bg-secondary_dark">
                     <div
-                        className={`flex items-center justify-center rounded-l-lg bg-secondary_dark p-1 px-2 text-center text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900 ${className}`}
+                        className={`flex items-center justify-center rounded-l-lg bg-secondary_dark p-1 px-2 text-center font-sans text-lg text-primary group-hover:bg-primary group-hover:font-bold group-hover:text-stone-900 ${className}`}
                     >
                         {`$${price}`}
                     </div>
                     <div className="flex p-1 pl-2">
-                        <StripeSVG svg_className="h-6 w-auto" path_className="fill-stone-900 group-hover:fill-primary" />
+                        <StripeSVG svg_className="h-7 w-auto" path_className="fill-stone-900 group-hover:fill-primary" />
                     </div>
-                    <div className="flex p-1 pl-0 font-sans text-stone-900 group-hover:text-primary">{text}</div>
+                    <div className="flex p-1 pl-0 font-sans text-lg text-stone-900 group-hover:text-primary">{text}</div>
                 </div>
             </Link>
         </div>
