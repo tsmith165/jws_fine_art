@@ -29,28 +29,29 @@ const MenuOverlay = ({ currentPage }: { currentPage: string }) => {
                 isActive = currentPage.includes(urlEndpoint);
             }
             return (
-                <MenuOverlayButton
-                    key={className}
-                    id={className}
-                    menu_name={menuItemString}
-                    url_endpoint={urlEndpoint}
-                    isActive={isActive}
-                />
+                <div key={className}>
+                    <MenuOverlayButton id={className} menu_name={menuItemString} url_endpoint={urlEndpoint} isActive={isActive} />
+                </div>
             );
         });
 
         if (isSignedIn && user != null && user.publicMetadata && user.publicMetadata.role) {
-            menu_items.push(<MenuOverlaySignOutButton />);
+            menu_items.push(
+                <div key="sign_out_button">
+                    <MenuOverlaySignOutButton />
+                </div>,
+            );
         } else {
             if (ADD_SIGN_IN_OUT_BUTTON) {
                 menu_items.push(
-                    <MenuOverlayButton
-                        key={'sign_in'}
-                        id={'sign_in'}
-                        menu_name={'Sign In'}
-                        url_endpoint={'/signin'}
-                        isActive={currentPage.includes('/signin')}
-                    />,
+                    <div key="sign_in">
+                        <MenuOverlayButton
+                            id={'sign_in'}
+                            menu_name={'Sign In'}
+                            url_endpoint={'/signin'}
+                            isActive={currentPage.includes('/signin')}
+                        />
+                    </div>,
                 );
             }
         }

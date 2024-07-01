@@ -1,6 +1,10 @@
 import Stripe from 'stripe';
 import { eq, and, sql } from 'drizzle-orm';
 import { db, piecesTable, pendingTransactionsTable, verifiedTransactionsTable } from '@/db/db';
+import React from 'react';
+import { render } from '@react-email/render';
+import { sendEmail } from '@/utils/emails/resend_utils';
+import CheckoutSuccessEmail from '@/utils/emails/templates/checkoutSuccessEmail';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
 
@@ -103,6 +107,22 @@ export async function POST(request: Request) {
                 .where(eq(piecesTable.id, parseInt(metadata.product_id, 10)));
 
             console.log('Set Sold Update Output:', updateOutput);
+
+            // Send email to user and admin
+            const checkoutSuccessEmailTemplate = React.createElement(CheckoutSuccessEmail, {
+                full_name: metadata.full_name,
+                piece_title: pendingTransactionData[0].piece_title,
+                address: pendingTransactionData[0].address,
+                price_paid: parseInt(metadata.price_id, 10),
+            });
+            const emailHtml = render(checkoutSuccessEmailTemplate);
+
+            await sendEmail({
+                from: 'contact@jwsfineart.com',
+                to: [pendingTransactionData[0].email, 'jwsfineart@gmail.com'],
+                subject: 'Purchase Confirmation - JWS Fine Art Gallery',
+                html: emailHtml,
+            });
         } else if (event.type === 'payment_intent.payment_failed') {
             // Handle unsuccessful payment
             console.log('Payment Unsuccessful. Handle unverified transaction (no current handling)...');
