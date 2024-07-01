@@ -140,11 +140,17 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                     >
                         {imageList.length > 1 && (
                             <>
-                                <IoIosSpeedometer
-                                    className={`${
-                                        showSlider ? 'fill-primary' : 'fill-stone-600'
-                                    } relative z-10 h-[24px] w-[24px] cursor-pointer fill-stone-600 hover:fill-primary`}
-                                />
+                                {showSlider ? (
+                                    <div className="mr-0.5 w-6 text-center leading-6 text-primary">
+                                        {speed / 1000}s
+                                    </div>
+                                ) : (
+                                    <IoIosSpeedometer
+                                        className={`${
+                                            showSlider ? 'fill-primary' : 'fill-stone-600'
+                                        } relative z-10 h-[24px] w-[24px] cursor-pointer fill-stone-600 hover:fill-primary`}
+                                    />
+                                )}
                                 {showSlider && (
                                     <div className="z-0 flex h-[24px] transform items-center justify-center rounded-md px-2">
                                         <div className="jutify-center flex items-center justify-center">
@@ -157,9 +163,6 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                                                 onChange={handleSpeedChange}
                                                 className="w-16 cursor-pointer appearance-none rounded-lg bg-stone-600 xs:w-20 md:w-24 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-lg [&::-webkit-slider-runnable-track]:bg-stone-600 [&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
                                             />
-                                            <div className="ml-2 hidden w-6 text-center leading-6 text-primary xs:flex">
-                                                {speed / 1000}s
-                                            </div>
                                         </div>
                                     </div>
                                 )}
