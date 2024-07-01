@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import React, { Suspense } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import PageLayout from '@/components/layout/PageLayout';
 import SlideshowPage from '@/app/slideshow/SlideshowPage';
 

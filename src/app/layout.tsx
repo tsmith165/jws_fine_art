@@ -6,7 +6,11 @@ import { dark } from '@clerk/themes';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { PHProvider } from './providers'
-import PostHogPageView from './PostHogPageView';
+import dynamic from 'next/dynamic'
+
+const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
+  ssr: false,
+})
 
 import { cinzel } from './fonts';
 
@@ -21,7 +25,6 @@ export default function RootLayout({ children, params }: RootLayoutProps) {
             <PHProvider>
                 <body className="font-cinzel">
                     <SpeedInsights />
-                    <PostHogPageView />
                     <ClerkProvider appearance={{ baseTheme: dark }}>{children}</ClerkProvider>
                 </body>
             </PHProvider>
