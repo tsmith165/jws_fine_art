@@ -7,8 +7,9 @@ import { saveAs } from 'file-saver';
 import ExcelJS from 'exceljs';
 
 import { sendTestCheckoutEmail } from '@/app/admin/tools/actions';
-
 import { fetchPieces } from '@/app/actions';
+
+import InputTextbox from '@/components/inputs/InputTextbox';
 
 const Tools: React.FC = () => {
     const [testEmailData, setTestEmailData] = useState({
@@ -47,7 +48,7 @@ const Tools: React.FC = () => {
     const handleTestEmailChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setTestEmailData((prevData) => ({
             ...prevData,
-            [e.target.name]: e.target.name === 'pricePaid' ? parseFloat(e.target.value) : e.target.value,
+            [e.target.name]: e.target.name === 'pricePaid' ? e.target.value === '' ? 0 : parseFloat(e.target.value) : e.target.value,
         }));
     };
 
@@ -80,46 +81,43 @@ const Tools: React.FC = () => {
                 <div className="rounded-t-md bg-secondary p-4 font-lato text-lg text-primary">Test Checkout Email</div>
                 <div className="space-y-2 rounded-b-md bg-primary p-4">
                     <div className="h-fit space-y-2">
-                        <input
-                            type="email"
-                            name="to"
+                        <InputTextbox
+                            idName="to"
+                            name="To"
                             value={testEmailData.to}
-                            onChange={handleTestEmailChange}
                             placeholder="Email to send to"
-                            className="w-full rounded-md border-none bg-secondary_dark px-4 py-2 font-lato text-white"
+                            onChange={handleTestEmailChange}
                         />
-                        <input
-                            type="text"
-                            name="pieceTitle"
+                        <InputTextbox
+                            idName="pieceTitle"
+                            name="Piece Title"
                             value={testEmailData.pieceTitle}
-                            onChange={handleTestEmailChange}
                             placeholder="Piece Title"
-                            className="w-full rounded-md border-none bg-secondary_dark px-4 py-2 font-lato text-white"
+                            onChange={handleTestEmailChange}
                         />
-                        <input
-                            type="text"
-                            name="fullName"
+                        <InputTextbox
+                            idName="fullName"
+                            name="Full Name"
                             value={testEmailData.fullName}
-                            onChange={handleTestEmailChange}
                             placeholder="Full Name"
-                            className="w-full rounded-md border-none bg-secondary_dark px-4 py-2 font-lato text-white"
+                            onChange={handleTestEmailChange}
                         />
-                        <input
-                            name="address"
+                        <InputTextbox
+                            idName="address"
+                            name="Address"
                             value={testEmailData.address}
-                            onChange={handleTestEmailChange}
                             placeholder="Address"
-                            className="w-full rounded-md border-none bg-secondary_dark px-4 py-2 font-lato text-white"
-                        />
-                        <input
-                            type="number"
-                            name="pricePaid"
-                            value={testEmailData.pricePaid}
                             onChange={handleTestEmailChange}
+                        />
+                        <InputTextbox
+                            idName="pricePaid"
+                            name="Price Paid"
+                            value={testEmailData.pricePaid.toString()}
                             placeholder="Price Paid"
-                            className="w-full rounded-md border-none bg-secondary_dark px-4 py-2 font-lato text-white"
+                            onChange={handleTestEmailChange}
                         />
                     </div>
+
                     <div className="mx-auto flex w-full flex-row items-center justify-center">
                         <button
                             onClick={handleSendTestEmail}
