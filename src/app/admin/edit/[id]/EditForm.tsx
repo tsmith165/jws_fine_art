@@ -136,30 +136,30 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 {/* Row 6.) Instagram URL Textbox / Price Textbox */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="instagram" value={formData.instagram} onChange={handleChange} />
+                        <InputTextbox idName="instagram" name="Instagram" value={formData.instagram} onChange={handleChange} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="price" value={formData.price.toString()} onChange={handleChange} />
+                        <InputTextbox idName="price" name="Price" value={formData.price.toString()} onChange={handleChange} />
                     </div>
                 </div>
 
                 {/* Row 7.) Real Width / Height Text Box */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="real_width" value={formData.real_width.toString()} onChange={handleChange} />
+                        <InputTextbox idName="real_width" name="Width (in)" value={formData.real_width.toString()} onChange={handleChange} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="real_height" value={formData.real_height.toString()} onChange={handleChange} />
+                        <InputTextbox idName="real_height" name="Height (in)" value={formData.real_height.toString()} onChange={handleChange} />
                     </div>
                 </div>
 
                 {/* Row 8.) Width / Height Text Box */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="width" value={formData.width.toString()} onChange={handleChange} />
+                        <InputTextbox idName="width" name="Width (px)" value={formData.width.toString()} onChange={handleChange} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <InputTextbox name="height" value={formData.height.toString()} onChange={handleChange} />
+                        <InputTextbox idName="height" name="Height (PX)" value={formData.height.toString()} onChange={handleChange} />
                     </div>
                 </div>
 

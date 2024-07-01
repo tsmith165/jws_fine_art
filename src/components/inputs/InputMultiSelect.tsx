@@ -30,15 +30,15 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name,
 
     return (
         <div className="m-0 flex w-full p-0">
-            <div className="flex min-w-28 max-w-28 items-center justify-center rounded-l-md bg-secondary_dark px-2.5 py-1.5 text-secondary_light">
-                <div className="text-primary">{formatted_name}</div>
+            <div className="flex min-w-32 max-w-32 items-center justify-center rounded-l-md bg-secondary_dark px-2.5 py-1.5">
+                <div className="text-stone-400 font-semibold">{formatted_name}</div>
             </div>
             <Select
                 defaultValue={defaultValue}
                 isMulti={true}
                 id={id}
                 name={id}
-                className="h-full flex-grow rounded-r-md border-none bg-primary text-sm font-bold text-secondary_dark"
+                className="h-full flex-grow rounded-r-md border-none bg-stone-400 text-sm font-bold text-secondary_dark"
                 classNamePrefix="select"
                 components={{
                     DropdownIndicator,
@@ -47,15 +47,12 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name,
                     control: (baseStyles, state) => ({
                         ...baseStyles,
                         borderColor: '',
-                        backgroundColor: '#54786d',
+                        backgroundColor: '#a8a29e',
                     }),
                     multiValue: (styles) => ({
                         ...styles,
-                        backgroundColor: '#616c63',
-                    }),
-                    option: (provided, state) => ({
-                        ...provided,
-                        color: '#54786d',
+                        backgroundColor: '#365349',
+                        color: '#a8a29e',
                     }),
                 }}
                 options={react_select_options}
