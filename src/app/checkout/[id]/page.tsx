@@ -28,18 +28,19 @@ export const metadata: Metadata = {
     },
 };
 
-import { fetchPieces } from '@/app/actions';
-import { Pieces } from '@/db/schema';
+import { fetchPieceById } from '@/app/actions';
+import { PiecesWithImages } from '@/db/schema';
 
 import PageLayout from '@/components/layout/PageLayout';
 import Checkout from '@/app/checkout/[id]/Checkout';
 
 export default async function Page(props: { params: { id: string } }) {
-    const piece_list: Pieces[] = await fetchPieces();
+    const current_id = parseInt(props.params.id);
+    const current_piece: PiecesWithImages = await fetchPieceById(current_id);
 
     return (
         <PageLayout page={`/checkout/${props.params.id}`}>
-            <Checkout piece_list={piece_list} current_id={props.params.id} />
+            <Checkout current_piece={current_piece} current_id={current_id} />
         </PageLayout>
     );
 }

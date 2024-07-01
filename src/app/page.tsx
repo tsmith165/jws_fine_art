@@ -3,8 +3,6 @@ import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import HomepagePage from '@/app/HomepagePage';
 
-import { captureEvent, captureDistictId } from '@/utils/posthog';
-
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Home',
     description: 'Jill Weeks Smith Home Page',
@@ -35,8 +33,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const distinctId = captureDistictId();
-    captureEvent('Home page was loaded', { distinctId });
 
     return (
         <PageLayout page="/">

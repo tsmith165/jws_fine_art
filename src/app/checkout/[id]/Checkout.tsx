@@ -3,26 +3,15 @@
 import React from 'react';
 import CheckoutForm from './CheckoutForm';
 import { motion } from 'framer-motion';
+import { PiecesWithImages } from '@/db/schema'
 
 interface CheckoutProps {
-    piece_list: any[];
-    current_id: string;
+    current_piece: PiecesWithImages;
+    current_id: number;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ piece_list, current_id }) => {
-    const passed_o_id = current_id;
-    console.log(`LOADING CHECKOUT PAGE - Piece ID: ${passed_o_id}`);
-
-    const num_pieces = piece_list.length;
-    let piece_position = 0;
-
-    for (let i = 0; i < piece_list.length; i++) {
-        if (piece_list[i]['o_id'].toString() === passed_o_id.toString()) {
-            piece_position = i;
-        }
-    }
-
-    const current_piece = piece_list[piece_position];
+const Checkout: React.FC<CheckoutProps> = ({ current_piece, current_id }) => {
+    console.log(`LOADING CHECKOUT PAGE - Piece ID: ${current_id}`);
 
     return (
         <div className="flex h-full w-full overflow-y-auto bg-stone-900 p-4">

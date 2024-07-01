@@ -3,26 +3,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import PROJECT_CONSTANTS from '@/lib/constants';
+import { PiecesWithImages } from '@/db/schema';
 
 interface SuccessProps {
-    piece_list: any[];
-    current_id: string;
+    current_piece: PiecesWithImages;
+    current_id: number;
 }
 
-const Success: React.FC<SuccessProps> = ({ piece_list, current_id }) => {
-    const passed_o_id = current_id;
-
-    const num_pieces = piece_list.length;
-    let piece_position = 0;
-
-    for (let i = 0; i < piece_list.length; i++) {
-        if (piece_list[i]['o_id'].toString() === passed_o_id.toString()) {
-            piece_position = i;
-        }
-    }
-
-    const current_piece = piece_list[piece_position];
-
+const Success: React.FC<SuccessProps> = ({ current_piece, current_id }) => {
+    console.log(`LOADING SUCCESS PAGE - Piece ID: ${current_id}`);
     return (
         <div className="flex h-fit w-full flex-col items-center justify-center space-y-4 md:h-full md:flex-row md:space-x-4 md:space-y-0">
             <div className="flex h-full w-auto items-center justify-center rounded-md ">

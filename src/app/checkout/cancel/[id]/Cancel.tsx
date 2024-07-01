@@ -3,25 +3,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import PROJECT_CONSTANTS from '@/lib/constants';
+import { PiecesWithImages } from '@/db/schema';
 
 interface CancelProps {
-    piece_list: any[];
-    current_id: string;
+    current_piece: PiecesWithImages;
+    current_id: number;
 }
 
-const Cancel: React.FC<CancelProps> = ({ piece_list, current_id }) => {
-    const passed_o_id = current_id;
-
-    const num_pieces = piece_list.length;
-    let piece_position = 0;
-
-    for (let i = 0; i < piece_list.length; i++) {
-        if (piece_list[i]['o_id'].toString() === passed_o_id.toString()) {
-            piece_position = i;
-        }
-    }
-
-    const current_piece = piece_list[piece_position];
+const Cancel: React.FC<CancelProps> = ({ current_piece, current_id }) => {
+    console.log(`LOADING CANCEL PAGE - Piece ID: ${current_id}`);
 
     return (
         <div className="flex h-full w-full overflow-y-auto bg-stone-900 p-4">
