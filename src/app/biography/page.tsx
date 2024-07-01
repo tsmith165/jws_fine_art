@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
     return (
-        <PageLayout page="/">
+        <PageLayout page="/biography">
             <Suspense fallback={<BiographySkeleton />}>
                 <BiographyPage />
             </Suspense>
