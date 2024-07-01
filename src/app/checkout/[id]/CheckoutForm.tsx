@@ -90,13 +90,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
                 <input type="hidden" name="piece_id" value={current_piece.id} />
 
                 <div className="flex flex-col space-y-2">
-                    <InputTextbox name="full_name" placeholder="Enter Full Name..." />
-                    <InputTextbox name="phone" placeholder="Enter Phone Number..." />
-                    <InputTextbox name="email" placeholder="Enter Email Address..." />
+                    <InputTextbox idName="full_name" name="full_name" placeholder="Enter Full Name..." />
+                    <InputTextbox idName="phone" name="phone" placeholder="Enter Phone Number..." />
+                    <InputTextbox idName="email" name="email" placeholder="Enter Email Address..." />
                     {isLoaded ? (
                         <InputAutoComplete name="address" value={address} onChange={handleAddressChange} />
                     ) : (
-                        <InputTextbox name="address" placeholder="Enter Address..." />
+                        <InputTextbox idName='address' name="address" placeholder="Enter Address..." />
                     )}
                 </div>
 

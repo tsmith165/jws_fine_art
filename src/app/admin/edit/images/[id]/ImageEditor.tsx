@@ -91,8 +91,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                         ]}
                         onChange={handleSelectChange}
                     />
-                    <InputTextbox name="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                    <InputTextbox name="Image Path" value={imageUrl} />
+                    <InputTextbox idName="title" name="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    <InputTextbox idName="image_path" name="Image Path" value={imageUrl} />
                     <button
                         type="button"
                         onClick={handleSubmit}
