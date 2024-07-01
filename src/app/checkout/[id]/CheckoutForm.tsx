@@ -104,7 +104,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
                     <StripeBrandedButton
                         url={'submit'}
                         price={isInternational ? current_piece.price + INTERNATIONAL_SHIPPING_RATE : current_piece.price}
-                        text="Purchase"
+                        text="purchase"
                     />
                     <div className="mt-2">
                         <div className="font-sans text-stone-300">

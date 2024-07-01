@@ -22,3 +22,18 @@ export function captureEvent(event: string, properties?: Record<string, any>) {
     properties,
   });
 }
+
+export async function captureDistictId() {
+  const hostname = process.env.NODE_ENV === 'production' ? 'https://www.capitalcitystaging.com' : 'http://localhost:3000';
+  const apiUrl = `${hostname}/api/distinct-id`;
+  const response = await fetch(apiUrl);
+  
+  let distinctId = '';
+  try {
+      const data = await response.json();
+      distinctId = data.distinctId || '';
+  } catch (error) {
+      console.error('Error parsing JSON:', error);
+  }
+  return distinctId;
+}
