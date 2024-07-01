@@ -165,12 +165,12 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
 
                 {/* Row 9.) Comments Text Area */}
                 <div className="flex h-fit w-full">
-                    <InputTextArea name="comments" value={formData.comments} rows={2} onChange={handleChange} />
+                    <InputTextArea idName="comments" name="Comments" value={formData.comments} rows={2} onChange={handleChange} />
                 </div>
 
                 {/* Row 10.) Description Text Area */}
                 <div className="flex h-fit w-full">
-                    <InputTextArea name="description" value={formData.description} rows={5} onChange={handleChange} />
+                    <InputTextArea idName="description" name="Description" value={formData.description} rows={5} onChange={handleChange} />
                 </div>
 
                 <div className="flex flex-row items-center space-x-2">

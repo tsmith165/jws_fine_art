@@ -84,15 +84,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
 
     const submit_container = loader_container && <div className="mt-4">{loader_container}</div>;
 
-    return (
+    return ( 
         <div className="flex h-full w-full flex-col overflow-y-auto">
             <form onSubmit={handleStripePurchaseClick} className="flex flex-col">
                 <input type="hidden" name="piece_id" value={current_piece.id} />
 
                 <div className="flex flex-col space-y-2">
-                    <InputTextbox idName="full_name" name="full_name" placeholder="Enter Full Name..." />
-                    <InputTextbox idName="phone" name="phone" placeholder="Enter Phone Number..." />
-                    <InputTextbox idName="email" name="email" placeholder="Enter Email Address..." />
+                    <InputTextbox idName="full_name" name="Full Name" placeholder="Enter Full Name..." />
+                    <InputTextbox idName="phone" name="Phone" placeholder="Enter Phone Number..." />
+                    <InputTextbox idName="email" name="Email" placeholder="Enter Email Address..." />
                     {isLoaded ? (
                         <InputAutoComplete name="address" value={address} onChange={handleAddressChange} />
                     ) : (

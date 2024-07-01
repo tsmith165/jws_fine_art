@@ -70,7 +70,7 @@ const UploadButtonClient: React.FC<UploadButtonClientProps> = ({ onCreatePiece }
             <InputTextbox idName="image_path" name="Image Path" value={imageUrl} />
             <InputTextbox idName="px_width" name="Px Width" value={width.toString()} />
             <InputTextbox idName="px_height" name="Px Height" value={height.toString()} />
-            <InputTextbox idName="title" name="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <InputTextbox idName="itle" name="Ttle" value={title} onChange={(e) => setTitle(e.target.value)} />
             {imageUrl === '' || imageUrl === null ? null : width < 800 && height < 800 ? (
                 <div className="text-red-700">Warning: Image width and height are less than 800px.</div>
             ) : width < 800 ? (
