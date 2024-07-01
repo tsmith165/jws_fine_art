@@ -38,6 +38,8 @@
         "pg": "^8.11.5",
         "postcss": "^8.4.38",
         "postgres": "^3.4.4",
+        "posthog-js": "^1.140.0",
+        "posthog-node": "^4.0.1",
         "prettier-plugin-tailwindcss": "^0.5.13",
         "react": "^18.2.0",
         "react-datepicker": "^4.11.0",
@@ -57,14 +59,13 @@
         "uploadthing": "^6.10.1",
         "uuid": "^9.0.1",
         "vercel": "^24.0.1",
-        "zustand": "^4.5.2",
-        "posthog-js": "^1.140.0",
-        "posthog-node": "^4.0.1"
+        "zustand": "^4.5.2"
     },
     "devDependencies": {
         "@next/env": "^14.2.3",
         "@types/react-datepicker": "^6.2.0",
         "@types/react-places-autocomplete": "^7.2.14",
+        "@types/uuid": "^10.0.0",
         "drizzle-kit": "0.20.17",
         "prettier": "^3.0.3",
         "typescript": "^5.4.5"
