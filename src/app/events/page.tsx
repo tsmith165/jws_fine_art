@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import PageLayout from '@/components/layout/PageLayout';
 import Events from './events';
+import EventsBasic from './eventsBasic';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Events',
@@ -33,9 +34,19 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-    const isComingSoon = true; // Set this to true to display the coming soon text
+    const isComingSoon = false; // Set this to true to display the coming soon text
+    const isBasic = true;
 
-    return <PageLayout page="events">{isComingSoon ? <ComingSoon /> : <Events />}</PageLayout>;
+    let component_to_render = null;
+    if (isComingSoon) {
+        component_to_render = <ComingSoon />;
+    } else if (isBasic) {
+        component_to_render = <EventsBasic />;
+    } else {
+        component_to_render = <Events />;
+    }
+
+    return <PageLayout page="events">{component_to_render}</PageLayout>;
 }
 
 function ComingSoon() {
