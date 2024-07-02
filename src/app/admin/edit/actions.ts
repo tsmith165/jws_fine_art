@@ -201,10 +201,13 @@ interface NewPieceData {
     imagePath: string;
     width: number;
     height: number;
+    smallImagePath: string;
+    smallWidth: number;
+    smallHeight: number;
 }
 
 export async function createPiece(newPieceData: NewPieceData) {
-    const { title, imagePath, width, height } = newPieceData;
+    const { title, imagePath, width, height, smallImagePath, smallWidth, smallHeight } = newPieceData;
 
     const maxOId = await getMostRecentId();
     const newOId = maxOId ? maxOId + 1 : 1;
@@ -214,6 +217,9 @@ export async function createPiece(newPieceData: NewPieceData) {
         image_path: imagePath,
         width: width,
         height: height,
+        small_image_path: smallImagePath,
+        small_width: smallWidth,
+        small_height: smallHeight,
         description: '',
         piece_type: '',
         sold: false,
@@ -232,4 +238,23 @@ export async function createPiece(newPieceData: NewPieceData) {
 
     const newPiece = await db.insert(piecesTable).values(data).returning();
     return newPiece[0];
+}
+
+interface NewPieceData {
+    title: string;
+    imagePath: string;
+    width: number;
+    height: number;
+    smallImagePath: string;
+    smallWidth: number;
+    smallHeight: number;
+}
+
+import { redirect } from 'next/navigation';
+
+export async function handleCreatePiece(newPieceData: NewPieceData) {
+    console.log('Creating new piece:', newPieceData);
+    const newPiece = await createPiece(newPieceData);
+    revalidatePath('/edit');
+    redirect(`/edit/${newPiece.id}`);
 }
