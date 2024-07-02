@@ -184,7 +184,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                         Submit Changes
                     </button>
                     <Link
-                        href="/edit/new"
+                        href="/admin/edit/new"
                         className={
                             'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
@@ -193,7 +193,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                         Create New Piece
                     </Link>
                     <Link
-                        href={`/edit/images/${formData.o_id}`}
+                        href={`/admin/edit/images/${formData.o_id}`}
                         className={
                             'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'

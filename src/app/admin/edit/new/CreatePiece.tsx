@@ -1,23 +1,20 @@
+'use client';
+
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
 import UploadButtonClient from './UploadButtonClient';
-import { createPiece } from '../actions';
+import { handleCreatePiece } from '../actions';
 
 interface NewPieceData {
     title: string;
     imagePath: string;
     width: number;
     height: number;
+    smallImagePath: string;
+    smallWidth: number;
+    smallHeight: number;
 }
 
 export default function CreatePiece() {
-    async function handleCreatePiece(newPieceData: NewPieceData) {
-        'use server';
-        console.log('Creating new piece:', newPieceData);
-        const newPiece = await createPiece(newPieceData);
-        revalidatePath('/edit');
-        redirect(`/edit/${newPiece.id}`);
-    }
 
     return (
         <div className="flex h-full w-full flex-col items-center justify-center bg-secondary_dark">
@@ -26,7 +23,7 @@ export default function CreatePiece() {
                     Create New Piece
                 </div>
                 <div className="flex w-full flex-col items-center space-y-2 p-2">
-                    <UploadButtonClient onCreatePiece={handleCreatePiece} />
+                    <UploadButtonClient onCreatePiece={(data) => {handleCreatePiece(data);}} />
                 </div>
             </div>
         </div>
