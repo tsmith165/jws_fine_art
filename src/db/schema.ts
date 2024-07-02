@@ -10,6 +10,9 @@ export const piecesTable = pgTable('Pieces', {
     image_path: text('image_path').notNull(),
     width: integer('width').notNull(),
     height: integer('height').notNull(),
+    small_image_path: text('small_image_path'),
+    small_width: integer('small_width'),
+    small_height: integer('small_height'),
     price: integer('price').notNull(),
     sold: boolean('sold').default(false),
     available: boolean('available').default(true),
@@ -32,10 +35,13 @@ export const extraImagesTable = pgTable('ExtraImages', {
     piece_id: integer('piece_id')
         .notNull()
         .references(() => piecesTable.id),
+        title: text('title').default(''),
     image_path: text('image_path').notNull(),
-    title: text('title').default(''),
     width: integer('width').notNull(),
     height: integer('height').notNull(),
+    small_image_path: text('small_image_path'),
+    small_width: integer('small_width'),
+    small_height: integer('small_height'),
 });
 
 export type ExtraImages = InferSelectModel<typeof extraImagesTable>;
@@ -46,10 +52,13 @@ export const progressImagesTable = pgTable('ProgressImages', {
     piece_id: integer('piece_id')
         .notNull()
         .references(() => piecesTable.id),
-    image_path: text('image_path').notNull(),
     title: text('title').default(''),
+    image_path: text('image_path').notNull(),
     width: integer('width').notNull(),
     height: integer('height').notNull(),
+    small_image_path: text('small_image_path'),
+    small_width: integer('small_width'),
+    small_height: integer('small_height'),
 });
 
 export type ProgressImages = InferSelectModel<typeof progressImagesTable>;
