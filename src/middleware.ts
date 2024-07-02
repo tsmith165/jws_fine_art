@@ -18,23 +18,25 @@ const ignoredRoutes = [
     '/api/checkout/webhook',
     '/biography',
     '/contact',
-    '/api/uploadthing',
     '/events',
     '/faq',
+    // '/api/uploadthing',
 ];
 
 export default authMiddleware({
     ignoredRoutes,
     async afterAuth(auth, req, evt) {
         const sign_in_page = new URL('/signin', req.url);
-
         const { userId, isPublicRoute, getToken } = auth;
         const user = userId ? await clerkClient.users.getUser(userId) : null;
 
         // Check if the user agent matches the Google crawler
         const userAgent = req.headers.get('user-agent');
 
-        if (isPublicRoute) {
+        // Check if the request is for the Uploadthing route
+        const isUploadthingRoute = req.nextUrl.pathname === '/api/uploadthing';
+
+        if (isPublicRoute || isUploadthingRoute) {
             return NextResponse.next();
         }
 

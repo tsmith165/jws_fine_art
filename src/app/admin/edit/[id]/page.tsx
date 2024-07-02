@@ -43,18 +43,9 @@ async function fetchPieceData(id: number) {
     return { ...piece, next_id, last_id };
 }
 
-const pieceDataCache: { [key: number]: Promise<any> } = {};
-
-function usePieceData(id: number) {
-    if (!pieceDataCache[id]) {
-        pieceDataCache[id] = fetchPieceData(id);
-    }
-    return pieceDataCache[id];
-}
-
 export default function Page({ params }: { params: { id: string } }) {
     const id = parseInt(params.id, 10);
-    const pieceDataPromise = usePieceData(id);
+    const pieceDataPromise = fetchPieceData(id);
 
     return (
         <PageLayout page={`/edit/${id}`}>

@@ -146,10 +146,20 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                 {/* Row 7.) Real Width / Height Text Box */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <div className="w-full md:w-1/2">
-                        <InputTextbox idName="real_width" name="Width (in)" value={formData.real_width.toString()} onChange={handleChange} />
+                        <InputTextbox
+                            idName="real_width"
+                            name="Width (in)"
+                            value={formData.real_width.toString()}
+                            onChange={handleChange}
+                        />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <InputTextbox idName="real_height" name="Height (in)" value={formData.real_height.toString()} onChange={handleChange} />
+                        <InputTextbox
+                            idName="real_height"
+                            name="Height (in)"
+                            value={formData.real_height.toString()}
+                            onChange={handleChange}
+                        />
                     </div>
                 </div>
 
@@ -177,7 +187,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     <button
                         type="submit"
                         className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 text-center font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
                         }
                     >
@@ -186,16 +196,16 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     <Link
                         href="/admin/edit/new"
                         className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 text-center font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
                         }
                     >
                         Create New Piece
                     </Link>
                     <Link
-                        href={`/admin/edit/images/${formData.o_id}`}
+                        href={`/admin/edit/images/${formData.id}`}
                         className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 font-bold text-secondary_dark ' +
+                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 text-center font-bold text-secondary_dark ' +
                             'hover:border-primary hover:bg-secondary_dark hover:text-primary'
                         }
                     >

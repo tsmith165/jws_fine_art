@@ -123,8 +123,6 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
             <GalleryPiece key={`piece-${piece.id}`} piece={{ ...piece, index }} handlePieceClick={handlePieceClick} />
         ));
 
-        console.log('New Gallery Pieces:', newGalleryPieces);
-
         setGalleryPieces((prevGalleryPieces) => [...prevGalleryPieces, ...newGalleryPieces]);
     };
 

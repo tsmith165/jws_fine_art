@@ -5,16 +5,18 @@ import { clerkClient } from '@clerk/nextjs/server';
 const f = createUploadthing();
 
 export const ourFileRouter = {
-    imageUploader: f({ image: { maxFileSize: '4MB' } })
+    imageUploader: f({ image: { maxFileSize: '4MB', maxFileCount: 2 } })
         .middleware(async ({ req }) => {
             // Get the authenticated user from Clerk
             const { userId } = getAuth(req);
+            console.log('Middleware: User ID:', userId);
 
-            // If the user is not authenticated, throw an error
+            // If the user is not authenticated, allow the request to proceed (for webhook callback)
             if (!userId) {
-                console.log('User is not authenticated. Cannot upload image.');
-                throw new Error('Unauthorized');
+                console.log('User is not authenticated. Allowing request to proceed.');
+                return {};
             }
+
             console.log('User is authenticated. Continuing...');
 
             // Get the user's role from Clerk
@@ -26,6 +28,7 @@ export const ourFileRouter = {
                 console.log('User does not have the "ADMIN" role. Cannot upload image.');
                 throw new Error('Forbidden');
             }
+
             console.log('User has the "ADMIN" role. Continuing...');
 
             // Return the authenticated user ID

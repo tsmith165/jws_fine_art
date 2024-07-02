@@ -87,24 +87,32 @@ export async function onSubmitEditForm(data: SubmitFormData) {
             comments: data.comments || '',
         });
     }
-    revalidatePath(`/edit/${data.piece_id}`);
+    revalidatePath(`/admin/edit/${data.piece_id}`);
 }
 
 interface UploadFormData {
     piece_id: string;
     image_path: string;
-    title: string | null; // Make title nullable
-    piece_type: string;
     width: string;
     height: string;
+    small_image_path: string;
+    small_width: string;
+    small_height: string;
+    title: string | null;
+    piece_type: string;
 }
 
 export async function handleImageUpload(data: UploadFormData) {
     console.log('Uploading Image...');
     const pieceId = parseInt(data.piece_id?.toString() || '0');
     const imageUrl = data.image_path?.toString() || '';
+    const width = parseInt(data.width?.toString() || '0');
+    const height = parseInt(data.height?.toString() || '0');
     const title = data.title;
     const imageType = data.piece_type?.toString() || '';
+    const smallImageUrl = data.small_image_path?.toString() || '';
+    const smallWidth = parseInt(data.small_width?.toString() || '0');
+    const smallHeight = parseInt(data.small_height?.toString() || '0');
 
     const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, pieceId)).limit(1);
     if (!piece.length) {
@@ -113,33 +121,47 @@ export async function handleImageUpload(data: UploadFormData) {
     }
 
     if (imageType === 'main') {
-        // Modify the current main image
-        await db.update(piecesTable).set({ image_path: imageUrl }).where(eq(piecesTable.id, pieceId));
+        console.log('Modifying main image');
+        await db
+            .update(piecesTable)
+            .set({
+                image_path: imageUrl,
+                width: width,
+                height: height,
+                small_image_path: smallImageUrl,
+                small_width: smallWidth,
+                small_height: smallHeight,
+            })
+            .where(eq(piecesTable.id, pieceId));
     } else {
-        // Add a new extra or progress image
-        const width = parseInt(data.width?.toString() || '0');
-        const height = parseInt(data.height?.toString() || '0');
-
         if (imageType === 'extra') {
+            console.log('Adding extra image');
             await db.insert(extraImagesTable).values({
                 piece_id: pieceId,
                 image_path: imageUrl,
                 title: title, // Set the title
                 width: width,
                 height: height,
+                small_image_path: smallImageUrl,
+                small_width: smallWidth,
+                small_height: smallHeight,
             });
         } else if (imageType === 'progress') {
+            console.log('Adding progress image');
             await db.insert(progressImagesTable).values({
                 piece_id: pieceId,
                 image_path: imageUrl,
                 title: title, // Set the title
                 width: width,
                 height: height,
+                small_image_path: smallImageUrl,
+                small_width: smallWidth,
+                small_height: smallHeight,
             });
         }
     }
 
-    revalidatePath(`/edit/${piece[0].id}`);
+    revalidatePath(`/admin/edit/${piece[0].id}`);
     return imageUrl;
 }
 
@@ -161,7 +183,7 @@ export async function handleImageReorder(pieceId: number, currentPieceId: number
     await db.update(table).set({ image_path: currentImage[0].image_path }).where(eq(table.id, targetPieceId));
 
     // Revalidate the path to refetch the data
-    revalidatePath(`/edit/${pieceId}`);
+    revalidatePath(`/admin/edit/${pieceId}`);
 }
 
 export async function handleImageTitleEdit(imageId: number, newTitle: string, imageType: string) {
@@ -170,7 +192,7 @@ export async function handleImageTitleEdit(imageId: number, newTitle: string, im
     await db.update(table).set({ title: newTitle }).where(eq(table.id, imageId));
 
     // Revalidate the path to refetch the data
-    revalidatePath(`/edit/${imageId}`);
+    revalidatePath(`/admin/edit/${imageId}`);
 }
 
 export async function handleImageDelete(pieceId: number, imagePath: string, imageType: string) {
@@ -178,7 +200,7 @@ export async function handleImageDelete(pieceId: number, imagePath: string, imag
     await db.delete(deleteTable).where(and(eq(deleteTable.piece_id, pieceId), eq(deleteTable.image_path, imagePath)));
 
     // Revalidate the path to refetch the data
-    revalidatePath(`/edit/${pieceId}`);
+    revalidatePath(`/admin/edit/${pieceId}`);
 }
 
 export async function handleTitleUpdate(formData: FormData) {
@@ -193,7 +215,7 @@ export async function handleTitleUpdate(formData: FormData) {
     await db.update(piecesTable).set({ title: newTitle }).where(eq(piecesTable.id, pieceId));
 
     // Revalidate the path to refetch the data
-    revalidatePath(`/edit/${pieceId}`);
+    revalidatePath(`/admin/edit/${pieceId}`);
 }
 
 interface NewPieceData {
@@ -210,7 +232,9 @@ export async function createPiece(newPieceData: NewPieceData) {
     const { title, imagePath, width, height, smallImagePath, smallWidth, smallHeight } = newPieceData;
 
     const maxOId = await getMostRecentId();
+    console.log('Max OId:', maxOId);
     const newOId = maxOId ? maxOId + 1 : 1;
+    console.log('New OId:', newOId);
 
     const data = {
         title: title,
@@ -235,6 +259,7 @@ export async function createPiece(newPieceData: NewPieceData) {
         o_id: newOId,
         class_name: title.toString().toLowerCase().replace(' ', '_').replace('-', '_'),
     };
+    console.log('New Piece Data:', data);
 
     const newPiece = await db.insert(piecesTable).values(data).returning();
     return newPiece[0];
@@ -252,9 +277,9 @@ interface NewPieceData {
 
 import { redirect } from 'next/navigation';
 
-export async function handleCreatePiece(newPieceData: NewPieceData) {
+export async function createNewPiece(newPieceData: NewPieceData) {
     console.log('Creating new piece:', newPieceData);
     const newPiece = await createPiece(newPieceData);
-    revalidatePath('/edit');
-    redirect(`/edit/${newPiece.id}`);
+    revalidatePath('/admin/edit');
+    redirect(`/admin/edit/${newPiece.id}`);
 }

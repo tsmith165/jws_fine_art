@@ -20,15 +20,15 @@
                 "name": "next"
             }
         ],
-        "baseUrl": ".",
+        "baseUrl": "./src",
         "paths": {
-            "@/components/*": ["src/components/*"],
-            "@/styles/*": ["src/styles/*"],
-            "@/lib/*": ["src/lib/*"],
-            "@/app/*": ["src/app/*"],
-            "@/stores/*": ["src/stores/*"],
-            "@/utils/*": ["src/utils/*"],
-            "@/db/*": ["src/db/*"]
+            "@/components/*": ["components/*"],
+            "@/styles/*": ["styles/*"],
+            "@/lib/*": ["lib/*"],
+            "@/app/*": ["app/*"],
+            "@/stores/*": ["stores/*"],
+            "@/utils/*": ["utils/*"],
+            "@/db/*": ["db/*"]
         }
     },
     "include": [
