@@ -23,7 +23,7 @@ export async function changeOrder(currIdList: number[], nextIdList: number[]): P
     await db.update(piecesTable).set({ o_id: nextOrderId }).where(eq(piecesTable.id, currId));
     await db.update(piecesTable).set({ o_id: currOrderId }).where(eq(piecesTable.id, nextId));
 
-    revalidatePath(`/manage`);
+    revalidatePath(`/admin/manage`);
 }
 
 export async function changePriority(currIdList: number[], nextIdList: number[]): Promise<void> {
@@ -33,13 +33,13 @@ export async function changePriority(currIdList: number[], nextIdList: number[])
 
     await db.update(piecesTable).set({ p_id: nextPriorityId }).where(eq(piecesTable.id, currId));
     await db.update(piecesTable).set({ p_id: currPriorityId }).where(eq(piecesTable.id, nextId));
-    revalidatePath(`/manage`);
+    revalidatePath(`/admin/manage`);
 }
 
 export async function setInactive(id: number): Promise<void> {
     console.log(`Setting piece with id: ${id} as inactive`);
     await db.update(piecesTable).set({ active: false, o_id: -1000000 }).where(eq(piecesTable.id, id));
-    revalidatePath(`/manage`);
+    revalidatePath(`/admin/manage`);
 }
 
 export async function setActive(id: number): Promise<void> {
@@ -49,5 +49,5 @@ export async function setActive(id: number): Promise<void> {
     const newOId = lastPiece.length > 0 ? lastPiece[0].o_id + 1 : 1;
 
     await db.update(piecesTable).set({ active: true, o_id: newOId }).where(eq(piecesTable.id, id));
-    revalidatePath(`/manage`);
+    revalidatePath(`/admin/manage`);
 }

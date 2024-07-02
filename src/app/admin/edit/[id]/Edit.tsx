@@ -32,8 +32,8 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
     console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${current_id}`);
 
     return (
-        <div className="flex h-full w-full flex-col lg:flex-row">
-            <div className="h-1/3 bg-secondary_dark lg:h-full lg:w-2/3">
+        <div className="flex h-full w-full flex-col md:flex-row">
+            <div className="h-1/3 bg-secondary_dark md:h-full md:w-2/5 lg:w-1/2">
                 {pieceData ? (
                     <Image
                         src={pieceData.image_path}
@@ -47,13 +47,13 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
                     <LoadingSpinner page="Edit Details" />
                 )}
             </div>
-            <div className="h-2/3 overflow-y-auto bg-secondary lg:h-full lg:w-1/3">
+            <div className="h-2/3 overflow-y-auto bg-secondary md:h-full md:w-3/5 lg:w-1/2">
                 <div className="flex h-fit flex-row items-center space-x-2 bg-primary p-2">
                     <div className="flex h-[48px] flex-col space-y-1">
-                        <Link href={`/edit/${next_id}`}>
+                        <Link href={`/admin/edit/${next_id}`}>
                             <IoIosArrowUp className="h-[22px] w-8 cursor-pointer rounded-lg bg-secondary fill-secondary_dark hover:bg-secondary_dark hover:fill-primary" />
                         </Link>
-                        <Link href={`/edit/${last_id}`}>
+                        <Link href={`/admin/edit/${last_id}`}>
                             <IoIosArrowDown className="h-[22px] w-8 cursor-pointer rounded-lg bg-secondary fill-secondary_dark hover:bg-secondary_dark hover:fill-primary" />
                         </Link>
                     </div>

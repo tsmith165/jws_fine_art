@@ -6,7 +6,7 @@ import { dark } from '@clerk/themes';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { PHProvider } from './providers'
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
