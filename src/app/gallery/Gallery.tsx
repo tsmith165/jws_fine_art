@@ -74,7 +74,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
             createGallery(pieceList, theme).then(() => {
                 setTimeout(() => {
                     setIsMasonryLoaded(true);
-                }, 500);
+                }, 0);
             });
         }
     }, [pieceList, theme]);
