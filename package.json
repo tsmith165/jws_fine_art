@@ -67,6 +67,7 @@
         "@types/react-places-autocomplete": "^7.2.14",
         "@types/uuid": "^10.0.0",
         "drizzle-kit": "0.20.17",
+        "node-polyfill-webpack-plugin": "^4.0.0",
         "prettier": "^3.0.3",
         "typescript": "^5.4.5"
     }

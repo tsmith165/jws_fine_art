@@ -1,4 +1,5 @@
 import constants from './src/lib/constants.js';
+import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 
 const { AWS_BUCKET_URL } = constants;
 
@@ -23,6 +24,18 @@ const nextConfig = {
             },
         ],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
+    },
+    webpack: (config, { isServer }) => {
+        if (!isServer) {
+            config.resolve.fallback = {
+                fs: false,
+                net: false,
+                tls: false,
+                child_process: false,
+            };
+            config.plugins.push(new NodePolyfillPlugin());
+        }
+        return config;
     },
     async rewrites() {
         return [
