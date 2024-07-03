@@ -55,7 +55,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.75 }}
         >
-            <h1 className="pb-2 font-cinzel text-2xl font-bold text-primary text-center">{selectedPiece.title}</h1>
+            <h1 className="pb-2 text-center font-cinzel text-2xl font-bold text-primary">{selectedPiece.title}</h1>
             <div className="relative flex w-fit cursor-pointer items-center justify-center space-y-2 pb-2">
                 <AnimatePresence mode="wait">
                     <motion.div
@@ -141,9 +141,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                         {imageList.length > 1 && (
                             <>
                                 {showSlider ? (
-                                    <div className="mr-0.5 w-6 text-center leading-6 text-primary">
-                                        {speed / 1000}s
-                                    </div>
+                                    <div className="mr-0.5 w-6 text-center leading-6 text-primary">{speed / 1000}s</div>
                                 ) : (
                                     <IoIosSpeedometer
                                         className={`${

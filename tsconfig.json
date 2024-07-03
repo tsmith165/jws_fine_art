@@ -28,7 +28,8 @@
             "@/app/*": ["app/*"],
             "@/stores/*": ["stores/*"],
             "@/utils/*": ["utils/*"],
-            "@/db/*": ["db/*"]
+            "@/db/*": ["db/*"],
+            "@/server/*": ["server/*"]
         }
     },
     "include": [

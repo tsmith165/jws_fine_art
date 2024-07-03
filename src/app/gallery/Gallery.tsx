@@ -48,19 +48,19 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
     const imageList = selectedPiece
         ? [
               {
-                  src: selectedPiece.image_path,
-                  width: selectedPiece.width,
-                  height: selectedPiece.height,
+                  src: selectedPiece.small_image_path,
+                  width: selectedPiece.small_width,
+                  height: selectedPiece.small_height,
               },
               ...(selectedPiece.extraImages || []).map((image) => ({
-                  src: image.image_path,
-                  width: image.width,
-                  height: image.height,
+                  src: image.small_image_path,
+                  width: image.small_width,
+                  height: image.small_height,
               })),
               ...(selectedPiece.progressImages || []).map((image) => ({
-                  src: image.image_path,
-                  width: image.width,
-                  height: image.height,
+                  src: image.small_image_path,
+                  width: image.small_width,
+                  height: image.small_height,
               })),
           ]
         : [];

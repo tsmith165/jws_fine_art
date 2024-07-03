@@ -8,6 +8,18 @@ interface GalleryPieceProps {
 }
 
 const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
+    const image_path = piece.small_image_path || piece.image_path;
+    let image_width = 0;
+    let image_height = 0;
+    if (image_path === piece.small_image_path) {
+        image_width = piece.small_width || 0;
+        image_height = piece.small_height || 0;
+    }
+    if (image_path === piece.image_path || image_width === 0 || image_height === 0) {
+        image_width = piece.width || 0;
+        image_height = piece.height || 0;
+    }
+
     return (
         <div
             key={`piece-${piece.id}`}
@@ -15,10 +27,10 @@ const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
             onClick={() => handlePieceClick(piece.id, piece.index)}
         >
             <Image
-                src={piece.image_path}
+                src={image_path}
                 alt={piece.title}
-                width={piece.width}
-                height={piece.height}
+                width={image_width}
+                height={image_height}
                 className="h-auto w-full rounded-md bg-stone-600 object-cover p-1"
                 priority
             />

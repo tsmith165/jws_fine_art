@@ -1,142 +1,69 @@
-// File: /src/app/admin/tools/tools.tsx
-
 'use client';
 
 import { useState } from 'react';
-import { saveAs } from 'file-saver';
-import ExcelJS from 'exceljs';
+import Link from 'next/link';
+import DataBackup from './DataBackup';
+import TestEmail from './TestEmail';
+import GenerateSmallImages from './GenerateSmallImages';
+import VerifyImageDimensions from './VerifyImageDimensions';
 
-import { sendTestCheckoutEmail } from '@/app/admin/tools/actions';
-import { fetchPieces } from '@/app/actions';
+interface ToolsProps {
+    activeTab: string;
+}
 
-import InputTextbox from '@/components/inputs/InputTextbox';
-
-const Tools: React.FC = () => {
-    const [testEmailData, setTestEmailData] = useState({
-        to: '',
-        pieceTitle: '',
-        fullName: '',
-        address: '',
-        pricePaid: 0,
-    });
-    const [testEmailStatus, setTestEmailStatus] = useState<'success' | 'error' | null>(null);
-    const [isEmailSending, setIsEmailSending] = useState(false);
-
-    const exportPiecesAsXLSX = async () => {
-        try {
-            const pieces = await fetchPieces();
-
-            if (pieces.length > 0) {
-                const workbook = new ExcelJS.Workbook();
-                const worksheet = workbook.addWorksheet('Pieces');
-
-                worksheet.columns = Object.keys(pieces[0]).map((key) => ({ header: key, key }));
-                pieces.forEach((piece) => worksheet.addRow(piece));
-
-                const buffer = await workbook.xlsx.writeBuffer();
-                const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                saveAs(data, 'pieces.xlsx');
-                console.log('Successfully exported pieces as XLSX');
-            } else {
-                console.log('No pieces found to export');
-            }
-        } catch (error) {
-            console.error('Failed to export pieces:', error);
-        }
-    };
-
-    const handleTestEmailChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setTestEmailData((prevData) => ({
-            ...prevData,
-            [e.target.name]: e.target.name === 'pricePaid' ? e.target.value === '' ? 0 : parseFloat(e.target.value) : e.target.value,
-        }));
-    };
-
-    const handleSendTestEmail = async () => {
-        setIsEmailSending(true);
-        try {
-            await sendTestCheckoutEmail(testEmailData);
-            setTestEmailStatus('success');
-        } catch (error) {
-            console.error('Failed to send test email:', error);
-            setTestEmailStatus('error');
-        }
-        setIsEmailSending(false);
-    };
-
+const Tools: React.FC<ToolsProps> = ({ activeTab }) => {
     return (
-        <div className="flex w-full max-w-xl flex-col space-y-4">
-            <div className="rounded-md border-2 border-primary_dark">
-                <div className="rounded-t-md bg-secondary p-4 font-lato text-lg text-primary">Data Backup</div>
-                <div className="flex items-center justify-center rounded-b-md bg-primary p-2">
-                    <button
-                        className="text-dark cursor-pointer rounded-md border-none bg-secondary_dark px-2 py-5 font-lato uppercase text-white hover:bg-primary_dark"
-                        onClick={exportPiecesAsXLSX}
-                    >
-                        Export Pieces as XLSX
-                    </button>
-                </div>
-            </div>
-            <div className="space rounded-md border-2 border-primary_dark">
-                <div className="rounded-t-md bg-secondary p-4 font-lato text-lg text-primary">Test Checkout Email</div>
-                <div className="space-y-2 rounded-b-md bg-primary p-4">
-                    <div className="h-fit space-y-2">
-                        <InputTextbox
-                            idName="to"
-                            name="To"
-                            value={testEmailData.to}
-                            placeholder="Email to send to"
-                            onChange={handleTestEmailChange}
-                        />
-                        <InputTextbox
-                            idName="pieceTitle"
-                            name="Piece Title"
-                            value={testEmailData.pieceTitle}
-                            placeholder="Piece Title"
-                            onChange={handleTestEmailChange}
-                        />
-                        <InputTextbox
-                            idName="fullName"
-                            name="Full Name"
-                            value={testEmailData.fullName}
-                            placeholder="Full Name"
-                            onChange={handleTestEmailChange}
-                        />
-                        <InputTextbox
-                            idName="address"
-                            name="Address"
-                            value={testEmailData.address}
-                            placeholder="Address"
-                            onChange={handleTestEmailChange}
-                        />
-                        <InputTextbox
-                            idName="pricePaid"
-                            name="Price Paid"
-                            value={testEmailData.pricePaid.toString()}
-                            placeholder="Price Paid"
-                            onChange={handleTestEmailChange}
-                        />
-                    </div>
-
-                    <div className="mx-auto flex w-full flex-row items-center justify-center">
-                        <button
-                            onClick={handleSendTestEmail}
-                            disabled={isEmailSending}
-                            className="flex w-fit items-center rounded-md border-none bg-secondary_dark px-4 py-2 font-lato uppercase text-white hover:bg-stone-400 hover:font-bold hover:text-primary"
+        <div className="flex w-4/5 flex-col space-y-4">
+            <div className="w-full rounded-lg bg-primary_dark text-lg font-bold text-secondary_dark">
+                <div className="w-full rounded-t-md bg-primary_dark text-lg font-bold text-secondary_dark">
+                    <div className="flex pt-1">
+                        <Link
+                            href="/admin/tools?tab=backup"
+                            className={`rounded-t-md px-2 py-1 ${
+                                activeTab === 'backup'
+                                    ? 'bg-secondary_dark text-primary'
+                                    : 'bg-primary text-secondary_dark hover:bg-secondary_dark hover:text-primary'
+                            }`}
                         >
-                            {isEmailSending ? (
-                                <div className="flex h-8 w-8 animate-spin items-center justify-center rounded-full bg-gradient-to-r from-primary via-primary_dark to-secondary">
-                                    <div className="h-7 w-7 rounded-full bg-secondary_dark opacity-75"></div>
-                                </div>
-                            ) : (
-                                'Send Test Email'
-                            )}
-                        </button>
+                            Data Backup
+                        </Link>
+                        <Link
+                            href="/admin/tools?tab=email"
+                            className={`rounded-t-md px-2 py-1 ${
+                                activeTab === 'email'
+                                    ? 'bg-secondary_dark text-primary'
+                                    : 'bg-primary text-secondary_dark hover:bg-secondary_dark hover:text-primary'
+                            }`}
+                        >
+                            Test Email
+                        </Link>
+                        <Link
+                            href="/admin/tools?tab=small-images"
+                            className={`rounded-t-md px-2 py-1 ${
+                                activeTab === 'small-images'
+                                    ? 'bg-secondary_dark text-primary'
+                                    : 'bg-primary text-secondary_dark hover:bg-secondary_dark hover:text-primary'
+                            }`}
+                        >
+                            Small Images
+                        </Link>
+                        <Link
+                            href="/admin/tools?tab=verify-dimensions"
+                            className={`rounded-t-md px-2 py-1 ${
+                                activeTab === 'verify-dimensions'
+                                    ? 'bg-secondary_dark text-primary'
+                                    : 'bg-primary text-secondary_dark hover:bg-secondary_dark hover:text-primary'
+                            }`}
+                        >
+                            Verify Dimensions
+                        </Link>
                     </div>
-                    <div className="mt-2 flex justify-center">
-                        {testEmailStatus === 'success' && <p className="text-green-500">Test email sent successfully!</p>}
-                        {testEmailStatus === 'error' && <p className="text-red-500">Failed to send test email.</p>}
-                    </div>
+                </div>
+                <div className="rounded-b-lg bg-secondary p-4">
+                    {activeTab === 'backup' && <DataBackup />}
+                    {activeTab === 'email' && <TestEmail />}
+                    {activeTab === 'small-images' && <GenerateSmallImages />}
+                    {activeTab === 'verify-dimensions' && <VerifyImageDimensions />}
                 </div>
             </div>
         </div>

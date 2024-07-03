@@ -1,7 +1,9 @@
+// File: /src/app/admin/tools/page.tsx
+
 import type { Metadata } from 'next';
 export const metadata: Metadata = {
-    title: 'JWS Fine Art - Admin',
-    description: 'Display admin info for authenticated users',
+    title: 'JWS Fine Art - Admin Tools',
+    description: 'Admin tools for JWS Fine Art',
     keywords:
         'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Checkout, Admin',
     applicationName: 'JWS Fine Art',
@@ -11,8 +13,8 @@ export const metadata: Metadata = {
         apple: '/favicon/apple-icon.png',
     },
     openGraph: {
-        title: 'JWS Fine Art - Admin',
-        description: 'Admin for JWS Fine Art',
+        title: 'JWS Fine Art - Admin Tools',
+        description: 'Admin tools for JWS Fine Art',
         siteName: 'JWS Fine Art',
         url: 'https://www.jwsfineart.com',
         images: [
@@ -29,17 +31,23 @@ export const metadata: Metadata = {
 };
 
 import { SignedIn } from '@clerk/nextjs';
-
 import Tools from '@/app/admin/tools/tools';
-
 import PageLayout from '@/components/layout/PageLayout';
 
-export default async function AdminPage() {
+interface PageProps {
+    searchParams?: {
+        tab?: string;
+    };
+}
+
+export default async function AdminToolsPage({ searchParams }: PageProps) {
+    const activeTab = searchParams?.tab || 'backup';
+
     return (
         <SignedIn>
-            <PageLayout page="/admin">
+            <PageLayout page="/admin/tools">
                 <div className="flex h-full w-full flex-col items-center p-5">
-                    <Tools />
+                    <Tools activeTab={activeTab} />
                 </div>
             </PageLayout>
         </SignedIn>
