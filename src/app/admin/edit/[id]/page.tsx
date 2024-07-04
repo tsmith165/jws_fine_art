@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 };
 
 import React, { Suspense } from 'react';
-import { SignedIn } from '@clerk/nextjs';
+import { Protect } from '@clerk/nextjs';
 
 import { fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 
@@ -49,11 +49,11 @@ export default function Page({ params }: { params: { id: string } }) {
 
     return (
         <PageLayout page={`/edit/${id}`}>
-            <SignedIn>
+            <Protect role="org:ADMIN">
                 <Suspense fallback={<LoadingSpinner page="Edit" />}>
                     <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
                 </Suspense>
-            </SignedIn>
+            </Protect>
         </PageLayout>
     );
 }

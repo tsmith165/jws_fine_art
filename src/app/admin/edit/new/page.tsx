@@ -29,18 +29,18 @@ export const metadata: Metadata = {
     },
 };
 
-import { SignedIn } from '@clerk/nextjs';
+import { Protect } from '@clerk/nextjs';
 
 import PageLayout from '@/components/layout/PageLayout';
 import CreatePiece from '@/app/admin/edit/new/CreatePiece';
 
 export default function NewPiecePage() {
     return (
-        <SignedIn>
+        <Protect role="org:ADMIN">
             <PageLayout page="/edit/new">
                 <CreatePiece />
             </PageLayout>
-        </SignedIn>
+        </Protect>
     );
 }
 

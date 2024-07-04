@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     },
 };
 
-import { SignedIn } from '@clerk/nextjs';
+import { Protect } from '@clerk/nextjs';
 import Tools from '@/app/admin/tools/tools';
 import PageLayout from '@/components/layout/PageLayout';
 
@@ -44,13 +44,13 @@ export default async function AdminToolsPage({ searchParams }: PageProps) {
     const activeTab = searchParams?.tab || 'backup';
 
     return (
-        <SignedIn>
+        <Protect role="org:ADMIN">
             <PageLayout page="/admin/tools">
                 <div className="flex h-full w-full flex-col items-center p-5">
                     <Tools activeTab={activeTab} />
                 </div>
             </PageLayout>
-        </SignedIn>
+        </Protect>
     );
 }
 

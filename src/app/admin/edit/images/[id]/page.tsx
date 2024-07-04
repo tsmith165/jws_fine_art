@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     },
 };
 
-import { SignedIn } from '@clerk/nextjs';
+import { Protect } from '@clerk/nextjs';
 
 import PageLayout from '@/components/layout/PageLayout';
 import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
@@ -36,9 +36,9 @@ import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 export default async function Page({ params }: { params: { id: string } }) {
     return (
         <PageLayout page={`/edit/${params.id}`}>
-            <SignedIn>
+            <Protect role="org:ADMIN">
                 <ImageEditor pieceId={params.id} />
-            </SignedIn>
+            </Protect>
         </PageLayout>
     );
 }
