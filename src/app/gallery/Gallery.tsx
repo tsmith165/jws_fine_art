@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import Masonry from 'react-masonry-css';
 import 'react-tooltip/dist/react-tooltip.css';
 import { PiecesWithImages } from '@/db/schema';
@@ -83,7 +82,7 @@ const Gallery = ({ pieces }: { pieces: PiecesWithImages[] }) => {
         const selectedPieceId = searchParams.get('piece');
         const initialSelectedIndex = pieces.findIndex((piece) => piece.id.toString() === selectedPieceId);
         setSelectedPieceIndex(initialSelectedIndex !== -1 ? initialSelectedIndex : null);
-    }, [pieces, searchParams]);
+    }, [searchParams]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;

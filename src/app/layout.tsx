@@ -5,12 +5,12 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
-import { PHProvider } from './providers'
+import { PHProvider } from './providers';
 import dynamic from 'next/dynamic';
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
-  ssr: false,
-})
+    ssr: false,
+});
 
 import { cinzel } from './fonts';
 
@@ -21,13 +21,15 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children, params }: RootLayoutProps) {
     return (
-        <html lang="en" className={`${cinzel.variable}`}>
-            <PHProvider>
-                <body className="font-cinzel">
-                    <SpeedInsights />
-                    <ClerkProvider appearance={{ baseTheme: dark }}>{children}</ClerkProvider>
-                </body>
-            </PHProvider>
-        </html>
+        <ClerkProvider appearance={{ baseTheme: dark }}>
+            <html lang="en" className={`${cinzel.variable}`}>
+                <PHProvider>
+                    <body className="font-cinzel">
+                        <SpeedInsights />
+                        {children}
+                    </body>
+                </PHProvider>
+            </html>
+        </ClerkProvider>
     );
 }

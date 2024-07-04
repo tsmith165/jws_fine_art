@@ -1,16 +1,16 @@
-import { NextResponse } from 'next/server';
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+// File: /src/middleware.ts
 
-const isPublicRoute = createRouteMatcher([
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
+
+const publicRoutes = [
     '/',
     '/gallery',
     '/signin',
     '/signup',
     '/details',
-    '/details/:id*',
-    '/checkout/:id*',
-    '/checkout/cancel/:id*',
-    '/checkout/success/:id*',
+    '/details/(.*)',
+    '/checkout/(.*)',
     '/slideshow',
     '/socials',
     '/checkout',
@@ -19,49 +19,22 @@ const isPublicRoute = createRouteMatcher([
     '/contact',
     '/events',
     '/faq',
-]);
+    '/api/uploadthing',
+];
 
-const isUploadthingRoute = createRouteMatcher(['/api/uploadthing']);
+const isPublicRoute = createRouteMatcher(publicRoutes);
+const isAdminRoute = createRouteMatcher(['/admin/tools', '/admin/(.*)']);
 
-const isAdminRoute = createRouteMatcher(['/admin/tools', '/admin/:path*']);
-
-export default clerkMiddleware(
-    (auth, req) => {
-        const signInPage = new URL('/signin', req.url);
-
-        // Check if the route is public, Uploadthing route, or Google crawler
-        if (isPublicRoute(req) || isUploadthingRoute(req) || isGoogleCrawler(req)) {
-            return NextResponse.next();
-        }
-
-        // Protect admin routes
-        if (isAdminRoute(req)) {
-            auth().protect();
-
-            // Check for ADMIN role
-            const isAdmin = auth().has({ role: 'org:ADMIN' });
-            if (!isAdmin) {
-                return NextResponse.redirect(signInPage);
-            }
-        }
-
+export default clerkMiddleware((auth, req) => {
+    if (isPublicRoute(req)) {
         return NextResponse.next();
-    },
-    { debug: true },
-); // Enable debugging for development
+    } else {
+        auth().protect().has({ role: 'org:ADMIN' });
+    }
 
-function isGoogleCrawler(req: Request): boolean {
-    const userAgent = req.headers.get('user-agent');
-    return userAgent?.toLowerCase().includes('googlebot') ?? false;
-}
+    return NextResponse.next();
+});
 
 export const config = {
-    matcher: [
-        '/admin/tools',
-        '/admin/:path*',
-        '/((?!.+\\.[\\w]+$|_next).*)',
-        '/((?!.+\\.[\\w]+$|_next|api/checkout/webhook).*)',
-        '/',
-        '/(api|trpc)(.*)',
-    ],
+    matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
 };

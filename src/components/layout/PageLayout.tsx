@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import Navbar from './Navbar';
+import Navbar from '@/components/layout/Navbar';
 
 type PageLayoutProps = {
     children: ReactNode;
