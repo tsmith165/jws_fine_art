@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { authMiddleware } from '@clerk/nextjs/server';
-import { clerkClient } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const ignoredRoutes = [
+const isPublicRoute = createRouteMatcher([
     '/',
     '/gallery',
     '/signin',
@@ -20,38 +19,41 @@ const ignoredRoutes = [
     '/contact',
     '/events',
     '/faq',
-    // '/api/uploadthing',
-];
+]);
 
-export default authMiddleware({
-    ignoredRoutes,
-    async afterAuth(auth, req, evt) {
-        const sign_in_page = new URL('/signin', req.url);
-        const { userId, isPublicRoute, getToken } = auth;
-        const user = userId ? await clerkClient.users.getUser(userId) : null;
+const isUploadthingRoute = createRouteMatcher(['/api/uploadthing']);
 
-        // Check if the user agent matches the Google crawler
-        const userAgent = req.headers.get('user-agent');
+const isAdminRoute = createRouteMatcher(['/admin/tools', '/admin/:path*']);
 
-        // Check if the request is for the Uploadthing route
-        const isUploadthingRoute = req.nextUrl.pathname === '/api/uploadthing';
+export default clerkMiddleware(
+    (auth, req) => {
+        const signInPage = new URL('/signin', req.url);
 
-        if (isPublicRoute || isUploadthingRoute) {
+        // Check if the route is public, Uploadthing route, or Google crawler
+        if (isPublicRoute(req) || isUploadthingRoute(req) || isGoogleCrawler(req)) {
             return NextResponse.next();
         }
 
-        if (!userId || !user) {
-            return NextResponse.redirect(sign_in_page);
-        }
+        // Protect admin routes
+        if (isAdminRoute(req)) {
+            auth().protect();
 
-        console.log('Comparing user role:', user.publicMetadata?.role, 'to ADMIN');
-        if (user.publicMetadata?.role !== 'ADMIN') {
-            return NextResponse.redirect(sign_in_page);
+            // Check for ADMIN role
+            const isAdmin = auth().has({ role: 'org:ADMIN' });
+            if (!isAdmin) {
+                return NextResponse.redirect(signInPage);
+            }
         }
 
         return NextResponse.next();
     },
-});
+    { debug: true },
+); // Enable debugging for development
+
+function isGoogleCrawler(req: Request): boolean {
+    const userAgent = req.headers.get('user-agent');
+    return userAgent?.toLowerCase().includes('googlebot') ?? false;
+}
 
 export const config = {
     matcher: [
