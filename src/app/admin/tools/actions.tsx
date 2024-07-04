@@ -2,7 +2,7 @@
 
 import { db, piecesTable, extraImagesTable, progressImagesTable } from '@/db/db';
 import { eq, isNull } from 'drizzle-orm';
-import { createSmallerImage } from '@/utils/imageUtils';
+import { createSmallerImage } from '@/utils/uploads/imageUtils';
 import { fetchPieces } from '@/app/actions';
 import ExcelJS from 'exceljs';
 import { Buffer } from 'buffer';
