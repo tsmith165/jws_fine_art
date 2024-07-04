@@ -1,7 +1,3 @@
-import constants from './src/lib/constants.js';
-
-const { AWS_BUCKET_URL } = constants;
-
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
@@ -11,11 +7,6 @@ const nextConfig = {
     },
     images: {
         remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: AWS_BUCKET_URL.replace('https://', ''),
-                pathname: '**',
-            },
             {
                 protocol: 'https',
                 hostname: 'utfs.io',
