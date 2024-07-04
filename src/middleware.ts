@@ -1,34 +1,24 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-const publicRoutes = [
-    '/',
-    '/gallery',
-    '/signin',
-    '/signup',
-    '/details',
-    '/details/(.*)',
-    '/checkout/(.*)',
-    '/slideshow',
-    '/socials',
-    '/checkout',
-    '/api/checkout/webhook',
-    '/biography',
-    '/contact',
-    '/events',
-    '/faq',
-    '/api/uploadthing',
-];
+const isPrivateRoute = createRouteMatcher(['/admin(.*)']);
 
-const isPublicRoute = createRouteMatcher(publicRoutes);
+export default clerkMiddleware(async (auth, req) => {
+    const route_is_private = isPrivateRoute(req);
+    console.log('Current route: ' + req.url);
+    console.log('Route is private? ' + route_is_private);
 
-export default clerkMiddleware((auth, req) => {
-    if (isPublicRoute(req)) {
-        return NextResponse.next();
+    if (route_is_private) {
+        console.log('Route is private.  Protecting with ADMIN role.');
+        try {
+            auth().protect({ role: 'org:ADMIN' });
+        } catch (error) {
+            console.error('Error protecting route with ADMIN role:', error);
+            return NextResponse.redirect(new URL('/signin', req.url));
+        }
     } else {
-        auth().protect().has({ role: 'org:ADMIN' });
+        return NextResponse.next();
     }
-
     return NextResponse.next();
 });
 
