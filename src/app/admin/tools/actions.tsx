@@ -77,7 +77,11 @@ export async function sendTestCheckoutEmail(testEmailData: {
 
 export async function generateMissingSmallImages(
     progressCallback?: (piece: any, current: number, total: number) => Promise<boolean>,
-): Promise<{ success: boolean; updatedPeces?: { pieces: number; extraImages: number; progressImages: number }; error?: string }> {
+): Promise<{
+    success: boolean;
+    updatedPeces?: { updatedPieces: number; updatedExtraImages: number; updatedProgressImages: number };
+    error?: string;
+}> {
     try {
         const piecesWithoutSmallImages = await db.select().from(piecesTable).where(isNull(piecesTable.small_image_path)).execute();
         const extraImagesWithoutSmallImages = await db
@@ -167,9 +171,9 @@ export async function generateMissingSmallImages(
         return {
             success: true,
             updatedPeces: {
-                pieces: updatedPieces,
-                extraImages: updatedExtraImages,
-                progressImages: updatedProgressImages,
+                updatedPieces,
+                updatedExtraImages,
+                updatedProgressImages,
             },
         };
     } catch (error) {

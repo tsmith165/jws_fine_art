@@ -12,8 +12,8 @@ const GenerateSmallImages: React.FC = () => {
     } | null>(null);
     const [currentPiece, setCurrentPiece] = useState<any | null>(null);
     const [progress, setProgress] = useState({ current: 0, total: 0 });
-    const [generateTimeout, setGenerateTimeout] = useState(1000); // Default to 1 second
-    const generateTimeoutRef = useRef(generateTimeout); // Create a ref to store the current timeout value
+    const [generateTimeout, setGenerateTimeout] = useState(1000);
+    const generateTimeoutRef = useRef(generateTimeout);
     const [showSlider, setShowSlider] = useState(false);
     const stopGenerationRef = useRef(false);
 
@@ -25,17 +25,27 @@ const GenerateSmallImages: React.FC = () => {
 
         try {
             const result = await generateMissingSmallImages(async (piece, current, total) => {
-                if (stopGenerationRef.current) return true; // Signal to stop
+                if (stopGenerationRef.current) return true;
                 console.log(`Generating small image for piece ${current} of ${total} with timeout ${generateTimeoutRef.current}ms`);
                 setCurrentPiece(piece);
                 setProgress({ current, total });
-                await new Promise((resolve) => setTimeout(resolve, generateTimeoutRef.current)); // Use the ref value
-                return false; // Signal to continue
+                await new Promise((resolve) => setTimeout(resolve, generateTimeoutRef.current));
+                return false;
             });
+            if (!result.success) {
+                console.error('Failed to generate small images:', result.error);
+                setStatus('error');
+                return;
+            }
+            if (!result.updatedPeces) {
+                console.error('No pieces returned from generateMissingSmallImages:', result.error);
+                setStatus('error');
+                return;
+            }
             setStatus('success');
-            setResult(result);
-        } catch (error) {
-            console.error('Failed to generate small images:', error);
+            setResult(result.updatedPeces);
+        } catch (error: any) {
+            console.error('Failed to generate small images:', error.message);
             setStatus('error');
         }
 
