@@ -1,5 +1,3 @@
-// File: /src/app/admin/tools/DataBackup.tsx
-
 import { useState } from 'react';
 import { saveAs } from 'file-saver';
 import ExcelJS from 'exceljs';

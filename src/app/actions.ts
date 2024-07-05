@@ -1,4 +1,5 @@
 'use server';
+import { auth } from '@clerk/nextjs/server';
 
 import { eq, desc, asc, gt, lt, and, inArray } from 'drizzle-orm';
 import { db, piecesTable, extraImagesTable, progressImagesTable, verifiedTransactionsTable } from '@/db/db';
