@@ -82,6 +82,12 @@ export async function generateMissingSmallImages(
     updatedPeces?: { updatedPieces: number; updatedExtraImages: number; updatedProgressImages: number };
     error?: string;
 }> {
+    const { isAdmin, error: roleError } = checkUserRole();
+    if (!isAdmin) {
+        console.error(roleError);
+        return { success: false, error: roleError };
+    }
+
     try {
         const piecesWithoutSmallImages = await db.select().from(piecesTable).where(isNull(piecesTable.small_image_path)).execute();
         const extraImagesWithoutSmallImages = await db
