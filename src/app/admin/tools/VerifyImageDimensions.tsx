@@ -1,15 +1,16 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { getPiecesToVerify, verifyImageDimensions } from './actions';
 import { IoIosSpeedometer } from 'react-icons/io';
+import { PiecesWithImages } from '@/db/schema';
 
 const VerifyImageDimensions: React.FC = () => {
     const [isVerifying, setIsVerifying] = useState(false);
     const [status, setStatus] = useState<'success' | 'error' | null>(null);
-    const [currentPiece, setCurrentPiece] = useState<any | null>(null);
+    const [currentPiece, setCurrentPiece] = useState<PiecesWithImages | null>(null);
     const [progress, setProgress] = useState({ current: 0, total: 0 });
     const [results, setResults] = useState<any[]>([]);
-    const [verifyTimeout, setVerifyTimeout] = useState(1000); // Default to 1 second
-    const verifyTimeoutRef = useRef(verifyTimeout); // Create a ref to store the current timeout value
+    const [verifyTimeout, setVerifyTimeout] = useState(1000);
+    const verifyTimeoutRef = useRef(verifyTimeout);
     const [showSlider, setShowSlider] = useState(false);
     const stopVerificationRef = useRef(false);
 
@@ -20,7 +21,12 @@ const VerifyImageDimensions: React.FC = () => {
         stopVerificationRef.current = false;
 
         try {
-            const pieces = await getPiecesToVerify();
+            const piecesResult = await getPiecesToVerify();
+            if (!piecesResult.success || !piecesResult.pieces) {
+                throw new Error(piecesResult.error || 'Failed to get pieces to verify');
+            }
+
+            const pieces = piecesResult.pieces;
             setProgress({ current: 0, total: pieces.length });
 
             for (let i = 0; i < pieces.length; i++) {
@@ -34,7 +40,7 @@ const VerifyImageDimensions: React.FC = () => {
                 const result = await verifyImageDimensions(piece);
                 setResults((prev) => [...prev, result]);
 
-                await new Promise((resolve) => setTimeout(resolve, verifyTimeoutRef.current)); // Use the ref value
+                await new Promise((resolve) => setTimeout(resolve, verifyTimeoutRef.current));
             }
 
             setStatus('success');
