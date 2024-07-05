@@ -24,10 +24,10 @@ const GenerateSmallImages: React.FC = () => {
         stopGenerationRef.current = false;
 
         try {
-            const result = await generateMissingSmallImages(async (piece, current, total) => {
+            const result = await generateMissingSmallImages(async (updatedPiece, current, total) => {
                 if (stopGenerationRef.current) return true;
                 console.log(`Generating small image for piece ${current} of ${total} with timeout ${generateTimeoutRef.current}ms`);
-                setCurrentPiece(piece);
+                setCurrentPiece(updatedPiece);
                 setProgress({ current, total });
                 await new Promise((resolve) => setTimeout(resolve, generateTimeoutRef.current));
                 return false;
@@ -37,13 +37,13 @@ const GenerateSmallImages: React.FC = () => {
                 setStatus('error');
                 return;
             }
-            if (!result.updatedPeces) {
+            if (!result.updatedPiece) {
                 console.error('No pieces returned from generateMissingSmallImages:', result.error);
                 setStatus('error');
                 return;
             }
             setStatus('success');
-            setResult(result.updatedPeces);
+            setResult(result.updatedPiece);
         } catch (error: any) {
             console.error('Failed to generate small images:', error.message);
             setStatus('error');

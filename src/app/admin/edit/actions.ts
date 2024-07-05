@@ -8,6 +8,16 @@ import { getMostRecentId } from '@/app/actions';
 
 import { Pieces } from '@/db/schema';
 
+function checkUserRole(): { isAdmin: boolean; error?: string } {
+    const { orgRole } = auth();
+    console.log(`User organization Role: ${orgRole}`);
+    const isAdmin = orgRole === 'ADMIN';
+    if (!isAdmin) {
+        return { isAdmin: false, error: 'User does not have the "ADMIN" role. Cannot edit piece.' };
+    }
+    return { isAdmin: true };
+}
+
 interface SubmitFormData {
     piece_id: string;
     piece_title: string;
@@ -25,16 +35,6 @@ interface SubmitFormData {
     framed: string;
     comments: string;
     image_path: string;
-}
-
-function checkUserRole(): { isAdmin: boolean; error?: string } {
-    const { orgRole } = auth();
-    console.log(`User organization Role: ${orgRole}`);
-    const isAdmin = orgRole === 'ADMIN';
-    if (!isAdmin) {
-        return { isAdmin: false, error: 'User does not have the "ADMIN" role. Cannot edit piece.' };
-    }
-    return { isAdmin: true };
 }
 
 export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success: boolean; error?: string }> {

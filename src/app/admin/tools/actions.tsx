@@ -79,7 +79,7 @@ export async function generateMissingSmallImages(
     progressCallback?: (piece: any, current: number, total: number) => Promise<boolean>,
 ): Promise<{
     success: boolean;
-    updatedPeces?: { updatedPieces: number; updatedExtraImages: number; updatedProgressImages: number };
+    updatedPiece?: { updatedPieces: number; updatedExtraImages: number; updatedProgressImages: number };
     error?: string;
 }> {
     const { isAdmin, error: roleError } = checkUserRole();
@@ -176,7 +176,7 @@ export async function generateMissingSmallImages(
 
         return {
             success: true,
-            updatedPeces: {
+            updatedPiece: {
                 updatedPieces,
                 updatedExtraImages,
                 updatedProgressImages,
