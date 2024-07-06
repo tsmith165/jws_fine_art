@@ -35,7 +35,7 @@ export const extraImagesTable = pgTable('ExtraImages', {
     piece_id: integer('piece_id')
         .notNull()
         .references(() => piecesTable.id),
-        title: text('title').default(''),
+    title: text('title').default(''),
     image_path: text('image_path').notNull(),
     width: integer('width').notNull(),
     height: integer('height').notNull(),
