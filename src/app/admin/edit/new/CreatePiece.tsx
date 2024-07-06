@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
 import { createNewPiece } from '@/app/admin/edit/actions';
-
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 import InputTextbox from '@/components/inputs/InputTextbox';
 
@@ -30,33 +28,22 @@ export default function CreatePiece() {
     const handleFilesSelected = (originalFile: File, smallFile: File) => {
         setFiles([originalFile, smallFile]);
         setTitle(originalFile.name.split('.')[0]);
-
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(originalFile);
-        img.onload = function () {
-            const width = img.naturalWidth;
-            const height = img.naturalHeight;
-            console.log('Original Image width:', width, 'height:', height);
-            console.log('Original Image URL:', img.src);
-            setWidth(width);
-            setHeight(height);
-        };
-
-        const smallImg = document.createElement('img');
-        smallImg.src = URL.createObjectURL(smallFile);
-        smallImg.onload = function () {
-            const smallWidth = smallImg.naturalWidth;
-            const smallHeight = smallImg.naturalHeight;
-            console.log('Small Image width:', smallWidth, 'height:', smallHeight);
-            console.log('Small Image URL:', smallImg.src);
-            setSmallWidth(smallWidth);
-            setSmallHeight(smallHeight);
-        };
     };
 
-    const handleUploadComplete = (originalImageUrl: string, smallImageUrl: string) => {
+    const handleUploadComplete = (
+        originalImageUrl: string,
+        smallImageUrl: string,
+        originalWidth: number,
+        originalHeight: number,
+        smallWidth: number,
+        smallHeight: number,
+    ) => {
         setImageUrl(originalImageUrl);
         setSmallImageUrl(smallImageUrl);
+        setWidth(originalWidth);
+        setHeight(originalHeight);
+        setSmallWidth(smallWidth);
+        setSmallHeight(smallHeight);
     };
 
     const handleCreatePiece = async () => {
@@ -104,24 +91,20 @@ export default function CreatePiece() {
                     <InputTextbox idName="small_px_width" name="Sm Width" value={smallWidth.toString()} />
                     <InputTextbox idName="small_px_height" name="Sm Height" value={smallHeight.toString()} />
                     <InputTextbox idName="title" name="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                    {imageUrl === '' || imageUrl === null ? null : width < 800 && height < 800 ? (
-                        <div className="text-red-700">Warning: Image width and height are less than 800px.</div>
-                    ) : width < 800 ? (
-                        <div className="text-red-700">Warning: Image width is less than 800px.</div>
-                    ) : height < 800 ? (
-                        <div className="text-red-700">Warning: Image height is less than 800px.</div>
-                    ) : null}
-
+                    {imageUrl !== 'Not yet uploaded' && (width < 800 || height < 800) && (
+                        <div className="text-red-700">
+                            Warning: Image dimensions are less than 800px. Width: {width}px, Height: {height}px
+                        </div>
+                    )}
                     <button
                         type="submit"
                         disabled={!isFormValid}
                         onClick={handleCreatePiece}
-                        className={
-                            'relative rounded-md border-2 px-4 py-1 text-lg font-bold ' +
-                            (isFormValid
+                        className={`relative rounded-md border-2 px-4 py-1 text-lg font-bold ${
+                            isFormValid
                                 ? 'border-primary bg-primary_dark text-primary hover:border-primary_dark hover:bg-primary hover:text-primary_dark'
-                                : 'cursor-not-allowed border-gray-400 bg-gray-300 text-gray-500')
-                        }
+                                : 'cursor-not-allowed border-gray-400 bg-gray-300 text-gray-500'
+                        }`}
                     >
                         <span className="relative z-10">Create Piece</span>
                     </button>

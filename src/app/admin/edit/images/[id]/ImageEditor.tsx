@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
 import { storeUploadedImageDetails } from '@/app/admin/edit/actions';
-
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 import InputTextbox from '@/components/inputs/InputTextbox';
 import InputSelect from '@/components/inputs/InputSelect';
@@ -26,31 +24,22 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
     const handleFilesSelected = (originalFile: File, smallFile: File) => {
         setFiles([originalFile, smallFile]);
         setTitle(originalFile.name.split('.')[0]);
-
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(originalFile);
-        img.onload = function () {
-            const width = img.naturalWidth;
-            const height = img.naturalHeight;
-            console.log('Original Image width:', width, 'height:', height);
-            setWidth(width);
-            setHeight(height);
-        };
-
-        const smallImg = document.createElement('img');
-        smallImg.src = URL.createObjectURL(smallFile);
-        smallImg.onload = function () {
-            const smallWidth = smallImg.naturalWidth;
-            const smallHeight = smallImg.naturalHeight;
-            console.log('Small Image width:', smallWidth, 'height:', smallHeight);
-            setSmallWidth(smallWidth);
-            setSmallHeight(smallHeight);
-        };
     };
 
-    const handleUploadComplete = (originalImageUrl: string, smallImageUrl: string) => {
+    const handleUploadComplete = (
+        originalImageUrl: string,
+        smallImageUrl: string,
+        originalWidth: number,
+        originalHeight: number,
+        smallWidth: number,
+        smallHeight: number,
+    ) => {
         setImageUrl(originalImageUrl);
         setSmallImageUrl(smallImageUrl);
+        setWidth(originalWidth);
+        setHeight(originalHeight);
+        setSmallWidth(smallWidth);
+        setSmallHeight(smallHeight);
     };
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -58,7 +47,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
     };
 
     const handleSubmit = async () => {
-        const uploadOutput = await storeUploadedImageDetails({
+        await storeUploadedImageDetails({
             piece_id: pieceId,
             image_path: imageUrl,
             title: title,
@@ -69,7 +58,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
             small_width: smallWidth.toString(),
             small_height: smallHeight.toString(),
         });
-        // Redirect to the piece details page after submitting the changes
         window.location.href = `/admin/edit/${pieceId}`;
     };
 
@@ -102,7 +90,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                         handleResetInputs={handleResetInputs}
                     />
                     <InputSelect
-                        key="image_type"
                         name="image_type"
                         defaultValue={{ value: selectedOption, label: selectedOption }}
                         select_options={[
@@ -123,12 +110,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                         type="button"
                         onClick={handleSubmit}
                         disabled={!isFormValid}
-                        className={
-                            'rounded-md border-2 px-4 py-1 text-lg font-bold ' +
-                            (isFormValid
+                        className={`rounded-md border-2 px-4 py-1 text-lg font-bold ${
+                            isFormValid
                                 ? 'border-primary bg-primary_dark text-primary hover:border-primary_dark hover:bg-primary hover:text-primary_dark'
-                                : 'cursor-not-allowed border-gray-400 bg-gray-300 text-gray-500')
-                        }
+                                : 'cursor-not-allowed border-gray-400 bg-gray-300 text-gray-500'
+                        }`}
                     >
                         Submit Changes
                     </button>
