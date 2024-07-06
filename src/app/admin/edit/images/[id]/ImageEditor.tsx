@@ -58,7 +58,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
             small_width: smallWidth.toString(),
             small_height: smallHeight.toString(),
         });
-        window.location.href = `/admin/edit/${pieceId}`;
+        handleResetInputs();
     };
 
     const handleResetInputs = () => {
