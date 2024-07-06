@@ -1,5 +1,7 @@
 'use server';
+import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
+import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
 
 import { db, piecesTable, extraImagesTable, progressImagesTable } from '@/db/db';
 import { eq, and, desc } from 'drizzle-orm';
@@ -8,12 +10,16 @@ import { getMostRecentId } from '@/app/actions';
 
 import { Pieces } from '@/db/schema';
 
-function checkUserRole(): { isAdmin: boolean; error?: string } {
-    const { orgRole } = auth();
-    console.log(`User organization Role: ${orgRole}`);
-    const isAdmin = orgRole === 'ADMIN';
-    if (!isAdmin) {
-        return { isAdmin: false, error: 'User does not have the "ADMIN" role. Cannot edit piece.' };
+async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string | undefined }> {
+    const { userId } = auth();
+    if (!userId) {
+        return { isAdmin: false, error: 'User is not authenticated. Cannot edit piece.' };
+    }
+    console.log(`User ID: ${userId}`);
+    const hasAdminRole = await isClerkUserIdAdmin(userId);
+    console.log(`User hasAdminRole: ${hasAdminRole}`);
+    if (!hasAdminRole) {
+        return { isAdmin: false, error: 'User does not have the admin role. Cannot edit piece.' };
     }
     return { isAdmin: true };
 }
@@ -38,7 +44,7 @@ interface SubmitFormData {
 }
 
 export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -129,7 +135,7 @@ interface UploadFormData {
 }
 
 export async function storeUploadedImageDetails(data: UploadFormData): Promise<{ success: boolean; imageUrl?: string; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -207,7 +213,7 @@ export async function handleImageReorder(
     targetPieceId: number,
     imageType: string,
 ): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -244,7 +250,7 @@ export async function handleImageTitleEdit(
     newTitle: string,
     imageType: string,
 ): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -269,7 +275,7 @@ export async function handleImageDelete(
     imagePath: string,
     imageType: string,
 ): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -289,7 +295,7 @@ export async function handleImageDelete(
 }
 
 export async function handleTitleUpdate(formData: FormData): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -326,7 +332,7 @@ interface NewPieceData {
 }
 
 export async function createPiece(newPieceData: NewPieceData): Promise<{ success: boolean; piece?: Pieces; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -381,8 +387,6 @@ interface NewPieceData {
     smallWidth: number;
     smallHeight: number;
 }
-
-import { redirect } from 'next/navigation';
 
 export async function createNewPiece(newPieceData: NewPieceData) {
     console.log('Creating new piece:', newPieceData);

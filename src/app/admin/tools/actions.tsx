@@ -1,6 +1,8 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
+import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
+
 import { db, piecesTable, extraImagesTable, progressImagesTable } from '@/db/db';
 import { eq, isNull } from 'drizzle-orm';
 import { createSmallerImage } from '@/utils/uploads/imageUtils';
@@ -25,12 +27,16 @@ const ourFileRouter = {
 
 export type OurFileRouter = typeof ourFileRouter;
 
-function checkUserRole(): { isAdmin: boolean; error?: string } {
-    const { orgRole } = auth();
-    console.log(`User organization Role: ${orgRole}`);
-    const isAdmin = orgRole === 'ADMIN';
-    if (!isAdmin) {
-        return { isAdmin: false, error: 'User does not have the "ADMIN" role. Cannot edit piece.' };
+async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string | undefined }> {
+    const { userId } = auth();
+    if (!userId) {
+        return { isAdmin: false, error: 'User is not authenticated. Cannot edit piece.' };
+    }
+    console.log(`User ID: ${userId}`);
+    const hasAdminRole = await isClerkUserIdAdmin(userId);
+    console.log(`User hasAdminRole: ${hasAdminRole}`);
+    if (!hasAdminRole) {
+        return { isAdmin: false, error: 'User does not have the admin role. Cannot edit piece.' };
     }
     return { isAdmin: true };
 }
@@ -42,7 +48,7 @@ export async function sendTestCheckoutEmail(testEmailData: {
     address: string;
     pricePaid: number;
 }): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -82,7 +88,7 @@ export async function generateMissingSmallImages(
     updatedPiece?: { updatedPieces: number; updatedExtraImages: number; updatedProgressImages: number };
     error?: string;
 }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -189,7 +195,7 @@ export async function generateMissingSmallImages(
 }
 
 export async function getPiecesToVerify(): Promise<{ success: boolean; pieces?: PiecesWithImages[]; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
@@ -218,7 +224,7 @@ export async function getPiecesToVerify(): Promise<{ success: boolean; pieces?: 
 export async function verifyImageDimensions(
     image: any,
 ): Promise<{ success: boolean; verifyResult?: { id: number; title: string; mainImage?: any; smallImage?: any }; error?: string }> {
-    const { isAdmin, error: roleError } = checkUserRole();
+    const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
         return { success: false, error: roleError };
