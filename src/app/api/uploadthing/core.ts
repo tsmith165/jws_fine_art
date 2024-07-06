@@ -1,6 +1,6 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { getAuth } from '@clerk/nextjs/server';
-import { clerkClient } from '@clerk/nextjs/server';
+import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
 
 const f = createUploadthing();
 
@@ -19,17 +19,13 @@ export const ourFileRouter = {
 
             console.log('User is authenticated. Continuing...');
 
-            // Get the user's role from Clerk
-            const user = await clerkClient.users.getUser(userId);
-            const userRole = user.publicMetadata?.role;
-
-            // Check if the user has the "ADMIN" role
-            if (userRole !== 'ADMIN') {
-                console.log('User does not have the "ADMIN" role. Cannot upload image.');
-                throw new Error('Forbidden');
+            const hasAdminRole = await isClerkUserIdAdmin(userId);
+            console.log('User hasAdminRole: ' + hasAdminRole);
+            if (!hasAdminRole) {
+                console.log('User does not have admin role. Redirecting to home page.');
+                return {};
             }
-
-            console.log('User has the "ADMIN" role. Continuing...');
+            console.log('User has admin role. Continuing...');
 
             // Return the authenticated user ID
             return { userId };

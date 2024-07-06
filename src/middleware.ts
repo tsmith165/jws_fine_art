@@ -2,12 +2,18 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
 
-const isPrivateRoute = createRouteMatcher(['/admin/inventory', '/admin/tools', '/admin/manage']);
+const isPrivateRoute = createRouteMatcher(['/admin(/.*)', '/api/uploadthing']);
 
 export default clerkMiddleware(async (auth, req) => {
     const route_is_private = isPrivateRoute(req);
     console.log('Current route: ' + req.url);
     console.log('Route is private? ' + route_is_private);
+
+    // Check if the request is for the Uploadthing route
+    const isUploadthingRoute = req.nextUrl.pathname === '/api/uploadthing';
+    if (isUploadthingRoute) {
+        return NextResponse.next();
+    }
 
     if (route_is_private === true) {
         console.log('Route is private.  Protecting with admin role.');
