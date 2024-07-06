@@ -150,6 +150,11 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ onFilesSelected, handle
         const smallFileWithPrefix = new File([smallFile], `small-${smallFile.name}`, { type: smallFile.type });
 
         await startUpload([smallFileWithPrefix, largeFile]);
+
+        setIsUploading(false);
+        setUploadProgress(0);
+        setLargeFile(null);
+        setSmallFile(null);
     };
 
     return (
