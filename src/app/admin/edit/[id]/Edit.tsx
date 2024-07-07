@@ -48,7 +48,7 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
                 )}
             </div>
             <div className="h-2/3 overflow-y-auto p-4 md:h-full md:w-3/5 lg:w-1/2">
-                <div className="mb-4 flex h-fit flex-row items-center space-x-2">
+                <div className="mb-2 flex h-fit flex-row items-center space-x-2">
                     <div className="flex h-[48px] flex-col space-y-1">
                         <Link href={`/admin/edit/${next_id}`}>
                             <IoIosArrowUp className="h-[22px] w-8 cursor-pointer rounded-lg bg-stone-700 fill-stone-400 hover:bg-stone-600 hover:fill-stone-200" />

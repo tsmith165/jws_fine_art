@@ -111,7 +111,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
     };
 
     return (
-        <div className="flex h-fit w-full flex-col p-2 pt-0">
+        <div className="flex h-fit w-full flex-col pt-2">
             <div className="rounded-lg bg-secondary_dark">
                 {extra_images.length > 0 && (
                     <div>
