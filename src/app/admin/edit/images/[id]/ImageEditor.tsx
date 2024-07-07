@@ -6,6 +6,7 @@ import { storeUploadedImageDetails } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 import InputTextbox from '@/components/inputs/InputTextbox';
 import InputSelect from '@/components/inputs/InputSelect';
+import { revalidatePath } from 'next/cache';
 
 interface ImageEditorProps {
     pieceId: string;
@@ -105,6 +106,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                 small_height: smallHeight.toString(),
             });
             setStatusMessage({ type: 'success', message: 'Changes submitted successfully. You can upload another image.' });
+            revalidatePath(`/admin/edit/${pieceId}`);
+            revalidatePath('/admin/manage');
+            revalidatePath('/admin/gallery');
+            revalidatePath('/admin/slideshow');
             if (shouldNavigate) {
                 router.push(`/admin/edit/${pieceId}`);
             } else {
@@ -127,7 +132,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
             <div className="flex w-4/5 flex-col items-center justify-center rounded-lg bg-stone-900">
                 <div
                     id="header"
-                    className="w-full rounded-t-lg bg-gradient-to-r from-secondary via-secondary_light to-secondary bg-clip-text text-center text-4xl font-bold text-transparent"
+                    className="w-fit rounded-t-lg bg-gradient-to-r from-primary_dark from-15% via-primary via-50% to-primary_dark to-85% bg-clip-text text-center text-4xl font-bold text-transparent"
                 >
                     Edit Images
                 </div>

@@ -27,7 +27,9 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
         if (nextId !== null && nextOrderId !== null) {
             console.log(`Handle Order Change: currId: ${currId} (${currOrderId}) | nextId: ${nextId} (${nextOrderId})`);
             await changeOrder([currId, currOrderId], [nextId, nextOrderId]);
-            revalidatePath(`/admin/manage`);
+            revalidatePath('/admin/manage');
+            revalidatePath('/admin/gallery');
+            revalidatePath('/admin/slideshow');
         }
     }
 
@@ -41,7 +43,9 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
         if (nextId !== null && nextPriorityId !== null) {
             console.log(`Handle Priority Change: currId: ${currId} (${currPriorityId}) | nextId: ${nextId} (${nextPriorityId})`);
             await changePriority([currId, currPriorityId], [nextId, nextPriorityId]);
-            revalidatePath(`/admin/manage`);
+            revalidatePath('/admin/manage');
+            revalidatePath('/admin/gallery');
+            revalidatePath('/admin/slideshow');
         }
     }
 
@@ -50,7 +54,9 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
         const id = Number(formData.get('id'));
         console.log(`Handle Set Inactive: id: ${id}`);
         await setInactive(id);
-        revalidatePath(`/admin/manage`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
     }
 
     async function handleSetActive(formData: FormData) {
@@ -58,7 +64,9 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
         const id = Number(formData.get('id'));
         console.log(`Handle Set Active: id: ${id}`);
         await setActive(id);
-        revalidatePath(`/admin/manage`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
     }
 
     console.log(`Current pieces length: ${pieces.length}`);

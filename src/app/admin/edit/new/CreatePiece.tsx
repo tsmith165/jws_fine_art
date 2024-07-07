@@ -1,5 +1,3 @@
-// File 1: /src/app/admin/edit/new/CreatePiece.tsx
-
 'use client';
 
 import { useState, useCallback } from 'react';
@@ -7,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { createNewPiece } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 import InputTextbox from '@/components/inputs/InputTextbox';
+import { revalidate } from '@/app/page';
+import { revalidatePath } from 'next/cache';
 
 interface NewPieceData {
     title: string;
@@ -77,7 +77,12 @@ export default function CreatePiece() {
             };
             const piece_data = await createNewPiece(data);
             setStatusMessage({ type: 'success', message: 'Piece created successfully.' });
+            revalidatePath(`/admin/edit/`);
+            revalidatePath('/admin/manage');
+            revalidatePath('/admin/gallery');
+            revalidatePath('/admin/slideshow');
             handleResetInputs();
+
             if (piece_data.piece?.id) {
                 switch (action) {
                     case 'edit':
@@ -117,7 +122,7 @@ export default function CreatePiece() {
             <div className="flex w-4/5 flex-col items-center justify-center rounded-lg bg-stone-900">
                 <div
                     id="header"
-                    className="w-full rounded-t-lg bg-gradient-to-r from-secondary via-secondary_light to-secondary bg-clip-text text-center text-4xl font-bold text-transparent"
+                    className="w-fit rounded-t-lg bg-gradient-to-r from-primary_dark from-15% via-primary via-50% to-primary_dark to-85% bg-clip-text text-center text-4xl font-bold text-transparent"
                 >
                     Create New Piece
                 </div>
