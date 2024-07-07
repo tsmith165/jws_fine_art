@@ -150,8 +150,8 @@ export default function CreatePiece() {
                             className={
                                 'relative rounded-md px-4 py-1 text-lg font-bold ' +
                                 (isFormValid
-                                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
                             }
                         >
                             {isSubmitting ? 'Creating...' : 'Create & Edit'}
@@ -163,8 +163,8 @@ export default function CreatePiece() {
                             className={
                                 'relative rounded-md px-4 py-1 text-lg font-bold ' +
                                 (isFormValid
-                                    ? 'bg-green-500 text-white hover:bg-green-600'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
                             }
                         >
                             {isSubmitting ? 'Creating...' : 'Create & Add Images'}
@@ -176,8 +176,8 @@ export default function CreatePiece() {
                             className={
                                 'relative rounded-md px-4 py-1 text-lg font-bold ' +
                                 (isFormValid
-                                    ? 'bg-purple-500 text-white hover:bg-purple-600'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
                             }
                         >
                             {isSubmitting ? 'Creating...' : 'Create & View'}

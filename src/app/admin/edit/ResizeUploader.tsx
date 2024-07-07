@@ -159,7 +159,7 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                     onClick={handleSelectFilesClick}
                     disabled={isUploading}
                     className={`group relative overflow-hidden rounded-md ${
-                        isUploading ? 'bg-secondary' : 'bg-secondary_dark hover:bg-secondary'
+                        isUploading ? 'bg-primary_dark' : 'bg-primary_dark hover:bg-primary'
                     } px-4 py-1 text-lg font-bold`}
                 >
                     {isUploading && (
@@ -168,12 +168,12 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                             style={{ width: `${uploadProgress}%`, transition: 'width 0.3s ease-in-out' }}
                         />
                     )}
-                    <span className={`relative z-10 text-stone-300 ${isUploading ? '' : 'group-hover:text-primary'}`}>
+                    <span className={`relative z-10 text-stone-300 ${isUploading ? '' : 'group-hover:text-stone-950'}`}>
                         {isUploading ? 'Uploading...' : 'Select and Upload File'}
                     </span>
                 </button>
                 <Link href={backToEditLink} passHref>
-                    <button className="rounded-md bg-gray-500 px-4 py-1 text-lg font-bold text-white hover:bg-gray-600">
+                    <button className="rounded-md bg-primary_dark px-4 py-1 text-lg font-bold text-stone-300 hover:bg-primary hover:text-stone-950">
                         Back To Edit
                     </button>
                 </Link>
