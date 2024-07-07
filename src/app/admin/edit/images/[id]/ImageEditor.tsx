@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { storeUploadedImageDetails } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 import InputTextbox from '@/components/inputs/InputTextbox';
@@ -19,8 +20,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
     const [smallImageUrl, setSmallImageUrl] = useState('Not yet uploaded');
     const [smallWidth, setSmallWidth] = useState(0);
     const [smallHeight, setSmallHeight] = useState(0);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    const router = useRouter();
 
     useEffect(() => {
         console.log('ImageEditor mounted or pieceId changed:', pieceId);
@@ -36,7 +39,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
         setSmallImageUrl('Not yet uploaded');
         setSmallWidth(0);
         setSmallHeight(0);
-        setIsSubmitted(false);
+        setIsSubmitting(false);
         setStatusMessage(null);
     }, []);
 
@@ -67,7 +70,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
             setHeight(originalHeight);
             setSmallWidth(smallWidth);
             setSmallHeight(smallHeight);
-            setIsSubmitted(false);
+            setIsSubmitting(false);
             setStatusMessage(null);
 
             console.log('State after update:', {
@@ -87,7 +90,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
         setSelectedOption(e.target.value);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (shouldNavigate: boolean) => {
+        setIsSubmitting(true);
         try {
             await storeUploadedImageDetails({
                 piece_id: pieceId,
@@ -100,15 +104,21 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                 small_width: smallWidth.toString(),
                 small_height: smallHeight.toString(),
             });
-            setIsSubmitted(true);
             setStatusMessage({ type: 'success', message: 'Changes submitted successfully. You can upload another image.' });
+            if (shouldNavigate) {
+                router.push(`/admin/edit/${pieceId}`);
+            } else {
+                resetInputs();
+            }
         } catch (error) {
             console.error('Error submitting changes:', error);
             setStatusMessage({ type: 'error', message: 'Failed to submit changes. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const isFormValid = imageUrl !== 'Not yet uploaded' && !isSubmitted;
+    const isFormValid = imageUrl !== 'Not yet uploaded' && !isSubmitting;
 
     console.log('Current state:', { imageUrl, title, width, height, smallImageUrl, smallWidth, smallHeight });
 
@@ -149,19 +159,34 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                     ) : height < 800 ? (
                         <div className="text-red-500">Warning: Image height is less than 800px.</div>
                     ) : null}
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={!isFormValid}
-                        className={
-                            'relative rounded-md px-4 py-1 text-lg font-bold ' +
-                            (isFormValid
-                                ? ' bg-secondary_dark text-stone-300 hover:bg-secondary'
-                                : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
-                        }
-                    >
-                        Submit Changes
-                    </button>
+                    <div className="flex space-x-4">
+                        <button
+                            type="button"
+                            onClick={() => handleSubmit(false)}
+                            disabled={!isFormValid}
+                            className={
+                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
+                                (isFormValid
+                                    ? ' bg-secondary_dark text-stone-300 hover:bg-secondary'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                            }
+                        >
+                            {isSubmitting ? 'Submitting...' : 'Submit'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleSubmit(true)}
+                            disabled={!isFormValid}
+                            className={
+                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
+                                (isFormValid
+                                    ? ' bg-blue-500 text-white hover:bg-blue-600'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                            }
+                        >
+                            {isSubmitting ? 'Submitting...' : 'Submit & Edit'}
+                        </button>
+                    </div>
                     {statusMessage && (
                         <div
                             className={`mt-4 rounded p-2 ${statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
