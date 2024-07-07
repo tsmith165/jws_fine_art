@@ -49,11 +49,9 @@ export default function Page({ params }: { params: { id: string } }) {
 
     return (
         <PageLayout page={`/edit/${id}`}>
-            <Protect role="org:ADMIN">
-                <Suspense fallback={<LoadingSpinner page="Edit" />}>
-                    <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
-                </Suspense>
-            </Protect>
+            <Suspense fallback={<LoadingSpinner page="Edit" />}>
+                <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
+            </Suspense>
         </PageLayout>
     );
 }

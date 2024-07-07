@@ -36,9 +36,7 @@ import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 export default async function Page({ params }: { params: { id: string } }) {
     return (
         <PageLayout page={`/edit/${params.id}`}>
-            <Protect role="org:ADMIN">
-                <ImageEditor pieceId={params.id} />
-            </Protect>
+            <ImageEditor pieceId={params.id} />
         </PageLayout>
     );
 }

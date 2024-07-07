@@ -36,11 +36,9 @@ import CreatePiece from '@/app/admin/edit/new/CreatePiece';
 
 export default function NewPiecePage() {
     return (
-        <Protect role="org:ADMIN">
-            <PageLayout page="/edit/new">
-                <CreatePiece />
-            </PageLayout>
-        </Protect>
+        <PageLayout page="/edit/new">
+            <CreatePiece />
+        </PageLayout>
     );
 }
 

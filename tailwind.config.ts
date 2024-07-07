@@ -1,5 +1,5 @@
 import typography from '@tailwindcss/typography';
-
+const plugin = require('tailwindcss/plugin');
 import { withUt } from 'uploadthing/tw';
 
 export default withUt({

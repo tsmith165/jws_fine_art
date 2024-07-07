@@ -31,7 +31,7 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name,
     return (
         <div className="m-0 flex w-full p-0">
             <div className="flex min-w-32 max-w-32 items-center justify-center rounded-l-md bg-secondary_dark px-2.5 py-1.5">
-                <div className="text-stone-400 font-semibold">{formatted_name}</div>
+                <div className="font-semibold text-stone-400">{formatted_name}</div>
             </div>
             <Select
                 defaultValue={defaultValue}

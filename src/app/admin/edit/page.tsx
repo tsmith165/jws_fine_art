@@ -73,13 +73,11 @@ export default async function Page({ params, searchParams }: PageProps) {
     const type = searchParams?.type || 'gallery';
 
     return (
-        <Protect role="org:ADMIN">
-            <PageLayout page={`/edit/${firstId}`}>
-                <Suspense fallback={<LoadingSpinner page="Edit Details" />}>
-                    <Edit pieceDataPromise={pieceDataPromise} current_id={firstId} />
-                </Suspense>
-            </PageLayout>
-        </Protect>
+        <PageLayout page={`/edit/${firstId}`}>
+            <Suspense fallback={<LoadingSpinner page="Edit Details" />}>
+                <Edit pieceDataPromise={pieceDataPromise} current_id={firstId} />
+            </Suspense>
+        </PageLayout>
     );
 }
 

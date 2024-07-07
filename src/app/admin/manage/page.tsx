@@ -48,10 +48,8 @@ export default async function ManagePage({ searchParams }: PageProps) {
     const prioritized_pieces = await getPrioritizedPieces();
 
     return (
-        <Protect role="org:ADMIN">
-            <PageLayout page="/manage">
-                <Manage pieces={pieces} deletedPieces={deletedPieces} prioritized_pieces={prioritized_pieces} activeTab={tab} />
-            </PageLayout>
-        </Protect>
+        <PageLayout page="/manage">
+            <Manage pieces={pieces} deletedPieces={deletedPieces} prioritized_pieces={prioritized_pieces} activeTab={tab} />
+        </PageLayout>
     );
 }
