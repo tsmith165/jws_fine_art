@@ -79,7 +79,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                     <div className="flex pt-1">
                         {pieces.length > 0 && (
                             <Link
-                                href="/manage?tab=manage"
+                                href="/admin/manage?tab=manage"
                                 className={`rounded-t-md px-2 py-1 ${
                                     activeTab === 'manage'
                                         ? 'bg-secondary_dark text-primary'
@@ -91,7 +91,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                         )}
                         {deletedPieces.length > 0 && (
                             <Link
-                                href="/manage?tab=deleted"
+                                href="/admin/manage?tab=deleted"
                                 className={`rounded-t-md px-2 py-1 ${
                                     activeTab === 'deleted'
                                         ? 'bg-secondary_dark text-primary'
@@ -102,7 +102,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                             </Link>
                         )}
                         <Link
-                            href="/manage?tab=priority"
+                            href="/admin/manage?tab=priority"
                             className={`rounded-t-md px-2 py-1 ${
                                 activeTab === 'priority'
                                     ? 'bg-secondary_dark text-primary'
