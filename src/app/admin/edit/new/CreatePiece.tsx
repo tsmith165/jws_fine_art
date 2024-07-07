@@ -1,3 +1,5 @@
+// File 1: /src/app/admin/edit/new/CreatePiece.tsx
+
 'use client';
 
 import { useState, useCallback } from 'react';
@@ -61,7 +63,7 @@ export default function CreatePiece() {
         [],
     );
 
-    const handleCreatePiece = async () => {
+    const handleCreatePiece = async (action: 'edit' | 'images' | 'view') => {
         setIsSubmitting(true);
         try {
             const data: NewPieceData = {
@@ -77,7 +79,17 @@ export default function CreatePiece() {
             setStatusMessage({ type: 'success', message: 'Piece created successfully.' });
             handleResetInputs();
             if (piece_data.piece?.id) {
-                router.push(`/admin/edit/${piece_data.piece?.id}`);
+                switch (action) {
+                    case 'edit':
+                        router.push(`/admin/edit/${piece_data.piece.id}`);
+                        break;
+                    case 'images':
+                        router.push(`/admin/edit/images/${piece_data.piece.id}`);
+                        break;
+                    case 'view':
+                        router.push(`/gallery/?piece=${piece_data.piece.id}`);
+                        break;
+                }
             }
         } catch (error) {
             console.error('Error creating piece:', error);
@@ -126,19 +138,47 @@ export default function CreatePiece() {
                         <div className="text-red-500">Warning: Image height is less than 800px.</div>
                     ) : null}
 
-                    <button
-                        type="submit"
-                        disabled={!isFormValid}
-                        onClick={handleCreatePiece}
-                        className={
-                            'relative rounded-md px-4 py-1 text-lg font-bold ' +
-                            (isFormValid
-                                ? ' bg-secondary_dark text-stone-300 hover:bg-secondary'
-                                : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
-                        }
-                    >
-                        {isSubmitting ? 'Creating...' : 'Create Piece'}
-                    </button>
+                    <div className="flex space-x-4">
+                        <button
+                            type="button"
+                            disabled={!isFormValid}
+                            onClick={() => handleCreatePiece('edit')}
+                            className={
+                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
+                                (isFormValid
+                                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                            }
+                        >
+                            {isSubmitting ? 'Creating...' : 'Create & Edit'}
+                        </button>
+                        <button
+                            type="button"
+                            disabled={!isFormValid}
+                            onClick={() => handleCreatePiece('images')}
+                            className={
+                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
+                                (isFormValid
+                                    ? 'bg-green-500 text-white hover:bg-green-600'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                            }
+                        >
+                            {isSubmitting ? 'Creating...' : 'Create & Add Images'}
+                        </button>
+                        <button
+                            type="button"
+                            disabled={!isFormValid}
+                            onClick={() => handleCreatePiece('view')}
+                            className={
+                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
+                                (isFormValid
+                                    ? 'bg-purple-500 text-white hover:bg-purple-600'
+                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark')
+                            }
+                        >
+                            {isSubmitting ? 'Creating...' : 'Create & View'}
+                        </button>
+                    </div>
                     {statusMessage && (
                         <div
                             className={`mt-4 rounded p-2 ${statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}

@@ -9,7 +9,7 @@ export default withUt({
             fontFamily: {
                 alegrya: ['Alegreya Sans SC', 'sans-serif'],
                 lato: ['Lato', 'sans-serif'],
-                cinzel: ['var(--font-cinzel)', 'serif'], // Fixed typo and using CSS variable
+                cinzel: ['var(--font-cinzel)', 'serif'],
             },
             colors: {
                 primary: '#54786d',
@@ -18,8 +18,8 @@ export default withUt({
                 secondary: '#475451',
                 secondary_dark: '#333739',
 
-                link: '#57aaf3', // unvisited link color,
-                visited: '#be23ae', // visited link color
+                link: '#57aaf3',
+                visited: '#be23ae',
             },
             screens: {
                 xxxs: '325px',
@@ -42,7 +42,7 @@ export default withUt({
     mode: 'jit',
     plugins: [
         typography,
-        plugin(function ({ addBase, theme }: { addBase: any; theme: any }) {
+        plugin(function ({ addBase, theme, addUtilities }: { addBase: any; theme: any; addUtilities: any }) {
             addBase({
                 ':root': {
                     '--color-primary': theme('colors.primary'),
@@ -52,6 +52,15 @@ export default withUt({
                     '--color-secondary-dark': theme('colors.secondary_dark'),
                 },
             });
+
+            // Custom gradeint utility classes
+            const newUtilities = {
+                '.gradient-primary-main': {
+                    '@apply text-transparent bg-gradient-to-r bg-clip-text bg-gradient-to-r from-primary via-primary_dark to-primary': {},
+                },
+            };
+
+            addUtilities(newUtilities);
         }),
     ],
 });
