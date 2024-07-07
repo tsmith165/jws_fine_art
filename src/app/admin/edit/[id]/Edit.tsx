@@ -32,8 +32,8 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
     console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${current_id}`);
 
     return (
-        <div className="flex h-full w-full flex-col md:flex-row">
-            <div className="h-1/3 bg-secondary_dark md:h-full md:w-2/5 lg:w-1/2">
+        <div className="flex h-full w-full flex-col bg-stone-800 md:flex-row">
+            <div className="flex h-1/3 items-center justify-center rounded-md object-contain p-8 md:h-full md:w-2/5 lg:w-1/2">
                 {pieceData ? (
                     <Image
                         src={pieceData.image_path}
@@ -41,36 +41,36 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
                         width={pieceData.width}
                         height={pieceData.height}
                         quality={100}
-                        className="h-full w-full object-contain"
+                        className="h-full w-auto rounded-md md:h-auto"
                     />
                 ) : (
                     <LoadingSpinner page="Edit Details" />
                 )}
             </div>
-            <div className="h-2/3 overflow-y-auto bg-secondary md:h-full md:w-3/5 lg:w-1/2">
-                <div className="flex h-fit flex-row items-center space-x-2 bg-primary p-2">
+            <div className="h-2/3 overflow-y-auto p-4 md:h-full md:w-3/5 lg:w-1/2">
+                <div className="mb-4 flex h-fit flex-row items-center space-x-2">
                     <div className="flex h-[48px] flex-col space-y-1">
                         <Link href={`/admin/edit/${next_id}`}>
-                            <IoIosArrowUp className="h-[22px] w-8 cursor-pointer rounded-lg bg-secondary fill-secondary_dark hover:bg-secondary_dark hover:fill-primary" />
+                            <IoIosArrowUp className="h-[22px] w-8 cursor-pointer rounded-lg bg-stone-700 fill-stone-400 hover:bg-stone-600 hover:fill-stone-200" />
                         </Link>
                         <Link href={`/admin/edit/${last_id}`}>
-                            <IoIosArrowDown className="h-[22px] w-8 cursor-pointer rounded-lg bg-secondary fill-secondary_dark hover:bg-secondary_dark hover:fill-primary" />
+                            <IoIosArrowDown className="h-[22px] w-8 cursor-pointer rounded-lg bg-stone-700 fill-stone-400 hover:bg-stone-600 hover:fill-stone-200" />
                         </Link>
                     </div>
                     <Link href={`/details/${current_id}`}>
-                        <MdPageview className="h-[48px] w-[48px] cursor-pointer rounded-lg bg-secondary fill-secondary_dark p-1 hover:bg-secondary_dark hover:fill-primary" />
+                        <MdPageview className="h-[48px] w-[48px] cursor-pointer rounded-lg bg-stone-700 fill-stone-400 p-1 hover:bg-stone-600 hover:fill-stone-200" />
                     </Link>
-                    <form action={handleTitleUpdate} className="flex w-full flex-grow flex-row rounded-lg bg-secondary_dark">
+                    <form action={handleTitleUpdate} className="flex w-full flex-grow flex-row rounded-lg bg-stone-700">
                         <input type="hidden" name="pieceId" value={current_id} />
                         <input
                             type="text"
                             name="newTitle"
                             defaultValue={piece_title}
-                            className="m-0 flex w-full flex-grow rounded-lg border-none bg-secondary_dark px-3 py-1 text-2xl font-bold text-primary outline-none"
+                            className="m-0 flex w-full flex-grow rounded-lg border-none bg-stone-700 px-3 py-1 text-2xl font-bold text-stone-200 outline-none"
                         />
                         <button
                             type="submit"
-                            className="ml-2 rounded-md bg-secondary px-3 py-1 font-bold text-primary hover:bg-primary_dark hover:text-secondary_dark"
+                            className="ml-2 rounded-md bg-stone-600 px-3 py-1 font-bold text-stone-200 hover:bg-stone-500"
                         >
                             Save
                         </button>

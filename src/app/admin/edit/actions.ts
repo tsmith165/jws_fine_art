@@ -402,5 +402,5 @@ export async function createNewPiece(newPieceData: NewPieceData) {
     }
 
     revalidatePath('/admin/edit');
-    redirect(`/admin/edit/${newPieceOutput.piece.id}`);
+    return { success: true, piece: newPieceOutput.piece };
 }

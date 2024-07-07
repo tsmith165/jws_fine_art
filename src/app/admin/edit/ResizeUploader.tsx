@@ -5,8 +5,8 @@ import type { OurFileRouter } from '@/app/api/uploadthing/core';
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
 interface ResizeUploaderProps {
-    onFilesSelected: (originalFile: File, smallFile: File) => void;
     handleUploadComplete: (
+        fileName: string,
         originalImageUrl: string,
         smallImageUrl: string,
         originalWidth: number,
@@ -22,38 +22,41 @@ interface UploadResponse {
     url: string;
 }
 
-const ResizeUploader: React.FC<ResizeUploaderProps> = ({ onFilesSelected, handleUploadComplete, handleResetInputs }) => {
-    const [largeFile, setLargeFile] = useState<File | null>(null);
-    const [smallFile, setSmallFile] = useState<File | null>(null);
-    const [isFileSelected, setIsFileSelected] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
+const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, handleResetInputs }) => {
     const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { startUpload } = useUploadThing('imageUploader', {
-        onClientUploadComplete: (res) => {
+        onClientUploadComplete: async (res) => {
             console.log('Upload complete:', res);
+            handleResetInputs();
             if (res && res.length === 2) {
+                const fileName = res[0].name;
                 const smallImage = res.find((file: UploadResponse) => file.name.startsWith('small-'));
                 const largeImage = res.find((file: UploadResponse) => !file.name.startsWith('small-'));
 
                 if (smallImage && largeImage) {
-                    const img = new Image();
-                    img.onload = function () {
-                        const smallImg = new Image();
-                        smallImg.onload = function () {
-                            handleUploadComplete(
-                                largeImage.url,
-                                smallImage.url,
-                                img.naturalWidth,
-                                img.naturalHeight,
-                                smallImg.naturalWidth,
-                                smallImg.naturalHeight,
-                            );
-                        };
-                        smallImg.src = smallImage.url;
-                    };
-                    img.src = largeImage.url;
+                    try {
+                        const [imgDimensions, smallImgDimensions] = await Promise.all([
+                            getImageDimensions(largeImage.url),
+                            getImageDimensions(smallImage.url),
+                        ]);
+
+                        console.log(`Image ${largeImage.url} dimensions:`, imgDimensions);
+                        console.log(`Small image ${smallImage.url} dimensions:`, smallImgDimensions);
+                        handleUploadComplete(
+                            fileName,
+                            largeImage.url,
+                            smallImage.url,
+                            imgDimensions.width,
+                            imgDimensions.height,
+                            smallImgDimensions.width,
+                            smallImgDimensions.height,
+                        );
+                    } catch (error) {
+                        console.error('Error getting image dimensions:', error);
+                    }
                 } else {
                     console.error('Could not identify small and large images from the response');
                 }
@@ -61,17 +64,26 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ onFilesSelected, handle
                 console.error('Unexpected response format');
             }
             setIsUploading(false);
+            setUploadProgress(0);
         },
         onUploadError: (error: Error) => {
             alert(`ERROR! ${error.message}`);
+            setIsUploading(false);
+            setUploadProgress(0);
         },
         onUploadProgress: (progress: number) => {
             setUploadProgress(progress);
-            if (progress < 100 && !isUploading && isFileSelected) {
-                setIsUploading(true);
-            }
         },
     });
+
+    const getImageDimensions = (url: string): Promise<{ width: number; height: number }> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+            img.onerror = reject;
+            img.src = url;
+        });
+    };
 
     const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<File> => {
         return new Promise((resolve) => {
@@ -117,71 +129,47 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ onFilesSelected, handle
             if (selectedFiles && selectedFiles.length > 0) {
                 const originalFile = selectedFiles[0];
 
+                setIsUploading(true);
+                handleResetInputs();
+
                 const originalResizedFile = await resizeImage(originalFile, 1920, 1920);
                 const smallResizedFile = await resizeImage(originalFile, 450, 450);
 
-                setIsFileSelected(true);
-                setLargeFile(originalResizedFile);
-                setSmallFile(smallResizedFile);
-                onFilesSelected(originalResizedFile, smallResizedFile);
+                const smallFileWithPrefix = new File([smallResizedFile], `small-${smallResizedFile.name}`, { type: smallResizedFile.type });
+
+                await startUpload([smallFileWithPrefix, originalResizedFile]);
             }
         },
-        [onFilesSelected],
+        [handleResetInputs, startUpload],
     );
 
     const handleSelectFilesClick = () => {
-        handleResetInputs();
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
 
-    const getFileSizeMB = (file: File) => {
-        return (file.size / (1024 * 1024)).toFixed(2);
-    };
-
-    const handleUploadClick = async () => {
-        if (!largeFile || !smallFile) return;
-
-        console.log(`Uploading large file with size: ${getFileSizeMB(largeFile)} MB`);
-        console.log(`Uploading small file with size: ${getFileSizeMB(smallFile)} MB`);
-
-        // Create a new File object for the small file with the "small-" prefix
-        const smallFileWithPrefix = new File([smallFile], `small-${smallFile.name}`, { type: smallFile.type });
-
-        await startUpload([smallFileWithPrefix, largeFile]);
-
-        setIsUploading(false);
-        setUploadProgress(0);
-        setLargeFile(null);
-        setSmallFile(null);
-    };
-
     return (
         <>
-            <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+            <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" disabled={isUploading} />
             <div className="flex space-x-2">
                 <button
                     onClick={handleSelectFilesClick}
-                    className="h-full rounded-md bg-primary_dark px-4 py-1 text-lg font-bold text-stone-300 hover:bg-secondary_dark hover:text-primary"
+                    disabled={isUploading}
+                    className={`group relative overflow-hidden rounded-md ${
+                        isUploading ? 'bg-secondary' : 'bg-secondary_dark hover:bg-secondary'
+                    } px-4 py-1 text-lg font-bold`}
                 >
-                    Select File
+                    {isUploading && (
+                        <div
+                            className="absolute left-0 top-0 z-0 h-full bg-primary"
+                            style={{ width: `${uploadProgress}%`, transition: 'width 0.3s ease-in-out' }}
+                        />
+                    )}
+                    <span className={`relative z-10 text-stone-300 ${isUploading ? '' : 'group-hover:text-primary'}`}>
+                        {isUploading ? 'Uploading...' : 'Select and Upload File'}
+                    </span>
                 </button>
-                {largeFile && smallFile && (
-                    <button
-                        onClick={handleUploadClick}
-                        className={`group relative overflow-hidden rounded-md ${
-                            isUploading ? 'bg-secondary_dark' : 'bg-primary_dark'
-                        } px-4 py-1 text-lg font-bold shadow-xl ring-2 ring-primary_dark hover:bg-secondary_dark`}
-                    >
-                        {isUploading && (
-                            <div className="absolute left-0 top-0 z-0 h-full bg-primary" style={{ width: `${uploadProgress}%` }} />
-                        )}
-                        <span className={`relative z-10 text-stone-300 ${isUploading ? '' : 'group-hover:text-primary'}`}>
-                            {isUploading ? 'Uploading...' : 'Upload'}
-                        </span>
-                    </button>
-                )}
             </div>
         </>
     );

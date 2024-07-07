@@ -52,16 +52,32 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
     const themeOptions =
         formData.theme
             ?.split(',')
-            .filter((option: string) => option.trim() !== '') // Filter out blank options
+            .filter((option: string) => option.trim() !== '')
             .map((option: string) => ({ value: option, label: option })) || [];
 
     return (
-        <div className="flex h-fit w-full p-2">
-            <form onSubmit={handleSubmit} className="flex w-full flex-col space-y-2">
-                {/* Row 2.) Piece Type Select */}
-                <div className="flex h-fit w-full">
+        <div className="w-full">
+            <form onSubmit={handleSubmit} className="space-y-2">
+                <InputMultiSelect
+                    name="theme"
+                    defaultValue={themeOptions}
+                    select_options={[
+                        ['Water', 'Water'],
+                        ['Snow', 'Snow'],
+                        ['Mountains', 'Mountains'],
+                        ['Landscape', 'Landscape'],
+                        ['City', 'City'],
+                        ['Portrait', 'Portrait'],
+                        ['Black and White', 'Black and White'],
+                        ['Abstract', 'Abstract'],
+                        ['None', 'None'],
+                    ]}
+                    onChange={handleMultiSelectChange}
+                />
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <InputSelect
-                        name="piece_type"
+                        idName="piece_type"
+                        name="Piece Type"
                         value={formData.piece_type}
                         onChange={handleChange}
                         select_options={[
@@ -72,32 +88,21 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                             ['Pastel On Paper', 'Pastel On Paper'],
                         ]}
                     />
-                </div>
-
-                {/* Row 3.) Theme Select */}
-                <div className="flex h-fit w-full">
-                    <InputMultiSelect
-                        name="theme"
-                        defaultValue={themeOptions}
+                    <InputSelect
+                        idName="sold"
+                        name="Sold"
+                        value={formData.sold ? 'True' : 'False'}
+                        onChange={handleChange}
                         select_options={[
-                            ['Water', 'Water'],
-                            ['Snow', 'Snow'],
-                            ['Mountains', 'Mountains'],
-                            ['Landscape', 'Landscape'],
-                            ['City', 'City'],
-                            ['Portrait', 'Portrait'],
-                            ['Black and White', 'Black and White'],
-                            ['Abstract', 'Abstract'],
-                            ['None', 'None'],
+                            ['True', 'Sold'],
+                            ['False', 'Not Sold'],
                         ]}
-                        onChange={handleMultiSelectChange}
                     />
                 </div>
-
-                {/* Row 3.) Piece Is Framed Select */}
-                <div className="flex h-fit w-full">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <InputSelect
-                        name="framed"
+                        idName="framed"
+                        name="Framed"
                         value={formData.framed ? 'True' : 'False'}
                         onChange={handleChange}
                         select_options={[
@@ -105,109 +110,44 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                             ['False', 'False'],
                         ]}
                     />
+                    <InputSelect
+                        idName="available"
+                        name="Available"
+                        value={formData.available ? 'True' : 'False'}
+                        onChange={handleChange}
+                        select_options={[
+                            ['True', 'True'],
+                            ['False', 'False'],
+                        ]}
+                    />
                 </div>
-
-                {/* Row 5.) Available / Sold Selects */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-                    <div className="w-full md:w-1/2">
-                        <InputSelect
-                            name="available"
-                            value={formData.available ? 'True' : 'False'}
-                            onChange={handleChange}
-                            select_options={[
-                                ['True', 'True'],
-                                ['False', 'False'],
-                            ]}
-                        />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <InputSelect
-                            name="sold"
-                            value={formData.sold ? 'True' : 'False'}
-                            onChange={handleChange}
-                            select_options={[
-                                ['True', 'Sold'],
-                                ['False', 'Not Sold'],
-                            ]}
-                        />
-                    </div>
+                    <InputTextbox idName="instagram" name="Instagram" value={formData.instagram} onChange={handleChange} />
+                    <InputTextbox idName="price" name="Price" value={formData.price.toString()} onChange={handleChange} />
                 </div>
-
-                {/* Row 6.) Instagram URL Textbox / Price Textbox */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-                    <div className="w-full md:w-1/2">
-                        <InputTextbox idName="instagram" name="Instagram" value={formData.instagram} onChange={handleChange} />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <InputTextbox idName="price" name="Price" value={formData.price.toString()} onChange={handleChange} />
-                    </div>
+                    <InputTextbox idName="real_width" name="Width (in)" value={formData.real_width.toString()} onChange={handleChange} />
+                    <InputTextbox idName="real_height" name="Height (in)" value={formData.real_height.toString()} onChange={handleChange} />
                 </div>
-
-                {/* Row 7.) Real Width / Height Text Box */}
                 <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-                    <div className="w-full md:w-1/2">
-                        <InputTextbox
-                            idName="real_width"
-                            name="Width (in)"
-                            value={formData.real_width.toString()}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <InputTextbox
-                            idName="real_height"
-                            name="Height (in)"
-                            value={formData.real_height.toString()}
-                            onChange={handleChange}
-                        />
-                    </div>
+                    <InputTextbox idName="width" name="Width (px)" value={formData.width.toString()} onChange={handleChange} />
+                    <InputTextbox idName="height" name="Height (px)" value={formData.height.toString()} onChange={handleChange} />
                 </div>
-
-                {/* Row 8.) Width / Height Text Box */}
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-                    <div className="w-full md:w-1/2">
-                        <InputTextbox idName="width" name="Width (px)" value={formData.width.toString()} onChange={handleChange} />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <InputTextbox idName="height" name="Height (PX)" value={formData.height.toString()} onChange={handleChange} />
-                    </div>
-                </div>
-
-                {/* Row 9.) Comments Text Area */}
-                <div className="flex h-fit w-full">
-                    <InputTextArea idName="comments" name="Comments" value={formData.comments} rows={2} onChange={handleChange} />
-                </div>
-
-                {/* Row 10.) Description Text Area */}
-                <div className="flex h-fit w-full">
-                    <InputTextArea idName="description" name="Description" value={formData.description} rows={5} onChange={handleChange} />
-                </div>
-
+                <InputTextArea idName="comments" name="Comments" value={formData.comments} rows={2} onChange={handleChange} />
+                <InputTextArea idName="description" name="Description" value={formData.description} rows={5} onChange={handleChange} />
                 <div className="flex flex-row items-center space-x-2">
-                    <button
-                        type="submit"
-                        className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 text-center font-bold text-secondary_dark ' +
-                            'hover:border-primary hover:bg-secondary_dark hover:text-primary'
-                        }
-                    >
+                    <button type="submit" className="rounded-md bg-stone-600 px-4 py-2 text-sm font-bold text-stone-200 hover:bg-stone-500">
                         Submit Changes
                     </button>
                     <Link
                         href="/admin/edit/new"
-                        className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 text-center font-bold text-secondary_dark ' +
-                            'hover:border-primary hover:bg-secondary_dark hover:text-primary'
-                        }
+                        className="rounded-md bg-stone-600 px-4 py-2 text-sm font-bold text-stone-200 hover:bg-stone-500"
                     >
                         Create New Piece
                     </Link>
                     <Link
                         href={`/admin/edit/images/${formData.id}`}
-                        className={
-                            'rounded-md border-2 border-primary_dark bg-primary px-3 py-1 text-center font-bold text-secondary_dark ' +
-                            'hover:border-primary hover:bg-secondary_dark hover:text-primary'
-                        }
+                        className="rounded-md bg-stone-600 px-4 py-2 text-sm font-bold text-stone-200 hover:bg-stone-500"
                     >
                         Edit Images
                     </Link>

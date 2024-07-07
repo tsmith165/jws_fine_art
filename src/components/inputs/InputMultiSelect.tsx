@@ -47,12 +47,19 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ defaultValue, name,
                     control: (baseStyles, state) => ({
                         ...baseStyles,
                         borderColor: '',
-                        backgroundColor: '#a8a29e',
+                        backgroundColor: 'var(--tw-bg-stone-400)',
                     }),
                     multiValue: (styles) => ({
                         ...styles,
-                        backgroundColor: '#365349',
-                        color: '#a8a29e',
+                        backgroundColor: 'var(--color-secondary-dark)',
+                    }),
+                    option: (provided, state) => ({
+                        ...provided,
+                        color: 'var(--color-stone-950)',
+                    }),
+                    multiValueLabel: (provided, state) => ({
+                        ...provided,
+                        color: 'var(--color-stone-300)',
                     }),
                 }}
                 options={react_select_options}

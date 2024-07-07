@@ -40,5 +40,18 @@ export default withUt({
         },
     },
     mode: 'jit',
-    plugins: [typography],
+    plugins: [
+        typography,
+        plugin(function ({ addBase, theme }: { addBase: any; theme: any }) {
+            addBase({
+                ':root': {
+                    '--color-primary': theme('colors.primary'),
+                    '--color-primary-dark': theme('colors.primary_dark'),
+                    '--color-secondary-light': theme('colors.secondary_light'),
+                    '--color-secondary': theme('colors.secondary'),
+                    '--color-secondary-dark': theme('colors.secondary_dark'),
+                },
+            });
+        }),
+    ],
 });
