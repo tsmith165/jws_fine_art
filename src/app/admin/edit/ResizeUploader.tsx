@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
+import Link from 'next/link';
 import { generateReactHelpers } from '@uploadthing/react';
 import type { OurFileRouter } from '@/app/api/uploadthing/core';
 
@@ -15,6 +16,7 @@ interface ResizeUploaderProps {
         smallHeight: number,
     ) => void;
     handleResetInputs: () => void;
+    backToEditLink: string;
 }
 
 interface UploadResponse {
@@ -22,7 +24,7 @@ interface UploadResponse {
     url: string;
 }
 
-const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, handleResetInputs }) => {
+const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, handleResetInputs, backToEditLink }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -170,6 +172,11 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                         {isUploading ? 'Uploading...' : 'Select and Upload File'}
                     </span>
                 </button>
+                <Link href={backToEditLink} passHref>
+                    <button className="rounded-md bg-gray-500 px-4 py-1 text-lg font-bold text-white hover:bg-gray-600">
+                        Back To Edit
+                    </button>
+                </Link>
             </div>
         </>
     );

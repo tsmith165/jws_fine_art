@@ -122,7 +122,11 @@ export default function CreatePiece() {
                     Create New Piece
                 </div>
                 <div className="flex w-full flex-col items-center space-y-2 p-2">
-                    <ResizeUploader handleUploadComplete={handleUploadComplete} handleResetInputs={handleResetInputs} />
+                    <ResizeUploader
+                        handleUploadComplete={handleUploadComplete}
+                        handleResetInputs={handleResetInputs}
+                        backToEditLink="/admin/edit"
+                    />
                     <InputTextbox idName="title" name="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
                     <InputTextbox idName="image_path" name="Image URL" value={imageUrl} />
                     <InputTextbox idName="px_width" name="Px Width" value={width.toString()} />

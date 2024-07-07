@@ -132,7 +132,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                     Edit Images
                 </div>
                 <div className="flex w-full flex-col items-center space-y-2 p-2">
-                    <ResizeUploader handleUploadComplete={handleUploadComplete} handleResetInputs={resetInputs} />
+                    <ResizeUploader
+                        handleUploadComplete={handleUploadComplete}
+                        handleResetInputs={resetInputs}
+                        backToEditLink={`/admin/edit/${pieceId}`}
+                    />
                     <InputSelect
                         idName="image_type"
                         key="image_type"
