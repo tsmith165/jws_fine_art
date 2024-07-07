@@ -3,6 +3,7 @@ import { IoIosArrowUp, IoIosArrowDown, IoIosTrash } from 'react-icons/io';
 import { handleImageReorder, handleImageDelete, handleImageTitleEdit } from '../actions';
 import { PiecesWithImages, ExtraImages, ProgressImages } from '@/db/schema';
 import Image from 'next/image';
+import { revalidatePath } from 'next/cache';
 
 interface PieceOrderPanelProps {
     current_piece: PiecesWithImages;
@@ -24,6 +25,10 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         }
 
         await handleImageReorder(pieceId, currentPieceId, targetPieceId, imageType);
+        revalidatePath(`/admin/edit/${current_piece.id}`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
     }
 
     async function handleImageDeleteAction(formData: FormData) {
@@ -37,6 +42,10 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         }
 
         await handleImageDelete(pieceId, imagePath, imageType);
+        revalidatePath(`/admin/edit/${current_piece.id}`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
     }
 
     async function handleImageTitleEditAction(formData: FormData) {
@@ -50,6 +59,10 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
         }
 
         await handleImageTitleEdit(imageId, newTitle, imageType);
+        revalidatePath(`/admin/edit/${current_piece.id}`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
     }
 
     const renderImages = (images: (ExtraImages | ProgressImages)[], imageType: string) => {

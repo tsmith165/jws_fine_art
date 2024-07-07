@@ -87,7 +87,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                         onChange={handleChange}
                         select_options={[
                             ['Oil On Canvas', 'Oil On Canvas'],
-                            ['Oil On Cradled Panel', 'Oil On Cradled Panel'],
+                            ['Oil On Panel', 'Oil On Panel'],
                             ['Oil On Cradled Panel', 'Oil On Cradled Panel'],
                             ['Intaglio On Paper', 'Intaglio On Paper'],
                             ['Linocut On Paper', 'Linocut On Paper'],
