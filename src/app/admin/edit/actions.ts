@@ -29,7 +29,7 @@ interface SubmitFormData {
     piece_title: string;
     description: string;
     piece_type: string;
-    sold: string;
+    sold: boolean;
     price: string;
     instagram: string;
     width: string;
@@ -37,8 +37,8 @@ interface SubmitFormData {
     real_width: string;
     real_height: string;
     theme: string;
-    available: string;
-    framed: string;
+    available: boolean;
+    framed: boolean;
     comments: string;
     image_path: string;
 }
@@ -58,27 +58,35 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
             throw new Error('Title is required');
         }
 
+        console.log('Pre-Formatted Data (Next Line):');
+        console.log(data);
+
+        const formattedData = {
+            title: data.piece_title?.toString(),
+            width: parseInt(data.width || '0'),
+            height: parseInt(data.height || '0'),
+            description: data.description || '',
+            piece_type: data.piece_type || '',
+            sold: data.sold,
+            price: parseInt(data.price || '0'),
+            real_width: parseFloat(data.real_width || '0'),
+            real_height: parseFloat(data.real_height || '0'),
+            instagram: data.instagram?.split('/').pop() || '',
+            theme: data.theme?.replace('None, ', '') || '',
+            available: data.available,
+            framed: data.framed,
+            comments: data.comments || '',
+            image_path: data.image_path || '',
+        };
+
+        console.log('Formatted Data (Next Line):');
+        console.log(formattedData);
+
         if (data.piece_id) {
             // Update existing piece
             await db
                 .update(piecesTable)
-                .set({
-                    title: data.piece_title?.toString(),
-                    width: parseInt(data.width || '0'),
-                    height: parseInt(data.height || '0'),
-                    description: data.description || '',
-                    piece_type: data.piece_type || '',
-                    sold: data.sold === 'Sold',
-                    price: parseInt(data.price || '0'),
-                    real_width: parseInt(data.real_width || '0'),
-                    real_height: parseInt(data.real_height || '0'),
-                    instagram: data.instagram?.split('/').pop() || '',
-                    theme: data.theme?.replace('None, ', '') || '',
-                    available: data.available === 'True',
-                    framed: data.framed === 'True',
-                    comments: data.comments || '',
-                    image_path: data.image_path || '',
-                })
+                .set(formattedData)
                 .where(eq(piecesTable.id, parseInt(data.piece_id)));
         } else {
             // Create new piece
@@ -96,25 +104,14 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
                 id: next_id,
                 o_id: next_oid,
                 class_name: data.piece_title.toString().toLowerCase().replace(' ', '_'),
-                title: data.piece_title?.toString(),
-                image_path: data.image_path || '',
-                width: parseInt(data.width || '0'),
-                height: parseInt(data.height || '0'),
-                description: data.description || '',
-                piece_type: data.piece_type || '',
-                sold: data.sold === 'Sold',
-                price: parseInt(data.price || '0'),
-                real_width: parseInt(data.real_width || '0'),
-                real_height: parseInt(data.real_height || '0'),
                 active: true,
-                instagram: data.instagram?.split('/').pop() || '',
-                theme: data.theme?.replace('None, ', '') || '',
-                available: data.available === 'True',
-                framed: data.framed === 'True',
-                comments: data.comments || '',
+                ...formattedData,
             });
         }
         revalidatePath(`/admin/edit/${data.piece_id}`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
         return { success: true };
     } catch (error) {
         console.error('Error in onSubmitEditForm:', error);
@@ -177,7 +174,7 @@ export async function storeUploadedImageDetails(data: UploadFormData): Promise<{
                 await db.insert(extraImagesTable).values({
                     piece_id: pieceId,
                     image_path: imageUrl,
-                    title: title, // Set the title
+                    title: title,
                     width: width,
                     height: height,
                     small_image_path: smallImageUrl,
@@ -189,7 +186,7 @@ export async function storeUploadedImageDetails(data: UploadFormData): Promise<{
                 await db.insert(progressImagesTable).values({
                     piece_id: pieceId,
                     image_path: imageUrl,
-                    title: title, // Set the title
+                    title: title,
                     width: width,
                     height: height,
                     small_image_path: smallImageUrl,
@@ -199,7 +196,10 @@ export async function storeUploadedImageDetails(data: UploadFormData): Promise<{
             }
         }
 
-        revalidatePath(`/admin/edit/${piece[0].id}`);
+        revalidatePath(`/admin/edit`); // Revalidate the path to refetch the data
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
         return { success: true, imageUrl: imageUrl };
     } catch (error) {
         console.error('Error in handleImageUpload:', error);
@@ -238,6 +238,9 @@ export async function handleImageReorder(
 
         // Revalidate the path to refetch the data
         revalidatePath(`/admin/edit/${pieceId}`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
         return { success: true };
     } catch (error) {
         console.error('Error in handleImageReorder:', error);
@@ -287,6 +290,9 @@ export async function handleImageDelete(
 
         // Revalidate the path to refetch the data
         revalidatePath(`/admin/edit/${pieceId}`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
         return { success: true };
     } catch (error) {
         console.error('Error in handleImageDelete:', error);
@@ -314,6 +320,9 @@ export async function handleTitleUpdate(formData: FormData): Promise<{ success: 
 
         // Revalidate the path to refetch the data
         revalidatePath(`/admin/edit/${pieceId}`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
         return { success: true };
     } catch (error) {
         console.error('Error in handleTitleUpdate:', error);
@@ -378,16 +387,6 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
     }
 }
 
-interface NewPieceData {
-    title: string;
-    imagePath: string;
-    width: number;
-    height: number;
-    smallImagePath: string;
-    smallWidth: number;
-    smallHeight: number;
-}
-
 export async function createNewPiece(newPieceData: NewPieceData) {
     console.log('Creating new piece:', newPieceData);
     const newPieceOutput = await createPiece(newPieceData);
@@ -401,6 +400,9 @@ export async function createNewPiece(newPieceData: NewPieceData) {
         return { success: false, error: 'Error creating new piece.' };
     }
 
-    revalidatePath('/admin/edit');
+    revalidatePath(`/admin/edit/`);
+    revalidatePath('/admin/manage');
+    revalidatePath('/admin/gallery');
+    revalidatePath('/admin/slideshow');
     return { success: true, piece: newPieceOutput.piece };
 }

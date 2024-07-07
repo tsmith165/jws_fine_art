@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import { createNewPiece } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 import InputTextbox from '@/components/inputs/InputTextbox';
-import { revalidate } from '@/app/page';
-import { revalidatePath } from 'next/cache';
 
 interface NewPieceData {
     title: string;
@@ -77,10 +75,6 @@ export default function CreatePiece() {
             };
             const piece_data = await createNewPiece(data);
             setStatusMessage({ type: 'success', message: 'Piece created successfully.' });
-            revalidatePath(`/admin/edit/`);
-            revalidatePath('/admin/manage');
-            revalidatePath('/admin/gallery');
-            revalidatePath('/admin/slideshow');
             handleResetInputs();
 
             if (piece_data.piece?.id) {

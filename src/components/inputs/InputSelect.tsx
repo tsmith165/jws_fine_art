@@ -1,7 +1,3 @@
-// File 1: /src/components/inputs/InputSelect.tsx
-
-'use client';
-
 import React from 'react';
 import Select, { components } from 'react-select';
 import { FaArrowDown } from 'react-icons/fa';
@@ -20,7 +16,7 @@ interface InputSelectProps {
     idName: string;
     name: string;
     select_options: [string, string][];
-    value?: string;
+    value?: string | boolean;
     onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
@@ -30,6 +26,26 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, idName, name, s
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
     const react_select_options = select_options.map((option) => ({ value: option[0], label: option[1] }));
+
+    const handleChange = (selectedOption: any) => {
+        if (onChange) {
+            let newValue = selectedOption.value;
+            // Convert 'True' and 'False' strings to boolean if necessary
+            if (newValue === 'True') newValue = true;
+            if (newValue === 'False') newValue = false;
+
+            const syntheticEvent = {
+                target: {
+                    name: idName,
+                    value: newValue,
+                },
+            } as React.ChangeEvent<HTMLSelectElement>;
+            onChange(syntheticEvent);
+        }
+    };
+
+    // Convert boolean value to string for Select component
+    const selectValue = typeof value === 'boolean' ? (value ? 'True' : 'False') : value;
 
     return (
         <div className="m-0 flex w-full p-0">
@@ -41,52 +57,27 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, idName, name, s
                 <div className="font-bold text-stone-400">{formatted_name}</div>
             </div>
             <Tooltip id={`tooltip-${idName}`} place="top" />
-            {onChange === undefined ? (
-                <Select
-                    defaultValue={defaultValue}
-                    value={react_select_options.find((option) => option.value === value)}
-                    isMulti={false}
-                    id={idName}
-                    name={idName}
-                    className="h-full flex-grow rounded-r-md border-none bg-stone-400 text-sm font-bold text-stone-950"
-                    classNamePrefix="select"
-                    components={{
-                        DropdownIndicator,
-                    }}
-                    styles={{
-                        control: (baseStyles, state) => ({
-                            ...baseStyles,
-                            borderColor: '',
-                            backgroundColor: 'var(--tw-bg-stone-400)',
-                        }),
-                    }}
-                    options={react_select_options}
-                />
-            ) : (
-                <Select
-                    defaultValue={defaultValue}
-                    value={react_select_options.find((option) => option.value === value)}
-                    isMulti={false}
-                    id={idName}
-                    name={idName}
-                    className="h-full flex-grow rounded-r-md border-none bg-stone-400 text-sm font-bold text-stone-950"
-                    classNamePrefix="select"
-                    components={{
-                        DropdownIndicator,
-                    }}
-                    styles={{
-                        control: (baseStyles, state) => ({
-                            ...baseStyles,
-                            borderColor: '',
-                            backgroundColor: 'var(--tw-bg-stone-400)',
-                        }),
-                    }}
-                    options={react_select_options}
-                    onChange={(selectedOption) =>
-                        onChange?.({ target: { value: selectedOption?.value, name: idName } } as React.ChangeEvent<HTMLSelectElement>)
-                    }
-                />
-            )}
+            <Select
+                defaultValue={defaultValue}
+                value={react_select_options.find((option) => option.value === selectValue)}
+                isMulti={false}
+                id={idName}
+                name={idName}
+                className="h-full flex-grow rounded-r-md border-none bg-stone-400 text-sm font-bold text-stone-950"
+                classNamePrefix="select"
+                components={{
+                    DropdownIndicator,
+                }}
+                styles={{
+                    control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        borderColor: '',
+                        backgroundColor: 'var(--tw-bg-stone-400)',
+                    }),
+                }}
+                options={react_select_options}
+                onChange={handleChange}
+            />
         </div>
     );
 };

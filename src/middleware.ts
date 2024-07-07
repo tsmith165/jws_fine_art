@@ -16,11 +16,11 @@ export default clerkMiddleware(async (auth, req) => {
     }
 
     if (route_is_private === true) {
-        console.log('Route is private.  Protecting with admin role.');
-        console.log('Current auth object: ' + JSON.stringify(auth()));
+        // console.log('Route is private.  Protecting with admin role.');
+        // console.log('Current auth object: ' + JSON.stringify(auth()));
 
         const userId = auth().userId;
-        console.log('User ID: ' + userId);
+        // console.log('User ID: ' + userId);
 
         if (!userId) {
             console.log('User ID is null. Redirecting to home page.');
@@ -28,12 +28,12 @@ export default clerkMiddleware(async (auth, req) => {
         }
 
         const hasAdminRole = await isClerkUserIdAdmin(userId);
-        console.log('User hasAdminRole: ' + hasAdminRole);
+        // console.log('User hasAdminRole: ' + hasAdminRole);
         if (!hasAdminRole) {
             console.log('User does not have admin role. Redirecting to home page.');
             return NextResponse.redirect(new URL('/', req.url));
         }
-        console.log('User has admin role. Continuing...');
+        // console.log('User has admin role. Continuing...');
     }
     return NextResponse.next();
 });

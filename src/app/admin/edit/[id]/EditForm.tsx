@@ -9,7 +9,6 @@ import InputMultiSelect from '@/components/inputs/InputMultiSelect';
 import InputTextArea from '@/components/inputs/InputTextArea';
 
 import { onSubmitEditForm } from '../actions';
-import { revalidatePath } from 'next/cache';
 
 interface EditFormProps {
     current_piece: any;
@@ -48,10 +47,6 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
         console.log('Form Data (Next Line):');
         console.log(formData);
         await onSubmitEditForm(formData);
-        revalidatePath(`/admin/edit/${formData.piece_id}`);
-        revalidatePath('/admin/manage');
-        revalidatePath('/admin/gallery');
-        revalidatePath('/admin/slideshow');
     };
 
     const themeOptions =
@@ -64,7 +59,8 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
         <div className="w-full">
             <form onSubmit={handleSubmit} className="space-y-2">
                 <InputMultiSelect
-                    name="theme"
+                    idName="theme"
+                    name="Theme"
                     defaultValue={themeOptions}
                     select_options={[
                         ['Water', 'Water'],
