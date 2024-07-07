@@ -16,9 +16,8 @@ const InputTextbox: React.FC<InputTextboxProps> = ({ idName, name, value, placeh
     const prevValueRef = useRef<string | undefined>(value);
 
     useEffect(() => {
-        console.log(`InputTextbox ${idName} rendering with value:`, value);
         if (value !== prevValueRef.current) {
-            console.log(`InputTextbox ${idName} value changed from ${prevValueRef.current} to ${value}`);
+            // console.log(`InputTextbox ${idName} value changed from ${prevValueRef.current} to ${value}`);
             prevValueRef.current = value;
             if (inputRef.current && !onChange) {
                 inputRef.current.value = value || '';

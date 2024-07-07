@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 import InputTextbox from '@/components/inputs/InputTextbox';
@@ -26,6 +26,8 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
         progress_images_count: current_piece.progress_images?.length.toString(),
     });
 
+    const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prevData: typeof formData) => ({
@@ -44,9 +46,19 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setSubmitMessage(null);
         console.log('Form Data (Next Line):');
         console.log(formData);
-        await onSubmitEditForm(formData);
+        try {
+            const result = await onSubmitEditForm(formData);
+            if (result.success) {
+                setSubmitMessage({ type: 'success', text: 'Changes submitted successfully!' });
+            } else {
+                setSubmitMessage({ type: 'error', text: result.error || 'An error occurred while submitting changes.' });
+            }
+        } catch (error) {
+            setSubmitMessage({ type: 'error', text: 'An unexpected error occurred.' });
+        }
     };
 
     const themeOptions =
@@ -154,6 +166,12 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                         Edit Images
                     </Link>
                 </div>
+
+                {submitMessage && (
+                    <div className={`mt-2 rounded-md p-2 ${submitMessage.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`}>
+                        {submitMessage.text}
+                    </div>
+                )}
             </form>
         </div>
     );

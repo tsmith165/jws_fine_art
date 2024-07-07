@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
@@ -18,18 +18,27 @@ interface EditProps {
 const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
     const [pieceData, setPieceData] = useState<any>(null);
 
-    useEffect(() => {
-        pieceDataPromise.then((data) => {
+    const fetchData = useCallback(async () => {
+        try {
+            const data = await pieceDataPromise;
             setPieceData(data);
-        });
-    }, [pieceDataPromise]);
+            console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${current_id}`);
+        } catch (error) {
+            console.error('Error fetching piece data:', error);
+        }
+    }, [pieceDataPromise, current_id]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const next_id = pieceData?.next_id ?? -1;
     const last_id = pieceData?.last_id ?? -1;
     const piece_title = pieceData?.title ?? '';
-    const price = pieceData?.price ?? '';
 
-    console.log(`LOADING EDIT DETAILS PAGE - Piece ID: ${current_id}`);
+    if (!pieceData) {
+        return <LoadingSpinner page="Edit Details" />;
+    }
 
     return (
         <div className="flex h-full w-full flex-col bg-stone-800 md:flex-row">
