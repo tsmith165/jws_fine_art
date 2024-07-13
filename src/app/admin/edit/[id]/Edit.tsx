@@ -42,7 +42,7 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
 
     return (
         <div className="flex h-full w-full flex-col bg-stone-800 md:flex-row">
-            <div className="flex h-1/3 items-center justify-center rounded-md object-contain p-8 md:h-full md:w-2/5 lg:w-1/2">
+            <div className="flex h-1/3 items-center justify-center rounded-lg p-8 md:h-[calc(100dvh-50px)] md:w-2/5 lg:w-1/2">
                 {pieceData ? (
                     <Image
                         src={pieceData.image_path}
@@ -50,7 +50,7 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
                         width={pieceData.width}
                         height={pieceData.height}
                         quality={100}
-                        className="h-full w-auto rounded-md md:h-auto"
+                        className="h-fit max-h-full w-auto rounded-lg object-contain"
                     />
                 ) : (
                     <LoadingSpinner page="Edit Details" />
