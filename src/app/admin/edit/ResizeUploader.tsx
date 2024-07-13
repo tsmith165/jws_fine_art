@@ -27,11 +27,13 @@ interface UploadResponse {
 const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, handleResetInputs, backToEditLink }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [loadingState, setLoadingState] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { startUpload } = useUploadThing('imageUploader', {
         onClientUploadComplete: async (res) => {
             console.log('Upload complete:', res);
+            setLoadingState('Loading Data');
             handleResetInputs();
             if (res && res.length === 2) {
                 const fileName = res[0].name;
@@ -67,11 +69,13 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
             }
             setIsUploading(false);
             setUploadProgress(0);
+            setLoadingState('');
         },
         onUploadError: (error: Error) => {
             alert(`ERROR! ${error.message}`);
             setIsUploading(false);
             setUploadProgress(0);
+            setLoadingState('');
         },
         onUploadProgress: (progress: number) => {
             setUploadProgress(progress);
@@ -134,11 +138,13 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                 setIsUploading(true);
                 handleResetInputs();
 
+                setLoadingState('Resizing Image');
                 const originalResizedFile = await resizeImage(originalFile, 1920, 1920);
                 const smallResizedFile = await resizeImage(originalFile, 450, 450);
 
                 const smallFileWithPrefix = new File([smallResizedFile], `small-${smallResizedFile.name}`, { type: smallResizedFile.type });
 
+                setLoadingState('Uploading Image');
                 await startUpload([smallFileWithPrefix, originalResizedFile]);
             }
         },
@@ -169,7 +175,7 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                         />
                     )}
                     <span className={`relative z-10 text-stone-300 ${isUploading ? '' : 'group-hover:text-stone-950'}`}>
-                        {isUploading ? 'Uploading...' : 'Select and Upload File'}
+                        {isUploading ? loadingState : 'Select and Upload File'}
                     </span>
                 </button>
                 <Link href={backToEditLink} passHref>
