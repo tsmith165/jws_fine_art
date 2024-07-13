@@ -33,7 +33,13 @@ export const metadata: Metadata = {
     },
 };
 
-export default async function Page() {
+interface PageProps {
+    searchParams?: {
+        piece?: string;
+    };
+}
+
+export default async function Page({ searchParams }: PageProps) {
     return (
         <PageLayout page="/gallery">
             <Suspense
@@ -45,7 +51,7 @@ export default async function Page() {
                     </div>
                 }
             >
-                <GalleryPage />
+                <GalleryPage searchParams={searchParams || {}} />
             </Suspense>
         </PageLayout>
     );

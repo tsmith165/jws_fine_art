@@ -1,5 +1,5 @@
 async function captureClerkUserOrganizationMemberships(userId: string) {
-    console.log("Capturing user's organization memberships...");
+    // console.log("Capturing user's organization memberships...");
     try {
         const response = await fetch(`https://api.clerk.com/v1/users/${userId}/organization_memberships?limit=100`, {
             headers: {
@@ -14,7 +14,7 @@ async function captureClerkUserOrganizationMemberships(userId: string) {
 
         const memberships = await response.json();
 
-        console.log('User Memberships:', memberships.data);
+        // console.log('User Memberships:', memberships.data);
         return memberships;
     } catch (error) {
         console.error('Error fetching organization memberships:', error);
