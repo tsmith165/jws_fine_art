@@ -1,45 +1,38 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+// React Imports
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Masonry from 'react-masonry-css';
-import 'react-tooltip/dist/react-tooltip.css';
-import { PiecesWithImages } from '@/db/schema';
-import useGalleryStore from '@/stores/gallery_store';
-import FilterMenu from './FilterMenu';
-import FullScreenView from './FullScreenView';
-import SelectedPieceView from './SelectedPieceView';
-import GalleryPiece from './GalleryPiece';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-interface GalleryProps {
-    initialPieces: PiecesWithImages[];
-}
+// Third Party Imports
+import Masonry from 'react-masonry-css';
+import 'react-tooltip/dist/react-tooltip.css';
 
-const Gallery: React.FC<GalleryProps> = ({ initialPieces }) => {
+// DB / Store Imports
+import { PiecesWithImages } from '@/db/schema';
+import useGalleryStore from '@/stores/gallery_store';
+
+// Component Imports
+import GalleryPiece from './GalleryPiece';
+import FullScreenView from './FullScreenView';
+import SelectedPieceView from './SelectedPieceView';
+import FilterMenu from './FilterMenu';
+
+const Gallery: React.FC<{ initialPieces: PiecesWithImages[] }> = ({ initialPieces }) => {
     const searchParams = useSearchParams();
 
-    const {
-        theme,
-        filterMenuOpen,
-        setFilterMenuOpen,
-        pieceList,
-        galleryPieces,
-        setPieceList,
-        setGalleryPieces,
-        selectedPieceIndex,
-        setSelectedPieceIndex,
-    } = useGalleryStore((state) => ({
-        theme: state.theme,
-        filterMenuOpen: state.filterMenuOpen,
-        setFilterMenuOpen: state.setFilterMenuOpen,
-        pieceList: state.pieceList,
-        galleryPieces: state.galleryPieces,
-        setPieceList: state.setPieceList,
-        setGalleryPieces: state.setGalleryPieces,
-        selectedPieceIndex: state.selectedPieceIndex,
-        setSelectedPieceIndex: state.setSelectedPieceIndex,
-    }));
+    const { theme, filterMenuOpen, setFilterMenuOpen, pieceList, setPieceList, selectedPieceIndex, setSelectedPieceIndex } =
+        useGalleryStore((state) => ({
+            theme: state.theme,
+            filterMenuOpen: state.filterMenuOpen,
+            setFilterMenuOpen: state.setFilterMenuOpen,
+            pieceList: state.pieceList,
+            setPieceList: state.setPieceList,
+            selectedPieceIndex: state.selectedPieceIndex,
+            setSelectedPieceIndex: state.setSelectedPieceIndex,
+        }));
 
     const [isMasonryLoaded, setIsMasonryLoaded] = useState(false);
     const [isPlaying, setIsPlaying] = useState(true);
@@ -48,28 +41,32 @@ const Gallery: React.FC<GalleryProps> = ({ initialPieces }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [imageLoadStates, setImageLoadStates] = useState<{ [key: number]: boolean }>({});
 
-    const selectedPiece = selectedPieceIndex !== null ? pieceList[selectedPieceIndex] : null;
+    const selectedPiece = useMemo(
+        () => (selectedPieceIndex !== null ? pieceList[selectedPieceIndex] : null),
+        [pieceList, selectedPieceIndex],
+    );
     const selectedImageRef = useRef<HTMLDivElement>(null);
 
-    const imageList = selectedPiece
-        ? [
-              {
-                  src: selectedPiece.small_image_path || selectedPiece.image_path,
-                  width: selectedPiece.small_width || selectedPiece.width,
-                  height: selectedPiece.small_height || selectedPiece.height,
-              },
-              ...(selectedPiece.extraImages || []).map((image) => ({
-                  src: image.small_image_path || image.image_path,
-                  width: image.small_width || image.width,
-                  height: image.small_height || image.height,
-              })),
-              ...(selectedPiece.progressImages || []).map((image) => ({
-                  src: image.small_image_path || image.image_path,
-                  width: image.small_width || image.width,
-                  height: image.small_height || image.height,
-              })),
-          ]
-        : [];
+    const imageList = useMemo(() => {
+        if (!selectedPiece) return [];
+        return [
+            {
+                src: selectedPiece.small_image_path || selectedPiece.image_path,
+                width: selectedPiece.small_width || selectedPiece.width,
+                height: selectedPiece.small_height || selectedPiece.height,
+            },
+            ...(selectedPiece.extraImages || []).map((image) => ({
+                src: image.small_image_path || image.image_path,
+                width: image.small_width || image.width,
+                height: image.small_height || image.height,
+            })),
+            ...(selectedPiece.progressImages || []).map((image) => ({
+                src: image.small_image_path || image.image_path,
+                width: image.small_width || image.width,
+                height: image.small_height || image.height,
+            })),
+        ];
+    }, [selectedPiece]);
 
     useEffect(() => {
         setPieceList(initialPieces);
@@ -82,54 +79,6 @@ const Gallery: React.FC<GalleryProps> = ({ initialPieces }) => {
             setSelectedPieceIndex(index !== -1 ? index : null);
         }
     }, [pieceList, searchParams, setSelectedPieceIndex]);
-
-    const createGallery = useCallback(() => {
-        console.log(`createGallery called - theme: ${theme} | pieceList.length: ${pieceList.length}`);
-
-        const filteredPieces = pieceList.filter((piece) => {
-            const piece_theme = piece.theme || 'None';
-            const piece_sold = piece.sold || false;
-            const piece_available = piece.available || false;
-
-            if (theme !== 'None' && theme) {
-                if (theme === 'Available') {
-                    return !piece_sold && piece_available;
-                } else {
-                    return piece_theme.includes(theme);
-                }
-            }
-            return true;
-        });
-
-        const newGalleryPieces = filteredPieces.map((piece, index) => (
-            <GalleryPiece key={`piece-${piece.id}`} piece={{ ...piece, index }} handlePieceClick={handlePieceClick} />
-        ));
-
-        setGalleryPieces(() => newGalleryPieces);
-    }, [pieceList, theme, setGalleryPieces]);
-
-    useEffect(() => {
-        if (pieceList.length > 0) {
-            createGallery();
-            setIsMasonryLoaded(true);
-        }
-    }, [pieceList, theme, createGallery]);
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-
-        if (isPlaying && imageList.length > 1) {
-            interval = setInterval(() => {
-                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
-            }, speed);
-        }
-
-        return () => {
-            if (interval) {
-                clearInterval(interval);
-            }
-        };
-    }, [speed, isPlaying, imageList.length]);
 
     const handlePieceClick = useCallback(
         (id: number, index: number) => {
@@ -149,6 +98,51 @@ const Gallery: React.FC<GalleryProps> = ({ initialPieces }) => {
         },
         [selectedPieceIndex, setSelectedPieceIndex],
     );
+
+    const filteredPieces = useMemo(() => {
+        return pieceList.filter((piece) => {
+            const piece_theme = piece.theme || 'None';
+            const piece_sold = piece.sold || false;
+            const piece_available = piece.available || false;
+
+            if (theme !== 'None' && theme) {
+                if (theme === 'Available') {
+                    return !piece_sold && piece_available;
+                } else {
+                    return piece_theme.includes(theme);
+                }
+            }
+            return true;
+        });
+    }, [pieceList, theme]);
+
+    const galleryPieces = useMemo(() => {
+        return filteredPieces.map((piece, index) => (
+            <GalleryPiece key={`piece-${piece.id}`} piece={{ ...piece, index }} handlePieceClick={handlePieceClick} />
+        ));
+    }, [filteredPieces, handlePieceClick]);
+
+    useEffect(() => {
+        if (pieceList.length > 0) {
+            setIsMasonryLoaded(true);
+        }
+    }, [pieceList]);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isPlaying && imageList.length > 1) {
+            interval = setInterval(() => {
+                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageList.length);
+            }, speed);
+        }
+
+        return () => {
+            if (interval) {
+                clearInterval(interval);
+            }
+        };
+    }, [speed, isPlaying, imageList.length]);
 
     const gallery_clicked = useCallback(
         (e: React.MouseEvent) => {
@@ -177,6 +171,15 @@ const Gallery: React.FC<GalleryProps> = ({ initialPieces }) => {
     const togglePlayPause = useCallback(() => {
         setIsPlaying((prevState) => !prevState);
     }, []);
+
+    if (!isMasonryLoaded)
+        return (
+            <div className="inset-0 flex h-full w-full items-center justify-center">
+                <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-stone-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
+                    <Image src="/logo/full_logo_small.png" alt="JWS Fine Art Logo" width={370} height={150} priority />
+                </div>
+            </div>
+        );
 
     return (
         <>
