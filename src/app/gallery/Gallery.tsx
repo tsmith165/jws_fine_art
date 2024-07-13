@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Masonry from 'react-masonry-css';
 import 'react-tooltip/dist/react-tooltip.css';
 import { PiecesWithImages } from '@/db/schema';
@@ -11,14 +11,12 @@ import FullScreenView from './FullScreenView';
 import SelectedPieceView from './SelectedPieceView';
 import GalleryPiece from './GalleryPiece';
 import { motion } from 'framer-motion';
-import { shallow } from 'zustand/shallow';
 
 interface GalleryProps {
     initialPieces: PiecesWithImages[];
 }
 
 const Gallery: React.FC<GalleryProps> = ({ initialPieces }) => {
-    const router = useRouter();
     const searchParams = useSearchParams();
 
     const {
@@ -31,20 +29,17 @@ const Gallery: React.FC<GalleryProps> = ({ initialPieces }) => {
         setGalleryPieces,
         selectedPieceIndex,
         setSelectedPieceIndex,
-    } = useGalleryStore(
-        (state) => ({
-            theme: state.theme,
-            filterMenuOpen: state.filterMenuOpen,
-            setFilterMenuOpen: state.setFilterMenuOpen,
-            pieceList: state.pieceList,
-            galleryPieces: state.galleryPieces,
-            setPieceList: state.setPieceList,
-            setGalleryPieces: state.setGalleryPieces,
-            selectedPieceIndex: state.selectedPieceIndex,
-            setSelectedPieceIndex: state.setSelectedPieceIndex,
-        }),
-        shallow,
-    );
+    } = useGalleryStore((state) => ({
+        theme: state.theme,
+        filterMenuOpen: state.filterMenuOpen,
+        setFilterMenuOpen: state.setFilterMenuOpen,
+        pieceList: state.pieceList,
+        galleryPieces: state.galleryPieces,
+        setPieceList: state.setPieceList,
+        setGalleryPieces: state.setGalleryPieces,
+        selectedPieceIndex: state.selectedPieceIndex,
+        setSelectedPieceIndex: state.setSelectedPieceIndex,
+    }));
 
     const [isMasonryLoaded, setIsMasonryLoaded] = useState(false);
     const [isPlaying, setIsPlaying] = useState(true);
