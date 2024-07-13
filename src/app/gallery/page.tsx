@@ -40,7 +40,7 @@ export default async function Page() {
                 fallback={
                     <div className="inset-0 flex h-full w-full items-center justify-center">
                         <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-stone-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
-                            <Image src="/logo/full_logo_small.png" alt="JWS Fine Art Logo" width={370} height={150} />
+                            <Image src="/logo/full_logo_small.png" alt="JWS Fine Art Logo" width={370} height={150} priority />
                         </div>
                     </div>
                 }
