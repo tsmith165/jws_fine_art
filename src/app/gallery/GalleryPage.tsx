@@ -1,7 +1,5 @@
 import { fetchPieces } from '@/app/actions';
 import React from 'react';
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
 
 import Gallery from './Gallery';
 
