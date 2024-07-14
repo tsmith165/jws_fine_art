@@ -36,7 +36,7 @@ import CreatePiece from '@/app/admin/edit/new/CreatePiece';
 
 export default function NewPiecePage() {
     return (
-        <PageLayout page="/edit/new">
+        <PageLayout page="/admin/edit/new">
             <CreatePiece />
         </PageLayout>
     );

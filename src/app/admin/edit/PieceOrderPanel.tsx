@@ -1,6 +1,6 @@
 import React from 'react';
 import { IoIosArrowUp, IoIosArrowDown, IoIosTrash } from 'react-icons/io';
-import { handleImageReorder, handleImageDelete, handleImageTitleEdit } from '../actions';
+import { handleImageReorder, handleImageDelete, handleImageTitleEdit } from './actions';
 import { PiecesWithImages, ExtraImages, ProgressImages } from '@/db/schema';
 import Image from 'next/image';
 
@@ -114,13 +114,13 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
             <div className="rounded-lg">
                 {extra_images.length > 0 && (
                     <div>
-                        <h3 className="gradient-primary-main rounded-t-lg px-2 py-2 text-center text-2xl font-semibold">Extra Images</h3>
+                        <h3 className="rounded-t-lg px-2 py-2 text-center text-2xl font-semibold gradient-primary-main">Extra Images</h3>
                         <div className="flex h-fit flex-col">{renderImages(extra_images, 'extra')}</div>
                     </div>
                 )}
                 {progress_images.length > 0 && (
                     <div className="">
-                        <h3 className="gradient-primary-main rounded-t-lg px-2 py-2 text-center text-2xl font-semibold">Progress Images</h3>
+                        <h3 className="rounded-t-lg px-2 py-2 text-center text-2xl font-semibold gradient-primary-main">Progress Images</h3>
                         <div className="flex h-fit flex-col">{renderImages(progress_images, 'progress')}</div>
                     </div>
                 )}

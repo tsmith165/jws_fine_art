@@ -142,7 +142,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                         </form>
                                     </div>
                                     <div className="flex flex-col items-center space-y-2">
-                                        <Link href={`/admin/edit/${piece.id.toString()}`} className="">
+                                        <Link href={`/admin/edit?id=${piece.id.toString()}`} className="">
                                             <FaEdit className="h-10 w-10 rounded-lg bg-secondary_dark fill-primary p-1.5 hover:bg-primary_dark hover:fill-secondary_dark" />
                                         </Link>
                                         <form action={handleSetInactive} className="flex h-fit w-fit">

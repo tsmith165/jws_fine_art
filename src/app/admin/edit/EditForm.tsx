@@ -8,7 +8,7 @@ import InputSelect from '@/components/inputs/InputSelect';
 import InputMultiSelect from '@/components/inputs/InputMultiSelect';
 import InputTextArea from '@/components/inputs/InputTextArea';
 
-import { onSubmitEditForm } from '../actions';
+import { onSubmitEditForm } from './actions';
 import { PiecesWithImages } from '@/db/schema';
 
 const MAX_CHANGE_DISPLAY_LENGTH = 30;

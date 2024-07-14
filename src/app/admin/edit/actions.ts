@@ -108,7 +108,7 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
                 ...formattedData,
             });
         }
-        revalidatePath(`/admin/edit/${data.piece_id}`);
+        revalidatePath(`/admin/edit`);
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');
@@ -237,7 +237,7 @@ export async function handleImageReorder(
         await db.update(table).set({ image_path: currentImage[0].image_path }).where(eq(table.id, targetPieceId));
 
         // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit/${pieceId}`);
+        revalidatePath(`/admin/edit`);
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');
@@ -265,7 +265,7 @@ export async function handleImageTitleEdit(
         await db.update(table).set({ title: newTitle }).where(eq(table.id, imageId));
 
         // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit/${imageId}`);
+        revalidatePath(`/admin/edit`);
         return { success: true };
     } catch (error) {
         console.error('Error in handleImageTitleEdit:', error);
@@ -289,7 +289,7 @@ export async function handleImageDelete(
         await db.delete(deleteTable).where(and(eq(deleteTable.piece_id, pieceId), eq(deleteTable.image_path, imagePath)));
 
         // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit/${pieceId}`);
+        revalidatePath(`/admin/edit`);
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');
@@ -319,7 +319,7 @@ export async function handleTitleUpdate(formData: FormData): Promise<{ success: 
         await db.update(piecesTable).set({ title: newTitle }).where(eq(piecesTable.id, pieceId));
 
         // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit/${pieceId}`);
+        revalidatePath(`/admin/edit`);
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');
@@ -400,7 +400,7 @@ export async function createNewPiece(newPieceData: NewPieceData) {
         return { success: false, error: 'Error creating new piece.' };
     }
 
-    revalidatePath(`/admin/edit/`);
+    revalidatePath(`/admin/edit`);
     revalidatePath('/admin/manage');
     revalidatePath('/admin/gallery');
     revalidatePath('/admin/slideshow');

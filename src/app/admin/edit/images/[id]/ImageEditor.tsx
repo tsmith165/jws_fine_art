@@ -106,7 +106,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
             });
             setStatusMessage({ type: 'success', message: 'Changes submitted successfully. You can upload another image.' });
             if (shouldNavigate) {
-                router.push(`/admin/edit/${pieceId}`);
+                router.push(`/admin/edit?id=${pieceId}`);
             } else {
                 resetInputs();
             }
@@ -135,7 +135,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
                     <ResizeUploader
                         handleUploadComplete={handleUploadComplete}
                         handleResetInputs={resetInputs}
-                        backToEditLink={`/admin/edit/${pieceId}`}
+                        backToEditLink={`/admin/edit?id=${pieceId}`}
                     />
                     <InputSelect
                         idName="image_type"

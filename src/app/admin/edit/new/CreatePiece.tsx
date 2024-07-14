@@ -80,13 +80,13 @@ export default function CreatePiece() {
             if (piece_data.piece?.id) {
                 switch (action) {
                     case 'edit':
-                        router.push(`/admin/edit/${piece_data.piece.id}`);
+                        router.push(`/admin/edit?id=${piece_data.piece.id}`);
                         break;
                     case 'images':
                         router.push(`/admin/edit/images/${piece_data.piece.id}`);
                         break;
                     case 'view':
-                        router.push(`/gallery/?piece=${piece_data.piece.id}`);
+                        router.push(`/gallery?piece=${piece_data.piece.id}`);
                         break;
                 }
             }

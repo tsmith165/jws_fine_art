@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react';
 import { Protect } from '@clerk/nextjs';
 
-import { fetchFirstPieceId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
+import { getMostRecentId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 
 import PageLayout from '@/components/layout/PageLayout';
-import Edit from '@/app/admin/edit/[id]/Edit';
+import Edit from '@/app/admin/edit/Edit';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import { redirect } from 'next/navigation';
 
 async function fetchPieceData(id: number) {
     const piece = await fetchPieceById(id);
@@ -61,21 +62,32 @@ export async function generateMetadata({ params }: PageProps) {
     };
 }
 
-export default async function Page({ params, searchParams }: PageProps) {
-    const firstId = await fetchFirstPieceId();
+export default async function Page({ searchParams }: { searchParams: { id?: string } }) {
+    let id = searchParams.id ? parseInt(searchParams.id, 10) : null;
 
-    if (!firstId) {
-        return <div>No pieces available.</div>;
+    if (!id) {
+        // Fetch the most recent ID if no ID is provided
+        const mostRecentId = await getMostRecentId();
+        if (mostRecentId) {
+            // Redirect to the same page with the most recent ID in the URL
+            redirect(`/admin/edit?id=${mostRecentId}`);
+        } else {
+            return (
+                <PageLayout page="/edit">
+                    <div className="text-center text-xl">No pieces found</div>
+                </PageLayout>
+            );
+        }
     }
 
-    const pieceDataPromise = usePieceData(firstId);
-    const selectedIndex = parseInt(searchParams?.selected || '0', 10);
-    const type = searchParams?.type || 'gallery';
+    const pieceDataPromise = fetchPieceData(id);
 
     return (
-        <PageLayout page={`/edit/${firstId}`}>
-            <Suspense fallback={<LoadingSpinner page="Edit Details" />}>
-                <Edit pieceDataPromise={pieceDataPromise} current_id={firstId} />
+        <PageLayout page={`/admin/edit?id=${id}`}>
+            <Suspense fallback={<LoadingSpinner page="Edit" />}>
+                <Protect>
+                    <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
+                </Protect>
             </Suspense>
         </PageLayout>
     );

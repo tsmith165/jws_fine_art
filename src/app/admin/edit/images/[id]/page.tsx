@@ -35,7 +35,7 @@ import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 
 export default async function Page({ params }: { params: { id: string } }) {
     return (
-        <PageLayout page={`/edit/${params.id}`}>
+        <PageLayout page={`/admin/edit/images/${params.id}`}>
             <ImageEditor pieceId={params.id} />
         </PageLayout>
     );
