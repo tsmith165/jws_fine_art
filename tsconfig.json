@@ -41,5 +41,5 @@
         "src/app/api/checkout/webhook/route.js",
         "src/lib/*"
     ],
-    "exclude": ["src/node_modules"]
+    "exclude": ["node_modules"]
 }
