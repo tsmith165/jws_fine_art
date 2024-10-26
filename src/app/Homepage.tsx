@@ -22,11 +22,9 @@ interface HomepageProps {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
-    console.log('Rendering Homepage...');
     const [isLogoVisible, setLogoVisible] = useState(true);
     const [isImageVisible, setImageVisible] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     useEffect(() => {
         const rotateImages = async () => {
