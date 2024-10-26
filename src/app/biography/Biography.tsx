@@ -22,8 +22,8 @@ interface BiographyProps {
 const slideDirections = [
     { x: '-100vw', opacity: 0 },
     { x: '100vw', opacity: 0 },
-    { y: '-100dvh', opacity: 0 },
-    { y: '100dvh', opacity: 0 },
+    { y: '-100vh', opacity: 0 },
+    { y: '100vh', opacity: 0 },
 ];
 
 const Biography = ({ biographyData }: BiographyProps) => {
@@ -72,21 +72,27 @@ const Biography = ({ biographyData }: BiographyProps) => {
     };
 
     return (
-        <div className="relative flex h-full w-full flex-col space-y-2 bg-stone-900">
+        <div className="relative flex h-screen w-full flex-col space-y-2 bg-stone-900">
             <AnimatePresence>
                 {biographyData.map((data, index) => {
                     const isEven = index % 2 === 0;
                     const direction = firstLoad && index === 0 ? { opacity: 0 } : slideDirections[index % slideDirections.length];
 
+                    const variants = {
+                        initial: direction,
+                        animate: { x: 0, y: 0, opacity: 1 },
+                        exit: { opacity: 0 },
+                    };
+
                     const current_image_div = (
-                        <div className="flex h-fit min-w-[20%] flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
+                        <div className="flex h-fit min-w-[20%] flex-shrink-0 flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
                             <Image
                                 src="/bio/bio_pic_updated_small.jpg"
                                 alt="Bio Pic"
                                 width={300}
                                 height={400}
                                 quality={100}
-                                className="h-auto w-48 rounded-lg p-1 pb-0 md:max-h-fit md:w-auto"
+                                className="h-auto w-full rounded-lg p-1 pb-0"
                             />
                             <Link
                                 href={'/gallery'}
@@ -99,18 +105,10 @@ const Biography = ({ biographyData }: BiographyProps) => {
                     );
 
                     const current_paragraph_div = (
-                        <p
-                            className={`h-fit max-h-[50%] max-w-[95%] overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 font-sans text-lg text-gray-400 md:max-h-fit md:max-w-[60%]`}
-                        >
+                        <p className="h-fit max-h-[50%] max-w-[95%] overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 font-sans text-lg text-gray-400 md:max-h-fit md:max-w-[60%]">
                             {data.bio_paragraph}
                         </p>
                     );
-
-                    const variants = {
-                        initial: direction,
-                        animate: { x: 0, y: 0, opacity: 1 },
-                        exit: { opacity: 0 },
-                    };
 
                     return (
                         index === currentIndex && (
@@ -121,23 +119,34 @@ const Biography = ({ biographyData }: BiographyProps) => {
                                 exit="exit"
                                 variants={variants}
                                 transition={{ duration: 1 }}
-                                className="absolute inset-0 h-full"
+                                className="absolute inset-0 flex flex-col"
                                 onPanEnd={handlePanEnd}
                             >
-                                <Image
-                                    src={data.image_path}
-                                    alt={data.title}
-                                    width={data.width}
-                                    height={data.height}
-                                    className="h-full w-full object-cover"
-                                    quality={100}
-                                    priority
-                                    onLoad={handleImageLoad}
-                                />
+                                <div className="relative h-[calc(100vh-50px)] w-full overflow-hidden">
+                                    <Image
+                                        src={data.image_path}
+                                        alt={data.title}
+                                        width={data.width}
+                                        height={data.height}
+                                        className="absolute inset-0 h-full w-full object-cover"
+                                        quality={100}
+                                        priority
+                                        onLoad={handleImageLoad}
+                                    />
 
-                                <div className="absolute inset-0 top-0 flex h-[calc(100dvh-50px-50px)] flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-stone-300 md:flex-row md:justify-center md:space-x-4 md:space-y-0">
-                                    {isEven ? current_image_div : current_paragraph_div}
-                                    {!isEven ? current_image_div : current_paragraph_div}
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-stone-300 md:flex-row md:justify-center md:space-x-4 md:space-y-0">
+                                        {isEven ? (
+                                            <>
+                                                {current_image_div}
+                                                {current_paragraph_div}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {current_paragraph_div}
+                                                {current_image_div}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </motion.div>
                         )
