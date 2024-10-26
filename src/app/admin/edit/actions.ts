@@ -371,7 +371,7 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
             active: true,
             instagram: '',
             theme: '',
-            available: true,
+            available: false,
             framed: false,
             comments: '',
             o_id: newOId,

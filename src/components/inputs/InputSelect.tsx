@@ -28,24 +28,42 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, idName, name, s
     const react_select_options = select_options.map((option) => ({ value: option[0], label: option[1] }));
 
     const handleChange = (selectedOption: any) => {
-        if (onChange) {
-            let newValue = selectedOption.value;
-            // Convert 'True' and 'False' strings to boolean if necessary
-            if (newValue === 'True') newValue = true;
-            if (newValue === 'False') newValue = false;
+        // console.log('Selected Option:', selectedOption);
+        // console.log('Selected Option Value:', selectedOption.value);
 
-            const syntheticEvent = {
+        if (onChange) {
+            // Pass the string value directly instead of converting to boolean
+            const customEvent = {
                 target: {
                     name: idName,
-                    value: newValue,
+                    value: selectedOption.value, // Pass the string 'True' or 'False'
+                    type: 'select-one',
+                    id: idName,
+                    tagName: 'SELECT',
+                    nodeName: 'SELECT',
+                    selectedOptions: [],
+                    selectedIndex: 0,
+                    options: [],
+                    multiple: false,
+                    labels: null,
+                    form: null,
+                    disabled: false,
+                    defaultSelected: false,
+                    autofocus: false,
+                    length: 0,
                 },
-            } as React.ChangeEvent<HTMLSelectElement>;
-            onChange(syntheticEvent);
+            } as unknown as React.ChangeEvent<HTMLSelectElement>;
+
+            console.log('Sending event with value:', customEvent.target.value);
+            onChange(customEvent);
         }
     };
 
-    // Convert boolean value to string for Select component
-    const selectValue = typeof value === 'boolean' ? (value ? 'True' : 'False') : value;
+    // Convert boolean value to string for comparison
+    const stringValue = typeof value === 'boolean' ? (value ? 'True' : 'False') : value;
+    // console.log('Current stringValue:', stringValue);
+    const selectedOption = react_select_options.find((option) => option.value === stringValue);
+    // console.log('Selected Option in render:', selectedOption);
 
     return (
         <div className="m-0 flex w-full p-0">
@@ -59,7 +77,7 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, idName, name, s
             <Tooltip id={`tooltip-${idName}`} place="top" />
             <Select
                 defaultValue={defaultValue}
-                value={react_select_options.find((option) => option.value === selectValue)}
+                value={selectedOption}
                 isMulti={false}
                 id={idName}
                 name={idName}
