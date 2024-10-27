@@ -30,18 +30,17 @@ export const metadata: Metadata = {
 
 import { getPieces, getDeletedPieces, getPrioritizedPieces } from './actions';
 
-import { Protect } from '@clerk/nextjs';
-
 import PageLayout from '@/components/layout/PageLayout';
 import { Manage } from '@/app/admin/manage/Manage';
 
 interface PageProps {
-    searchParams?: {
+    searchParams?: Promise<{
         tab?: string;
-    };
+    }>;
 }
 
-export default async function ManagePage({ searchParams }: PageProps) {
+export default async function ManagePage(props: PageProps) {
+    const searchParams = await props.searchParams;
     const tab = searchParams?.tab || 'manage';
     const pieces = await getPieces();
     const deletedPieces = await getDeletedPieces();

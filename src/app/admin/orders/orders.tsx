@@ -1,6 +1,5 @@
 import React from 'react';
 import OrderTree from './OrderTree';
-import { Protect } from '@clerk/nextjs';
 import { VerifiedTransactions } from '@/db/schema';
 
 interface OrdersProps {

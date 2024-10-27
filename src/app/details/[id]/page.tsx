@@ -5,13 +5,13 @@ import DetailsPage from './DetailsPage';
 import TitleComponent from './TitleComponent';
 
 interface PageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
-    searchParams?: {
+    }>;
+    searchParams?: Promise<{
         selected?: string;
         type?: string;
-    };
+    }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -43,7 +43,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
-export default async function Page({ params, searchParams }: PageProps) {
+export default async function Page(props: PageProps) {
+    const searchParams = await props.searchParams;
+    const params = await props.params;
     const { id: idParam } = params;
     const id = parseInt(idParam, 10);
     const selectedIndex = parseInt(searchParams?.selected || '0', 10);

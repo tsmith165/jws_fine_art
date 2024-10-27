@@ -73,56 +73,56 @@ const Biography = ({ biographyData }: BiographyProps) => {
 
     return (
         <div className="relative flex h-screen w-full flex-col space-y-2 bg-stone-900">
-            <AnimatePresence>
-                {biographyData.map((data, index) => {
-                    const isEven = index % 2 === 0;
-                    const direction = firstLoad && index === 0 ? { opacity: 0 } : slideDirections[index % slideDirections.length];
+            <div className="relative h-[calc(100vh-50px)] w-full overflow-hidden">
+                <AnimatePresence>
+                    {biographyData.map((data, index) => {
+                        const isEven = index % 2 === 0;
+                        const direction = firstLoad && index === 0 ? { opacity: 0 } : slideDirections[index % slideDirections.length];
 
-                    const variants = {
-                        initial: direction,
-                        animate: { x: 0, y: 0, opacity: 1 },
-                        exit: { opacity: 0 },
-                    };
+                        const variants = {
+                            initial: direction,
+                            animate: { x: 0, y: 0, opacity: 1 },
+                            exit: { opacity: 0 },
+                        };
 
-                    const current_image_div = (
-                        <div className="flex h-fit min-w-[20%] flex-shrink-0 flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
-                            <Image
-                                src="/bio/bio_pic_updated_small.jpg"
-                                alt="Bio Pic"
-                                width={300}
-                                height={400}
-                                quality={100}
-                                className="h-auto w-full rounded-lg p-1 pb-0"
-                            />
-                            <Link
-                                href={'/gallery'}
-                                className="w-full rounded rounded-b-lg rounded-t-none py-1 text-gray-400 hover:bg-secondary_dark hover:bg-opacity-25 hover:font-bold hover:text-primary"
-                                prefetch={false}
-                            >
-                                Enter Gallery
-                            </Link>
-                        </div>
-                    );
+                        const current_image_div = (
+                            <div className="flex h-fit min-w-[20%] flex-shrink-0 flex-col space-y-0 rounded-lg bg-secondary bg-opacity-85">
+                                <Image
+                                    src="/bio/bio_pic_updated_small.jpg"
+                                    alt="Bio Pic"
+                                    width={300}
+                                    height={400}
+                                    quality={100}
+                                    className="h-auto w-full rounded-lg p-1 pb-0"
+                                />
+                                <Link
+                                    href={'/gallery'}
+                                    className="w-full rounded rounded-b-lg rounded-t-none py-1 text-gray-400 hover:bg-secondary_dark hover:bg-opacity-25 hover:font-bold hover:text-primary"
+                                    prefetch={false}
+                                >
+                                    Enter Gallery
+                                </Link>
+                            </div>
+                        );
 
-                    const current_paragraph_div = (
-                        <p className="h-fit max-h-[50%] max-w-[95%] overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 font-sans text-lg text-gray-400 md:max-h-fit md:max-w-[60%]">
-                            {data.bio_paragraph}
-                        </p>
-                    );
+                        const current_paragraph_div = (
+                            <p className="h-fit max-h-[50%] max-w-[95%] overflow-y-auto rounded-lg bg-secondary bg-opacity-85 p-2 font-sans text-lg text-gray-400 md:max-h-fit md:max-w-[60%]">
+                                {data.bio_paragraph}
+                            </p>
+                        );
 
-                    return (
-                        index === currentIndex && (
-                            <motion.div
-                                key={data.id}
-                                initial="initial"
-                                animate={imageLoaded ? 'animate' : {}}
-                                exit="exit"
-                                variants={variants}
-                                transition={{ duration: 1 }}
-                                className="absolute inset-0 flex flex-col"
-                                onPanEnd={handlePanEnd}
-                            >
-                                <div className="relative h-[calc(100vh-50px)] w-full overflow-hidden">
+                        return (
+                            index === currentIndex && (
+                                <motion.div
+                                    key={data.id}
+                                    initial="initial"
+                                    animate={imageLoaded ? 'animate' : {}}
+                                    exit="exit"
+                                    variants={variants}
+                                    transition={{ duration: 1 }}
+                                    className="absolute inset-0 flex flex-col"
+                                    onPanEnd={handlePanEnd}
+                                >
                                     <Image
                                         src={data.image_path}
                                         alt={data.title}
@@ -134,7 +134,7 @@ const Biography = ({ biographyData }: BiographyProps) => {
                                         onLoad={handleImageLoad}
                                     />
 
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-stone-300 md:flex-row md:justify-center md:space-x-4 md:space-y-0">
+                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center space-y-4 px-4 py-4 text-center text-stone-300 md:flex-row md:justify-center md:space-x-4 md:space-y-0">
                                         {isEven ? (
                                             <>
                                                 {current_image_div}
@@ -147,13 +147,13 @@ const Biography = ({ biographyData }: BiographyProps) => {
                                             </>
                                         )}
                                     </div>
-                                </div>
-                            </motion.div>
-                        )
-                    );
-                })}
-            </AnimatePresence>
-            <div className="absolute bottom-0 flex h-[50px] w-full items-center justify-center space-x-4">
+                                </motion.div>
+                            )
+                        );
+                    })}
+                </AnimatePresence>
+            </div>
+            <div className="absolute bottom-[50px] z-20 flex h-[50px] w-full items-center justify-center space-x-4">
                 <button aria-label="Previous" onClick={handlePrev} className="rounded-lg bg-secondary_dark p-1 hover:bg-secondary">
                     <IoIosArrowBack className="text-2xl" />
                 </button>

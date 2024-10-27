@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { PiecesWithImages } from '@/db/schema';
 
+import type { JSX } from "react";
+
 interface GalleryStore {
     theme: string;
     filterMenuOpen: boolean;

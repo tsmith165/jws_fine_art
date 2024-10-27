@@ -15,7 +15,7 @@ interface SelectedPieceViewProps {
     handleImageLoad: () => void;
     setIsFullScreenImage: (isFullScreen: boolean) => void;
     selectedPieceIndex: number | null;
-    selectedImageRef: React.RefObject<HTMLDivElement>;
+    selectedImageRef: React.RefObject<HTMLDivElement | null>;
     handleNext: () => void;
     handlePrev: () => void;
     togglePlayPause: () => void;

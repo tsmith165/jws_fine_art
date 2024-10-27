@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import { Protect } from '@clerk/nextjs';
 
 import { getMostRecentId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 
@@ -62,7 +61,8 @@ export async function generateMetadata({ params }: PageProps) {
     };
 }
 
-export default async function Page({ searchParams }: { searchParams: { id?: string } }) {
+export default async function Page(props: { searchParams: Promise<{ id?: string }> }) {
+    const searchParams = await props.searchParams;
     let id = searchParams.id ? parseInt(searchParams.id, 10) : null;
 
     if (!id) {
@@ -85,9 +85,7 @@ export default async function Page({ searchParams }: { searchParams: { id?: stri
     return (
         <PageLayout page={`/admin/edit?id=${id}`}>
             <Suspense fallback={<LoadingSpinner page="Edit" />}>
-                <Protect>
-                    <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
-                </Protect>
+                <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
             </Suspense>
         </PageLayout>
     );
