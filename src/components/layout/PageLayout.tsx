@@ -1,5 +1,4 @@
-import React, { ReactNode } from 'react';
-import { Suspense } from 'react';
+import React, { ReactNode, Suspense } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import PostHogPageView from '@/app/PostHogPageView';
 
