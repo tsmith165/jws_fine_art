@@ -1,3 +1,30 @@
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+    title: 'JWS Fine Art - Edit Gallery Piece Details',
+    description: 'Edit gallery piece details for JWS Fine Art',
+    keywords: 'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Edit',
+    applicationName: 'JWS Fine Art',
+    icons: {
+        icon: '/logo/JWS_ICON_260.png',
+    },
+    openGraph: {
+        title: 'JWS Fine Art - Edit Details',
+        description: 'Edit Details for JWS Fine Art',
+        siteName: 'JWS Fine Art',
+        url: 'https://www.jwsfineart.com',
+        images: [
+            {
+                url: '/favicon/og-image.png',
+                width: 1200,
+                height: 630,
+                alt: 'JWS Fine Art',
+            },
+        ],
+        locale: 'en_US',
+        type: 'website',
+    },
+};
+
 import React, { Suspense } from 'react';
 import { getMostRecentId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
 import PageLayout from '@/components/layout/PageLayout';
@@ -20,41 +47,9 @@ function usePieceData(id: number) {
     return pieceDataCache[id];
 }
 
-export async function generateMetadata() {
-    return {
-        title: 'JWS Fine Art - Edit Gallery Piece Details',
-        description: 'Edit gallery piece details for JWS Fine Art',
-        keywords:
-            'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Edit',
-        applicationName: 'JWS Fine Art',
-        icons: {
-            icon: '/logo/JWS_ICON_260.png',
-        },
-        openGraph: {
-            title: 'JWS Fine Art - Edit Details',
-            description: 'Edit Details for JWS Fine Art',
-            siteName: 'JWS Fine Art',
-            url: 'https://www.jwsfineart.com',
-            images: [
-                {
-                    url: '/favicon/og-image.png',
-                    width: 1200,
-                    height: 630,
-                    alt: 'JWS Fine Art',
-                },
-            ],
-            locale: 'en_US',
-            type: 'website',
-        },
-    };
-}
-
-interface PageProps {
-    searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default async function Page({ searchParams }: PageProps) {
-    let id = searchParams.id ? parseInt(searchParams.id.toString(), 10) : null;
+export default async function Page(props: { searchParams: Promise<{ id?: string }> }) {
+    const searchParams = await props.searchParams;
+    let id = searchParams.id ? parseInt(searchParams.id, 10) : null;
 
     if (!id) {
         // Fetch the most recent ID if no ID is provided
