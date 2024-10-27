@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
 
 export default clerkMiddleware(async (auth, req) => {
-    const userId = auth().userId;
+    const { userId } = await auth();
 
     // Apply admin checks only on protected routes
     if (req.nextUrl.pathname.startsWith('/admin')) {
