@@ -87,7 +87,7 @@ const InputSelect: React.FC<InputSelectProps> = ({ defaultValue, idName, name, s
                     DropdownIndicator,
                 }}
                 styles={{
-                    control: (baseStyles, state) => ({
+                    control: (baseStyles: any, state: any) => ({
                         ...baseStyles,
                         borderColor: '',
                         backgroundColor: 'var(--tw-bg-stone-400)',
