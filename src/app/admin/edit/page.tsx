@@ -1,8 +1,32 @@
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+    title: 'JWS Fine Art - Edit Gallery Piece Details',
+    description: 'Edit gallery piece details for JWS Fine Art',
+    keywords: 'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Edit',
+    applicationName: 'JWS Fine Art',
+    icons: {
+        icon: '/logo/JWS_ICON_260.png',
+    },
+    openGraph: {
+        title: 'JWS Fine Art - Edit Details',
+        description: 'Edit Details for JWS Fine Art',
+        siteName: 'JWS Fine Art',
+        url: 'https://www.jwsfineart.com',
+        images: [
+            {
+                url: '/favicon/og-image.png',
+                width: 1200,
+                height: 630,
+                alt: 'JWS Fine Art',
+            },
+        ],
+        locale: 'en_US',
+        type: 'website',
+    },
+};
+
 import React, { Suspense } from 'react';
-import { Protect } from '@clerk/nextjs';
-
 import { getMostRecentId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
-
 import PageLayout from '@/components/layout/PageLayout';
 import Edit from '@/app/admin/edit/Edit';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
@@ -23,46 +47,8 @@ function usePieceData(id: number) {
     return pieceDataCache[id];
 }
 
-interface PageProps {
-    params: {
-        id?: string;
-    };
-    searchParams?: {
-        selected?: string;
-        type?: string;
-    };
-}
-
-export async function generateMetadata({ params }: PageProps) {
-    return {
-        title: 'JWS Fine Art - Edit Gallery Piece Details',
-        description: 'Edit gallery piece details for JWS Fine Art',
-        keywords:
-            'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Edit',
-        applicationName: 'JWS Fine Art',
-        icons: {
-            icon: '/logo/JWS_ICON_260.png',
-        },
-        openGraph: {
-            title: 'JWS Fine Art - Edit Details',
-            description: 'Edit Details for JWS Fine Art',
-            siteName: 'JWS Fine Art',
-            url: 'https://www.jwsfineart.com',
-            images: [
-                {
-                    url: '/favicon/og-image.png',
-                    width: 1200,
-                    height: 630,
-                    alt: 'JWS Fine Art',
-                },
-            ],
-            locale: 'en_US',
-            type: 'website',
-        },
-    };
-}
-
-export default async function Page({ searchParams }: { searchParams: { id?: string } }) {
+export default async function Page(props: { searchParams: Promise<{ id?: string }> }) {
+    const searchParams = await props.searchParams;
     let id = searchParams.id ? parseInt(searchParams.id, 10) : null;
 
     if (!id) {
@@ -85,9 +71,7 @@ export default async function Page({ searchParams }: { searchParams: { id?: stri
     return (
         <PageLayout page={`/admin/edit?id=${id}`}>
             <Suspense fallback={<LoadingSpinner page="Edit" />}>
-                <Protect>
-                    <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
-                </Protect>
+                <Edit pieceDataPromise={pieceDataPromise} current_id={id} />
             </Suspense>
         </PageLayout>
     );

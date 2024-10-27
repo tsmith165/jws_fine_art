@@ -9,10 +9,10 @@ import { IoIosMenu } from 'react-icons/io';
 const SiteMenu = ({ currentPage }: { currentPage: string }) => {
     return (
         <div className="flex h-full w-fit flex-row">
-            <div className={`group hidden p-0 pr-1 xxxs:flex`}>
+            <div className={`m-[5px] hidden rounded-md hover:bg-primary xxxs:flex`}>
                 <Link href="https://www.instagram.com/jws_fineart/" target="_blank" rel="noreferrer" prefetch={false}>
                     <Image
-                        className={'my-[10px] h-[30px] w-[30px] rounded-t-md'}
+                        className={'h-[40px] w-[40px] rounded-md p-[5px]'}
                         src="/icon/instagram_icon_50.png"
                         alt="Instagram Link"
                         width={40}

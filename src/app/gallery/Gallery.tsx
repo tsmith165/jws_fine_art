@@ -1,8 +1,7 @@
 'use client';
 
-// React Imports
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useQueryState } from 'nuqs';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -20,8 +19,15 @@ import FullScreenView from './FullScreenView';
 import SelectedPieceView from './SelectedPieceView';
 import FilterMenu from './FilterMenu';
 
-const Gallery: React.FC<{ initialPieces: PiecesWithImages[] }> = ({ initialPieces }) => {
-    const searchParams = useSearchParams();
+import { pieceParser } from './parsers';
+
+interface GalleryProps {
+    initialPieces: PiecesWithImages[];
+    initialPieceId: string;
+}
+
+const Gallery: React.FC<GalleryProps> = ({ initialPieces, initialPieceId }) => {
+    const [piece, setPiece] = useQueryState('piece', pieceParser);
 
     const { theme, filterMenuOpen, setFilterMenuOpen, pieceList, setPieceList, selectedPieceIndex, setSelectedPieceIndex } =
         useGalleryStore((state) => ({
@@ -73,15 +79,14 @@ const Gallery: React.FC<{ initialPieces: PiecesWithImages[] }> = ({ initialPiece
     }, [initialPieces, setPieceList]);
 
     useEffect(() => {
-        const selectedPieceId = searchParams.get('piece');
-        if (pieceList.length > 0 && selectedPieceId) {
-            const index = pieceList.findIndex((piece) => piece.id.toString() === selectedPieceId);
+        if (pieceList.length > 0 && initialPieceId) {
+            const index = pieceList.findIndex((piece) => piece.id.toString() === initialPieceId);
             setSelectedPieceIndex(index !== -1 ? index : null);
         }
-    }, [pieceList, searchParams, setSelectedPieceIndex]);
+    }, [pieceList, initialPieceId, setSelectedPieceIndex]);
 
     const handlePieceClick = useCallback(
-        (id: number, index: number) => {
+        async (id: number, index: number) => {
             if (selectedPieceIndex === index) {
                 selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 return;
@@ -89,14 +94,13 @@ const Gallery: React.FC<{ initialPieces: PiecesWithImages[] }> = ({ initialPiece
             setCurrentImageIndex(0);
             setSelectedPieceIndex(index);
 
-            // Update URL without triggering a page reload
-            const newUrl = `/gallery?piece=${id}`;
-            window.history.pushState({}, '', newUrl);
+            // Update URL using nuqs
+            await setPiece(id.toString());
 
             setImageLoadStates({});
             selectedImageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         },
-        [selectedPieceIndex, setSelectedPieceIndex],
+        [selectedPieceIndex, setSelectedPieceIndex, setPiece],
     );
 
     const filteredPieces = useMemo(() => {

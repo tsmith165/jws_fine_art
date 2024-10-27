@@ -30,17 +30,17 @@ export const metadata: Metadata = {
     },
 };
 
-import { Protect } from '@clerk/nextjs';
 import Tools from '@/app/admin/tools/tools';
 import PageLayout from '@/components/layout/PageLayout';
 
 interface PageProps {
-    searchParams?: {
+    searchParams?: Promise<{
         tab?: string;
-    };
+    }>;
 }
 
-export default async function AdminToolsPage({ searchParams }: PageProps) {
+export default async function AdminToolsPage(props: PageProps) {
+    const searchParams = await props.searchParams;
     const activeTab = searchParams?.tab || 'backup';
 
     return (

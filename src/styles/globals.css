@@ -1,6 +1,10 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+/* File: /src/styles/globals.css */
+
+:root {
+    --scrollbar-color: #54786d;
+    --scrollbar-hover-color: #365349;
+    --track-color: #333739;
+}
 
 html,
 body {
@@ -19,8 +23,6 @@ a {
 }
 
 select {
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
     padding: 3px 6px;
     width: 250px;
@@ -31,57 +33,34 @@ select {
     border: 0;
 }
 
+/* Webkit scrollbar */
 ::-webkit-scrollbar {
-    width: 8px; // Thin scrollbar
-    color: #333739;
+    width: 8px;
+    color: var(--track-color);
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #333739;
+    background-color: var(--track-color);
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #54786d;
+    background-color: var(--scrollbar-color);
     border-radius: 2px;
-
-    &:hover {
-        background-color: #365349;
-    }
 }
 
-// For Firefox
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-hover-color);
+}
+
+/* Firefox scrollbar */
 * {
     scrollbar-width: thin;
-    scrollbar-color: #54786d transparent;
-    color: #54786d;
+    scrollbar-color: var(--scrollbar-color) transparent;
+    color: var(--scrollbar-color);
 }
 
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background-color: bg-primary;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background-color: bg-primary;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.slider::-ms-thumb {
-    width: 16px;
-    height: 16px;
-    background-color: bg-primary;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
+/* Slider styles */
+.slider::-webkit-slider-thumb,
 .slider-slideshow::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -92,6 +71,7 @@ select {
     cursor: pointer;
 }
 
+.slider::-moz-range-thumb,
 .slider-slideshow::-moz-range-thumb {
     width: 16px;
     height: 16px;
@@ -100,6 +80,7 @@ select {
     cursor: pointer;
 }
 
+.slider::-ms-thumb,
 .slider-slideshow::-ms-thumb {
     width: 16px;
     height: 16px;
@@ -108,21 +89,19 @@ select {
     cursor: pointer;
 }
 
+/* Masonry grid styles */
 .my-masonry-grid {
-    display: -webkit-box; /* Not needed if autoprefixing */
-    display: -ms-flexbox; /* Not needed if autoprefixing */
     display: flex;
-    margin-left: -15px; /* gutter size offset */
+    margin-left: -15px;
     width: 100%;
 }
+
 .my-masonry-grid_column {
-    padding-left: 30px; /* gutter size */
+    padding-left: 30px;
     background-clip: padding-box;
 }
 
-/* Style your items */
 .my-masonry-grid_column > div {
-    /* change div to reference your elements you put in <Masonry> */
     background: grey;
     margin-bottom: 30px;
 }

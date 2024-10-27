@@ -29,8 +29,6 @@ export const metadata: Metadata = {
     },
 };
 
-import { Protect } from '@clerk/nextjs';
-
 import PageLayout from '@/components/layout/PageLayout';
 import CreatePiece from '@/app/admin/edit/new/CreatePiece';
 
