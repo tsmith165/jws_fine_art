@@ -11,7 +11,7 @@ import { getMostRecentId } from '@/app/actions';
 import { Pieces } from '@/db/schema';
 
 async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string | undefined }> {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
         return { isAdmin: false, error: 'User is not authenticated. Cannot edit piece.' };
     }
