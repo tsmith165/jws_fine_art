@@ -1,7 +1,5 @@
 import React, { Suspense } from 'react';
-
 import { getMostRecentId, fetchPieceById, fetchAdjacentPieceIds } from '@/app/actions';
-
 import PageLayout from '@/components/layout/PageLayout';
 import Edit from '@/app/admin/edit/Edit';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
@@ -22,17 +20,7 @@ function usePieceData(id: number) {
     return pieceDataCache[id];
 }
 
-interface PageProps {
-    params: {
-        id?: string;
-    };
-    searchParams?: {
-        selected?: string;
-        type?: string;
-    };
-}
-
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata() {
     return {
         title: 'JWS Fine Art - Edit Gallery Piece Details',
         description: 'Edit gallery piece details for JWS Fine Art',
@@ -61,9 +49,12 @@ export async function generateMetadata({ params }: PageProps) {
     };
 }
 
-export default async function Page(props: { searchParams: Promise<{ id?: string }> }) {
-    const searchParams = await props.searchParams;
-    let id = searchParams.id ? parseInt(searchParams.id, 10) : null;
+interface PageProps {
+    searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function Page({ searchParams }: PageProps) {
+    let id = searchParams.id ? parseInt(searchParams.id.toString(), 10) : null;
 
     if (!id) {
         // Fetch the most recent ID if no ID is provided
