@@ -1,6 +1,6 @@
 import { PostHog } from 'posthog-node';
 import { v4 as uuidv4 } from 'uuid';
-import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
+import { cookies } from 'next/headers';
 
 const COOKIE_KEY = 'distinct_id';
 
@@ -13,8 +13,8 @@ export function getDistinctId(cookieStore: Awaited<ReturnType<typeof cookies>>) 
     return distinctId || uuidv4();
 }
 
-export function captureEvent(event: string, properties?: Record<string, any>) {
-    const cookieStore = cookies() as unknown as UnsafeUnwrappedCookies;
+export async function captureEvent(event: string, properties?: Record<string, any>) {
+    const cookieStore = await cookies();
     const distinctId = getDistinctId(cookieStore);
     posthog.capture({
         distinctId,
