@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import QRCodePage from './QRCodePage';
+import { qrConfigs } from './qr-config';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - QR Code',
@@ -25,22 +26,22 @@ export const metadata: Metadata = {
     },
 };
 
-export default async function Page() {
+const QRCodeSkeleton = ({ size }: { size: number }) => {
+    return (
+        <div className="relative flex h-full w-full flex-col items-center justify-center">
+            <div className="animate-pulse bg-stone-900" style={{ height: size, width: size }}></div>
+        </div>
+    );
+};
+
+export default function Page() {
     return (
         <PageLayout page="/qr">
-            <Suspense fallback={<QRCodeSkeleton />}>
+            <Suspense fallback={<QRCodeSkeleton size={qrConfigs.color.size} />}>
                 <QRCodePage />
             </Suspense>
         </PageLayout>
     );
 }
-
-const QRCodeSkeleton = () => {
-    return (
-        <div className="relative flex h-full w-full flex-col items-center justify-center">
-            <div className="h-[300px] w-[300px] animate-pulse bg-stone-900"></div>
-        </div>
-    );
-};
 
 export const revalidate = 60;
