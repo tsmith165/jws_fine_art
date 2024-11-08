@@ -18,24 +18,34 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
     const [isPlaying, setIsPlaying] = useState(true);
     const [speed, setSpeed] = useState(3000);
     const [showSlider, setShowSlider] = useState(false);
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
+    const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const preloadNextImage = (list: { title: string; image_path: string }[]) => {
-        if (list.length > 0) {
-            const img = new window.Image();
-            img.src = list[nextIndex].image_path;
-            img.onload = () => setIsImageLoaded(true);
+    const preloadImages = (startIndex: number, count: number) => {
+        for (let i = 0; i < count; i++) {
+            const index = (startIndex + i) % pieceList.length;
+            const imagePath = pieceList[index].image_path;
+
+            if (!loadedImages.has(imagePath)) {
+                const img = new window.Image();
+                img.src = imagePath;
+                img.onload = () => {
+                    setLoadedImages((prev) => new Set(prev).add(imagePath));
+                };
+            }
         }
     };
 
     useEffect(() => {
-        if (isPlaying && isImageLoaded) {
+        preloadImages(0, 3);
+    }, []);
+
+    useEffect(() => {
+        if (isPlaying && loadedImages.has(pieceList[currentIndex].image_path)) {
             timeoutRef.current = setTimeout(() => {
                 setCurrentIndex(nextIndex);
                 setNextIndex((nextIndex + 1) % pieceList.length);
-                setIsImageLoaded(false);
-                preloadNextImage(pieceList);
+                preloadImages(nextIndex + 1, 2);
             }, speed);
         }
 
@@ -44,7 +54,7 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [nextIndex, isPlaying, speed, pieceList.length, isImageLoaded]);
+    }, [nextIndex, isPlaying, speed, pieceList.length, loadedImages]);
 
     const handlePlayPause = () => {
         setIsPlaying((prevState) => !prevState);
@@ -68,22 +78,22 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
     const { title, image_path, width, height } = current_piece;
 
     const variants = {
-        initial: { opacity: 0, x: 100 },
-        animate: { opacity: 1, x: 0 },
-        exit: { opacity: 0, x: -100 },
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
     };
 
     return (
         <div className="relative flex h-full w-full flex-col overflow-hidden bg-stone-900">
             <div className="relative h-full w-full">
-                <AnimatePresence initial={false}>
+                <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                         key={currentIndex}
                         initial="initial"
                         animate="animate"
-                        exit="exit-slide"
+                        exit="exit"
                         variants={variants}
-                        transition={{ duration: 2 }}
+                        transition={{ duration: 1, ease: 'easeInOut' }}
                         className="absolute inset-0"
                     >
                         <Image
@@ -92,7 +102,8 @@ export default function Slideshow({ pieceList }: SlideshowProps) {
                             height={height}
                             alt={title}
                             className="h-full w-full object-contain"
-                            onLoad={() => setIsImageLoaded(true)}
+                            priority={currentIndex === 0}
+                            loading={currentIndex === 0 ? 'eager' : 'lazy'}
                         />
                     </motion.div>
                 </AnimatePresence>
