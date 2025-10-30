@@ -8,9 +8,8 @@ export function useIsAdmin() {
     }
 
     for (const membership of user.organizationMemberships) {
-        console.log('Checking membership:', membership);
         // Match the same logic as middleware: org name is 'ADMIN' and user has admin role
-        if (membership.organization.name === 'ADMIN' && membership.role === 'org:admin') {
+        if (membership.organization.name === 'ADMIN' && (membership.role === 'org:admin' || membership.role === 'admin')) {
             return true;
         }
     }

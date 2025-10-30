@@ -11,29 +11,27 @@ import '@/styles/globals.css';
 
 import { cinzel } from './fonts';
 
+export const metadata = {
+    metadataBase: new URL('https://www.jwsfineart.com'),
+};
+
 interface RootLayoutProps {
     children: React.ReactNode;
 }
 
-const RootProvider = ({ children }: RootLayoutProps) => {
-    return (
-        <ClerkProvider appearance={{ baseTheme: dark }}>
-            <PHProvider>
-                <NuqsAdapter>{children}</NuqsAdapter>
-            </PHProvider>
-        </ClerkProvider>
-    );
-};
-
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
-        <RootProvider>
+        <ClerkProvider appearance={{ baseTheme: dark }}>
             <html lang="en" className={`${cinzel.variable}`}>
                 <body className="font-cinzel">
-                    <SpeedInsights />
-                    {children}
+                    <PHProvider>
+                        <NuqsAdapter>
+                            <SpeedInsights />
+                            {children}
+                        </NuqsAdapter>
+                    </PHProvider>
                 </body>
             </html>
-        </RootProvider>
+        </ClerkProvider>
     );
 }

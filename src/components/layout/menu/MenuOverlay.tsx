@@ -14,7 +14,6 @@ function MenuOverlay({ currentPage }: { currentPage: string }) {
     const { isSignedIn } = useUser();
     const isAdmin = useIsAdmin();
 
-    console.log('MenuOverlay: Is Admin:', isAdmin);
     const menuList = selectMenu(isSignedIn || false, isAdmin);
     const menuItems = generateMenu(menuList, isSignedIn || false, currentPage);
 
@@ -32,7 +31,6 @@ function selectMenu(isSignedIn: boolean, isAdmin: boolean) {
 }
 
 function generateMenu(menuList: typeof DEFAULT_MENU_LIST, isSignedIn: boolean, currentPage: string) {
-    console.log(`MenuOverlay: Current Page: ${currentPage}`);
     const menu_items = menuList.map((menuItem) => {
         const [className, menuItemString, , urlEndpoint] = menuItem;
         const isActive = urlEndpoint === '/' ? currentPage === '/' : currentPage.includes(urlEndpoint);
