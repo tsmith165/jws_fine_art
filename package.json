@@ -11,7 +11,7 @@
         "prettier": "prettier --write \"**/*.{js,jsx,json,md,ts,tsx}\""
     },
     "dependencies": {
-        "@clerk/nextjs": "^6.0.2",
+        "@clerk/nextjs": "^6.34.1",
         "@clerk/themes": "^2.1.39",
         "@neondatabase/serverless": "^0.9.5",
         "@react-email/components": "^0.0.19",
