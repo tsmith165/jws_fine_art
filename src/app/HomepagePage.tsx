@@ -2,6 +2,7 @@ import { BIOGRAPHY_TEXT } from '@/lib/biography_text';
 import { db, piecesTable } from '@/db/db';
 import { eq, desc } from 'drizzle-orm';
 import Homepage from './Homepage';
+import GallerySection from '@/components/gallery/GallerySection';
 
 async function fetchHomepageImages(limit: number) {
     console.log(`Fetching pieces with Drizzle`);
@@ -34,8 +35,17 @@ async function fetchHomepageData() {
     }));
 }
 
-export default async function HomepagePage() {
+interface HomepagePageProps {
+    initialPieceId?: string;
+}
+
+export default async function HomepagePage({ initialPieceId }: HomepagePageProps) {
     const homepageData = await fetchHomepageData();
 
-    return <Homepage homepageData={homepageData} />;
+    return (
+        <>
+            <Homepage homepageData={homepageData} />
+            <GallerySection initialPieceId={initialPieceId} />
+        </>
+    );
 }

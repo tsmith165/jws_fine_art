@@ -1,6 +1,5 @@
 export const DEFAULT_MENU_LIST: [string, string, boolean, string][] = [
     ['home', 'Home', false, '/'],
-    ['gallery', 'Gallery', false, '/gallery'],
     ['biography', 'Biography', false, '/biography'],
     ['slideshow', 'Slideshow', false, '/slideshow'],
     ['events', 'Events', false, '/events'],
@@ -20,13 +19,13 @@ export const ADMIN_MENU_LIST: [string, string, boolean, string][] = [
 ];
 
 export const navbar_menu_list: [string, string, string][] = [
-    ['gallery', 'Gallery', '/gallery'],
+    ['gallery', 'Gallery', '/'],
     ['slideshow', 'Slideshow', '/slideshow'],
     ['biography', 'Biography', '/biography'],
 ];
 
 export const short_navbar_menu_list: [string, string, string][] = [
-    ['gallery', 'Gallery', '/gallery'],
+    ['gallery', 'Gallery', '/'],
     ['slideshow', 'Slideshow', '/slideshow'],
     ['biography', 'Bio', '/biography'],
 ];

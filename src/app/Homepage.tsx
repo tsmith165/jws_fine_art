@@ -62,7 +62,7 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
             <Head>
                 <link rel="preload" href={homepageData[0].image_path} as="image" />
             </Head>
-            <div className="relative h-[calc(100dvh-50px)] w-full overflow-hidden bg-stone-900">
+            <div id="hero" className="relative h-[calc(75dvh-50px)] w-full overflow-hidden bg-stone-900">
                 <AnimatePresence mode="wait">
                     {isImageVisible && (
                         <motion.div
@@ -115,12 +115,14 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
                 )}
                 <div className="absolute bottom-8 left-0 w-full">
                     <div className="flex h-fit w-full items-center justify-center space-x-2">
-                        <Link
-                            href="/gallery"
+                        <button
+                            onClick={() => {
+                                document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' });
+                            }}
                             className="rounded-full bg-primary px-6 py-2 text-secondary_dark opacity-55 transition-colors duration-300 hover:opacity-90 active:opacity-90"
                         >
                             Enter Gallery
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>

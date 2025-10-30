@@ -1,6 +1,6 @@
 import { fetchPieces } from '@/app/actions';
 import React from 'react';
-import Gallery from './Gallery';
+import Gallery from '@/components/gallery/Gallery';
 import { ParsedParams } from './parsers';
 
 interface GalleryPageProps {

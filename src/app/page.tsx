@@ -32,12 +32,14 @@ export const metadata: Metadata = {
     },
 };
 
-export default async function Page() {
+export default async function Page(props: { searchParams: Promise<{ piece?: string }> }) {
+    const searchParams = await props.searchParams;
+    const pieceId = searchParams.piece;
 
     return (
         <PageLayout page="/">
             <Suspense fallback={<HomepageSkeleton />}>
-                <HomepagePage />
+                <HomepagePage initialPieceId={pieceId} />
             </Suspense>
         </PageLayout>
     );
