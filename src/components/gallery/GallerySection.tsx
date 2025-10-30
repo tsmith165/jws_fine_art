@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react';
 import { fetchPieces } from '@/app/actions';
 import Gallery from './Gallery';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 interface GallerySectionProps {
     initialPieceId?: string;
@@ -15,7 +14,7 @@ async function GalleryData({ initialPieceId }: GallerySectionProps) {
 export default async function GallerySection({ initialPieceId }: GallerySectionProps) {
     return (
         <div id="gallery" className="w-full">
-            <Suspense fallback={<LoadingSpinner page="Gallery" />}>
+            <Suspense fallback={null}>
                 <GalleryData initialPieceId={initialPieceId} />
             </Suspense>
         </div>
