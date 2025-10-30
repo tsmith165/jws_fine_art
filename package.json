@@ -30,6 +30,7 @@
         "file-saver": "^2.0.5",
         "framer-motion": "12.0.0-alpha.1",
         "googleapis": "^118.0.0",
+        "lucide-react": "^0.548.0",
         "micro": "^9.4.1",
         "next": "16.0.1",
         "nuqs": "^2.0.4",
