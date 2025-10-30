@@ -38,7 +38,7 @@ export default async function Page() {
     const verified_list = await fetchVerifiedPayments();
 
     return (
-        <PageLayout page="/orders">
+        <PageLayout page="/admin/orders">
             <Orders verified_list={verified_list} />
         </PageLayout>
     );

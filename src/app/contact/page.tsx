@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default async function ContactPage() {
     return (
-        <PageLayout page="contact">
+        <PageLayout page="/contact">
             <Contact />
         </PageLayout>
     );

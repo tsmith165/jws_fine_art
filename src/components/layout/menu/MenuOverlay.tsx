@@ -33,7 +33,11 @@ function selectMenu(isSignedIn: boolean, isAdmin: boolean) {
 function generateMenu(menuList: typeof DEFAULT_MENU_LIST, isSignedIn: boolean, currentPage: string) {
     const menu_items = menuList.map((menuItem) => {
         const [className, menuItemString, , urlEndpoint] = menuItem;
-        const isActive = urlEndpoint === '/' ? currentPage === '/' : currentPage.includes(urlEndpoint);
+        // More precise matching: exact match for home, startsWith for others
+        const isActive = urlEndpoint === '/'
+            ? currentPage === '/'
+            : currentPage.startsWith(urlEndpoint);
+
         return (
             <div key={className}>
                 <MenuOverlayButton id={className} menu_name={menuItemString} url_endpoint={urlEndpoint} isActive={isActive} />
@@ -41,24 +45,6 @@ function generateMenu(menuList: typeof DEFAULT_MENU_LIST, isSignedIn: boolean, c
         );
     });
 
-    if (isSignedIn) {
-        menu_items.push(
-            <div key="sign_out_button">
-                <DynamicMenuOverlaySignOutButton />
-            </div>,
-        );
-    } else if (ADD_SIGN_IN_OUT_BUTTON) {
-        menu_items.push(
-            <div key="sign_in">
-                <MenuOverlayButton
-                    id={'sign_in'}
-                    menu_name={'Sign In'}
-                    url_endpoint={'/signin'}
-                    isActive={currentPage.includes('/signin')}
-                />
-            </div>,
-        );
-    }
     return menu_items;
 }
 

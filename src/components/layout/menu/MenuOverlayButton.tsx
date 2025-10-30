@@ -12,7 +12,11 @@ function MenuOverlayButton({ menu_name, id, url_endpoint, isActive }: MenuOverla
     return (
         <Link
             href={url_endpoint}
-            className={`relative z-50 flex h-[40px] items-center justify-center border-b-2 border-primary_dark bg-primary px-[5px] font-bold text-secondary_dark hover:bg-secondary_dark hover:text-primary ${isActive ? '!bg-secondary_dark !text-primary' : ''}`}
+            className={`relative z-50 flex h-[48px] items-center border-b border-primary px-4 font-bold uppercase tracking-wide transition-all ${
+                isActive
+                    ? 'bg-primary text-white'
+                    : 'bg-transparent text-stone-300 hover:bg-primary/20 hover:text-primary'
+            }`}
             id={`${id}`}
             aria-label={menu_name}
             prefetch={false}

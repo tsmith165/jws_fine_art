@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 export default async function FAQPage() {
     const isComingSoon = false; // Set this to true to display the coming soon text
 
-    return <PageLayout page="faq">{isComingSoon ? <ComingSoon /> : <FAQ />}</PageLayout>;
+    return <PageLayout page="/faq">{isComingSoon ? <ComingSoon /> : <FAQ />}</PageLayout>;
 }
 
 function ComingSoon() {

@@ -8,6 +8,11 @@ const nextConfig = {
                 hostname: 'utfs.io',
                 pathname: '**',
             },
+            {
+                protocol: 'https',
+                hostname: 'img.clerk.com',
+                pathname: '**',
+            },
         ],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
     },

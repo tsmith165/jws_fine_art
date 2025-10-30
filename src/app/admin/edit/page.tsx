@@ -59,7 +59,7 @@ export default async function Page(props: { searchParams: Promise<{ id?: string 
             redirect(`/admin/edit?id=${mostRecentId}`);
         } else {
             return (
-                <PageLayout page="/edit">
+                <PageLayout page="/admin/edit">
                     <div className="text-center text-xl">No pieces found</div>
                 </PageLayout>
             );

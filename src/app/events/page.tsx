@@ -46,7 +46,7 @@ export default async function EventsPage() {
         component_to_render = <Events />;
     }
 
-    return <PageLayout page="events">{component_to_render}</PageLayout>;
+    return <PageLayout page="/events">{component_to_render}</PageLayout>;
 }
 
 function ComingSoon() {

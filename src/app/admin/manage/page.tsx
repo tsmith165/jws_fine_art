@@ -47,7 +47,7 @@ export default async function ManagePage(props: PageProps) {
     const prioritized_pieces = await getPrioritizedPieces();
 
     return (
-        <PageLayout page="/manage">
+        <PageLayout page="/admin/manage">
             <Manage pieces={pieces} deletedPieces={deletedPieces} prioritized_pieces={prioritized_pieces} activeTab={tab} />
         </PageLayout>
     );
