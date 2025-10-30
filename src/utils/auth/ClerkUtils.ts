@@ -18,7 +18,7 @@ async function captureClerkUserOrganizationMemberships(userId: string) {
         return memberships;
     } catch (error) {
         console.error('Error fetching organization memberships:', error);
-        throw error;
+        return { data: [] }; // Return empty memberships on error
     }
 }
 
