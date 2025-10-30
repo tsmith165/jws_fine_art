@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { IoIosArrowForward, IoIosArrowBack, IoIosSpeedometer } from 'react-icons/io';
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { PiecesWithImages } from '@/db/schema';
-import PurchaseButton from './PurchaseButton';
+import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
 interface SelectedPieceViewProps {
     selectedPiece: PiecesWithImages;
@@ -177,7 +177,7 @@ const SelectedPieceView: React.FC<SelectedPieceViewProps> = ({
                     </p>
                 )}
                 {selectedPiece.sold === false && selectedPiece.available === true ? (
-                    <PurchaseButton pieceId={selectedPiece.id} />
+                    <StripeBrandedButton url={'/checkout/' + selectedPiece.id} price={`${selectedPiece.price}`} text="checkout" />
                 ) : (
                     <div className="h-9 text-xl font-[600] text-red-800">{selectedPiece.sold ? 'Sold' : 'Not For Sale'}</div>
                 )}
