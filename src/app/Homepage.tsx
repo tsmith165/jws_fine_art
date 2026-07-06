@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import Head from 'next/head';
 
 interface HomepageData {
     id: number;
@@ -22,29 +21,39 @@ interface HomepageProps {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
-    const [isLogoVisible, setLogoVisible] = useState(true);
     const [isImageVisible, setImageVisible] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     useEffect(() => {
+        if (homepageData.length === 0) return;
+        let isMounted = true;
+
         const rotateImages = async () => {
-            while (true) {
+            while (isMounted) {
                 await delay(5500); // Wait before starting transition
+                if (!isMounted) return;
                 setImageVisible(false);
                 await delay(1500); // Wait for fade out
+                if (!isMounted) return;
                 setCurrentImageIndex((prevIndex) => (prevIndex + 1) % homepageData.length);
                 await delay(100); // Small delay before fade in
+                if (!isMounted) return;
                 setImageVisible(true);
             }
         };
 
         const startRotation = async () => {
             await delay(250);
+            if (!isMounted) return;
             setImageVisible(true);
             rotateImages();
         };
 
         startRotation();
+
+        return () => {
+            isMounted = false;
+        };
     }, [homepageData.length]);
 
     const circularFadeVariants = {
@@ -59,12 +68,9 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
 
     return (
         <>
-            <Head>
-                <link rel="preload" href={homepageData[0].image_path} as="image" />
-            </Head>
             <div id="hero" className="relative h-[calc(75dvh-50px)] w-full overflow-hidden bg-stone-900">
                 <AnimatePresence mode="wait">
-                    {isImageVisible && (
+                    {isImageVisible && homepageData[currentImageIndex] && (
                         <motion.div
                             key={currentImageIndex}
                             initial={{ opacity: 0, scale: 1 }}
@@ -79,6 +85,7 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
                                 height={homepageData[currentImageIndex].height}
                                 className="absolute inset-0 h-full w-full object-cover"
                                 alt={homepageData[currentImageIndex].title}
+                                sizes="100vw"
                                 priority={currentImageIndex === 0}
                                 loading={currentImageIndex === 0 ? 'eager' : 'lazy'}
                                 placeholder="blur"
@@ -101,18 +108,16 @@ const Homepage: React.FC<HomepageProps> = ({ homepageData }) => {
                     transition={{ duration: 2 }}
                     className="absolute inset-0 bg-neutral-900"
                 />
-                {isLogoVisible && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1 }}
-                        className="absolute inset-0 flex items-center justify-center"
-                    >
-                        <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-stone-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
-                            <Image src="/logo/full_logo_small.png" alt="JWS Fine Art Logo" width={370} height={150} priority />
-                        </div>
-                    </motion.div>
-                )}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                >
+                    <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-stone-900 p-6 opacity-70 xxs:h-[300px] xxs:w-[300px] xs:h-[350px] xs:w-[350px]">
+                        <Image src="/logo/full_logo_small.png" alt="JWS Fine Art Logo" width={370} height={150} priority sizes="370px" />
+                    </div>
+                </motion.div>
                 <div className="absolute bottom-8 left-0 w-full">
                     <div className="flex h-fit w-full items-center justify-center space-x-2">
                         <button

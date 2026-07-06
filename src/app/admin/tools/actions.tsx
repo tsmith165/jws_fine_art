@@ -27,6 +27,15 @@ const ourFileRouter = {
 
 export type OurFileRouter = typeof ourFileRouter;
 
+type SmallImageTargetType = 'piece' | 'extra' | 'progress';
+
+export interface SmallImageTarget {
+    id: number;
+    title: string;
+    image_path: string;
+    targetType: SmallImageTargetType;
+}
+
 async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string | undefined }> {
     const { userId } = await auth();
     if (!userId) {
@@ -63,7 +72,7 @@ export async function sendTestCheckoutEmail(testEmailData: {
             address,
             price_paid: pricePaid,
         });
-        const emailHtml = render(checkoutSuccessEmailTemplate);
+        const emailHtml = await render(checkoutSuccessEmailTemplate);
 
         // Split the comma-separated email addresses into an array
         const recipients = to.split(',').map((email) => email.trim());
@@ -81,13 +90,7 @@ export async function sendTestCheckoutEmail(testEmailData: {
     }
 }
 
-export async function generateMissingSmallImages(
-    progressCallback?: (piece: any, current: number, total: number) => Promise<boolean>,
-): Promise<{
-    success: boolean;
-    updatedPiece?: { updatedPieces: number; updatedExtraImages: number; updatedProgressImages: number };
-    error?: string;
-}> {
+export async function getImagesMissingSmallImages(): Promise<{ success: boolean; images?: SmallImageTarget[]; error?: string }> {
     const { isAdmin, error: roleError } = await checkUserRole();
     if (!isAdmin) {
         console.error(roleError);
@@ -107,77 +110,122 @@ export async function generateMissingSmallImages(
             .where(isNull(progressImagesTable.small_image_path))
             .execute();
 
-        const allImages = [...piecesWithoutSmallImages, ...extraImagesWithoutSmallImages, ...progressImagesWithoutSmallImages];
+        const images: SmallImageTarget[] = [
+            ...piecesWithoutSmallImages.map((image) => ({
+                id: image.id,
+                title: image.title,
+                image_path: image.image_path,
+                targetType: 'piece' as const,
+            })),
+            ...extraImagesWithoutSmallImages.map((image) => ({
+                id: image.id,
+                title: image.title || `Extra image ${image.id}`,
+                image_path: image.image_path,
+                targetType: 'extra' as const,
+            })),
+            ...progressImagesWithoutSmallImages.map((image) => ({
+                id: image.id,
+                title: image.title || `Progress image ${image.id}`,
+                image_path: image.image_path,
+                targetType: 'progress' as const,
+            })),
+        ];
+
+        return { success: true, images };
+    } catch (error) {
+        console.error('Error in getImagesMissingSmallImages:', error);
+        return { success: false, error: 'An error occurred while fetching images.' };
+    }
+}
+
+function getImageTable(targetType: SmallImageTargetType) {
+    if (targetType === 'piece') return piecesTable;
+    if (targetType === 'extra') return extraImagesTable;
+    return progressImagesTable;
+}
+
+export async function generateMissingSmallImage(image: SmallImageTarget): Promise<{ success: boolean; error?: string }> {
+    const { isAdmin, error: roleError } = await checkUserRole();
+    if (!isAdmin) {
+        console.error(roleError);
+        return { success: false, error: roleError };
+    }
+
+    try {
+        if (!image.image_path) {
+            return { success: false, error: 'Image URL is missing.' };
+        }
+
+        const table = getImageTable(image.targetType);
+        const response = await fetch(image.image_path);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        const resizedImage = await createSmallerImage(buffer, 450);
+        const resizedBuffer = await resizedImage.toBuffer();
+
+        const file: FileEsque = new Blob([resizedBuffer], { type: 'image/jpeg' }) as FileEsque;
+        file.name = `small_${image.targetType}_${image.id}.jpg`;
+
+        const uploadResult = (await utapi.uploadFiles(file)) as UploadFileResponse;
+
+        if ('error' in uploadResult && uploadResult.error) {
+            console.error('Failed to upload small image:', uploadResult.error.message);
+            return { success: false, error: 'Failed to upload small image.' };
+        }
+
+        const uploadedFile = uploadResult.data;
+
+        if (!uploadedFile) {
+            console.error('Upload succeeded but no file data returned');
+            return { success: false, error: 'Upload succeeded but no file data returned.' };
+        }
+
+        const metadata = await resizedImage.metadata();
+
+        await db
+            .update(table)
+            .set({
+                small_image_path: uploadedFile.url,
+                small_width: metadata.width,
+                small_height: metadata.height,
+            })
+            .where(eq(table.id, image.id));
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error in generateMissingSmallImage:', error);
+        return { success: false, error: 'An error occurred while generating a small image.' };
+    }
+}
+
+export async function generateMissingSmallImages(): Promise<{
+    success: boolean;
+    updatedPiece?: { updatedPieces: number; updatedExtraImages: number; updatedProgressImages: number };
+    error?: string;
+}> {
+    const { isAdmin, error: roleError } = await checkUserRole();
+    if (!isAdmin) {
+        console.error(roleError);
+        return { success: false, error: roleError };
+    }
+
+    try {
+        const imageResult = await getImagesMissingSmallImages();
+        if (!imageResult.success || !imageResult.images) {
+            return { success: false, error: imageResult.error || 'Failed to fetch images.' };
+        }
+
         let updatedPieces = 0;
         let updatedExtraImages = 0;
         let updatedProgressImages = 0;
 
-        const updateImage = async (
-            image: any,
-            table: typeof piecesTable | typeof extraImagesTable | typeof progressImagesTable,
-            index: number,
-        ) => {
-            if (!image.image_path) return;
-
-            if (progressCallback) {
-                const shouldStop = await progressCallback(image, index + 1, allImages.length);
-                if (shouldStop) return;
-            }
-
-            const response = await fetch(image.image_path);
-            const arrayBuffer = await response.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            // Resize the image
-            const resizedImage = await createSmallerImage(buffer, 450);
-            const resizedBuffer = await resizedImage.toBuffer();
-
-            // Create a File-like object
-            const file: FileEsque = new Blob([resizedBuffer], { type: 'image/jpeg' }) as FileEsque;
-            file.name = `small_${image.id}.jpg`;
-
-            // Upload the resized image using UploadThing
-            const uploadResult = (await utapi.uploadFiles(file)) as UploadFileResponse;
-
-            if ('error' in uploadResult && uploadResult.error) {
-                console.error('Failed to upload small image:', uploadResult.error.message);
-                return { success: false, error: 'Failed to upload small image.' };
-            }
-
-            const uploadedFile = uploadResult.data;
-
-            if (!uploadedFile) {
-                console.error('Upload succeeded but no file data returned');
-                return { success: false, error: 'Upload succeeded but no file data returned.' };
-            }
-
-            const metadata = await resizedImage.metadata();
-
-            await db
-                .update(table)
-                .set({
-                    small_image_path: uploadedFile.url,
-                    small_width: metadata.width,
-                    small_height: metadata.height,
-                })
-                .where(eq(table.id, image.id));
-
-            if (table === piecesTable) updatedPieces++;
-            else if (table === extraImagesTable) updatedExtraImages++;
-            else if (table === progressImagesTable) updatedProgressImages++;
-        };
-
-        for (let i = 0; i < allImages.length; i++) {
-            const image = allImages[i];
-            let table;
-            if ('piece_type' in image) {
-                table = piecesTable;
-            } else if ('extra_image_id' in image) {
-                table = extraImagesTable;
-            } else {
-                table = progressImagesTable;
-            }
-            await updateImage(image, table, i);
+        for (const image of imageResult.images) {
+            const result = await generateMissingSmallImage(image);
+            if (!result.success) continue;
+            if (image.targetType === 'piece') updatedPieces++;
+            else if (image.targetType === 'extra') updatedExtraImages++;
+            else updatedProgressImages++;
         }
 
         return {

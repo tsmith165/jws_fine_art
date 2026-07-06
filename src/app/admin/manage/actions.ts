@@ -1,65 +1,126 @@
+'use server';
+
 import { eq, asc, desc } from 'drizzle-orm';
 import { db, piecesTable } from '@/db/db';
 import { Pieces } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
+import { requireAdmin } from '@/utils/auth/requireAdmin';
+
+async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string }> {
+    return requireAdmin('manage pieces');
+}
 
 export async function getPieces(): Promise<Pieces[]> {
+    const { isAdmin, error } = await checkUserRole();
+    if (!isAdmin) {
+        throw new Error(error);
+    }
+
     return await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(asc(piecesTable.o_id));
 }
 
 export async function getPrioritizedPieces(): Promise<Pieces[]> {
+    const { isAdmin, error } = await checkUserRole();
+    if (!isAdmin) {
+        throw new Error(error);
+    }
+
     return await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(desc(piecesTable.p_id));
 }
 
 export async function getDeletedPieces(): Promise<Pieces[]> {
+    const { isAdmin, error } = await checkUserRole();
+    if (!isAdmin) {
+        throw new Error(error);
+    }
+
     return await db.select().from(piecesTable).where(eq(piecesTable.active, false)).orderBy(asc(piecesTable.o_id));
 }
 
-export async function changeOrder(currIdList: number[], nextIdList: number[]): Promise<void> {
+export async function changeOrder(currIdList: number[], nextIdList: number[]): Promise<{ success: boolean; error?: string }> {
+    const { isAdmin, error: roleError } = await checkUserRole();
+    if (!isAdmin) {
+        return { success: false, error: roleError };
+    }
+
     const [currId, currOrderId] = currIdList;
     const [nextId, nextOrderId] = nextIdList;
-    console.log(`Swapping ${currId} (${currOrderId}) with ${nextId} (${nextOrderId})`);
 
-    await db.update(piecesTable).set({ o_id: nextOrderId }).where(eq(piecesTable.id, currId));
-    await db.update(piecesTable).set({ o_id: currOrderId }).where(eq(piecesTable.id, nextId));
+    try {
+        await db.update(piecesTable).set({ o_id: nextOrderId }).where(eq(piecesTable.id, currId));
+        await db.update(piecesTable).set({ o_id: currOrderId }).where(eq(piecesTable.id, nextId));
 
-    revalidatePath(`/admin/edit`);
-    revalidatePath('/admin/manage');
-    revalidatePath('/admin/gallery');
-    revalidatePath('/admin/slideshow');
+        revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
+        return { success: true };
+    } catch (error) {
+        console.error('Error changing piece order:', error);
+        return { success: false, error: 'An error occurred while changing piece order.' };
+    }
 }
 
-export async function changePriority(currIdList: number[], nextIdList: number[]): Promise<void> {
+export async function changePriority(currIdList: number[], nextIdList: number[]): Promise<{ success: boolean; error?: string }> {
+    const { isAdmin, error: roleError } = await checkUserRole();
+    if (!isAdmin) {
+        return { success: false, error: roleError };
+    }
+
     const [currId, currPriorityId] = currIdList;
     const [nextId, nextPriorityId] = nextIdList;
-    console.log(`Swapping priority ${currId} (${currPriorityId}) with ${nextId} (${nextPriorityId})`);
 
-    await db.update(piecesTable).set({ p_id: nextPriorityId }).where(eq(piecesTable.id, currId));
-    await db.update(piecesTable).set({ p_id: currPriorityId }).where(eq(piecesTable.id, nextId));
-    revalidatePath(`/admin/edit`);
-    revalidatePath('/admin/manage');
-    revalidatePath('/admin/gallery');
-    revalidatePath('/admin/slideshow');
+    try {
+        await db.update(piecesTable).set({ p_id: nextPriorityId }).where(eq(piecesTable.id, currId));
+        await db.update(piecesTable).set({ p_id: currPriorityId }).where(eq(piecesTable.id, nextId));
+        revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
+        return { success: true };
+    } catch (error) {
+        console.error('Error changing piece priority:', error);
+        return { success: false, error: 'An error occurred while changing piece priority.' };
+    }
 }
 
-export async function setInactive(id: number): Promise<void> {
-    console.log(`Setting piece with id: ${id} as inactive`);
-    await db.update(piecesTable).set({ active: false, o_id: -1000000 }).where(eq(piecesTable.id, id));
-    revalidatePath(`/admin/edit`);
-    revalidatePath('/admin/manage');
-    revalidatePath('/admin/gallery');
-    revalidatePath('/admin/slideshow');
+export async function setInactive(id: number): Promise<{ success: boolean; error?: string }> {
+    const { isAdmin, error: roleError } = await checkUserRole();
+    if (!isAdmin) {
+        return { success: false, error: roleError };
+    }
+
+    try {
+        await db.update(piecesTable).set({ active: false, o_id: -1000000 }).where(eq(piecesTable.id, id));
+        revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
+        return { success: true };
+    } catch (error) {
+        console.error('Error archiving piece:', error);
+        return { success: false, error: 'An error occurred while archiving the piece.' };
+    }
 }
 
-export async function setActive(id: number): Promise<void> {
-    console.log(`Setting piece with id: ${id} as active`);
+export async function setActive(id: number): Promise<{ success: boolean; error?: string }> {
+    const { isAdmin, error: roleError } = await checkUserRole();
+    if (!isAdmin) {
+        return { success: false, error: roleError };
+    }
 
-    const lastPiece = await db.select().from(piecesTable).orderBy(desc(piecesTable.o_id)).limit(1);
-    const newOId = lastPiece.length > 0 ? lastPiece[0].o_id + 1 : 1;
+    try {
+        const lastPiece = await db.select().from(piecesTable).orderBy(desc(piecesTable.o_id)).limit(1);
+        const newOId = lastPiece.length > 0 ? lastPiece[0].o_id + 1 : 1;
 
-    await db.update(piecesTable).set({ active: true, o_id: newOId }).where(eq(piecesTable.id, id));
-    revalidatePath(`/admin/edit`);
-    revalidatePath('/admin/manage');
-    revalidatePath('/admin/gallery');
-    revalidatePath('/admin/slideshow');
+        await db.update(piecesTable).set({ active: true, o_id: newOId }).where(eq(piecesTable.id, id));
+        revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/manage');
+        revalidatePath('/admin/gallery');
+        revalidatePath('/admin/slideshow');
+        return { success: true };
+    } catch (error) {
+        console.error('Error restoring piece:', error);
+        return { success: false, error: 'An error occurred while restoring the piece.' };
+    }
 }

@@ -23,7 +23,7 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                         <div className="m-0 w-full max-w-full p-0">
                             <div className="flex w-full">
                                 <div className="flex h-8 min-w-32 max-w-32 items-center justify-center rounded-l-md bg-secondary_dark px-2.5">
-                                    <b className="text-stone-400 font-semibold">Address</b>
+                                    <b className="font-semibold text-stone-400">Address</b>
                                 </div>
                                 <input {...inputProps} />
                             </div>
@@ -32,14 +32,16 @@ const InputAutoComplete: React.FC<InputAutoCompleteProps> = ({ name, value, onCh
                                     const style = suggestion.active
                                         ? { backgroundColor: '#42a5f5', cursor: 'pointer' }
                                         : { backgroundColor: '#ffffff', cursor: 'pointer' };
-                                    const suggestionItemProps: ReturnType<typeof getSuggestionItemProps> = getSuggestionItemProps(
-                                        suggestion,
-                                        'h-8 px-2.5 text-secondary_dark bg-stone-400 rounded-b-md border-none font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
-                                    );
+                                    const { key: generatedKey, ...suggestionItemProps }: ReturnType<typeof getSuggestionItemProps> =
+                                        getSuggestionItemProps(
+                                            suggestion,
+                                            'h-8 px-2.5 text-secondary_dark bg-stone-400 rounded-b-md border-none font-bold placeholder-secondary text-stone-900 overflow-hidden overflow-ellipsis whitespace-nowrap ',
+                                        );
                                     return (
                                         <div
                                             className="h-8 overflow-hidden overflow-ellipsis whitespace-nowrap bg-stone-400 px-2.5 py-0.5 leading-8 text-primary_dark last:rounded-b-md last:pb-1 hover:bg-secondary_dark hover:text-primary"
                                             {...suggestionItemProps}
+                                            key={suggestion.placeId || generatedKey || suggestion.description}
                                         >
                                             {suggestion.description}
                                         </div>

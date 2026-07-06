@@ -77,4 +77,4 @@ export default async function Page(props: { searchParams: Promise<{ id?: string 
     );
 }
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';

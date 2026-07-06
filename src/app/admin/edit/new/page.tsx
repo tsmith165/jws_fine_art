@@ -40,4 +40,4 @@ export default function NewPiecePage() {
     );
 }
 
-export const revalidate = 3660;
+export const dynamic = 'force-dynamic';

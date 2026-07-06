@@ -175,16 +175,10 @@ export async function fetchVerifiedPayments(): Promise<VerifiedTransactions[]> {
     console.log(`Fetching verified payments with Drizzle`);
     const verifiedList = await db.select().from(verifiedTransactionsTable);
 
-    console.log('Verified Payments List (Next Line):');
-    console.log(verifiedList);
-
     const formattedList = verifiedList.map((payment) => ({
         ...payment,
         date: new Date(payment.date).toUTCString(),
     }));
-
-    console.log('Formatted Verified Payments List (Next Line):');
-    console.log(formattedList);
 
     return formattedList;
 }

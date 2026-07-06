@@ -52,4 +52,4 @@ export default async function AdminToolsPage(props: PageProps) {
     );
 }
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';

@@ -115,12 +115,19 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
 
                         ctx?.drawImage(img, 0, 0, newWidth, newHeight);
 
-                        canvas.toBlob((blob) => {
-                            if (blob) {
-                                const resizedFile = new File([blob], file.name, { type: file.type });
-                                resolve(resizedFile);
-                            }
-                        }, file.type);
+                        const outputType = file.type || 'image/jpeg';
+                        const outputQuality = outputType === 'image/jpeg' || outputType === 'image/webp' ? 0.92 : undefined;
+
+                        canvas.toBlob(
+                            (blob) => {
+                                if (blob) {
+                                    const resizedFile = new File([blob], file.name, { type: outputType });
+                                    resolve(resizedFile);
+                                }
+                            },
+                            outputType,
+                            outputQuality,
+                        );
                     }
                 };
                 img.src = event.target?.result as string;

@@ -12,10 +12,16 @@ export async function createSmallerImage(buffer: Buffer, maxSize: number): Promi
 
     const { updatedWidth, updatedHeight } = getUpdatedDimensions(width, height, maxSize);
 
-    return image.resize(updatedWidth, updatedHeight, {
-        fit: 'inside',
-        withoutEnlargement: true,
-    });
+    return image
+        .resize(updatedWidth, updatedHeight, {
+            fit: 'inside',
+            withoutEnlargement: true,
+        })
+        .jpeg({
+            quality: 90,
+            chromaSubsampling: '4:4:4',
+            mozjpeg: true,
+        });
 }
 
 function getUpdatedDimensions(width: number, height: number, maxSize: number) {

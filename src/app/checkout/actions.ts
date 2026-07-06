@@ -6,7 +6,7 @@ import PROJECT_CONSTANTS from '@/lib/constants';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-04-10',
+    apiVersion: '2026-06-24.dahlia',
 });
 const INTERNATIONAL_SHIPPING_RATE = 25;
 
@@ -38,18 +38,19 @@ export async function runStripePurchase(data: FormData) {
     }
     const piece = piece_data[0];
 
+    if (piece.sold || !piece.available || !piece.active) {
+        throw new Error('This piece is not currently available for purchase');
+    }
+
     console.log('Creating a Pending Transaction ...');
     const pending_response = await create_pending_transaction(piece.id, piece.title, full_name, phone, email, address, is_international);
-
-    console.log(`Pending Transaction Response (Next Line):`);
-    console.log(pending_response);
 
     if (!pending_response) {
         console.error('No Response From Create Pending Transaction. Cannot check out...');
         return;
     }
 
-    console.log(`Creating stripe session with piece:`, piece);
+    console.log(`Creating stripe session for piece ID: ${piece.id}`);
 
     // Create Stripe Checkout Session
     const price_with_shipping = piece.price + (is_international ? INTERNATIONAL_SHIPPING_RATE : 0);
@@ -62,7 +63,7 @@ export async function runStripePurchase(data: FormData) {
         price_id: piece.price.toString(),
     };
 
-    console.log(`Creating a Stripe Checkout Session with metadata:`, metadata);
+    console.log(`Creating a Stripe Checkout Session for piece ID: ${piece.id}`);
 
     try {
         const session = await stripe.checkout.sessions.create({
@@ -89,7 +90,6 @@ export async function runStripePurchase(data: FormData) {
             },
         });
 
-        console.log(`Stripe Session Created:`, session);
         console.log(`Session ID: ${session.id}`);
 
         return {

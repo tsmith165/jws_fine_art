@@ -1,8 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-// APIs
-import { loadStripe } from '@stripe/stripe-js';
+import React, { useState } from 'react';
 import { useLoadScript, Libraries } from '@react-google-maps/api';
 // Icons
 import { TbProgress } from 'react-icons/tb';
@@ -13,7 +11,6 @@ import InputTextbox from '@/components/inputs/InputTextbox';
 import InputAutoComplete from '@/components/inputs/InputAutoComplete';
 import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 const INTERNATIONAL_SHIPPING_RATE = 25;
 const googleMapsLibraries: Libraries = ['places'];
 
@@ -31,7 +28,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
     const [submitted, setSubmitted] = React.useState(false);
     const [errorFound, setErrorFound] = React.useState(false);
     const [address, setAddress] = React.useState('');
-    const [isInternational, setIsInternational] = useState(false);
+    const [isInternational, setIsInternational] = useState(Boolean(current_piece.international));
 
     // CHECK THAT GOOGLE MAPS API IS LOADED
     if (loadError) {
@@ -60,15 +57,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
     const handleAddressChange = (value: string) => {
         setAddress(value);
         const isInternationalAddress = value.includes('USA') ? false : true;
-        console.log(`Address changed to: ${value}`);
-        console.log(`Address is international: ${isInternationalAddress}`);
         setIsInternational(isInternationalAddress);
     };
-
-    useEffect(() => {
-        // Set the initial value of isInternational based on the current_piece prop
-        setIsInternational(current_piece.international);
-    }, [current_piece.international]);
 
     const submit_loader_spinner = <TbProgress className="animate-spin text-primary" />;
     const submit_successful_jsx = <div className="text-green-500">Checkout submit successful.</div>;
@@ -84,7 +74,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
 
     const submit_container = loader_container && <div className="mt-4">{loader_container}</div>;
 
-    return ( 
+    return (
         <div className="flex h-full w-full flex-col overflow-y-auto">
             <form onSubmit={handleStripePurchaseClick} className="flex flex-col">
                 <input type="hidden" name="piece_id" value={current_piece.id} />
@@ -96,7 +86,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
                     {isLoaded ? (
                         <InputAutoComplete name="address" value={address} onChange={handleAddressChange} />
                     ) : (
-                        <InputTextbox idName='address' name="address" placeholder="Enter Address..." />
+                        <InputTextbox idName="address" name="address" placeholder="Enter Address..." />
                     )}
                 </div>
 

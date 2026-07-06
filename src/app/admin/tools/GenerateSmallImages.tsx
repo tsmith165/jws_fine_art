@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { generateMissingSmallImages } from './actions';
+import { generateMissingSmallImage, getImagesMissingSmallImages, type SmallImageTarget } from './actions';
 import { IoIosSpeedometer } from 'react-icons/io';
 
 const GenerateSmallImages: React.FC = () => {
@@ -10,7 +10,7 @@ const GenerateSmallImages: React.FC = () => {
         updatedExtraImages: number;
         updatedProgressImages: number;
     } | null>(null);
-    const [currentPiece, setCurrentPiece] = useState<any | null>(null);
+    const [currentPiece, setCurrentPiece] = useState<SmallImageTarget | null>(null);
     const [progress, setProgress] = useState({ current: 0, total: 0 });
     const [generateTimeout, setGenerateTimeout] = useState(1000);
     const generateTimeoutRef = useRef(generateTimeout);
@@ -24,26 +24,42 @@ const GenerateSmallImages: React.FC = () => {
         stopGenerationRef.current = false;
 
         try {
-            const result = await generateMissingSmallImages(async (updatedPiece, current, total) => {
-                if (stopGenerationRef.current) return true;
-                console.log(`Generating small image for piece ${current} of ${total} with timeout ${generateTimeoutRef.current}ms`);
-                setCurrentPiece(updatedPiece);
-                setProgress({ current, total });
+            const imagesResult = await getImagesMissingSmallImages();
+            if (!imagesResult.success || !imagesResult.images) {
+                throw new Error(imagesResult.error || 'Failed to get images missing small versions');
+            }
+
+            const images = imagesResult.images;
+            const counts = {
+                updatedPieces: 0,
+                updatedExtraImages: 0,
+                updatedProgressImages: 0,
+            };
+
+            setProgress({ current: 0, total: images.length });
+
+            for (let i = 0; i < images.length; i++) {
+                if (stopGenerationRef.current) break;
+
+                const image = images[i];
+                setCurrentPiece(image);
+                setProgress({ current: i + 1, total: images.length });
+
+                const result = await generateMissingSmallImage(image);
+                if (!result.success) {
+                    setStatus('error');
+                    return;
+                }
+
+                if (image.targetType === 'piece') counts.updatedPieces++;
+                else if (image.targetType === 'extra') counts.updatedExtraImages++;
+                else counts.updatedProgressImages++;
+
                 await new Promise((resolve) => setTimeout(resolve, generateTimeoutRef.current));
-                return false;
-            });
-            if (!result.success) {
-                console.error('Failed to generate small images:', result.error);
-                setStatus('error');
-                return;
             }
-            if (!result.updatedPiece) {
-                console.error('No pieces returned from generateMissingSmallImages:', result.error);
-                setStatus('error');
-                return;
-            }
+
             setStatus('success');
-            setResult(result.updatedPiece);
+            setResult(counts);
         } catch (error: any) {
             console.error('Failed to generate small images:', error.message);
             setStatus('error');
@@ -127,12 +143,7 @@ const GenerateSmallImages: React.FC = () => {
                     <p>
                         <strong className="font-bold text-stone-900">{currentPiece.title}</strong>
                     </p>
-                    {currentPiece.piece_type && <p className="text-stone-900">Type: {currentPiece.piece_type}</p>}
-                    {currentPiece.width && currentPiece.height && (
-                        <p className="text-stone-900">
-                            Dimensions: {currentPiece.width}" x {currentPiece.height}"
-                        </p>
-                    )}
+                    <p className="text-stone-900">Type: {currentPiece.targetType}</p>
                 </div>
             )}
         </div>

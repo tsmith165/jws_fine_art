@@ -74,21 +74,24 @@ export default function CreatePiece() {
                 smallHeight,
             };
             const piece_data = await createNewPiece(data);
+            if (!piece_data.success || !piece_data.piece?.id) {
+                setStatusMessage({ type: 'error', message: piece_data.error || 'Failed to create piece. Please try again.' });
+                return;
+            }
+
             setStatusMessage({ type: 'success', message: 'Piece created successfully.' });
             handleResetInputs();
 
-            if (piece_data.piece?.id) {
-                switch (action) {
-                    case 'edit':
-                        router.push(`/admin/edit?id=${piece_data.piece.id}`);
-                        break;
-                    case 'images':
-                        router.push(`/admin/edit/images/${piece_data.piece.id}`);
-                        break;
-                    case 'view':
-                        router.push(`/gallery?piece=${piece_data.piece.id}`);
-                        break;
-                }
+            switch (action) {
+                case 'edit':
+                    router.push(`/admin/edit?id=${piece_data.piece.id}`);
+                    break;
+                case 'images':
+                    router.push(`/admin/edit/images/${piece_data.piece.id}`);
+                    break;
+                case 'view':
+                    router.push(`/gallery?piece=${piece_data.piece.id}`);
+                    break;
             }
         } catch (error) {
             console.error('Error creating piece:', error);

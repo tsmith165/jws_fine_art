@@ -33,15 +33,15 @@ import { PiecesWithImages } from '@/db/schema';
 import PageLayout from '@/components/layout/PageLayout';
 import Success from '@/app/checkout/success/[id]/Success';
 
-export default async function Page(props: { params: Promise<{ id: string }> }){
+export default async function Page(props: { params: Promise<{ id: string }> }) {
     const current_id = parseInt((await props.params).id);
     const current_piece: PiecesWithImages = await fetchPieceById(current_id);
 
     return (
-        <PageLayout page={`/checkout/cancel/${current_id}`}>
+        <PageLayout page={`/checkout/success/${current_id}`}>
             <Success current_piece={current_piece} current_id={current_id} />
         </PageLayout>
     );
 }
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';

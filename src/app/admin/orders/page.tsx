@@ -34,6 +34,8 @@ import { VerifiedTransactions } from '@/db/schema';
 import PageLayout from '@/components/layout/PageLayout';
 import Orders from '@/app/admin/orders/orders';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
     const verified_list = await fetchVerifiedPayments();
 
@@ -48,17 +50,10 @@ async function fetchVerifiedPayments(): Promise<VerifiedTransactions[]> {
     console.log(`Fetching verified payments with Drizzle`);
     const verified_list = await db.select().from(verifiedTransactionsTable);
 
-    console.log('Verified Payments List (Next Line):');
-    console.log(verified_list);
-
     for (let i = 0; i < verified_list.length; i++) {
         const date_string = new Date(verified_list[i].date).toUTCString();
-        console.log(`Current Date: ${date_string}`);
         verified_list[i].date = date_string;
     }
-
-    console.log('Verified Payments List (Next Line):');
-    console.log(verified_list);
 
     return verified_list;
 }

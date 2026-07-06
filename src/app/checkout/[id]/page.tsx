@@ -39,10 +39,10 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     const current_piece: PiecesWithImages = await fetchPieceById(current_id);
 
     return (
-        (<PageLayout page={`/checkout/${(await props.params).id}`}>
+        <PageLayout page={`/checkout/${(await props.params).id}`}>
             <Checkout current_piece={current_piece} current_id={current_id} />
-        </PageLayout>)
+        </PageLayout>
     );
 }
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';

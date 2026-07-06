@@ -24,6 +24,15 @@ async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string | und
     return { isAdmin: true };
 }
 
+function getPieceClassName(title: string) {
+    return title
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, '_')
+        .replace(/[^a-z0-9_]/g, '');
+}
+
 interface SubmitFormData {
     piece_id: string;
     piece_title: string;
@@ -103,7 +112,7 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
             await db.insert(piecesTable).values({
                 id: next_id,
                 o_id: next_oid,
-                class_name: data.piece_title.toString().toLowerCase().replace(' ', '_'),
+                class_name: getPieceClassName(data.piece_title),
                 active: true,
                 ...formattedData,
             });
@@ -230,11 +239,12 @@ export async function handleImageReorder(
             return { success: false, error: 'No images found for reordering' };
         }
 
-        console.log(`Setting image path for ${currentPieceId} to ${targetImage[0].image_path}`);
-        await db.update(table).set({ image_path: targetImage[0].image_path }).where(eq(table.id, currentPieceId));
+        const imageFields = ['title', 'image_path', 'width', 'height', 'small_image_path', 'small_width', 'small_height'] as const;
+        const currentImageFields = Object.fromEntries(imageFields.map((field) => [field, currentImage[0][field]]));
+        const targetImageFields = Object.fromEntries(imageFields.map((field) => [field, targetImage[0][field]]));
 
-        console.log(`Setting image path for ${targetPieceId} to ${currentImage[0].image_path}`);
-        await db.update(table).set({ image_path: currentImage[0].image_path }).where(eq(table.id, targetPieceId));
+        await db.update(table).set(targetImageFields).where(eq(table.id, currentPieceId));
+        await db.update(table).set(currentImageFields).where(eq(table.id, targetPieceId));
 
         // Revalidate the path to refetch the data
         revalidatePath(`/admin/edit`);
@@ -375,7 +385,7 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
             framed: false,
             comments: '',
             o_id: newOId,
-            class_name: title.toString().toLowerCase().replace(' ', '_').replace('-', '_'),
+            class_name: getPieceClassName(title),
         };
         console.log('New Piece Data:', data);
 

@@ -25,13 +25,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
 
     const router = useRouter();
 
-    useEffect(() => {
-        console.log('ImageEditor mounted or pieceId changed:', pieceId);
-        resetInputs();
-    }, [pieceId]);
-
     const resetInputs = useCallback(() => {
-        console.log('Resetting inputs');
         setImageUrl('Not yet uploaded');
         setTitle('Not yet uploaded');
         setWidth(0);
@@ -43,6 +37,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
         setStatusMessage(null);
     }, []);
 
+    useEffect(() => {
+        resetInputs();
+    }, [pieceId, resetInputs]);
+
     const handleUploadComplete = useCallback(
         (
             fileName: string,
@@ -53,16 +51,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
             smallWidth: number,
             smallHeight: number,
         ) => {
-            console.log('handleUploadComplete called with:', {
-                fileName,
-                originalImageUrl,
-                smallImageUrl,
-                originalWidth,
-                originalHeight,
-                smallWidth,
-                smallHeight,
-            });
-
             setTitle(fileName.split('.')[0] || 'Not yet uploaded');
             setImageUrl(originalImageUrl);
             setSmallImageUrl(smallImageUrl);
@@ -72,16 +60,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
             setSmallHeight(smallHeight);
             setIsSubmitting(false);
             setStatusMessage(null);
-
-            console.log('State after update:', {
-                title: fileName.split('.')[0] || 'Not yet uploaded',
-                imageUrl: originalImageUrl,
-                smallImageUrl,
-                width: originalWidth,
-                height: originalHeight,
-                smallWidth,
-                smallHeight,
-            });
         },
         [],
     );
@@ -119,8 +97,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
     };
 
     const isFormValid = imageUrl !== 'Not yet uploaded' && !isSubmitting;
-
-    console.log('Current state:', { imageUrl, title, width, height, smallImageUrl, smallWidth, smallHeight });
 
     return (
         <div className="flex h-full w-full flex-col items-center justify-center bg-stone-900">

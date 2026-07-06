@@ -7,11 +7,8 @@ interface OrderTreeProps {
 
 const OrderTree: React.FC<OrderTreeProps> = (props) => {
     const list_items = props.verified_list.reverse().map((verified_payment_data) => {
-        console.log(`Verified Payment Data (Next Line):`);
-        console.log(verified_payment_data);
-
         return (
-            <div className={'group flex flex-row hover:bg-secondary_dark'} key={verified_payment_data.id || Math.random()}>
+            <div className={'group flex flex-row hover:bg-secondary_dark'} key={verified_payment_data.id}>
                 <div className={'bg-primary_dark'}>
                     <img
                         className={'h-[150px] w-[150px] object-contain'}

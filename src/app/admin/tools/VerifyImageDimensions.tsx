@@ -127,12 +127,12 @@ const VerifyImageDimensions: React.FC = () => {
                     {currentPiece.piece_type && <p className="text-stone-900">Type: {currentPiece.piece_type}</p>}
                     {currentPiece.width && currentPiece.height && (
                         <p className="text-stone-900">
-                            Dimensions: {currentPiece.width}" x {currentPiece.height}"
+                            Dimensions: {currentPiece.width}&quot; x {currentPiece.height}&quot;
                         </p>
                     )}
                     {currentPiece.small_width && currentPiece.small_height && (
                         <p className="text-stone-900">
-                            Small Dimensions: {currentPiece.small_width}" x {currentPiece.small_height}"
+                            Small Dimensions: {currentPiece.small_width}&quot; x {currentPiece.small_height}&quot;
                         </p>
                     )}
                 </div>

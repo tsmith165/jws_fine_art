@@ -5,8 +5,9 @@ import React from 'react';
 import { render } from '@react-email/render';
 import { sendEmail } from '@/utils/emails/resend_utils';
 import CheckoutSuccessEmail from '@/utils/emails/templates/checkoutSuccessEmail';
+import { revalidatePath } from 'next/cache';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-06-24.dahlia' });
 
 interface WebhookEventMetadata {
     product_id: string;
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
         console.log('Verifying Signature From Webhook...');
         event = stripe.webhooks.constructEvent(payload, sig, webhookSecret);
 
-        console.log('Stripe Event:', event);
+        console.log(`Stripe webhook event verified: ${event.type}`);
 
         if (event.type === 'payment_intent.succeeded' && hasMetadata(event)) {
             const stripeEvent = event.data.object;
@@ -46,13 +47,23 @@ export async function POST(request: Request) {
             const stripeId = stripeEvent.id;
 
             console.log(`ID: ${stripeId}`);
-            console.log(`Metadata:`, metadata);
 
             if (!metadata.product_id || !metadata.full_name) {
                 throw new Error('Missing required metadata');
             }
 
-            console.log(`Querying pending transactions for Piece DB ID: ${metadata.product_id} | Full Name: ${metadata.full_name}`);
+            const existingVerifiedTransaction = await db
+                .select({ id: verifiedTransactionsTable.id })
+                .from(verifiedTransactionsTable)
+                .where(eq(verifiedTransactionsTable.stripe_id, stripeId))
+                .limit(1);
+
+            if (existingVerifiedTransaction.length > 0) {
+                console.log(`Stripe payment intent ${stripeId} already processed.`);
+                return new Response(JSON.stringify({ received: true }), { status: 200 });
+            }
+
+            console.log(`Querying pending transaction for piece ID: ${metadata.product_id}`);
             const pendingTransactionData = await db
                 .select()
                 .from(pendingTransactionsTable)
@@ -63,8 +74,6 @@ export async function POST(request: Request) {
                     ),
                 )
                 .limit(1);
-
-            console.log('Pending Transaction Data:', pendingTransactionData);
 
             if (pendingTransactionData.length === 0) {
                 throw new Error('Pending transaction not found');
@@ -81,7 +90,7 @@ export async function POST(request: Request) {
             const nextId = maxId + 1;
 
             console.log('Creating Verified Transaction...');
-            const createOutput = await db.insert(verifiedTransactionsTable).values({
+            await db.insert(verifiedTransactionsTable).values({
                 id: nextId, // Manually setting the id
                 piece_db_id: parseInt(metadata.product_id, 10),
                 full_name: metadata.full_name,
@@ -98,15 +107,16 @@ export async function POST(request: Request) {
                 price: parseInt(metadata.price_id, 10),
             });
 
-            console.log('Pending Transaction Create Output:', createOutput);
-
             console.log('Setting Piece As Sold...');
-            const updateOutput = await db
+            await db
                 .update(piecesTable)
                 .set({ sold: true })
                 .where(eq(piecesTable.id, parseInt(metadata.product_id, 10)));
 
-            console.log('Set Sold Update Output:', updateOutput);
+            revalidatePath(`/checkout/${metadata.product_id}`);
+            revalidatePath(`/details/${metadata.product_id}`);
+            revalidatePath('/gallery');
+            revalidatePath('/');
 
             // Send email to user and admin
             const checkoutSuccessEmailTemplate = React.createElement(CheckoutSuccessEmail, {
@@ -115,7 +125,7 @@ export async function POST(request: Request) {
                 address: pendingTransactionData[0].address,
                 price_paid: parseInt(metadata.price_id, 10),
             });
-            const emailHtml = render(checkoutSuccessEmailTemplate);
+            const emailHtml = await render(checkoutSuccessEmailTemplate);
 
             await sendEmail({
                 from: 'contact@jwsfineart.com',
@@ -132,8 +142,6 @@ export async function POST(request: Request) {
             // Implement any additional logic needed for canceled payments
         } else {
             console.warn(`Unhandled Stripe event type: ${event.type}`);
-            const unhandledData = event.data.object;
-            console.log('Unhandled Event Data:', unhandledData);
         }
     } catch (err: any) {
         console.error(`Webhook Error: ${err.message}`);

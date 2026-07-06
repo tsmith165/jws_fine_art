@@ -39,6 +39,8 @@ interface PageProps {
     }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function ManagePage(props: PageProps) {
     const searchParams = await props.searchParams;
     const tab = searchParams?.tab || 'manage';

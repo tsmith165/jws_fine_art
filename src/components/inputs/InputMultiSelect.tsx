@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Select, { components, StylesConfig, ControlProps, MultiValueProps, OptionProps, GroupBase } from 'react-select';
+import Select, { components, StylesConfig, MultiValue } from 'react-select';
 import { FaArrowDown } from 'react-icons/fa';
 
 interface InputMultiSelectProps {
@@ -9,7 +9,7 @@ interface InputMultiSelectProps {
     defaultValue?: { value: string; label: string }[];
     name: string;
     select_options: [string, string][];
-    onChange?: (selectedOptions: { value: string; label: string }[]) => void;
+    onChange?: (selectedOptions: OptionType[]) => void;
     inputId?: string;
 }
 
@@ -67,9 +67,9 @@ const InputMultiSelect: React.FC<InputMultiSelectProps> = ({ idName, defaultValu
                 }}
                 styles={customStyles}
                 options={react_select_options}
-                onChange={(selectedOptions: { value: string; label: string }[]) => {
+                onChange={(selectedOptions: MultiValue<OptionType>) => {
                     if (onChange && selectedOptions) {
-                        onChange(selectedOptions as { value: string; label: string }[]);
+                        onChange([...selectedOptions]);
                     }
                 }}
             />
