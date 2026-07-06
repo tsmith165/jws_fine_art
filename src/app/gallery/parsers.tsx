@@ -1,9 +1,11 @@
-import { parseAsString } from 'nuqs/server';
-
-// Create parser for piece ID
-export const pieceParser = parseAsString.withDefault('');
-
-// Type for parsed parameters
 export type ParsedParams = {
-    piece: NonNullable<ReturnType<typeof pieceParser.parseServerSide>>;
+    piece: string;
 };
+
+export function parsePieceParam(value: string | string[] | undefined) {
+    if (Array.isArray(value)) {
+        return value[0] ?? '';
+    }
+
+    return value ?? '';
+}

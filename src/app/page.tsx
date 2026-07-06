@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import HomepagePage from '@/app/HomepagePage';
+import { parsePieceParam } from '@/app/gallery/parsers';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Home',
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 
 export default async function Page(props: { searchParams: Promise<{ piece?: string }> }) {
     const searchParams = await props.searchParams;
-    const pieceId = searchParams.piece;
+    const pieceId = parsePieceParam(searchParams.piece);
 
     return (
         <PageLayout page="/">

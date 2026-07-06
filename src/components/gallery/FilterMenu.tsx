@@ -16,12 +16,10 @@ const THEME_FILTERS: [string, string, React.ComponentType<{ className?: string }
 ];
 
 const FilterMenu: React.FC = () => {
-    const { theme, filterMenuOpen, setTheme, setFilterMenuOpen } = useGalleryStore((state) => ({
-        theme: state.theme,
-        filterMenuOpen: state.filterMenuOpen,
-        setTheme: state.setTheme,
-        setFilterMenuOpen: state.setFilterMenuOpen,
-    }));
+    const theme = useGalleryStore((state) => state.theme);
+    const filterMenuOpen = useGalleryStore((state) => state.filterMenuOpen);
+    const setTheme = useGalleryStore((state) => state.setTheme);
+    const setFilterMenuOpen = useGalleryStore((state) => state.setFilterMenuOpen);
 
     return (
         <div onMouseEnter={() => setFilterMenuOpen(true)} onMouseLeave={() => setFilterMenuOpen(false)}>

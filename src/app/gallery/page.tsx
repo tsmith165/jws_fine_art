@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import GalleryPage from './GalleryPage';
-import { pieceParser } from './parsers';
+import { parsePieceParam } from './parsers';
 
 export const metadata: Metadata = {
     title: 'JWS Fine Art - Gallery',
@@ -40,10 +40,9 @@ interface PageProps {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-    // Parse search params server-side using nuqs parser
     const resolvedSearchParams = await searchParams;
     const parsedParams = {
-        piece: pieceParser.parseServerSide(resolvedSearchParams.piece),
+        piece: parsePieceParam(resolvedSearchParams.piece),
     };
 
     return (

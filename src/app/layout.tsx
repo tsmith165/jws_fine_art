@@ -1,7 +1,6 @@
 import React from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
 import { PHProvider } from './providers';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { dark } from '@clerk/themes';
@@ -25,10 +24,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <html lang="en" className={`${cinzel.variable}`}>
                 <body className="font-cinzel">
                     <PHProvider>
-                        <NuqsAdapter>
-                            <SpeedInsights />
-                            {children}
-                        </NuqsAdapter>
+                        <SpeedInsights />
+                        {children}
                     </PHProvider>
                 </body>
             </html>
