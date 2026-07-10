@@ -110,13 +110,17 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                         const newWidth = width * ratio;
                         const newHeight = height * ratio;
 
-                        canvas.width = newWidth;
-                        canvas.height = newHeight;
+                        canvas.width = Math.round(newWidth);
+                        canvas.height = Math.round(newHeight);
 
-                        ctx?.drawImage(img, 0, 0, newWidth, newHeight);
+                        if (ctx) {
+                            ctx.imageSmoothingEnabled = true;
+                            ctx.imageSmoothingQuality = 'high';
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        }
 
                         const outputType = file.type || 'image/jpeg';
-                        const outputQuality = outputType === 'image/jpeg' || outputType === 'image/webp' ? 0.92 : undefined;
+                        const outputQuality = outputType === 'image/jpeg' || outputType === 'image/webp' ? 0.96 : undefined;
 
                         canvas.toBlob(
                             (blob) => {
@@ -146,8 +150,8 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                 handleResetInputs();
 
                 setLoadingState('Resizing Image');
-                const originalResizedFile = await resizeImage(originalFile, 1920, 1920);
-                const smallResizedFile = await resizeImage(originalFile, 450, 450);
+                const originalResizedFile = await resizeImage(originalFile, 2560, 2560);
+                const smallResizedFile = await resizeImage(originalFile, 900, 900);
 
                 const smallFileWithPrefix = new File([smallResizedFile], `small-${smallResizedFile.name}`, { type: smallResizedFile.type });
 

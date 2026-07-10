@@ -8,17 +8,9 @@ interface GalleryPieceProps {
 }
 
 const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
-    const image_path = piece.small_image_path || piece.image_path;
-    let image_width = 0;
-    let image_height = 0;
-    if (image_path === piece.small_image_path) {
-        image_width = piece.small_width || 0;
-        image_height = piece.small_height || 0;
-    }
-    if (image_path === piece.image_path || image_width === 0 || image_height === 0) {
-        image_width = piece.width || 0;
-        image_height = piece.height || 0;
-    }
+    const image_path = piece.image_path;
+    const image_width = piece.width || 0;
+    const image_height = piece.height || 0;
 
     return (
         <div
@@ -33,6 +25,7 @@ const GalleryPiece = ({ piece, handlePieceClick }: GalleryPieceProps) => {
                 height={image_height}
                 className="h-auto w-full rounded-md bg-stone-600 object-cover p-1"
                 sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                quality={90}
                 priority={piece.index < 10}
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 p-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

@@ -5,7 +5,7 @@ import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
 const f = createUploadthing();
 
 export const ourFileRouter = {
-    imageUploader: f({ image: { maxFileSize: '4MB', maxFileCount: 2 } })
+    imageUploader: f({ image: { maxFileSize: '8MB', maxFileCount: 2 } })
         .middleware(async ({ req }) => {
             const { userId } = getAuth(req);
             if (!userId) {

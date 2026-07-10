@@ -62,19 +62,19 @@ const Gallery: React.FC<GalleryProps> = ({ initialPieces, initialPieceId }) => {
         if (!selectedPiece) return [];
         return [
             {
-                src: selectedPiece.small_image_path || selectedPiece.image_path,
-                width: selectedPiece.small_width || selectedPiece.width,
-                height: selectedPiece.small_height || selectedPiece.height,
+                src: selectedPiece.image_path,
+                width: selectedPiece.width,
+                height: selectedPiece.height,
             },
             ...(selectedPiece.extraImages || []).map((image) => ({
-                src: image.small_image_path || image.image_path,
-                width: image.small_width || image.width,
-                height: image.small_height || image.height,
+                src: image.image_path,
+                width: image.width,
+                height: image.height,
             })),
             ...(selectedPiece.progressImages || []).map((image) => ({
-                src: image.small_image_path || image.image_path,
-                width: image.small_width || image.width,
-                height: image.small_height || image.height,
+                src: image.image_path,
+                width: image.width,
+                height: image.height,
             })),
         ];
     }, [selectedPiece]);
