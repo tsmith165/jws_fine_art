@@ -8,26 +8,26 @@ This ledger is the plan of record for the production-site overhaul. It is update
 - Baseline commit: `be3b821`
 - Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
 - Production data policy: Neon remains read-only and intact as the rollback source.
-- Current phase: 1 of 8, inventory and baseline measurement.
+- Current phase: 2 of 8, plan critique and migration review.
 
 ## Phases
 
 ### Phase 1: Inventory and Baseline
 
-Status: **in progress**
+Status: **complete**
 
 Acceptance criteria:
 
-- [ ] Record every application route and its public, commerce, authentication, or owner-console role.
-- [ ] Record package versions, known vulnerabilities, unused dependencies, and justified upgrade targets.
-- [ ] Record the complete Neon schema, relationships, row counts, nullability, and UI-dependent fields without modifying Neon.
-- [ ] Record where every image and document asset lives, how URLs are formed, and representative resolution checks.
-- [ ] Record the complete `d2 v1` design surface and map each real route to its target screen or an explicit extension.
-- [ ] Capture baseline typecheck, lint, tests, production build, bundle output, browser behavior, accessibility, and performance measurements.
+- [x] Record every application route and its public, commerce, authentication, or owner-console role.
+- [x] Record package versions, known vulnerabilities, unused dependencies, and justified upgrade targets.
+- [x] Record the complete Neon schema, relationships, row counts, nullability, and UI-dependent fields without modifying Neon.
+- [x] Record where every image and document asset lives, how URLs are formed, and representative resolution checks.
+- [x] Record the complete `d2 v1` design surface and map each real route to its target screen or an explicit extension.
+- [x] Capture baseline typecheck, lint, production build, browser behavior, accessibility, and performance measurements. The source has no test suite; adding one is an implementation gate.
 
 ### Phase 2: Plan of Record and Critique
 
-Status: **pending**
+Status: **in progress**
 
 Acceptance criteria:
 
@@ -117,9 +117,21 @@ Acceptance criteria:
 
 ## Migration Record
 
-Not started. This section will contain:
+Pre-migration source protection and inventory:
 
-- Neon dump path, checksum, creation command, and restore procedure.
+- Full custom-format dump: `/Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-pre-convex.dump`
+- Dump SHA-256: `1c42170b66ca617bb275b60930e0ad943dca553bf92def6b52c4ecae8e7c6d9c`
+- Schema snapshot: `/Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-schema.sql`
+- Schema SHA-256: `c632c9331b49f6b1269eaf2adc91242d3237d17e2285f59515dc40108e211d5f`
+- Source server: PostgreSQL 16.14. Dump tool: PostgreSQL 18.4.
+- The dump catalog parsed successfully and includes all five tables, sequences, data sections, primary keys, and two media foreign keys.
+- Restore command for an empty, non-production database: `pg_restore --clean --if-exists --no-owner --no-acl --dbname "$RESTORE_DATABASE_URL" /Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-pre-convex.dump`. A live restore will only be tested against a disposable local or isolated database, never the production Neon database.
+- Source counts: 86 artworks, 150 supporting images, 5 progress images, 115 pending transactions, and 12 verified transactions.
+- Source anomalies to preserve: 14 unresolved pending-artwork references and three verified rows sharing one Stripe payment intent.
+- Asset baseline: 481 unique HTTP URLs, all returning `200`; nine sampled primary files match stored dimensions exactly.
+
+This section will additionally contain:
+
 - Source schema and per-table counts.
 - Convex deployment/environment identifiers without secret values.
 - Import run IDs, stable-ID strategy, field mappings, and any normalization.
@@ -138,3 +150,9 @@ Not started. This section will contain:
 - Existing service accounts and projects should be reused when available; no paid infrastructure will be provisioned without approval.
 - Image binaries will remain at their existing provider initially unless inventory proves that moving them is necessary for reliability, quality, or cost.
 
+## Evidence
+
+- Source inventory: `_overhaul/INVENTORY.md`
+- Build, audit, performance, and visual baseline: `_overhaul/BASELINE.md`
+- Pre-critique implementation draft: `_overhaul/DRAFT_PLAN.md`
+- Approved design artifact: `jws-d2-v1-home-desktop`, `sha256:8cc5eb14f95c408ce785ac8372083586050a1612856a7387ad363689617a2f14`
