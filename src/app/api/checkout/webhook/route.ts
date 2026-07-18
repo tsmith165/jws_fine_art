@@ -1,152 +1,90 @@
-import Stripe from 'stripe';
-import { eq, and, sql } from 'drizzle-orm';
-import { db, piecesTable, pendingTransactionsTable, verifiedTransactionsTable } from '@/db/db';
 import React from 'react';
 import { render } from '@react-email/render';
+import { revalidatePath } from 'next/cache';
+import Stripe from 'stripe';
+import { api } from '../../../../../convex/_generated/api';
+import { getServerConvexClient } from '@/data/serverConvex';
 import { sendEmail } from '@/utils/emails/resend_utils';
 import CheckoutSuccessEmail from '@/utils/emails/templates/checkoutSuccessEmail';
-import { revalidatePath } from 'next/cache';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-06-24.dahlia' });
 
-interface WebhookEventMetadata {
-    product_id: string;
-    full_name: string;
-    image_path: string;
-    image_width: string;
-    image_height: string;
-    price_id: string;
-}
-
-function hasMetadata(event: Stripe.Event): event is Stripe.Event & { data: { object: { metadata: WebhookEventMetadata } } } {
-    return 'metadata' in event.data.object;
+async function checkoutSessionId(paymentIntentId: string) {
+    const sessions = await stripe.checkout.sessions.list({ payment_intent: paymentIntentId, limit: 1 });
+    return sessions.data[0]?.id ?? null;
 }
 
 export async function POST(request: Request) {
-    console.log('Received Stripe Webhook Request');
-
     const payload = await request.text();
-    const sig = request.headers.get('stripe-signature');
+    const signature = request.headers.get('stripe-signature');
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!signature || !webhookSecret) return Response.json({ error: 'Webhook configuration is incomplete.' }, { status: 400 });
+
     let event: Stripe.Event;
-
     try {
-        if (!sig || !webhookSecret) {
-            console.error('Invalid signature or webhook secret');
-            return new Response(JSON.stringify({ error: 'Invalid signature or webhook secret' }), { status: 400 });
-        }
-
-        console.log('Verifying Signature From Webhook...');
-        event = stripe.webhooks.constructEvent(payload, sig, webhookSecret);
-
-        console.log(`Stripe webhook event verified: ${event.type}`);
-
-        if (event.type === 'payment_intent.succeeded' && hasMetadata(event)) {
-            const stripeEvent = event.data.object;
-            const metadata = stripeEvent.metadata;
-            const stripeId = stripeEvent.id;
-
-            console.log(`ID: ${stripeId}`);
-
-            if (!metadata.product_id || !metadata.full_name) {
-                throw new Error('Missing required metadata');
-            }
-
-            const existingVerifiedTransaction = await db
-                .select({ id: verifiedTransactionsTable.id })
-                .from(verifiedTransactionsTable)
-                .where(eq(verifiedTransactionsTable.stripe_id, stripeId))
-                .limit(1);
-
-            if (existingVerifiedTransaction.length > 0) {
-                console.log(`Stripe payment intent ${stripeId} already processed.`);
-                return new Response(JSON.stringify({ received: true }), { status: 200 });
-            }
-
-            console.log(`Querying pending transaction for piece ID: ${metadata.product_id}`);
-            const pendingTransactionData = await db
-                .select()
-                .from(pendingTransactionsTable)
-                .where(
-                    and(
-                        eq(pendingTransactionsTable.piece_db_id, parseInt(metadata.product_id, 10)),
-                        eq(pendingTransactionsTable.full_name, metadata.full_name),
-                    ),
-                )
-                .limit(1);
-
-            if (pendingTransactionData.length === 0) {
-                throw new Error('Pending transaction not found');
-            }
-
-            // Fetch the current maximum ID from the VerifiedTransactions table
-            const maxIdResult = await db
-                .select({ value: sql`max(${verifiedTransactionsTable.id})`.mapWith(Number) })
-                .from(verifiedTransactionsTable);
-
-            const maxId = maxIdResult.length > 0 && maxIdResult[0].value !== null ? maxIdResult[0].value : 0;
-
-            // Calculate the next ID
-            const nextId = maxId + 1;
-
-            console.log('Creating Verified Transaction...');
-            await db.insert(verifiedTransactionsTable).values({
-                id: nextId, // Manually setting the id
-                piece_db_id: parseInt(metadata.product_id, 10),
-                full_name: metadata.full_name,
-                piece_title: pendingTransactionData[0].piece_title,
-                phone: pendingTransactionData[0].phone,
-                email: pendingTransactionData[0].email,
-                address: pendingTransactionData[0].address,
-                international: pendingTransactionData[0].international,
-                image_path: metadata.image_path,
-                image_width: parseInt(metadata.image_width, 10),
-                image_height: parseInt(metadata.image_height, 10),
-                date: new Date().toISOString(),
-                stripe_id: stripeId,
-                price: parseInt(metadata.price_id, 10),
-            });
-
-            console.log('Setting Piece As Sold...');
-            await db
-                .update(piecesTable)
-                .set({ sold: true })
-                .where(eq(piecesTable.id, parseInt(metadata.product_id, 10)));
-
-            revalidatePath(`/checkout/${metadata.product_id}`);
-            revalidatePath(`/details/${metadata.product_id}`);
-            revalidatePath('/gallery');
-            revalidatePath('/');
-
-            // Send email to user and admin
-            const checkoutSuccessEmailTemplate = React.createElement(CheckoutSuccessEmail, {
-                full_name: metadata.full_name,
-                piece_title: pendingTransactionData[0].piece_title,
-                address: pendingTransactionData[0].address,
-                price_paid: parseInt(metadata.price_id, 10),
-            });
-            const emailHtml = await render(checkoutSuccessEmailTemplate);
-
-            await sendEmail({
-                from: 'contact@jwsfineart.com',
-                to: [pendingTransactionData[0].email, 'jwsfineart@gmail.com'],
-                subject: 'Purchase Confirmation - JWS Fine Art Gallery',
-                html: emailHtml,
-            });
-        } else if (event.type === 'payment_intent.payment_failed') {
-            // Handle unsuccessful payment
-            console.log('Payment Unsuccessful. Handle unverified transaction (no current handling)...');
-        } else if (event.type === 'payment_intent.canceled') {
-            // Handle canceled payment
-            console.log('Payment Canceled. Handle canceled transaction...');
-            // Implement any additional logic needed for canceled payments
-        } else {
-            console.warn(`Unhandled Stripe event type: ${event.type}`);
-        }
-    } catch (err: any) {
-        console.error(`Webhook Error: ${err.message}`);
-        return new Response(JSON.stringify({ error: `Webhook Error: ${err.message}` }), { status: 400 });
+        event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+    } catch (error) {
+        console.error('Stripe webhook signature verification failed.', error);
+        return Response.json({ error: 'Invalid webhook signature.' }, { status: 400 });
     }
 
-    return new Response(JSON.stringify({ received: true }), { status: 200 });
+    try {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const paymentIntentId = paymentIntent.object === 'payment_intent' ? paymentIntent.id : null;
+        const sessionId = paymentIntentId ? await checkoutSessionId(paymentIntentId) : null;
+        const { client, serverSecret } = getServerConvexClient();
+        const result = await client.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: event.id,
+            eventType: event.type,
+            paymentIntentId,
+            checkoutSessionId: sessionId,
+            amountReceivedCents:
+                event.type === 'payment_intent.succeeded' && paymentIntent.object === 'payment_intent'
+                    ? paymentIntent.amount_received
+                    : null,
+            currency: paymentIntent.object === 'payment_intent' ? paymentIntent.currency : null,
+        });
+
+        if (result.outcome === 'processed' && 'notification' in result && result.notification && paymentIntentId) {
+            const notification = result.notification;
+            try {
+                const emailHtml = await render(
+                    React.createElement(CheckoutSuccessEmail, {
+                        full_name: notification.buyerName,
+                        piece_title: notification.artworkTitle,
+                        address: notification.shippingAddress,
+                        price_paid: notification.amountPaidCents / 100,
+                    }),
+                );
+                await sendEmail({
+                    from: 'contact@jwsfineart.com',
+                    to: [notification.buyerEmail, 'jwsfineart@gmail.com'],
+                    subject: 'Purchase Confirmation - JWS Fine Art Gallery',
+                    html: emailHtml,
+                });
+                await client.mutation(api.commerce.recordNotificationOutcome, {
+                    serverSecret,
+                    paymentIntentId,
+                    outcome: 'sent',
+                    details: 'Purchase confirmation accepted by the email provider.',
+                });
+            } catch (error) {
+                console.error('Purchase was recorded, but confirmation email failed.', error);
+                await client.mutation(api.commerce.recordNotificationOutcome, {
+                    serverSecret,
+                    paymentIntentId,
+                    outcome: 'failed',
+                    details: 'Purchase confirmation delivery failed and needs owner attention.',
+                });
+            }
+            revalidatePath('/');
+            revalidatePath('/gallery');
+            revalidatePath('/admin/orders');
+        }
+        return Response.json({ received: true, outcome: result.outcome });
+    } catch (error) {
+        console.error('Stripe webhook processing failed.', error);
+        return Response.json({ error: 'Webhook processing failed.' }, { status: 500 });
+    }
 }

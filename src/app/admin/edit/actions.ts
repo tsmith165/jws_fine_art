@@ -1,36 +1,22 @@
 'use server';
-import { redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
-import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
 
-import { db, piecesTable, extraImagesTable, progressImagesTable } from '@/db/db';
-import { eq, and, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { getMostRecentId } from '@/app/actions';
+import { api } from '../../../../convex/_generated/api';
+import type { Pieces } from '@/db/schema';
+import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
+import { ownerArtworkToLegacy } from '@/data/ownerMapper';
+import sharp from 'sharp';
 
-import { Pieces } from '@/db/schema';
-
-async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string | undefined }> {
-    const { userId } = await auth();
-    if (!userId) {
-        return { isAdmin: false, error: 'User is not authenticated. Cannot edit piece.' };
+function revalidateArtworkSurfaces(id?: number) {
+    revalidatePath('/');
+    revalidatePath('/gallery');
+    revalidatePath('/slideshow');
+    revalidatePath('/admin/edit');
+    revalidatePath('/admin/manage');
+    if (id) {
+        revalidatePath(`/details/${id}`);
+        revalidatePath(`/checkout/${id}`);
     }
-    console.log(`User ID: ${userId}`);
-    const hasAdminRole = await isClerkUserIdAdmin(userId);
-    console.log(`User hasAdminRole: ${hasAdminRole}`);
-    if (!hasAdminRole) {
-        return { isAdmin: false, error: 'User does not have the admin role. Cannot edit piece.' };
-    }
-    return { isAdmin: true };
-}
-
-function getPieceClassName(title: string) {
-    return title
-        .toString()
-        .trim()
-        .toLowerCase()
-        .replace(/[\s-]+/g, '_')
-        .replace(/[^a-z0-9_]/g, '');
 }
 
 interface SubmitFormData {
@@ -52,79 +38,66 @@ interface SubmitFormData {
     image_path: string;
 }
 
-export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = await checkUserRole();
-    if (!isAdmin) {
-        console.error(roleError);
-        return { success: false, error: roleError };
+function nullableText(value: string | null | undefined) {
+    const normalized = value?.trim();
+    return normalized ? normalized : null;
+}
+
+function nullableNumber(value: string) {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? number : null;
+}
+
+export async function inspectUploadedImage(url: string): Promise<{ width: number; height: number }> {
+    await getAuthenticatedOwnerConvexClient('inspect uploaded artwork');
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:' || !['utfs.io', 'ufs.sh'].some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`))) {
+        throw new Error('Uploaded image URL is not from the configured media provider.');
     }
+    const response = await fetch(parsed, { cache: 'no-store' });
+    if (!response.ok) throw new Error('The uploaded image could not be inspected.');
+    const contentLength = Number(response.headers.get('content-length') ?? 0);
+    if (contentLength > 40 * 1024 * 1024) throw new Error('The uploaded image is too large to inspect.');
+    const metadata = await sharp(Buffer.from(await response.arrayBuffer()), { failOn: 'error' }).metadata();
+    if (!metadata.width || !metadata.height) throw new Error('The uploaded image dimensions could not be determined.');
+    return { width: metadata.width, height: metadata.height };
+}
 
-    console.log('Form Data (Next Line):');
-    console.log(data);
+async function findOwnerArtwork(legacyId: number) {
+    const client = await getAuthenticatedOwnerConvexClient('manage artwork');
+    const artworks = await client.query(api.ownerReads.listArtworks, {});
+    const artwork = artworks.find((item) => item.legacyId === legacyId);
+    if (!artwork) throw new Error('Artwork not found.');
+    return { client, artwork };
+}
 
+export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success: boolean; error?: string }> {
     try {
-        if (!data.piece_title) {
-            throw new Error('Title is required');
-        }
-
-        console.log('Pre-Formatted Data (Next Line):');
-        console.log(data);
-
-        const formattedData = {
-            title: data.piece_title?.toString(),
-            width: parseInt(data.width || '0'),
-            height: parseInt(data.height || '0'),
-            description: data.description || '',
-            piece_type: data.piece_type || '',
+        const legacyId = Number(data.piece_id);
+        if (!Number.isSafeInteger(legacyId) || legacyId <= 0) throw new Error('Artwork ID is invalid.');
+        if (!data.piece_title.trim()) throw new Error('Title is required.');
+        const { client, artwork } = await findOwnerArtwork(legacyId);
+        await client.mutation(api.ownerMutations.updateArtwork, {
+            legacyId,
+            title: data.piece_title.trim(),
+            description: nullableText(data.description),
+            medium: nullableText(data.piece_type),
+            theme: nullableText(data.theme.replace('None, ', '')),
+            instagramUrl: nullableText(data.instagram),
+            ownerNotes: nullableText(data.comments),
+            priceCents: Math.max(0, Math.round(Number(data.price || 0) * 100)),
             sold: data.sold,
-            price: parseInt(data.price || '0'),
-            real_width: parseFloat(data.real_width || '0'),
-            real_height: parseFloat(data.real_height || '0'),
-            instagram: data.instagram?.split('/').pop() || '',
-            theme: data.theme?.replace('None, ', '') || '',
             available: data.available,
+            active: artwork.active,
             framed: data.framed,
-            comments: data.comments || '',
-            image_path: data.image_path || '',
-        };
-
-        console.log('Formatted Data (Next Line):');
-        console.log(formattedData);
-
-        if (data.piece_id) {
-            // Update existing piece
-            await db
-                .update(piecesTable)
-                .set(formattedData)
-                .where(eq(piecesTable.id, parseInt(data.piece_id)));
-        } else {
-            // Create new piece
-            const last_oid_json = await db
-                .select()
-                .from(piecesTable)
-                .where(eq(piecesTable.active, true))
-                .orderBy(desc(piecesTable.o_id))
-                .limit(1);
-            const last_oid = last_oid_json[0]?.o_id || 0;
-            const next_oid = last_oid + 1;
-            const next_id = last_oid + 1;
-
-            await db.insert(piecesTable).values({
-                id: next_id,
-                o_id: next_oid,
-                class_name: getPieceClassName(data.piece_title),
-                active: true,
-                ...formattedData,
-            });
-        }
-        revalidatePath(`/admin/edit`);
-        revalidatePath('/admin/manage');
-        revalidatePath('/admin/gallery');
-        revalidatePath('/admin/slideshow');
+            widthInches: nullableNumber(data.real_width),
+            heightInches: nullableNumber(data.real_height),
+        });
+        revalidateArtworkSurfaces(legacyId);
         return { success: true };
     } catch (error) {
-        console.error('Error in onSubmitEditForm:', error);
-        return { success: false, error: 'An error occurred while processing your request.' };
+        console.error('Unable to update artwork.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to update artwork.' };
     }
 }
 
@@ -141,79 +114,31 @@ interface UploadFormData {
 }
 
 export async function storeUploadedImageDetails(data: UploadFormData): Promise<{ success: boolean; imageUrl?: string; error?: string }> {
-    const { isAdmin, error: roleError } = await checkUserRole();
-    if (!isAdmin) {
-        console.error(roleError);
-        return { success: false, error: roleError };
-    }
-    console.log('Uploading Image...');
     try {
-        const pieceId = parseInt(data.piece_id?.toString() || '0');
-        const imageUrl = data.image_path?.toString() || '';
-        const width = parseInt(data.width?.toString() || '0');
-        const height = parseInt(data.height?.toString() || '0');
-        const title = data.title;
-        const imageType = data.piece_type?.toString() || '';
-        const smallImageUrl = data.small_image_path?.toString() || '';
-        const smallWidth = parseInt(data.small_width?.toString() || '0');
-        const smallHeight = parseInt(data.small_height?.toString() || '0');
-
-        const piece = await db.select().from(piecesTable).where(eq(piecesTable.id, pieceId)).limit(1);
-        if (!piece.length) {
-            console.error(`Piece with id ${pieceId} not found`);
-            return { success: false, error: 'Piece not found' };
-        }
-
-        if (imageType === 'main') {
-            console.log('Modifying main image');
-            await db
-                .update(piecesTable)
-                .set({
-                    image_path: imageUrl,
-                    width: width,
-                    height: height,
-                    small_image_path: smallImageUrl,
-                    small_width: smallWidth,
-                    small_height: smallHeight,
-                })
-                .where(eq(piecesTable.id, pieceId));
-        } else {
-            if (imageType === 'extra') {
-                console.log('Adding extra image');
-                await db.insert(extraImagesTable).values({
-                    piece_id: pieceId,
-                    image_path: imageUrl,
-                    title: title,
-                    width: width,
-                    height: height,
-                    small_image_path: smallImageUrl,
-                    small_width: smallWidth,
-                    small_height: smallHeight,
-                });
-            } else if (imageType === 'progress') {
-                console.log('Adding progress image');
-                await db.insert(progressImagesTable).values({
-                    piece_id: pieceId,
-                    image_path: imageUrl,
-                    title: title,
-                    width: width,
-                    height: height,
-                    small_image_path: smallImageUrl,
-                    small_width: smallWidth,
-                    small_height: smallHeight,
-                });
-            }
-        }
-
-        revalidatePath(`/admin/edit`); // Revalidate the path to refetch the data
-        revalidatePath('/admin/manage');
-        revalidatePath('/admin/gallery');
-        revalidatePath('/admin/slideshow');
-        return { success: true, imageUrl: imageUrl };
+        const artworkLegacyId = Number(data.piece_id);
+        const role = data.piece_type === 'main' ? 'primary' : data.piece_type === 'progress' ? 'progress' : 'supporting';
+        const client = await getAuthenticatedOwnerConvexClient('store artwork media');
+        await client.mutation(api.ownerMutations.storeArtworkMedia, {
+            artworkLegacyId,
+            role,
+            title: nullableText(data.title),
+            sourceUrl: data.image_path,
+            sourceWidth: Number(data.width),
+            sourceHeight: Number(data.height),
+            smallUrl: nullableText(data.small_image_path),
+            smallWidth: nullableNumber(data.small_width),
+            smallHeight: nullableNumber(data.small_height),
+        });
+        revalidateArtworkSurfaces(artworkLegacyId);
+        return { success: true, imageUrl: data.image_path };
     } catch (error) {
-        console.error('Error in handleImageUpload:', error);
-        return { success: false, error: 'An error occurred while processing your request.' };
+        console.error('Unable to store artwork media.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to store artwork media.' };
     }
+}
+
+function imageRole(imageType: string): 'supporting' | 'progress' {
+    return imageType === 'extra' ? 'supporting' : 'progress';
 }
 
 export async function handleImageReorder(
@@ -222,39 +147,18 @@ export async function handleImageReorder(
     targetPieceId: number,
     imageType: string,
 ): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = await checkUserRole();
-    if (!isAdmin) {
-        console.error(roleError);
-        return { success: false, error: roleError };
-    }
-
     try {
-        const table = imageType === 'extra' ? extraImagesTable : progressImagesTable;
-
-        const currentImage = await db.select().from(table).where(eq(table.id, currentPieceId)).limit(1);
-        const targetImage = await db.select().from(table).where(eq(table.id, targetPieceId)).limit(1);
-
-        if (currentImage.length === 0 || targetImage.length === 0) {
-            console.error(`No images found for reordering`);
-            return { success: false, error: 'No images found for reordering' };
-        }
-
-        const imageFields = ['title', 'image_path', 'width', 'height', 'small_image_path', 'small_width', 'small_height'] as const;
-        const currentImageFields = Object.fromEntries(imageFields.map((field) => [field, currentImage[0][field]]));
-        const targetImageFields = Object.fromEntries(imageFields.map((field) => [field, targetImage[0][field]]));
-
-        await db.update(table).set(targetImageFields).where(eq(table.id, currentPieceId));
-        await db.update(table).set(currentImageFields).where(eq(table.id, targetPieceId));
-
-        // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit`);
-        revalidatePath('/admin/manage');
-        revalidatePath('/admin/gallery');
-        revalidatePath('/admin/slideshow');
+        const client = await getAuthenticatedOwnerConvexClient('reorder artwork media');
+        await client.mutation(api.ownerMutations.swapMediaOrder, {
+            currentMediaId: currentPieceId,
+            targetMediaId: targetPieceId,
+            role: imageRole(imageType),
+        });
+        revalidateArtworkSurfaces(pieceId);
         return { success: true };
     } catch (error) {
-        console.error('Error in handleImageReorder:', error);
-        return { success: false, error: 'An error occurred while processing your request.' };
+        console.error('Unable to reorder artwork media.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to reorder artwork media.' };
     }
 }
 
@@ -263,23 +167,18 @@ export async function handleImageTitleEdit(
     newTitle: string,
     imageType: string,
 ): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = await checkUserRole();
-    if (!isAdmin) {
-        console.error(roleError);
-        return { success: false, error: roleError };
-    }
-
     try {
-        const table = imageType === 'extra' ? extraImagesTable : progressImagesTable;
-
-        await db.update(table).set({ title: newTitle }).where(eq(table.id, imageId));
-
-        // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit`);
+        const client = await getAuthenticatedOwnerConvexClient('edit artwork media');
+        await client.mutation(api.ownerMutations.updateMediaTitle, {
+            mediaId: imageId,
+            role: imageRole(imageType),
+            title: nullableText(newTitle),
+        });
+        revalidatePath('/admin/edit');
         return { success: true };
     } catch (error) {
-        console.error('Error in handleImageTitleEdit:', error);
-        return { success: false, error: 'An error occurred while processing your request.' };
+        console.error('Unable to update image title.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to update image title.' };
     }
 }
 
@@ -288,55 +187,47 @@ export async function handleImageDelete(
     imagePath: string,
     imageType: string,
 ): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = await checkUserRole();
-    if (!isAdmin) {
-        console.error(roleError);
-        return { success: false, error: roleError };
-    }
-
     try {
-        const deleteTable = imageType === 'extra' ? extraImagesTable : progressImagesTable;
-        await db.delete(deleteTable).where(and(eq(deleteTable.piece_id, pieceId), eq(deleteTable.image_path, imagePath)));
-
-        // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit`);
-        revalidatePath('/admin/manage');
-        revalidatePath('/admin/gallery');
-        revalidatePath('/admin/slideshow');
+        const { client, artwork } = await findOwnerArtwork(pieceId);
+        const role = imageRole(imageType);
+        const media = artwork.media.find((item) => item.role === role && item.sourceUrl === imagePath);
+        if (!media) throw new Error('Artwork image not found.');
+        await client.mutation(api.ownerMutations.archiveMedia, { mediaId: media.legacyId, role });
+        revalidateArtworkSurfaces(pieceId);
         return { success: true };
     } catch (error) {
-        console.error('Error in handleImageDelete:', error);
-        return { success: false, error: 'An error occurred while processing your request.' };
+        console.error('Unable to archive artwork media.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to archive artwork media.' };
     }
 }
 
 export async function handleTitleUpdate(formData: FormData): Promise<{ success: boolean; error?: string }> {
-    const { isAdmin, error: roleError } = await checkUserRole();
-    if (!isAdmin) {
-        console.error(roleError);
-        return { success: false, error: roleError };
-    }
-
+    const pieceId = Number(formData.get('pieceId'));
+    const newTitle = formData.get('newTitle')?.toString().trim();
+    if (!pieceId || !newTitle) return { success: false, error: 'Artwork ID and title are required.' };
     try {
-        const pieceId = Number(formData.get('pieceId'));
-        const newTitle = formData.get('newTitle')?.toString();
-
-        if (!pieceId || !newTitle) {
-            console.error('Required form data missing. Cannot update title.');
-            return { success: false, error: 'Required form data missing. Cannot update title.' };
-        }
-
-        await db.update(piecesTable).set({ title: newTitle }).where(eq(piecesTable.id, pieceId));
-
-        // Revalidate the path to refetch the data
-        revalidatePath(`/admin/edit`);
-        revalidatePath('/admin/manage');
-        revalidatePath('/admin/gallery');
-        revalidatePath('/admin/slideshow');
+        const { client, artwork } = await findOwnerArtwork(pieceId);
+        await client.mutation(api.ownerMutations.updateArtwork, {
+            legacyId: pieceId,
+            title: newTitle,
+            description: artwork.description,
+            medium: artwork.medium,
+            theme: artwork.theme,
+            instagramUrl: artwork.instagramUrl,
+            ownerNotes: artwork.ownerNotes,
+            priceCents: artwork.priceCents,
+            sold: artwork.sold,
+            available: artwork.available,
+            active: artwork.active,
+            framed: artwork.framed,
+            widthInches: artwork.widthInches,
+            heightInches: artwork.heightInches,
+        });
+        revalidateArtworkSurfaces(pieceId);
         return { success: true };
     } catch (error) {
-        console.error('Error in handleTitleUpdate:', error);
-        return { success: false, error: 'An error occurred while processing your request.' };
+        console.error('Unable to update artwork title.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to update artwork title.' };
     }
 }
 
@@ -351,68 +242,42 @@ interface NewPieceData {
 }
 
 export async function createPiece(newPieceData: NewPieceData): Promise<{ success: boolean; piece?: Pieces; error?: string }> {
-    const { isAdmin, error: roleError } = await checkUserRole();
-    if (!isAdmin) {
-        console.error(roleError);
-        return { success: false, error: roleError };
-    }
     try {
-        const { title, imagePath, width, height, smallImagePath, smallWidth, smallHeight } = newPieceData;
-
-        const maxOId = await getMostRecentId();
-        console.log('Max OId:', maxOId);
-        const newOId = maxOId ? maxOId + 1 : 1;
-        console.log('New OId:', newOId);
-
-        const data = {
-            title: title,
-            image_path: imagePath,
-            width: width,
-            height: height,
-            small_image_path: smallImagePath,
-            small_width: smallWidth,
-            small_height: smallHeight,
-            description: '',
-            piece_type: '',
+        const client = await getAuthenticatedOwnerConvexClient('create artwork');
+        const created = await client.mutation(api.ownerMutations.createArtwork, {
+            title: newPieceData.title.trim(),
+            description: null,
+            medium: null,
+            theme: null,
+            instagramUrl: null,
+            ownerNotes: null,
+            priceCents: 0,
             sold: false,
-            price: 0,
-            real_width: 0,
-            real_height: 0,
-            active: true,
-            instagram: '',
-            theme: '',
             available: false,
+            active: true,
             framed: false,
-            comments: '',
-            o_id: newOId,
-            class_name: getPieceClassName(title),
-        };
-        console.log('New Piece Data:', data);
-
-        const newPiece = await db.insert(piecesTable).values(data).returning();
-        return { success: true, piece: newPiece[0] };
+            widthInches: null,
+            heightInches: null,
+            primaryImage: {
+                sourceUrl: newPieceData.imagePath,
+                sourceWidth: newPieceData.width,
+                sourceHeight: newPieceData.height,
+                smallUrl: nullableText(newPieceData.smallImagePath),
+                smallWidth: newPieceData.smallWidth || null,
+                smallHeight: newPieceData.smallHeight || null,
+            },
+        });
+        const artworks = await client.query(api.ownerReads.listArtworks, {});
+        const artwork = artworks.find((item) => item.legacyId === created.legacyId);
+        if (!artwork) throw new Error('The new artwork could not be reloaded.');
+        revalidateArtworkSurfaces(created.legacyId);
+        return { success: true, piece: ownerArtworkToLegacy(artwork) };
     } catch (error) {
-        console.error('Error in createPiece:', error);
-        return { success: false, error: 'An error occurred while processing your request.' };
+        console.error('Unable to create artwork.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to create artwork.' };
     }
 }
 
 export async function createNewPiece(newPieceData: NewPieceData) {
-    console.log('Creating new piece:', newPieceData);
-    const newPieceOutput = await createPiece(newPieceData);
-
-    if (!newPieceOutput.success) {
-        console.error('Error creating new piece:', newPieceOutput.error);
-        return { success: false, error: 'Error creating new piece.' };
-    }
-    if (!newPieceOutput.piece) {
-        console.error('No piece returned from createPiece:', newPieceOutput.error);
-        return { success: false, error: 'Error creating new piece.' };
-    }
-
-    revalidatePath(`/admin/edit`);
-    revalidatePath('/admin/manage');
-    revalidatePath('/admin/gallery');
-    revalidatePath('/admin/slideshow');
-    return { success: true, piece: newPieceOutput.piece };
+    return createPiece(newPieceData);
 }

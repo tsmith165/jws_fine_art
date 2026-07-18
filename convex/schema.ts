@@ -106,6 +106,7 @@ export default defineSchema({
         .index('by_snapshot_id', ['snapshotId']),
 
     artworks: defineTable({
+        origin: v.optional(v.union(v.literal('legacy'), v.literal('owner'))),
         legacyTable: v.literal('Pieces'),
         legacyId: v.number(),
         sourceHash: v.string(),
@@ -141,7 +142,7 @@ export default defineSchema({
         .index('by_absent_from_source', ['absentFromSource']),
 
     artworkMedia: defineTable({
-        legacyTable: v.union(v.literal('Pieces'), v.literal('ExtraImages'), v.literal('ProgressImages')),
+        legacyTable: v.union(v.literal('Pieces'), v.literal('ExtraImages'), v.literal('ProgressImages'), v.literal('Owner')),
         legacyId: v.number(),
         artworkLegacyId: v.number(),
         sourceHash: v.string(),
@@ -246,6 +247,27 @@ export default defineSchema({
     })
         .index('by_event_id', ['eventId'])
         .index('by_status', ['status']),
+
+    stripeEvents: defineTable({
+        eventId: v.string(),
+        eventType: v.string(),
+        paymentIntentId: nullableString,
+        status: v.union(v.literal('processed'), v.literal('quarantined'), v.literal('ignored')),
+        createdAt: v.number(),
+    })
+        .index('by_event_id', ['eventId'])
+        .index('by_payment_intent_id', ['paymentIntentId']),
+
+    ownerAuditEvents: defineTable({
+        actorId: v.string(),
+        action: v.string(),
+        entityType: v.string(),
+        entityId: v.string(),
+        detailsJson: v.string(),
+        createdAt: v.number(),
+    })
+        .index('by_entity', ['entityType', 'entityId'])
+        .index('by_created_at', ['createdAt']),
 
     inquiries: defineTable({
         artworkId: v.union(v.id('artworks'), v.null()),

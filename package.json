@@ -78,6 +78,7 @@
         "@types/react-places-autocomplete": "^7.2.14",
         "@types/uuid": "^10.0.0",
         "@vitest/coverage-v8": "4.1.10",
+        "convex-test": "0.0.54",
         "drizzle-kit": "0.31.10",
         "eslint": "^9.39.2",
         "eslint-config-next": "16.2.10",

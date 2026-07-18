@@ -1,22 +1,12 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
-import { getAuth } from '@clerk/nextjs/server';
-import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
+import { requireAdminRequest } from '@/utils/auth/requireAdminRequest';
 
 const f = createUploadthing();
 
 export const ourFileRouter = {
-    imageUploader: f({ image: { maxFileSize: '8MB', maxFileCount: 2 } })
+    imageUploader: f({ image: { maxFileSize: '32MB', maxFileCount: 1 } })
         .middleware(async ({ req }) => {
-            const { userId } = getAuth(req);
-            if (!userId) {
-                throw new Error('Unauthorized');
-            }
-
-            const hasAdminRole = await isClerkUserIdAdmin(userId);
-            if (!hasAdminRole) {
-                throw new Error('Forbidden');
-            }
-
+            const userId = await requireAdminRequest(req);
             return { userId };
         })
         .onUploadComplete(async ({ metadata, file }) => {

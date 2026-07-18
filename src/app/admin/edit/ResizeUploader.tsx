@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { generateReactHelpers } from '@uploadthing/react';
 import type { OurFileRouter } from '@/app/api/uploadthing/core';
+import { inspectUploadedImage } from './actions';
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
@@ -19,11 +20,6 @@ interface ResizeUploaderProps {
     backToEditLink: string;
 }
 
-interface UploadResponse {
-    name: string;
-    url: string;
-}
-
 const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, handleResetInputs, backToEditLink }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -35,34 +31,14 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
             console.log('Upload complete:', res);
             setLoadingState('Loading Data');
             handleResetInputs();
-            if (res && res.length === 2) {
-                const fileName = res[0].name;
-                const smallImage = res.find((file: UploadResponse) => file.name.startsWith('small-'));
-                const largeImage = res.find((file: UploadResponse) => !file.name.startsWith('small-'));
-
-                if (smallImage && largeImage) {
-                    try {
-                        const [imgDimensions, smallImgDimensions] = await Promise.all([
-                            getImageDimensions(largeImage.url),
-                            getImageDimensions(smallImage.url),
-                        ]);
-
-                        console.log(`Image ${largeImage.url} dimensions:`, imgDimensions);
-                        console.log(`Small image ${smallImage.url} dimensions:`, smallImgDimensions);
-                        handleUploadComplete(
-                            fileName,
-                            largeImage.url,
-                            smallImage.url,
-                            imgDimensions.width,
-                            imgDimensions.height,
-                            smallImgDimensions.width,
-                            smallImgDimensions.height,
-                        );
-                    } catch (error) {
-                        console.error('Error getting image dimensions:', error);
-                    }
-                } else {
-                    console.error('Could not identify small and large images from the response');
+            if (res?.length === 1) {
+                const uploaded = res[0];
+                try {
+                    const dimensions = await inspectUploadedImage(uploaded.url);
+                    handleUploadComplete(uploaded.name, uploaded.url, '', dimensions.width, dimensions.height, 0, 0);
+                } catch (error) {
+                    console.error('Error inspecting uploaded image:', error);
+                    alert(error instanceof Error ? error.message : 'The uploaded image could not be inspected.');
                 }
             } else {
                 console.error('Unexpected response format');
@@ -82,64 +58,6 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
         },
     });
 
-    const getImageDimensions = (url: string): Promise<{ width: number; height: number }> => {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
-            img.onerror = reject;
-            img.src = url;
-        });
-    };
-
-    const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<File> => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (event: ProgressEvent<FileReader>) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-
-                    const width = img.width;
-                    const height = img.height;
-
-                    if (width <= maxWidth && height <= maxHeight) {
-                        resolve(file);
-                    } else {
-                        const ratio = Math.min(maxWidth / width, maxHeight / height);
-                        const newWidth = width * ratio;
-                        const newHeight = height * ratio;
-
-                        canvas.width = Math.round(newWidth);
-                        canvas.height = Math.round(newHeight);
-
-                        if (ctx) {
-                            ctx.imageSmoothingEnabled = true;
-                            ctx.imageSmoothingQuality = 'high';
-                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        }
-
-                        const outputType = file.type || 'image/jpeg';
-                        const outputQuality = outputType === 'image/jpeg' || outputType === 'image/webp' ? 0.96 : undefined;
-
-                        canvas.toBlob(
-                            (blob) => {
-                                if (blob) {
-                                    const resizedFile = new File([blob], file.name, { type: outputType });
-                                    resolve(resizedFile);
-                                }
-                            },
-                            outputType,
-                            outputQuality,
-                        );
-                    }
-                };
-                img.src = event.target?.result as string;
-            };
-            reader.readAsDataURL(file);
-        });
-    };
-
     const handleFileChange = useCallback(
         async (e: React.ChangeEvent<HTMLInputElement>) => {
             const selectedFiles = e.target.files;
@@ -149,14 +67,8 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
                 setIsUploading(true);
                 handleResetInputs();
 
-                setLoadingState('Resizing Image');
-                const originalResizedFile = await resizeImage(originalFile, 2560, 2560);
-                const smallResizedFile = await resizeImage(originalFile, 900, 900);
-
-                const smallFileWithPrefix = new File([smallResizedFile], `small-${smallResizedFile.name}`, { type: smallResizedFile.type });
-
-                setLoadingState('Uploading Image');
-                await startUpload([smallFileWithPrefix, originalResizedFile]);
+                setLoadingState('Uploading Original');
+                await startUpload([originalFile]);
             }
         },
         [handleResetInputs, startUpload],
@@ -170,7 +82,14 @@ const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, h
 
     return (
         <>
-            <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" disabled={isUploading} />
+            <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                onChange={handleFileChange}
+                className="hidden"
+                disabled={isUploading}
+            />
             <div className="flex space-x-2">
                 <button
                     onClick={handleSelectFilesClick}

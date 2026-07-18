@@ -1,0 +1,96 @@
+# Phase 4b Convex Write and Commerce Verification
+
+Date: 2026-07-17
+
+## Scope
+
+This phase moves branch-only owner writes, public inquiry/subscriber writes, upload metadata, checkout intents, and canonical Stripe order processing to Convex. Neon remains unchanged and is still available through the read adapter. The old Neon schema and migration code remain in the repository until Phase 8, but no active application code outside the explicit read adapters calls a Neon insert, update, or delete operation.
+
+## Implemented boundaries
+
+- Clerk remains the identity provider. Owner Next actions obtain a Clerk `convex` JWT and every owner Convex query or mutation calls `requireOwnerIdentity`, which requires `owner_role=ADMIN` from the verified token.
+- UploadThing request middleware calls the same central Next owner authorization policy before issuing an upload token.
+- Public inquiry, subscription, checkout, and webhook calls use `CONVEX_SERVER_WRITE_SECRET` from server-only code. No `NEXT_PUBLIC_` variable contains the secret.
+- Migration derivation and audit functions are internal Convex functions.
+- Original uploads are preserved. The browser no longer resizes or recompresses images before upload; Sharp reads normalized server-side dimensions from the uploaded original.
+- Checkout price, availability, title, shipping, buyer, and artwork identity are snapshotted from canonical Convex state before Stripe Checkout is created.
+- Stripe success handling requires a matching canonical checkout intent, exact amount and currency, a unique payment intent, and a previously unseen event ID.
+- Successful payment creates one canonical order, appends an order event, closes the intent, and atomically marks the artwork sold and unavailable.
+- Unknown or mismatched verified Stripe events are quarantined. Replayed events are deduplicated. Unrelated Stripe event types are recorded as ignored without creating quarantine noise.
+- Confirmation email failure is appended to the canonical order and does not roll back a recorded payment.
+- Owner campaign sends prepare a consent-filtered recipient set, use Resend's batch API in bounded groups of 100, persist every provider message ID or failure, and finalize the campaign from recorded recipient outcomes.
+- Legacy verified transaction rows remain separate from new Stripe orders.
+
+## Automated behavior evidence
+
+`pnpm test` passes 15 tests covering:
+
+- deterministic migration primitives and owner-field conflict protection;
+- owner authorization rejection and ADMIN acceptance;
+- artwork create/edit/reorder/archive/restore and audit events;
+- primary image replacement, supporting image add/reorder/title/dimension/archive;
+- unavailable and non-positive-price checkout rejection;
+- concurrent checkout locking and canonical amount/shipping snapshots;
+- successful payment, one-order enforcement, sold-state update, same-event replay, and second-event replay;
+- canceled checkout intent recovery;
+- unknown and amount-mismatched payment quarantine;
+- unrelated Stripe event ignore behavior;
+- inquiry persistence;
+- consent, unsubscribe, and resubscribe events;
+- campaign draft/sending/sent state;
+- site-content writes;
+- fulfillment and failed-notification events.
+
+The tests use `convex-test`, an in-memory Convex runtime. They do not mutate the development deployment or Neon.
+
+## Data and build evidence
+
+- `pnpm migration:verify-reads`: public parity verified with 69 artworks, 142 supporting images, 2 progress images, and the same navigation samples.
+- `pnpm migration:verify-owner-reads`: owner parity verified with 86 artworks, 150 supporting images, 5 progress images, and 12 legacy transactions.
+- `JWS_READ_BACKEND=convex pnpm build`: production build passed for all application routes.
+- `pnpm typecheck`: passed.
+- `pnpm lint`: passed with four pre-existing legacy warnings. These are removed with the replaced UI in Phase 6/8.
+- `pnpm audit --prod --registry=https://registry.npmjs.org`: no known production dependency vulnerabilities.
+- `rg -n "db\\.(insert|update|delete)" src --glob '!src/db/**' --glob '!src/drizzle/**'`: no matches.
+- Convex development deployment accepted the schema and functions through `pnpm exec convex dev --once`.
+
+## Preview verification gate
+
+The following checks require the Vercel preview and real provider boundaries, so they remain part of the preview QA gate before any production approval:
+
+- owner Clerk sign-in and owner JWT propagation in the deployed application;
+- a reversible test UploadThing upload using a non-production test image;
+- Stripe test-mode Checkout plus signed webhook delivery and replay;
+- Resend test delivery and explicit failed-delivery behavior;
+- browser-level create/edit/archive/restore/reorder and owner workspace persistence.
+
+No production Convex deployment exists and no production write cutover has occurred.
+
+## Production cutover checklist (not executed)
+
+1. Obtain explicit production-deployment approval.
+2. Disable new checkout starts and owner mutations on the legacy production site. Keep public reads available.
+3. Let all open Stripe Checkout Sessions expire. New sessions currently expire after 30 minutes; also inspect Stripe for older sessions and allow the documented webhook retry backlog to drain.
+4. Confirm there are no unprocessed successful payments, email failures, or open payment-event quarantines.
+5. Create a fresh full Neon dump and schema snapshot with restrictive permissions and recorded checksums. Neon remains read-only.
+6. Export a fresh deterministic Neon snapshot, import it into the production Convex deployment, and repeat raw/canonical parity, relationship, null, status, and asset checks.
+7. Export the current Convex development state needed for review only. Do not promote development PII or test records directly to production.
+8. Reconcile the final delta in both directions: every Neon source row must be represented in Convex, and every owner-created or payment-created Convex record since the baseline must be explicitly accounted for.
+9. Configure production Clerk JWT issuer, server write secret, UploadThing, Stripe test/live separation, Resend, PostHog, and `JWS_READ_BACKEND=convex` in the approved production environment.
+10. Register the new production Stripe webhook endpoint while checkout remains disabled. Deliver signed test events and verify replay behavior.
+11. Run the full production-build and browser matrix against a production-candidate preview.
+12. Record owner sign-off on catalog counts, sold state, orders, image quality, and owner workflows.
+13. Enable production traffic only after explicit approval. Re-enable checkout last and watch the first real order end to end.
+
+## Post-cutover rollback (not executed)
+
+Rollback after Convex receives production writes is asymmetric. The original Neon database is never silently written to.
+
+1. Disable checkout and owner mutations immediately while leaving public reads on the last known-good backend.
+2. Export all Convex-only records: owner-origin artworks/media, owner revisions, inquiries, subscribers and consent events, campaigns, site content, canonical orders, order events, Stripe event IDs, checkout intents, and quarantines.
+3. Reconcile every successful Stripe payment against canonical orders and preserve the payment-intent/event dedupe set before changing stacks.
+4. Restore the latest Neon dump into a new isolated PostgreSQL database. Never use the original Neon backup source as the rollback write target.
+5. Apply a reviewed translation of the Convex-only delta to the restored copy. Preserve identifiers or an explicit mapping and verify sold/available state, orders, buyer data, media, and owner edits.
+6. Re-run full parity and application tests against that restored copy.
+7. Move Stripe webhook delivery only after the restored stack can deduplicate every already-seen event and payment intent.
+8. Resume checkout only after owner sign-off. Retain the Convex export and original Neon backup unchanged for audit and recovery.

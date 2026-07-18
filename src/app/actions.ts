@@ -1,6 +1,5 @@
 'use server';
-import { db, verifiedTransactionsTable } from '@/db/db';
-import { PiecesWithImages, VerifiedTransactions } from '@/db/schema';
+import { PiecesWithImages } from '@/db/schema';
 import {
     readAdjacentArtworkIds,
     readFirstAvailableArtworkId,
@@ -39,18 +38,6 @@ export async function fetchFirstPieceId(): Promise<number | null> {
 
 export async function getMostRecentId(): Promise<number | null> {
     return readMostRecentArtworkId();
-}
-
-export async function fetchVerifiedPayments(): Promise<VerifiedTransactions[]> {
-    console.log(`Fetching verified payments with Drizzle`);
-    const verifiedList = await db.select().from(verifiedTransactionsTable);
-
-    const formattedList = verifiedList.map((payment) => ({
-        ...payment,
-        date: new Date(payment.date).toUTCString(),
-    }));
-
-    return formattedList;
 }
 
 export async function fetchPieceImageById(id: number) {

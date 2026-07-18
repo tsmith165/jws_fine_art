@@ -154,6 +154,7 @@ export const deriveCanonical = internalMutation({
 
             if (!existing) {
                 const artworkId = await ctx.db.insert('artworks', {
+                    origin: 'legacy',
                     legacyTable: 'Pieces',
                     legacyId: piece.legacyId,
                     sourceHash: piece.sourceHash,
@@ -192,6 +193,7 @@ export const deriveCanonical = internalMutation({
                 ownerMutatedFields: existing.ownerMutatedFields,
             });
             const patch: Partial<Doc<'artworks'>> = {
+                origin: 'legacy',
                 sourceHash: piece.sourceHash,
                 absentFromSource: false,
                 importedAt: args.importedAt,

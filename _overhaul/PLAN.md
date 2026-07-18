@@ -9,7 +9,7 @@ This ledger is the plan of record for the production-site overhaul. It is update
 -   Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
 -   Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
 -   Production data policy: Neon remains read-only and intact as the backup source.
--   Current phase: 4b of 8, Convex writes and commerce implementation beginning.
+-   Current phase: 4b of 8, locally verified and awaiting Vercel preview provider QA before the phase is closed.
 -   Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
 
 ## Safety Invariants
@@ -101,24 +101,28 @@ Rollback boundary:
 
 ### Phase 4b: Convex Writes, Owner Mutations, and Commerce
 
-Status: **pending**
+Status: **in progress**
 
 Acceptance criteria:
 
--   [ ] Centralize Clerk owner authorization in one helper used by Next route handlers, UploadThing callbacks, and every private Convex function. Owner claims must come from the verified Clerk-to-Convex JWT, not a Convex-side Clerk API call.
--   [ ] Implement Convex mutations for artwork facts, media metadata/order, visibility/order, content settings, inquiries, subscribers, simple campaign drafts/sends, fulfillment state, and maintenance jobs.
--   [ ] Create server-side checkout intents and persist them atomically from current canonical artwork state; reject sold, inactive, unavailable, or non-positive-price purchases.
--   [ ] Implement one canonical order per Stripe payment intent with transactional idempotency, immutable purchase snapshots, append-only events, and persisted Stripe event IDs.
--   [ ] Derive paid amount from Stripe `amount_received` or the trusted checkout-intent snapshot, never client input or replayed metadata.
--   [ ] Verify create/edit/archive/restore/upload/reorder, inquiry, subscription, campaign draft/send, checkout, replayed webhook, legacy-shaped unknown-intent webhook quarantine, failed email, cancellation, and recovery behavior.
--   [ ] Keep raw imported pending/verified rows separate from canonical new orders and label legacy limits honestly in the owner UI.
--   [ ] Disable Neon write code in the branch only after preview verification; do not delete it until Phase 8.
--   [ ] Document the production write-freeze, open Stripe Checkout Session expiration or 24-hour drain, retry-backlog drain, fresh Neon backup, bidirectional final delta, parity re-proof, Stripe webhook transition, and sign-off checklist without executing it.
--   [ ] Document asymmetric post-cutover rollback through a restored PostgreSQL copy, never by silently writing to original Neon. Export and reconcile all Convex-only writes, sold state, and payment-intent dedupe records before checkout can return to the legacy stack.
+-   [x] Centralize Clerk owner authorization in one helper used by Next route handlers, UploadThing callbacks, and every private Convex function. Owner claims must come from the verified Clerk-to-Convex JWT, not a Convex-side Clerk API call.
+-   [x] Implement Convex mutations for artwork facts, media metadata/order, visibility/order, content settings, inquiries, subscribers, simple campaign drafts/sends, fulfillment state, and maintenance jobs.
+-   [x] Create server-side checkout intents and persist them atomically from current canonical artwork state; reject sold, inactive, unavailable, or non-positive-price purchases.
+-   [x] Implement one canonical order per Stripe payment intent with transactional idempotency, immutable purchase snapshots, append-only events, and persisted Stripe event IDs.
+-   [x] Derive paid amount from Stripe `amount_received` or the trusted checkout-intent snapshot, never client input or replayed metadata.
+-   [x] Verify create/edit/archive/restore/upload/reorder, inquiry, subscription, campaign draft/send, checkout, replayed webhook, legacy-shaped unknown-intent webhook quarantine, failed email, cancellation, and recovery behavior in the in-memory Convex runtime. Real provider boundaries remain in the preview gate.
+-   [ ] Keep raw imported pending/verified rows separate from canonical new orders and label legacy limits honestly in the Phase 6 owner UI. The data boundary is complete; the replacement orders UI remains.
+-   [ ] Verify the Convex write paths in a Vercel preview, then retain legacy Neon code only as inactive rollback source until Phase 8.
+-   [x] Document the production write-freeze, open Stripe Checkout Session expiration or 24-hour drain, retry-backlog drain, fresh Neon backup, bidirectional final delta, parity re-proof, Stripe webhook transition, and sign-off checklist without executing it.
+-   [x] Document asymmetric post-cutover rollback through a restored PostgreSQL copy, never by silently writing to original Neon. Export and reconcile all Convex-only writes, sold state, and payment-intent dedupe records before checkout can return to the legacy stack.
 
 Rollback boundary:
 
 -   Before production approval, production still writes to Neon. The branch can revert to the Neon implementation. After an approved production write cutover, rollback requires a Convex delta export and explicit reconciliation.
+
+Evidence:
+
+-   `_overhaul/reports/PHASE_4B_WRITE_COMMERCE_VERIFICATION.md`
 
 ### Phase 5: Tailwind CSS v4 and Deliberate Client State
 

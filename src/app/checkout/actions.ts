@@ -1,137 +1,99 @@
 'use server';
-import { db, piecesTable, pendingTransactionsTable } from '@/db/db';
-import { eq, desc, sql } from 'drizzle-orm';
 
-import PROJECT_CONSTANTS from '@/lib/constants';
+import { headers } from 'next/headers';
 import Stripe from 'stripe';
+import { api } from '../../../convex/_generated/api';
+import type { Id } from '../../../convex/_generated/dataModel';
+import { getServerConvexClient } from '@/data/serverConvex';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-06-24.dahlia',
-});
-const INTERNATIONAL_SHIPPING_RATE = 25;
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-06-24.dahlia' });
 
-interface MaxIdResult {
-    value: number | null;
+function siteOrigin(requestHeaders: Headers) {
+    const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '');
+    if (configured) return configured.startsWith('http') ? configured : `https://${configured}`;
+    const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host');
+    const protocol = requestHeaders.get('x-forwarded-proto') ?? (host?.includes('localhost') ? 'http' : 'https');
+    if (!host) throw new Error('Unable to determine the site URL for checkout.');
+    return `${protocol}://${host}`;
+}
+
+function requiredFormValue(data: FormData, key: string) {
+    const value = data.get(key)?.toString().trim();
+    if (!value) throw new Error(`${key.replaceAll('_', ' ')} is required.`);
+    return value;
 }
 
 export async function runStripePurchase(data: FormData) {
-    const piece_id = data.get('piece_id')?.toString();
-    const full_name = data.get('full_name')?.toString() || '';
-    const phone = data.get('phone')?.toString() || '';
-    const email = data.get('email')?.toString() || '';
-    const address = data.get('address')?.toString() || '';
-    const is_international = address.includes('USA') ? false : true;
-
-    if (!piece_id) {
-        throw new Error('Piece ID is required');
-    }
-
-    const piece_data = await db
-        .select()
-        .from(piecesTable)
-        .where(eq(piecesTable.id, parseInt(piece_id)))
-        .orderBy(desc(piecesTable.o_id))
-        .limit(1);
-
-    if (!piece_data.length) {
-        throw new Error('Piece not found');
-    }
-    const piece = piece_data[0];
-
-    if (piece.sold || !piece.available || !piece.active) {
-        throw new Error('This piece is not currently available for purchase');
-    }
-
-    console.log('Creating a Pending Transaction ...');
-    const pending_response = await create_pending_transaction(piece.id, piece.title, full_name, phone, email, address, is_international);
-
-    if (!pending_response) {
-        console.error('No Response From Create Pending Transaction. Cannot check out...');
-        return;
-    }
-
-    console.log(`Creating stripe session for piece ID: ${piece.id}`);
-
-    // Create Stripe Checkout Session
-    const price_with_shipping = piece.price + (is_international ? INTERNATIONAL_SHIPPING_RATE : 0);
-    const metadata = {
-        product_id: piece.id.toString(),
-        full_name: full_name,
-        image_path: piece.image_path,
-        image_width: piece.width.toString(),
-        image_height: piece.height.toString(),
-        price_id: piece.price.toString(),
-    };
-
-    console.log(`Creating a Stripe Checkout Session for piece ID: ${piece.id}`);
-
-    try {
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'usd',
-                        unit_amount: price_with_shipping * 100, // Amount in cents
-                        product_data: {
-                            name: piece.title,
-                            images: [piece.image_path],
-                        },
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: 'payment',
-            success_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/success/${piece.id}`,
-            cancel_url: `https://${PROJECT_CONSTANTS.SITE_URL}/checkout/${piece.id}`,
-            client_reference_id: piece.id.toString(),
-            payment_intent_data: {
-                metadata: metadata, // Include metadata in the payment intent
-            },
-        });
-
-        console.log(`Session ID: ${session.id}`);
-
-        return {
-            success: true,
-            redirectUrl: session.url,
-        };
-    } catch (error) {
-        console.error('Error creating Stripe session:', error);
-        throw error;
-    }
-}
-
-export async function create_pending_transaction(
-    piece_db_id: number,
-    piece_title: string,
-    full_name: string,
-    phone: string,
-    email: string,
-    address: string,
-    international: boolean,
-) {
-    console.log(`Attempting to create pending transaction for piece_db_id: ${piece_db_id}`);
-    // Fetch the current maximum ID from the PendingTransactions table
-    const maxIdResult: MaxIdResult[] = await db
-        .select({ value: sql`max(${pendingTransactionsTable.id})`.mapWith(Number) })
-        .from(pendingTransactionsTable);
-
-    const maxId = maxIdResult[0].value ?? 0; // If max_id is null, set it to 0
-
-    // Calculate the next ID
-    const nextId = maxId + 1;
-
-    // Insert the new record with the next ID
-    const pending_transaction_output = await db.insert(pendingTransactionsTable).values({
-        id: nextId,
-        piece_db_id,
-        piece_title,
-        full_name,
-        phone,
-        email,
-        address,
+    const artworkLegacyId = Number(requiredFormValue(data, 'piece_id'));
+    if (!Number.isSafeInteger(artworkLegacyId) || artworkLegacyId <= 0) throw new Error('Artwork ID is invalid.');
+    const buyerName = requiredFormValue(data, 'full_name');
+    const buyerPhone = requiredFormValue(data, 'phone');
+    const buyerEmail = requiredFormValue(data, 'email');
+    const shippingAddress = requiredFormValue(data, 'address');
+    const international = !/(^|\b)(usa|united states|united states of america)(\b|$)/i.test(shippingAddress);
+    const { client, serverSecret } = getServerConvexClient();
+    const intent = await client.mutation(api.commerce.createCheckoutIntent, {
+        serverSecret,
+        artworkLegacyId,
+        buyerName,
+        buyerEmail,
+        buyerPhone,
+        shippingAddress,
         international,
     });
-    return pending_transaction_output;
+
+    try {
+        const origin = siteOrigin(await headers());
+        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+            {
+                price_data: {
+                    currency: intent.currency,
+                    unit_amount: intent.artworkPriceCents,
+                    product_data: {
+                        name: intent.artworkTitle,
+                        ...(intent.imageUrl ? { images: [intent.imageUrl] } : {}),
+                    },
+                },
+                quantity: 1,
+            },
+        ];
+        if (intent.shippingCents > 0) {
+            lineItems.push({
+                price_data: {
+                    currency: intent.currency,
+                    unit_amount: intent.shippingCents,
+                    product_data: { name: 'International shipping' },
+                },
+                quantity: 1,
+            });
+        }
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: lineItems,
+            mode: 'payment',
+            customer_email: buyerEmail,
+            client_reference_id: String(intent.intentId),
+            expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+            success_url: `${origin}/checkout/success/${artworkLegacyId}?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/checkout/cancel/${artworkLegacyId}`,
+            payment_intent_data: { metadata: { checkout_intent_id: String(intent.intentId) } },
+        });
+        const paymentIntentId =
+            typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id ?? null);
+        await client.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: session.id,
+            paymentIntentId,
+        });
+        if (!session.url) throw new Error('Stripe did not return a checkout URL.');
+        return { success: true, redirectUrl: session.url };
+    } catch (error) {
+        await client.mutation(api.commerce.abandonCheckoutIntent, {
+            serverSecret,
+            checkoutIntentId: intent.intentId as Id<'checkoutIntents'>,
+        });
+        console.error('Unable to create checkout session.', error);
+        throw new Error('Checkout could not be started. Please try again or contact the studio.');
+    }
 }
