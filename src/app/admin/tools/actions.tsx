@@ -4,7 +4,7 @@ import React from 'react';
 import { render } from '@react-email/render';
 import sharp from 'sharp';
 import { api } from '../../../../convex/_generated/api';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { ownerArtworkWithMediaToLegacy } from '@/data/ownerMapper';
 import { sendEmail } from '@/utils/emails/resend_utils';

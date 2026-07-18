@@ -2,8 +2,8 @@
 
 import { Ruler, X } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import type { PiecesWithImages } from '@/db/schema';
+import { useEffect, useRef, useState } from 'react';
+import type { PiecesWithImages } from '@/types/artwork';
 import { dimensions } from '@/lib/artwork';
 
 const rooms = [
@@ -13,6 +13,7 @@ const rooms = [
 ] as const;
 
 export function RoomVisualizer({ piece, open, onClose }: { piece: PiecesWithImages; open: boolean; onClose: () => void }) {
+    const dialogRef = useRef<HTMLElement>(null);
     const [roomId, setRoomId] = useState<(typeof rooms)[number]['id']>('living');
     const [position, setPosition] = useState(50);
     const room = rooms.find((item) => item.id === roomId) || rooms[0];
@@ -22,14 +23,48 @@ export function RoomVisualizer({ piece, open, onClose }: { piece: PiecesWithImag
     const artworkHeight = Math.max(7, Math.min(62, (height / room.height) * 100));
     useEffect(() => {
         if (!open) return;
-        const close = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
-        window.addEventListener('keydown', close);
-        return () => window.removeEventListener('keydown', close);
+        const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        const priorOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        dialogRef.current?.focus();
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                onClose();
+                return;
+            }
+            if (event.key !== 'Tab' || !dialogRef.current) return;
+            const focusable = Array.from(
+                dialogRef.current.querySelectorAll<HTMLElement>(
+                    'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                ),
+            );
+            if (!focusable.length) {
+                event.preventDefault();
+                dialogRef.current.focus();
+                return;
+            }
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = priorOverflow;
+            previouslyFocused?.focus();
+        };
     }, [onClose, open]);
     if (!open) return null;
     return (
         <div className="lw-room-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-            <section className="lw-room-dialog" role="dialog" aria-modal="true" aria-labelledby="room-title">
+            <section ref={dialogRef} className="lw-room-dialog" role="dialog" aria-modal="true" aria-labelledby="room-title" tabIndex={-1}>
                 <header>
                     <div>
                         <span className="lw-eyebrow">View at scale</span>

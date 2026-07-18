@@ -1,6 +1,6 @@
 import type { FunctionReturnType } from 'convex/server';
 import type { api } from '../../convex/_generated/api';
-import type { ExtraImages, Pieces, PiecesWithImages, ProgressImages, VerifiedTransactions } from '@/db/schema';
+import type { ExtraImages, Pieces, PiecesWithImages, ProgressImages, VerifiedTransactions } from '@/types/artwork';
 
 export type ConvexOwnerArtwork = FunctionReturnType<typeof api.ownerReads.listArtworks>[number];
 export type ConvexOwnerTransaction = FunctionReturnType<typeof api.ownerReads.listLegacyVerifiedTransactions>[number];

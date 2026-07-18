@@ -6,7 +6,7 @@ let client: ConvexHttpClient | undefined;
 export function getConvexClient(): ConvexHttpClient {
     const deploymentUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
     if (!deploymentUrl) {
-        throw new Error('NEXT_PUBLIC_CONVEX_URL is required when JWS_READ_BACKEND=convex.');
+        throw new Error('NEXT_PUBLIC_CONVEX_URL is required.');
     }
     client ??= new ConvexHttpClient(deploymentUrl);
     return client;

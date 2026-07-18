@@ -1,3 +1,4 @@
+import { Download, LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
 import { saveAs } from 'file-saver';
 import ExcelJS from 'exceljs';
@@ -21,9 +22,6 @@ const DataBackup: React.FC = () => {
                 const buffer = await workbook.xlsx.writeBuffer();
                 const data = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                 saveAs(data, 'pieces.xlsx');
-                console.log('Successfully exported pieces as XLSX');
-            } else {
-                console.log('No pieces found to export');
             }
         } catch (error) {
             console.error('Failed to export pieces:', error);
@@ -32,13 +30,10 @@ const DataBackup: React.FC = () => {
     };
 
     return (
-        <div className="flex items-center justify-center">
-            <button
-                className="text-dark bg-secondary_dark font-lato hover:bg-primary_dark cursor-pointer rounded-md border-none px-4 py-2 text-white uppercase disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={exportPiecesAsXLSX}
-                disabled={isExporting}
-            >
-                {isExporting ? 'Exporting...' : 'Export Pieces as XLSX'}
+        <div className="owner-tool-action">
+            <button className="owner-button" onClick={exportPiecesAsXLSX} disabled={isExporting}>
+                {isExporting ? <LoaderCircle className="owner-spin" size={16} /> : <Download size={16} />}
+                {isExporting ? 'Preparing export…' : 'Download XLSX backup'}
             </button>
         </div>
     );

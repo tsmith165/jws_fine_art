@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Check, ExternalLink, Images, Save } from 'lucide
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 import { onSubmitEditForm } from '@/app/admin/edit/actions';
 
 type EditorForm = {

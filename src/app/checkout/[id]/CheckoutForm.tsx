@@ -2,7 +2,7 @@
 
 import { CreditCard, LoaderCircle, LockKeyhole } from 'lucide-react';
 import { useState } from 'react';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 import { money } from '@/lib/artwork';
 import { runStripePurchase } from '../actions';
 

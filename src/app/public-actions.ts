@@ -1,6 +1,8 @@
 'use server';
 
 import { api } from '../../convex/_generated/api';
+import { createHmac } from 'node:crypto';
+import { headers } from 'next/headers';
 import { getServerConvexClient } from '@/data/serverConvex';
 
 export type PublicFormState = { status: 'idle' | 'success' | 'error'; message: string };
@@ -11,14 +13,23 @@ function value(data: FormData, key: string) {
     return data.get(key)?.toString().trim() ?? '';
 }
 
+async function rateLimitKey(action: 'inquiry' | 'subscribe', secret: string) {
+    const requestHeaders = await headers();
+    const forwarded = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim();
+    const address = forwarded || requestHeaders.get('x-real-ip') || 'unknown';
+    return createHmac('sha256', secret).update(`${action}:${address}`).digest('hex');
+}
+
 export async function subscribeAction(_state: PublicFormState = idle, data: FormData): Promise<PublicFormState> {
     try {
+        if (value(data, 'website')) return { status: 'success', message: 'You are on the list. Watch for a note from Jill.' };
         const { client, serverSecret } = getServerConvexClient();
         const result = await client.mutation(api.publicWrites.subscribe, {
             serverSecret,
             email: value(data, 'email'),
             name: value(data, 'name') || null,
             consentSource: value(data, 'source') || 'website',
+            rateLimitKey: await rateLimitKey('subscribe', serverSecret),
         });
         return result.status === 'suppressed'
             ? { status: 'error', message: 'This address cannot be subscribed. Contact the studio for help.' }
@@ -30,6 +41,9 @@ export async function subscribeAction(_state: PublicFormState = idle, data: Form
 
 export async function inquiryAction(_state: PublicFormState = idle, data: FormData): Promise<PublicFormState> {
     try {
+        if (value(data, 'website')) {
+            return { status: 'success', message: 'Your note reached the studio. Jill usually replies within two business days.' };
+        }
         const rawArtworkId = value(data, 'artwork_id');
         const artworkLegacyId = rawArtworkId ? Number(rawArtworkId) : null;
         const kind = value(data, 'kind');
@@ -44,6 +58,7 @@ export async function inquiryAction(_state: PublicFormState = idle, data: FormDa
             phone: value(data, 'phone') || null,
             message: value(data, 'message'),
             sourcePath: value(data, 'source_path') || '/contact',
+            rateLimitKey: await rateLimitKey('inquiry', serverSecret),
         });
         return { status: 'success', message: 'Your note reached the studio. Jill usually replies within two business days.' };
     } catch {

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { api } from '../../../../convex/_generated/api';
-import type { Pieces } from '@/db/schema';
+import type { Pieces } from '@/types/artwork';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { ownerArtworkToLegacy } from '@/data/ownerMapper';
 import sharp from 'sharp';

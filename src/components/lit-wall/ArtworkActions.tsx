@@ -3,7 +3,7 @@
 import { Bookmark, Ruler } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 import { isPurchasable } from '@/lib/artwork';
 import { useShortlist } from '@/stores/shortlist';
 import { RoomVisualizer } from './RoomVisualizer';

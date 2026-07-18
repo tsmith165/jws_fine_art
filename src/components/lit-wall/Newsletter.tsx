@@ -17,6 +17,10 @@ export function Newsletter() {
             </div>
             <form action={action}>
                 <input type="hidden" name="source" value="website-footer" />
+                <label className="lw-honeypot" aria-hidden="true">
+                    Website
+                    <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+                </label>
                 <label>
                     <span>Email address</span>
                     <input name="email" type="email" required autoComplete="email" placeholder="you@example.com" />

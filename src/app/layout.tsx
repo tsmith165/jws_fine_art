@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
 import { PHProvider } from './providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -10,6 +10,7 @@ import '@/styles/lit-wall.css';
 import '@/styles/owner-console.css';
 
 import { cinzel, libreCaslon, manrope } from './fonts';
+import PostHogPageView from './PostHogPageView';
 
 export const metadata = {
     metadataBase: new URL('https://www.jwsfineart.com'),
@@ -36,6 +37,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <html lang="en" className={`${cinzel.variable} ${libreCaslon.variable} ${manrope.variable}`}>
                 <body>
                     <PHProvider>
+                        <Suspense fallback={null}>
+                            <PostHogPageView />
+                        </Suspense>
                         <SpeedInsights />
                         {children}
                     </PHProvider>

@@ -1,6 +1,6 @@
 'use server';
 
-import { Pieces } from '@/db/schema';
+import { Pieces } from '@/types/artwork';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/utils/auth/requireAdmin';
 import { readOwnerArtworks } from '@/data/ownerReads';

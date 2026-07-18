@@ -1,16 +1,12 @@
-'use server';
-
-import { auth } from '@clerk/nextjs/server';
-import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
+import 'server-only';
+import { currentUser } from '@clerk/nextjs/server';
 
 export async function requireAdmin(action = 'perform this action'): Promise<{ isAdmin: boolean; error?: string }> {
-    const { userId } = await auth();
-    if (!userId) {
+    const user = await currentUser();
+    if (!user) {
         return { isAdmin: false, error: `User is not authenticated. Cannot ${action}.` };
     }
-
-    const hasAdminRole = await isClerkUserIdAdmin(userId);
-    if (!hasAdminRole) {
+    if (user.publicMetadata.role !== 'ADMIN') {
         return { isAdmin: false, error: `User does not have the admin role. Cannot ${action}.` };
     }
 

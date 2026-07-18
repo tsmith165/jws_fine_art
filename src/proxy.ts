@@ -1,19 +1,14 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { isClerkUserIdAdmin } from '@/utils/auth/ClerkUtils';
 
 export default clerkMiddleware(async (auth, req) => {
     const { userId } = await auth();
 
-    // Apply admin checks only on protected routes
     if (req.nextUrl.pathname.startsWith('/admin')) {
         if (!userId) {
-            return NextResponse.redirect(new URL('/', req.url));
-        }
-
-        const hasAdminRole = await isClerkUserIdAdmin(userId);
-        if (!hasAdminRole) {
-            return NextResponse.redirect(new URL('/', req.url));
+            const signIn = new URL('/signin', req.url);
+            signIn.searchParams.set('redirect_url', req.nextUrl.pathname + req.nextUrl.search);
+            return NextResponse.redirect(signIn);
         }
     }
 

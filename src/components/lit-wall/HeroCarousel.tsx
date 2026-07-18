@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Pause, Play } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 import { artworkHref, dimensions } from '@/lib/artwork';
 
 export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
@@ -22,18 +22,16 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
     return (
         <section className="lw-hero" aria-label="Featured artwork">
             <div className="lw-hero-slides" aria-live="polite">
-                {slides.map((piece, slideIndex) => (
-                    <Image
-                        key={piece.id}
-                        className={slideIndex === index ? 'is-active' : ''}
-                        src={piece.image_path}
-                        alt={slideIndex === index ? piece.title : ''}
-                        fill
-                        sizes="100vw"
-                        quality={90}
-                        priority={slideIndex === 0}
-                    />
-                ))}
+                <Image
+                    key={current.id}
+                    className="is-active"
+                    src={current.image_path}
+                    alt={current.title}
+                    fill
+                    sizes="100vw"
+                    quality={90}
+                    priority={index === 0}
+                />
             </div>
             <div className="lw-hero-scrim" aria-hidden="true" />
             <div className="lw-hero-copy">

@@ -1,47 +1,20 @@
 import type { Metadata } from 'next';
-import React, { Suspense } from 'react';
-import PageLayout from '@/components/layout/PageLayout';
+import { SiteShell } from '@/components/lit-wall/SiteShell';
 import QRCodePage from './QRCodePage';
-import { qrConfigs } from './qr-config';
 
-export const metadata: Metadata = {
-    title: 'JWS Fine Art - QR Code',
-    description: 'Scan to visit JWS Fine Art',
-    keywords: 'JWS Fine Art, QR Code',
-    openGraph: {
-        title: 'JWS Fine Art - QR Code',
-        description: 'Scan to visit JWS Fine Art',
-        siteName: 'JWS Fine Art',
-        url: 'https://www.jwsfineart.com/qr',
-        images: [
-            {
-                url: '/favicon/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'JWS Fine Art',
-            },
-        ],
-        locale: 'en_US',
-        type: 'website',
-    },
-};
+export const metadata: Metadata = { title: 'Studio QR code', robots: { index: false, follow: false } };
 
-const QRCodeSkeleton = ({ size }: { size: number }) => {
+export default function QrPage() {
     return (
-        <div className="relative flex h-full w-full flex-col items-center justify-center">
-            <div className="animate-pulse bg-stone-900" style={{ height: size, width: size }}></div>
-        </div>
-    );
-};
-
-export default function Page() {
-    return (
-        <PageLayout page="/qr">
-            <Suspense fallback={<QRCodeSkeleton size={qrConfigs.color.size} />}>
+        <SiteShell>
+            <section className="lw-qr-page">
+                <div>
+                    <span className="lw-eyebrow">Studio utility</span>
+                    <h1>Share Jill’s collection.</h1>
+                    <p>Choose a print treatment, then save or print the code from your browser.</p>
+                </div>
                 <QRCodePage />
-            </Suspense>
-        </PageLayout>
+            </section>
+        </SiteShell>
     );
 }
-
-export const revalidate = 60;

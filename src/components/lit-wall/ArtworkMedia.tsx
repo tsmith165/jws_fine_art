@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 
 type Media = { id: string; url: string; smallUrl: string; width: number; height: number; alt: string };
 

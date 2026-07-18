@@ -1,20 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { qrConfigs } from './qr-config';
-
-interface QRCodeConfig {
-    url: string;
-    size: number;
-    logoPath: string;
-    logoSize: number;
-    colors: {
-        dark: string;
-        light: string;
-        background: string;
-    };
-}
 
 const QRCodePage = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,7 +14,6 @@ const QRCodePage = () => {
             if (!canvasRef.current) return;
 
             try {
-                // Generate QR code with correct options type
                 await QRCode.toCanvas(canvasRef.current, config.url, {
                     width: config.size,
                     margin: 2,
@@ -37,11 +24,9 @@ const QRCodePage = () => {
                     errorCorrectionLevel: 'H',
                 });
 
-                // Get canvas context
                 const ctx = canvasRef.current.getContext('2d');
                 if (!ctx) return;
 
-                // Create logo image with proper type
                 const logo = document.createElement('img');
                 logo.src = config.logoPath;
 
@@ -54,11 +39,9 @@ const QRCodePage = () => {
                     const logoX = (config.size - actualLogoSize) / 2;
                     const logoY = (config.size - actualLogoSize) / 2;
 
-                    // Create background for logo
                     ctx.fillStyle = config.colors.background;
                     ctx.fillRect(logoX - 4, logoY - 4, actualLogoSize + 8, actualLogoSize + 8);
 
-                    // Draw logo
                     ctx.drawImage(logo, logoX, logoY, actualLogoSize, actualLogoSize);
                 };
             } catch (err) {
@@ -70,26 +53,16 @@ const QRCodePage = () => {
     }, [config]);
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center space-y-6 p-8">
-            <div className="flex space-x-4">
-                <button
-                    onClick={() => setActiveConfig('color')}
-                    className={`rounded-lg px-4 py-2 font-lato transition-colors ${
-                        activeConfig === 'color' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                >
-                    Color
+        <div className="lw-qr-tool">
+            <div className="lw-qr-options" role="group" aria-label="QR code treatment">
+                <button type="button" onClick={() => setActiveConfig('color')} aria-pressed={activeConfig === 'color'}>
+                    Lit Wall
                 </button>
-                <button
-                    onClick={() => setActiveConfig('blackAndWhite')}
-                    className={`rounded-lg px-4 py-2 font-lato transition-colors ${
-                        activeConfig === 'blackAndWhite' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                >
+                <button type="button" onClick={() => setActiveConfig('blackAndWhite')} aria-pressed={activeConfig === 'blackAndWhite'}>
                     Black & White
                 </button>
             </div>
-            <canvas ref={canvasRef} width={config.size} height={config.size} className="rounded-lg shadow-lg" />
+            <canvas ref={canvasRef} width={config.size} height={config.size} aria-label="QR code for jwsfineart.com" />
         </div>
     );
 };

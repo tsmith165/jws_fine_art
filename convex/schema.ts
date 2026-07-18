@@ -307,6 +307,14 @@ export default defineSchema({
         createdAt: v.number(),
     }).index('by_subscriber_id', ['subscriberId']),
 
+    publicRateLimits: defineTable({
+        key: v.string(),
+        action: v.union(v.literal('inquiry'), v.literal('subscribe')),
+        windowStartedAt: v.number(),
+        count: v.number(),
+        updatedAt: v.number(),
+    }).index('by_key', ['key']),
+
     campaigns: defineTable({
         name: v.string(),
         subject: v.string(),

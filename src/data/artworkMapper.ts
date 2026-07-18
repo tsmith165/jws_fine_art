@@ -1,6 +1,6 @@
 import type { FunctionReturnType } from 'convex/server';
 import type { api } from '../../convex/_generated/api';
-import type { ExtraImages, PiecesWithImages, ProgressImages } from '@/db/schema';
+import type { ExtraImages, PiecesWithImages, ProgressImages } from '@/types/artwork';
 
 export type ConvexPublicArtwork = FunctionReturnType<typeof api.artworks.getPublicByLegacyId>;
 type ConvexArtwork = NonNullable<ConvexPublicArtwork>;

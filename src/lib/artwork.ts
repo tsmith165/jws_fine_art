@@ -1,4 +1,4 @@
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 
 export function artworkHref(piece: Pick<PiecesWithImages, 'id' | 'slug'>) {
     return `/work/${piece.slug ?? piece.id}`;

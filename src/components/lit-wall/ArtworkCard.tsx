@@ -1,7 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 import { artworkHref, artworkStatus, dimensions, imageSource, money } from '@/lib/artwork';
 
 export function ArtworkCard({ piece, priority = false }: { piece: PiecesWithImages; priority?: boolean }) {

@@ -3,7 +3,7 @@
 import { Check, ChevronDown, Filter, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import type { PiecesWithImages } from '@/db/schema';
+import type { PiecesWithImages } from '@/types/artwork';
 import { ArtworkCard } from './ArtworkCard';
 
 type Availability = 'available' | 'all' | 'sold';

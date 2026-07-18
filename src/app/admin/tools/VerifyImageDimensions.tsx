@@ -1,144 +1,60 @@
-import React, { useState, useRef, useCallback } from 'react';
+'use client';
+
+import { CheckCircle2, LoaderCircle, ScanLine, StopCircle } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { getPiecesToVerify, verifyImageDimensions } from './actions';
-import { IoIosSpeedometer } from 'react-icons/io';
-import { PiecesWithImages } from '@/db/schema';
 
-const VerifyImageDimensions: React.FC = () => {
-    const [isVerifying, setIsVerifying] = useState(false);
-    const [status, setStatus] = useState<'success' | 'error' | null>(null);
-    const [currentPiece, setCurrentPiece] = useState<PiecesWithImages | null>(null);
-    const [progress, setProgress] = useState({ current: 0, total: 0 });
-    const [results, setResults] = useState<any[]>([]);
-    const [verifyTimeout, setVerifyTimeout] = useState(1000);
-    const verifyTimeoutRef = useRef(verifyTimeout);
-    const [showSlider, setShowSlider] = useState(false);
-    const stopVerificationRef = useRef(false);
+export default function VerifyImageDimensions() {
+    const [running, setRunning] = useState(false);
+    const [progress, setProgress] = useState({ current: 0, total: 0, title: '' });
+    const [message, setMessage] = useState('');
+    const stop = useRef(false);
 
-    const handleVerifyImageDimensions = useCallback(async () => {
-        setIsVerifying(true);
-        setStatus(null);
-        setResults([]);
-        stopVerificationRef.current = false;
-
-        try {
-            const piecesResult = await getPiecesToVerify();
-            if (!piecesResult.success || !piecesResult.pieces) {
-                throw new Error(piecesResult.error || 'Failed to get pieces to verify');
-            }
-
-            const pieces = piecesResult.pieces;
-            setProgress({ current: 0, total: pieces.length });
-
-            for (let i = 0; i < pieces.length; i++) {
-                if (stopVerificationRef.current) break;
-                console.log(`Verifying piece ${i + 1} of ${pieces.length} with timeout ${verifyTimeoutRef.current}ms`);
-
-                const piece = pieces[i];
-                setCurrentPiece(piece);
-                setProgress((prev) => ({ ...prev, current: i + 1 }));
-
-                const result = await verifyImageDimensions(piece);
-                setResults((prev) => [...prev, result]);
-
-                await new Promise((resolve) => setTimeout(resolve, verifyTimeoutRef.current));
-            }
-
-            setStatus('success');
-        } catch (error) {
-            console.error('Failed to verify image dimensions:', error);
-            setStatus('error');
+    async function verify() {
+        setRunning(true);
+        setMessage('');
+        stop.current = false;
+        const result = await getPiecesToVerify();
+        if (!result.success || !result.pieces) {
+            setRunning(false);
+            setMessage(result.error || 'Artwork metadata could not be loaded.');
+            return;
         }
-
-        setIsVerifying(false);
-        setCurrentPiece(null);
-    }, []);
-
-    const handleStopVerification = () => {
-        stopVerificationRef.current = true;
-    };
-
-    const handleTimeoutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newTimeout = parseInt(e.target.value, 10);
-        setVerifyTimeout(newTimeout);
-        verifyTimeoutRef.current = newTimeout; // Update the ref value
-    };
+        let completed = 0;
+        for (const [index, piece] of result.pieces.entries()) {
+            if (stop.current) break;
+            setProgress({ current: index + 1, total: result.pieces.length, title: piece.title });
+            const check = await verifyImageDimensions(piece);
+            if (!check.success) {
+                setMessage(check.error || `Could not verify ${piece.title}.`);
+                setRunning(false);
+                return;
+            }
+            completed += 1;
+        }
+        setRunning(false);
+        setMessage(stop.current ? `Stopped after ${completed} pieces.` : `Verified ${completed} artwork records.`);
+    }
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="flex items-center space-x-4">
-                <div className="flex space-x-2">
-                    <button
-                        onClick={handleVerifyImageDimensions}
-                        disabled={isVerifying}
-                        className="bg-secondary_dark font-lato hover:text-primary flex w-fit items-center rounded-md border-none px-4 py-2 text-white uppercase hover:bg-stone-400 hover:font-bold disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {isVerifying ? 'Verifying...' : 'Verify Image Dimensions'}
+        <div className="owner-tool-action">
+            <div className="owner-inline-form">
+                <button className="owner-button" type="button" onClick={verify} disabled={running}>
+                    {running ? <LoaderCircle className="owner-spin" size={16} /> : <ScanLine size={16} />}
+                    {running ? `Verifying ${progress.current} of ${progress.total}` : 'Verify dimensions'}
+                </button>
+                {running ? (
+                    <button className="owner-button" type="button" onClick={() => (stop.current = true)}>
+                        <StopCircle size={16} /> Stop after this piece
                     </button>
-                    {isVerifying && (
-                        <button
-                            onClick={handleStopVerification}
-                            className="font-lato flex w-fit items-center rounded-md border-none bg-red-600 px-4 py-2 text-white uppercase hover:bg-red-700 hover:font-bold"
-                        >
-                            Stop
-                        </button>
-                    )}
-                </div>
-                <div
-                    className="group relative flex items-center"
-                    onMouseEnter={() => setShowSlider(true)}
-                    onMouseLeave={() => setShowSlider(false)}
-                >
-                    <IoIosSpeedometer className="h-6 w-6 cursor-pointer fill-stone-900" />
-                    {showSlider && (
-                        <div className="flex items-center space-x-2 p-2">
-                            <input
-                                type="range"
-                                min={250}
-                                max={10000}
-                                step={100}
-                                value={verifyTimeout}
-                                onChange={handleTimeoutChange}
-                                className="[&::-webkit-slider-thumb]:bg-primary w-24 cursor-pointer appearance-none rounded-lg bg-stone-600 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-lg [&::-webkit-slider-runnable-track]:bg-stone-900 [&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full"
-                            />
-                            <span className="w-16 text-center text-stone-900">{(verifyTimeout / 1000).toFixed(2)}s</span>
-                        </div>
-                    )}
-                </div>
+                ) : null}
             </div>
-            {isVerifying && currentPiece && (
-                <div className="text-center text-stone-900">
-                    <p className="text-stone-900">Verifying: {currentPiece.title}</p>
-                    <p className="text-stone-900">
-                        Progress: {progress.current} of {progress.total}
-                    </p>
-                </div>
-            )}
-            {status === 'success' && (
-                <p className="bg-stone-900 p-2 text-center text-green-500">
-                    Image dimensions verified successfully! Total pieces processed: {results.length}
+            {running ? <p className="owner-tool-progress">Now checking {progress.title}</p> : null}
+            {message ? (
+                <p className="owner-tool-result" role="status">
+                    <CheckCircle2 size={15} /> {message}
                 </p>
-            )}
-            {status === 'error' && <p className="text-center text-red-500">Failed to verify image dimensions.</p>}
-            {currentPiece && (
-                <div className="mt-4 text-stone-900">
-                    <p>
-                        <strong className="font-bold text-stone-900">{currentPiece.title}</strong>
-                    </p>
-                    {currentPiece.piece_type && <p className="text-stone-900">Type: {currentPiece.piece_type}</p>}
-                    {currentPiece.width && currentPiece.height && (
-                        <p className="text-stone-900">
-                            Dimensions: {currentPiece.width}&quot; x {currentPiece.height}&quot;
-                        </p>
-                    )}
-                    {currentPiece.small_width && currentPiece.small_height && (
-                        <p className="text-stone-900">
-                            Small Dimensions: {currentPiece.small_width}&quot; x {currentPiece.small_height}&quot;
-                        </p>
-                    )}
-                </div>
-            )}
+            ) : null}
         </div>
     );
-};
-
-export default VerifyImageDimensions;
+}

@@ -615,6 +615,47 @@
     margin-top: auto;
     padding-top: 24px;
 }
+.owner-tool-action,
+.owner-tool-form {
+    display: grid;
+    gap: 12px;
+}
+.owner-tool-form {
+    grid-template-columns: 1fr 1fr;
+}
+.owner-tool-form .is-wide,
+.owner-tool-form > .owner-button,
+.owner-tool-form > .owner-tool-result {
+    grid-column: 1 / -1;
+}
+.owner-tool-progress,
+.owner-tool-result {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    color: var(--owner-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+.owner-tool-result svg {
+    flex: 0 0 auto;
+    color: var(--owner-green);
+}
+.owner-spin {
+    animation: owner-spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .owner-spin {
+        animation: none;
+    }
+}
+@keyframes owner-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 .owner-tool-control button {
     min-height: 42px;
     border: 1px solid var(--owner-line) !important;
@@ -1059,6 +1100,14 @@
         grid-template-columns: 1fr;
     }
     .owner-form-grid .is-wide {
+        grid-column: auto;
+    }
+    .owner-tool-form {
+        grid-template-columns: 1fr;
+    }
+    .owner-tool-form .is-wide,
+    .owner-tool-form > .owner-button,
+    .owner-tool-form > .owner-tool-result {
         grid-column: auto;
     }
     .owner-art-row {

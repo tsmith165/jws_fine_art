@@ -294,7 +294,10 @@ describe('Convex commerce', () => {
         expect(mismatch.outcome).toBe('quarantined');
 
         const state = await t.run(async (ctx) => ({
-            artwork: await ctx.db.query('artworks').withIndex('by_legacy_id', (q) => q.eq('legacyId', 101)).unique(),
+            artwork: await ctx.db
+                .query('artworks')
+                .withIndex('by_legacy_id', (q) => q.eq('legacyId', 101))
+                .unique(),
             intents: await ctx.db.query('checkoutIntents').collect(),
             orders: await ctx.db.query('orders').collect(),
             quarantine: await ctx.db.query('webhookQuarantine').collect(),
@@ -399,8 +402,14 @@ describe('owner authorization', () => {
         await owner.mutation(api.ownerMutations.archiveMedia, { mediaId: added.mediaId, role: 'supporting' });
 
         const state = await t.run(async (ctx) => ({
-            first: await ctx.db.query('artworks').withIndex('by_legacy_id', (q) => q.eq('legacyId', 101)).unique(),
-            second: await ctx.db.query('artworks').withIndex('by_legacy_id', (q) => q.eq('legacyId', 102)).unique(),
+            first: await ctx.db
+                .query('artworks')
+                .withIndex('by_legacy_id', (q) => q.eq('legacyId', 101))
+                .unique(),
+            second: await ctx.db
+                .query('artworks')
+                .withIndex('by_legacy_id', (q) => q.eq('legacyId', 102))
+                .unique(),
             media: await ctx.db.query('artworkMedia').collect(),
             audit: await ctx.db.query('ownerAuditEvents').collect(),
         }));
@@ -467,8 +476,14 @@ describe('owner authorization', () => {
         expect(created.legacyId).toBe(102);
 
         const state = await t.run(async (ctx) => ({
-            artwork: await ctx.db.query('artworks').withIndex('by_legacy_id', (q) => q.eq('legacyId', 102)).unique(),
-            media: await ctx.db.query('artworkMedia').withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', 102)).collect(),
+            artwork: await ctx.db
+                .query('artworks')
+                .withIndex('by_legacy_id', (q) => q.eq('legacyId', 102))
+                .unique(),
+            media: await ctx.db
+                .query('artworkMedia')
+                .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', 102))
+                .collect(),
         }));
         expect(state.artwork).toMatchObject({ origin: 'owner', title: 'New Owner Work' });
         expect(state.media).toHaveLength(1);
@@ -477,6 +492,27 @@ describe('owner authorization', () => {
 });
 
 describe('public and owner workspace writes', () => {
+    it('rate limits repeated public inquiries without storing the rejected request', async () => {
+        const t = createHarness();
+        const request = {
+            serverSecret,
+            artworkLegacyId: null,
+            kind: 'general' as const,
+            name: 'Collector Name',
+            email: 'collector@example.com',
+            phone: null,
+            message: 'Please share more information about the studio.',
+            sourcePath: '/contact',
+            rateLimitKey: 'inquiry:test:rate-limit',
+        };
+        for (let index = 0; index < 4; index += 1) {
+            await t.mutation(api.publicWrites.submitInquiry, request);
+        }
+        await expect(t.mutation(api.publicWrites.submitInquiry, request)).rejects.toThrow('Please wait before trying again.');
+        const inquiries = await t.run((ctx) => ctx.db.query('inquiries').collect());
+        expect(inquiries).toHaveLength(4);
+    });
+
     it('stores inquiries and records subscriber consent, unsubscribe, and resubscribe events', async () => {
         const t = createHarness();
         await seedArtwork(t);
@@ -489,6 +525,7 @@ describe('public and owner workspace writes', () => {
             phone: null,
             message: 'I would like to ask about this painting.',
             sourcePath: '/work/test-artwork-101',
+            rateLimitKey: 'inquiry:test:collector',
         });
         expect(inquiry.inquiryId).toBeTruthy();
 
@@ -497,6 +534,7 @@ describe('public and owner workspace writes', () => {
             email: 'Collector@Example.com',
             name: 'Collector Name',
             consentSource: 'footer',
+            rateLimitKey: 'subscribe:test:collector:initial',
         });
         await t.mutation(api.publicWrites.unsubscribe, {
             serverSecret,
@@ -508,6 +546,7 @@ describe('public and owner workspace writes', () => {
             email: 'collector@example.com',
             name: null,
             consentSource: 'footer',
+            rateLimitKey: 'subscribe:test:collector:resubscribe',
         });
 
         const state = await t.run(async (ctx) => ({
@@ -559,12 +598,14 @@ describe('public and owner workspace writes', () => {
             phone: null,
             message: 'Please tell me about upcoming studio events.',
             sourcePath: '/contact',
+            rateLimitKey: 'inquiry:test:owner-workflow',
         });
         await t.mutation(api.publicWrites.subscribe, {
             serverSecret,
             email: 'collector@example.com',
             name: 'Collector Name',
             consentSource: 'footer',
+            rateLimitKey: 'subscribe:test:owner-workflow',
         });
         const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
         const order = (await owner.query(api.ownerWorkspace.listOrders, {}))[0];

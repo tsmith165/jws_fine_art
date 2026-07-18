@@ -9,7 +9,7 @@ This ledger is the plan of record for the production-site overhaul. It is update
 -   Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
 -   Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
 -   Production data policy: Neon remains read-only and intact as the backup source.
--   Current phase: 6 of 8. The Lit Wall public site and owner console are implemented against Convex and pass local production checks; deployed owner QA and final optimization remain. Production and live-provider cutover remain explicitly unexecuted.
+-   Current phase: 7 of 8. The Lit Wall public site and owner console are implemented against Convex, the superseded runtime stack has been removed, and all local release gates pass. Final deployed preview QA and performance evidence remain. Production and live-provider cutover remain explicitly unexecuted.
 -   Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
 
 ## Safety Invariants
@@ -148,15 +148,15 @@ Status: **in progress**
 
 Acceptance criteria:
 
--   [ ] Implement the Lit Wall public Home, Work, Artwork, Studio & Story, Commissions, Contact & Collector Guide, Checkout, confirmation/cancel, error, and not-found surfaces with real data.
--   [ ] Implement the Lit Wall owner Dashboard, Catalog, Artwork Editor, Orders, Inbox, Mailing & Campaigns MVP, Analytics, and Tools surfaces with real operations.
--   [ ] Make search, availability, faceting, sorting, selected-artwork routing, image navigation, 2D room visualization, forms, upload, and owner workflows functional.
--   [ ] Use real links and semantic controls. Preserve middle-click, keyboard, screen-reader, reduced-motion, pause, and focus behavior.
--   [ ] Match the reviewed `d2 v1` hierarchy, charcoal/ivory/brass palette, typography, fixed app bars, and artwork-first presentation across desktop and mobile.
--   [ ] Keep artwork at opacity 1 with `filter: none`; readability treatment uses separate scrim layers and must not alter the image element.
--   [ ] Render description-less works with honest facts-only content. Do not generate fictional artwork stories.
--   [ ] Expose real catalog gaps through owner needs-attention and publish-check rules; do not copy synthetic wireframe analytics or counts.
--   [ ] Implement Mailing MVP as consent/suppression, subscriber list, simple draft/preview/send, and provider outcomes. Defer segmentation, scheduling, and a full ESP workflow.
+-   [x] Implement the Lit Wall public Home, Work, Artwork, Studio & Story, Commissions, Contact & Collector Guide, Checkout, confirmation/cancel, error, and not-found surfaces with real data.
+-   [x] Implement the Lit Wall owner Dashboard, Catalog, Artwork Editor, Orders, Inbox, Mailing & Campaigns MVP, Analytics, and Tools surfaces with real operations.
+-   [x] Make search, availability, faceting, sorting, selected-artwork routing, image navigation, 2D room visualization, forms, upload, and owner workflows functional.
+-   [x] Use real links and semantic controls. Preserve middle-click, keyboard, screen-reader, reduced-motion, pause, and focus behavior.
+-   [x] Match the reviewed `d2 v1` hierarchy, charcoal/ivory/brass palette, typography, fixed app bars, and artwork-first presentation across desktop and mobile.
+-   [x] Keep artwork at opacity 1 with `filter: none`; readability treatment uses separate scrim layers and must not alter the image element.
+-   [x] Render description-less works with honest facts-only content. Do not generate fictional artwork stories.
+-   [x] Expose real catalog gaps through owner needs-attention and publish-check rules; do not copy synthetic wireframe analytics or counts.
+-   [x] Implement Mailing MVP as consent/suppression, subscriber list, simple draft/preview/send, and provider outcomes. Defer segmentation, scheduling, and a full ESP workflow.
 -   [ ] Verify every route and meaningful state against a production build with screenshots plus DOM/layout, console, and failed-network evidence.
 
 Progress:
@@ -167,18 +167,18 @@ Progress:
 
 ### Phase 7: Optimization, Security, Accessibility, and Discoverability
 
-Status: **pending**
+Status: **in progress**
 
 Acceptance criteria:
 
--   [ ] Resolve actionable package and application security findings without hiding remaining risk.
+-   [x] Resolve actionable package and application security findings without hiding remaining risk.
 -   [ ] Meet or explain the public performance targets below using before/after Lighthouse reports with identical profiles.
 -   [ ] Preserve originals, generate responsive derivatives from originals once, validate dimensions/orientation/color profile, and avoid repeated lossy transforms.
--   [ ] Load only the active hero slide eagerly; use accurate `sizes`, bounded hero selection, route-level caching, and minimal root providers.
--   [ ] Implement redirects, canonical URLs, metadata, dynamic sitemap, robots policy, Open Graph, and accurate artwork JSON-LD.
--   [ ] Keep sold artwork indexable as archive records and omit `Offer` data for sold or non-positive-price records.
--   [ ] Add security headers, input validation, rate limits/abuse controls, webhook signature/replay tests, and PII-safe logging.
--   [ ] Verify keyboard navigation, focus visibility, semantic landmarks, contrast, labels, reduced motion, screen-reader paths, and mobile touch targets.
+-   [x] Load only the active hero slide eagerly; use accurate `sizes`, bounded hero selection, route-level caching, and minimal root providers.
+-   [x] Implement redirects, canonical URLs, metadata, dynamic sitemap, robots policy, Open Graph, and accurate artwork JSON-LD.
+-   [x] Keep sold artwork indexable as archive records and omit `Offer` data for sold or non-positive-price records.
+-   [x] Add security headers, input validation, rate limits/abuse controls, webhook signature/replay tests, and PII-safe logging.
+-   [x] Verify keyboard navigation, focus visibility, semantic landmarks, contrast, labels, reduced motion, screen-reader paths, and mobile touch targets locally; deployed verification remains part of the final gate.
 
 Measured targets:
 
@@ -192,12 +192,12 @@ Measured targets:
 
 ### Phase 8: Old-Stack Removal and Final Verification
 
-Status: **pending**
+Status: **in progress**
 
 Acceptance criteria:
 
--   [ ] Remove Neon, Drizzle, PostgreSQL, and legacy transaction code from application paths after the reversible preview cutover window.
--   [ ] Remove verified dead packages/files, obsolete migrations/configuration, orphaned styles, unused components, compatibility redirects that are no longer needed, and superseded implementations.
+-   [x] Remove Neon, Drizzle, PostgreSQL, and legacy transaction code from application paths after the reversible preview cutover window.
+-   [x] Remove verified dead packages/files, obsolete migrations/configuration, orphaned styles, unused components, and superseded implementations. Intentional compatibility redirects remain for indexed legacy URLs.
 -   [ ] Preserve the external Neon dump, schema snapshot, deterministic export/import tooling, migration reports, and rollback documentation.
 -   [ ] Pass a clean install, typecheck, lint with zero warnings, tests, production build, production dependency audit, asset verification, and full browser QA.
 -   [ ] Create a Vercel preview deployment and verify public and owner flows there. Do not deploy production.

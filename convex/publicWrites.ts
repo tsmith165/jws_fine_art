@@ -1,5 +1,6 @@
 import { v } from 'convex/values';
 import { mutation } from './_generated/server';
+import type { MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
 
 const nullableNumber = v.union(v.number(), v.null());
@@ -13,6 +14,24 @@ function validEmail(value: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+async function enforceRateLimit(ctx: MutationCtx, key: string, action: 'inquiry' | 'subscribe', limit: number, windowMs: number) {
+    const now = Date.now();
+    const existing = await ctx.db
+        .query('publicRateLimits')
+        .withIndex('by_key', (query) => query.eq('key', key))
+        .unique();
+    if (!existing) {
+        await ctx.db.insert('publicRateLimits', { key, action, windowStartedAt: now, count: 1, updatedAt: now });
+        return;
+    }
+    if (now - existing.windowStartedAt >= windowMs) {
+        await ctx.db.patch(existing._id, { action, windowStartedAt: now, count: 1, updatedAt: now });
+        return;
+    }
+    if (existing.count >= limit) throw new Error('Please wait before trying again.');
+    await ctx.db.patch(existing._id, { count: existing.count + 1, updatedAt: now });
+}
+
 export const submitInquiry = mutation({
     args: {
         serverSecret: v.string(),
@@ -23,9 +42,11 @@ export const submitInquiry = mutation({
         phone: nullableString,
         message: v.string(),
         sourcePath: v.string(),
+        rateLimitKey: v.string(),
     },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
+        await enforceRateLimit(ctx, args.rateLimitKey, 'inquiry', 4, 60 * 60 * 1000);
         const name = args.name.trim();
         const email = normalizeEmail(args.email);
         const message = args.message.trim();
@@ -58,13 +79,17 @@ export const submitInquiry = mutation({
 });
 
 export const subscribe = mutation({
-    args: { serverSecret: v.string(), email: v.string(), name: nullableString, consentSource: v.string() },
+    args: { serverSecret: v.string(), email: v.string(), name: nullableString, consentSource: v.string(), rateLimitKey: v.string() },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
+        await enforceRateLimit(ctx, args.rateLimitKey, 'subscribe', 6, 60 * 60 * 1000);
         const email = normalizeEmail(args.email);
         if (!validEmail(email)) throw new Error('A valid email is required.');
         const now = Date.now();
-        const existing = await ctx.db.query('subscribers').withIndex('by_normalized_email', (q) => q.eq('normalizedEmail', email)).unique();
+        const existing = await ctx.db
+            .query('subscribers')
+            .withIndex('by_normalized_email', (q) => q.eq('normalizedEmail', email))
+            .unique();
         if (existing?.status === 'suppressed') return { status: 'suppressed' as const };
         if (existing) {
             await ctx.db.patch(existing._id, {
@@ -111,7 +136,10 @@ export const unsubscribe = mutation({
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
         const email = normalizeEmail(args.email);
-        const existing = await ctx.db.query('subscribers').withIndex('by_normalized_email', (q) => q.eq('normalizedEmail', email)).unique();
+        const existing = await ctx.db
+            .query('subscribers')
+            .withIndex('by_normalized_email', (q) => q.eq('normalizedEmail', email))
+            .unique();
         if (!existing || existing.status === 'suppressed') return { status: existing?.status ?? 'not_found' };
         const now = Date.now();
         await ctx.db.patch(existing._id, { status: 'unsubscribed', unsubscribedAt: now, updatedAt: now });

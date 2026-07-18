@@ -22,6 +22,10 @@ export function InquiryForm({
         <form className="lw-inquiry-form" action={action}>
             <input type="hidden" name="artwork_id" value={artworkId || ''} />
             <input type="hidden" name="source_path" value={sourcePath} />
+            <label className="lw-honeypot" aria-hidden="true">
+                Website
+                <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+            </label>
             <fieldset>
                 <legend>What can Jill help with?</legend>
                 <div>

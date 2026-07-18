@@ -5,9 +5,9 @@ export const qrConfigs = {
         logoPath: '/logo/JWS_ICON_260.png',
         logoSize: 0.275,
         colors: {
-            dark: '#a8a29e',
-            light: '#475451',
-            background: '#a8a29e',
+            dark: '#0d120f',
+            light: '#dce7e1',
+            background: '#dce7e1',
         },
     },
     blackAndWhite: {

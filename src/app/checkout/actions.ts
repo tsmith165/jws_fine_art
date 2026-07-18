@@ -78,8 +78,7 @@ export async function runStripePurchase(data: FormData) {
             cancel_url: `${origin}/checkout/cancel/${artworkLegacyId}`,
             payment_intent_data: { metadata: { checkout_intent_id: String(intent.intentId) } },
         });
-        const paymentIntentId =
-            typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id ?? null);
+        const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id ?? null);
         await client.mutation(api.commerce.attachCheckoutSession, {
             serverSecret,
             checkoutIntentId: intent.intentId,

@@ -1,153 +1,38 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { generateMissingSmallImage, getImagesMissingSmallImages, type SmallImageTarget } from './actions';
-import { IoIosSpeedometer } from 'react-icons/io';
+'use client';
 
-const GenerateSmallImages: React.FC = () => {
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [status, setStatus] = useState<'success' | 'error' | null>(null);
-    const [result, setResult] = useState<{
-        updatedPieces: number;
-        updatedExtraImages: number;
-        updatedProgressImages: number;
-    } | null>(null);
-    const [currentPiece, setCurrentPiece] = useState<SmallImageTarget | null>(null);
-    const [progress, setProgress] = useState({ current: 0, total: 0 });
-    const [generateTimeout, setGenerateTimeout] = useState(1000);
-    const generateTimeoutRef = useRef(generateTimeout);
-    const [showSlider, setShowSlider] = useState(false);
-    const stopGenerationRef = useRef(false);
+import { CheckCircle2, ImageDown, LoaderCircle } from 'lucide-react';
+import { useState } from 'react';
+import { getImagesMissingSmallImages } from './actions';
 
-    const handleGenerateSmallImages = useCallback(async () => {
-        setIsGenerating(true);
-        setStatus(null);
-        setResult(null);
-        stopGenerationRef.current = false;
+export default function GenerateSmallImages() {
+    const [checking, setChecking] = useState(false);
+    const [message, setMessage] = useState('');
 
-        try {
-            const imagesResult = await getImagesMissingSmallImages();
-            if (!imagesResult.success || !imagesResult.images) {
-                throw new Error(imagesResult.error || 'Failed to get images missing small versions');
-            }
-
-            const images = imagesResult.images;
-            const counts = {
-                updatedPieces: 0,
-                updatedExtraImages: 0,
-                updatedProgressImages: 0,
-            };
-
-            setProgress({ current: 0, total: images.length });
-
-            for (let i = 0; i < images.length; i++) {
-                if (stopGenerationRef.current) break;
-
-                const image = images[i];
-                setCurrentPiece(image);
-                setProgress({ current: i + 1, total: images.length });
-
-                const result = await generateMissingSmallImage(image);
-                if (!result.success) {
-                    setStatus('error');
-                    return;
-                }
-
-                if (image.targetType === 'piece') counts.updatedPieces++;
-                else if (image.targetType === 'extra') counts.updatedExtraImages++;
-                else counts.updatedProgressImages++;
-
-                await new Promise((resolve) => setTimeout(resolve, generateTimeoutRef.current));
-            }
-
-            setStatus('success');
-            setResult(counts);
-        } catch (error: any) {
-            console.error('Failed to generate small images:', error.message);
-            setStatus('error');
-        }
-
-        setIsGenerating(false);
-        setCurrentPiece(null);
-    }, []);
-
-    const handleStopGeneration = () => {
-        stopGenerationRef.current = true;
-    };
-
-    const handleTimeoutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newTimeout = parseInt(e.target.value, 10);
-        setGenerateTimeout(newTimeout);
-        generateTimeoutRef.current = newTimeout; // Update the ref value
-    };
+    async function checkVariants() {
+        setChecking(true);
+        setMessage('');
+        const result = await getImagesMissingSmallImages();
+        setChecking(false);
+        setMessage(
+            result.success
+                ? result.images?.length
+                    ? `${result.images.length} images need presentation variants.`
+                    : 'All originals are ready. Responsive variants are generated at delivery time.'
+                : result.error || 'Image variants could not be checked.',
+        );
+    }
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="flex items-center space-x-4">
-                <div className="flex space-x-2">
-                    <button
-                        onClick={handleGenerateSmallImages}
-                        disabled={isGenerating}
-                        className="bg-secondary_dark font-lato hover:text-primary flex w-fit items-center rounded-md border-none px-4 py-2 text-white uppercase hover:bg-stone-400 hover:font-bold disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {isGenerating ? 'Generating...' : 'Generate Missing Small Images'}
-                    </button>
-                    {isGenerating && (
-                        <button
-                            onClick={handleStopGeneration}
-                            className="font-lato flex w-fit items-center rounded-md border-none bg-red-600 px-4 py-2 text-white uppercase hover:bg-red-700 hover:font-bold"
-                        >
-                            Stop
-                        </button>
-                    )}
-                </div>
-                <div
-                    className="group relative flex items-center"
-                    onMouseEnter={() => setShowSlider(true)}
-                    onMouseLeave={() => setShowSlider(false)}
-                >
-                    <IoIosSpeedometer className="h-6 w-6 cursor-pointer fill-stone-900" />
-                    {showSlider && (
-                        <div className="flex items-center space-x-2 p-2">
-                            <input
-                                type="range"
-                                min={250}
-                                max={10000}
-                                step={100}
-                                value={generateTimeout}
-                                onChange={handleTimeoutChange}
-                                className="[&::-webkit-slider-thumb]:bg-primary w-24 cursor-pointer appearance-none rounded-lg bg-stone-600 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-lg [&::-webkit-slider-runnable-track]:bg-stone-900 [&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full"
-                            />
-                            <span className="w-16 text-center text-stone-900">{(generateTimeout / 1000).toFixed(2)}s</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-            {isGenerating && currentPiece && (
-                <div className="text-center text-stone-900">
-                    <p>Generating small image for: {currentPiece.title}</p>
-                    <p>
-                        Progress: {progress.current} of {progress.total}
-                    </p>
-                </div>
-            )}
-            {status === 'success' && result && (
-                <div className="text-center text-green-500">
-                    <p>Small images generated successfully!</p>
-                    <p>Updated pieces: {result.updatedPieces}</p>
-                    <p>Updated extra images: {result.updatedExtraImages}</p>
-                    <p>Updated progress images: {result.updatedProgressImages}</p>
-                </div>
-            )}
-            {status === 'error' && <p className="text-center text-red-500">Failed to generate small images.</p>}
-            {currentPiece && (
-                <div className="mt-4 text-stone-900">
-                    <p>
-                        <strong className="font-bold text-stone-900">{currentPiece.title}</strong>
-                    </p>
-                    <p className="text-stone-900">Type: {currentPiece.targetType}</p>
-                </div>
-            )}
+        <div className="owner-tool-action">
+            <button className="owner-button" type="button" onClick={checkVariants} disabled={checking}>
+                {checking ? <LoaderCircle className="owner-spin" size={16} /> : <ImageDown size={16} />}
+                {checking ? 'Checking…' : 'Check variants'}
+            </button>
+            {message ? (
+                <p className="owner-tool-result" role="status">
+                    <CheckCircle2 size={15} /> {message}
+                </p>
+            ) : null}
         </div>
     );
-};
-
-export default GenerateSmallImages;
+}
