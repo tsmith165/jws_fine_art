@@ -1,9 +1,54 @@
-/* File: /src/styles/globals.css */
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+    --font-alegrya: 'Alegreya Sans SC', sans-serif;
+    --font-lato: 'Lato', sans-serif;
+    --font-cinzel: var(--font-cinzel-face), serif;
+
+    /* Legacy aliases retained until the Lit Wall replacement is complete. */
+    --color-primary: #54786d;
+    --color-primary_dark: #365349;
+    --color-secondary_light: #616c63;
+    --color-secondary: #475451;
+    --color-secondary_dark: #333739;
+    --color-link: #57aaf3;
+    --color-visited: #be23ae;
+
+    /* Lit Wall design tokens. */
+    --color-ink: #0b0f0c;
+    --color-charcoal: #111713;
+    --color-gallery: #182019;
+    --color-ivory: #f4f0e6;
+    --color-brass: #c9a867;
+    --color-mist: #aeb8af;
+    --color-line: #2c3830;
+
+    --breakpoint-xxxs: 325px;
+    --breakpoint-xxs: 375px;
+    --breakpoint-xs: 480px;
+    --breakpoint-md-nav: 833px;
+
+    --animate-fade-in: fade-in 1s forwards;
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+@utility gradient-primary-main {
+    @apply from-primary via-primary_dark to-primary bg-gradient-to-r bg-clip-text text-transparent;
+}
 
 :root {
-    --scrollbar-color: #54786d;
-    --scrollbar-hover-color: #365349;
-    --track-color: #333739;
+    --scrollbar-color: var(--color-brass);
+    --scrollbar-hover-color: #dbc083;
+    --track-color: var(--color-ink);
 }
 
 html,
@@ -28,7 +73,7 @@ select {
     width: 250px;
     background-color: #bd2786;
     color: white;
-    letter-spacing: -0.04em;
+    letter-spacing: 0;
     font-weight: bold;
     border: 0;
 }
@@ -66,7 +111,7 @@ select {
     appearance: none;
     width: 16px;
     height: 16px;
-    background-color: bg-primary;
+    background-color: var(--color-primary);
     border-radius: 50%;
     cursor: pointer;
 }
@@ -75,7 +120,7 @@ select {
 .slider-slideshow::-moz-range-thumb {
     width: 16px;
     height: 16px;
-    background-color: bg-primary;
+    background-color: var(--color-primary);
     border-radius: 50%;
     cursor: pointer;
 }
@@ -84,7 +129,7 @@ select {
 .slider-slideshow::-ms-thumb {
     width: 16px;
     height: 16px;
-    background-color: bg-primary;
+    background-color: var(--color-primary);
     border-radius: 50%;
     cursor: pointer;
 }

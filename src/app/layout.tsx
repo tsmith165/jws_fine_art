@@ -5,7 +5,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { dark } from '@clerk/themes';
 
-import 'tailwindcss/tailwind.css';
 import '@/styles/globals.css';
 
 import { cinzel } from './fonts';
