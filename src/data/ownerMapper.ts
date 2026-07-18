@@ -51,6 +51,7 @@ export function ownerArtworkWithMediaToLegacy(artwork: ConvexOwnerArtwork): Piec
     });
     return {
         ...piece,
+        slug: artwork.slug,
         extraImages: media.filter((item) => item.role === 'supporting').map((item) => legacyMedia(item) as ExtraImages),
         progressImages: media.filter((item) => item.role === 'progress').map((item) => legacyMedia(item) as ProgressImages),
     };

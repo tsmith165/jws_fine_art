@@ -1,43 +1,21 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import CreatePiece from './CreatePiece';
+import { OwnerHeading, OwnerShell } from '@/components/owner/OwnerShell';
 
-export const metadata: Metadata = {
-    title: 'JWS Fine Art - New Piece',
-    description: 'Create a new piece for JWS Fine Art',
-    keywords:
-        'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Create New Piece',
-    applicationName: 'JWS Fine Art',
-    icons: {
-        icon: '/logo/JWS_ICON_260.png',
-        shortcut: '/logo/JWS_ICON_260.png',
-        apple: '/favicon/apple-icon.png',
-    },
-    openGraph: {
-        title: 'JWS Fine Art - Create New Piece',
-        description: 'Create New Piece for JWS Fine Art',
-        siteName: 'JWS Fine Art',
-        url: 'https://www.jwsfineart.com',
-        images: [
-            {
-                url: '/favicon/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'JWS Fine Art',
-            },
-        ],
-        locale: 'en_US',
-        type: 'website',
-    },
-};
-
-import PageLayout from '@/components/layout/PageLayout';
-import CreatePiece from '@/app/admin/edit/new/CreatePiece';
+export const metadata: Metadata = { title: 'New artwork · JWS Fine Art' };
+export const dynamic = 'force-dynamic';
 
 export default function NewPiecePage() {
     return (
-        <PageLayout page="/admin/edit/new">
-            <CreatePiece />
-        </PageLayout>
+        <OwnerShell active="/admin/artwork" title="New artwork">
+            <section className="owner-content">
+                <OwnerHeading
+                    eyebrow="New catalog record"
+                    title="Add artwork"
+                    description="Start with the highest-quality original. The image is preserved as uploaded, then presentation variants are generated at delivery time."
+                />
+                <CreatePiece />
+            </section>
+        </OwnerShell>
     );
 }
-
-export const dynamic = 'force-dynamic';

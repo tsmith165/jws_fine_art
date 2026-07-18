@@ -9,7 +9,7 @@ This ledger is the plan of record for the production-site overhaul. It is update
 -   Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
 -   Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
 -   Production data policy: Neon remains read-only and intact as the backup source.
--   Current phase: 6 of 8. Tailwind CSS v4 is verified on the Convex-backed branch preview; production and live-provider cutover remain explicitly unexecuted.
+-   Current phase: 6 of 8. The Lit Wall public site and owner console are implemented against Convex and pass local production checks; deployed owner QA and final optimization remain. Production and live-provider cutover remain explicitly unexecuted.
 -   Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
 
 ## Safety Invariants
@@ -161,7 +161,9 @@ Acceptance criteria:
 
 Progress:
 
--   The canonical Lit Wall public routes, slug-based artwork detail, real-data catalog controls, image gallery, room visualization, inquiry/newsletter forms, commissions, studio story, contact guide, and server-authoritative Stripe checkout states are implemented and pass a production build. Preview browser verification and the owner console remain before this phase can be marked verified.
+-   The canonical Lit Wall public routes, slug-based artwork detail, real-data catalog controls, image gallery, room visualization, inquiry/newsletter forms, commissions, studio story, contact guide, and server-authoritative Stripe checkout states are implemented and pass preview browser verification.
+-   The shared owner console now covers Today, Artwork, Orders, Inbox, Mailing, Analytics, and Tools with real Convex data and mutations. The artwork editor, new-piece workflow, and media uploader use the same shell, preserve original uploads, expose publish checks, and pass typecheck, lint, tests, and a production build.
+-   Authenticated deployed owner QA and the final public responsive/accessibility pass remain before this phase is verified.
 
 ### Phase 7: Optimization, Security, Accessibility, and Discoverability
 

@@ -5,7 +5,7 @@ import { db, piecesTable, verifiedTransactionsTable } from '@/db/db';
 import type { Pieces, VerifiedTransactions } from '@/db/schema';
 import { requireAdmin } from '@/utils/auth/requireAdmin';
 import { getReadBackend } from './readBackend';
-import { ownerArtworkToLegacy, ownerTransactionToLegacy } from './ownerMapper';
+import { ownerArtworkToLegacy, ownerArtworkWithMediaToLegacy, ownerTransactionToLegacy } from './ownerMapper';
 import { getAuthenticatedOwnerConvexClient } from './ownerConvex';
 
 async function assertNextOwner(): Promise<void> {
@@ -40,4 +40,10 @@ export async function readOwnerLegacyTransactions(): Promise<VerifiedTransaction
         return (await client.query(api.ownerReads.listLegacyVerifiedTransactions, {})).map(ownerTransactionToLegacy);
     }
     return db.select().from(verifiedTransactionsTable).orderBy(asc(verifiedTransactionsTable.id));
+}
+
+export async function readOwnerArtworksWithMedia() {
+    await assertNextOwner();
+    const client = await getAuthenticatedOwnerConvexClient('read owner artwork media');
+    return (await client.query(api.ownerReads.listArtworks, {})).map(ownerArtworkWithMediaToLegacy);
 }

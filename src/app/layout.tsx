@@ -7,6 +7,7 @@ import { dark } from '@clerk/themes';
 
 import '@/styles/globals.css';
 import '@/styles/lit-wall.css';
+import '@/styles/owner-console.css';
 
 import { cinzel, libreCaslon, manrope } from './fonts';
 

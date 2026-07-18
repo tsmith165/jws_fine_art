@@ -1,199 +1,99 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { Check, ImagePlus } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createNewPiece } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
-import InputTextbox from '@/components/inputs/InputTextbox';
-
-interface NewPieceData {
-    title: string;
-    imagePath: string;
-    width: number;
-    height: number;
-    smallImagePath: string;
-    smallWidth: number;
-    smallHeight: number;
-}
 
 export default function CreatePiece() {
-    const [imageUrl, setImageUrl] = useState('Not yet uploaded');
-    const [width, setWidth] = useState(0);
-    const [height, setHeight] = useState(0);
-    const [title, setTitle] = useState('Not yet uploaded');
-    const [smallImageUrl, setSmallImageUrl] = useState('Not yet uploaded');
-    const [smallWidth, setSmallWidth] = useState(0);
-    const [smallHeight, setSmallHeight] = useState(0);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-
     const router = useRouter();
-
-    const handleUploadComplete = useCallback(
-        (
-            fileName: string,
-            originalImageUrl: string,
-            smallImageUrl: string,
-            originalWidth: number,
-            originalHeight: number,
-            smallWidth: number,
-            smallHeight: number,
-        ) => {
-            console.log(
-                'handleUploadComplete',
-                fileName,
-                originalImageUrl,
-                smallImageUrl,
-                originalWidth,
-                originalHeight,
-                smallWidth,
-                smallHeight,
-            );
-            setTitle(fileName.split('.')[0]);
-            setImageUrl(originalImageUrl);
-            setSmallImageUrl(smallImageUrl);
-            setWidth(originalWidth);
-            setHeight(originalHeight);
-            setSmallWidth(smallWidth);
-            setSmallHeight(smallHeight);
-            setStatusMessage(null);
-        },
-        [],
-    );
-
-    const handleCreatePiece = async (action: 'edit' | 'images' | 'view') => {
-        setIsSubmitting(true);
-        try {
-            const data: NewPieceData = {
-                title,
-                imagePath: imageUrl,
-                width,
-                height,
-                smallImagePath: smallImageUrl,
-                smallWidth,
-                smallHeight,
-            };
-            const piece_data = await createNewPiece(data);
-            if (!piece_data.success || !piece_data.piece?.id) {
-                setStatusMessage({ type: 'error', message: piece_data.error || 'Failed to create piece. Please try again.' });
-                return;
-            }
-
-            setStatusMessage({ type: 'success', message: 'Piece created successfully.' });
-            handleResetInputs();
-
-            switch (action) {
-                case 'edit':
-                    router.push(`/admin/edit?id=${piece_data.piece.id}`);
-                    break;
-                case 'images':
-                    router.push(`/admin/edit/images/${piece_data.piece.id}`);
-                    break;
-                case 'view':
-                    router.push(`/gallery?piece=${piece_data.piece.id}`);
-                    break;
-            }
-        } catch (error) {
-            console.error('Error creating piece:', error);
-            setStatusMessage({ type: 'error', message: 'Failed to create piece. Please try again.' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleResetInputs = useCallback(() => {
-        setImageUrl('Not yet uploaded');
-        setWidth(0);
-        setHeight(0);
-        setTitle('Not yet uploaded');
-        setSmallImageUrl('Not yet uploaded');
-        setSmallWidth(0);
-        setSmallHeight(0);
-        setStatusMessage(null);
+    const [upload, setUpload] = useState({ url: '', title: '', width: 0, height: 0 });
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+    const reset = useCallback(() => {
+        setUpload({ url: '', title: '', width: 0, height: 0 });
+        setMessage(null);
+    }, []);
+    const completed = useCallback((name: string, url: string, _small: string, width: number, height: number) => {
+        setUpload({ url, title: name.replace(/\.[^.]+$/, ''), width, height });
+        setMessage(null);
     }, []);
 
-    const isFormValid = imageUrl !== 'Not yet uploaded' && title !== 'Not yet uploaded' && !isSubmitting;
+    async function create(destination: 'edit' | 'media') {
+        setSaving(true);
+        const result = await createNewPiece({
+            title: upload.title,
+            imagePath: upload.url,
+            width: upload.width,
+            height: upload.height,
+            smallImagePath: '',
+            smallWidth: 0,
+            smallHeight: 0,
+        });
+        setSaving(false);
+        if (!result.success || !result.piece) {
+            setMessage(result.error || 'The artwork could not be created.');
+            return;
+        }
+        router.push(destination === 'media' ? `/admin/edit/images/${result.piece.id}` : `/admin/edit?id=${result.piece.id}`);
+    }
 
     return (
-        <div className="flex h-full w-full flex-col items-center justify-center bg-stone-900">
-            <div className="flex w-4/5 flex-col items-center justify-center rounded-lg bg-stone-900">
-                <div
-                    id="header"
-                    className="w-fit rounded-t-lg bg-gradient-to-r from-primary_dark from-15% via-primary via-50% to-primary_dark to-85% bg-clip-text text-center text-4xl font-bold text-transparent"
-                >
-                    Create New Piece
-                </div>
-                <div className="flex w-full flex-col items-center space-y-2 p-2">
-                    <ResizeUploader
-                        handleUploadComplete={handleUploadComplete}
-                        handleResetInputs={handleResetInputs}
-                        backToEditLink="/admin/edit"
-                    />
-                    <InputTextbox idName="title" name="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                    <InputTextbox idName="image_path" name="Image URL" value={imageUrl} />
-                    <InputTextbox idName="px_width" name="Px Width" value={width.toString()} />
-                    <InputTextbox idName="px_height" name="Px Height" value={height.toString()} />
-                    <InputTextbox idName="small_image_path" name="Small URL" value={smallImageUrl} />
-                    <InputTextbox idName="small_px_width" name="Sm Width" value={smallWidth.toString()} />
-                    <InputTextbox idName="small_px_height" name="Sm Height" value={smallHeight.toString()} />
-                    {imageUrl !== '' && imageUrl !== null ? null : width < 800 && height < 800 ? (
-                        <div className="text-red-500">Warning: Image width and height are less than 800px.</div>
-                    ) : width < 800 ? (
-                        <div className="text-red-500">Warning: Image width is less than 800px.</div>
-                    ) : height < 800 ? (
-                        <div className="text-red-500">Warning: Image height is less than 800px.</div>
-                    ) : null}
-
-                    <div className="flex space-x-4">
-                        <button
-                            type="button"
-                            disabled={!isFormValid}
-                            onClick={() => handleCreatePiece('edit')}
-                            className={
-                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
-                                (isFormValid
-                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
-                            }
-                        >
-                            {isSubmitting ? 'Creating...' : 'Create & Edit'}
-                        </button>
-                        <button
-                            type="button"
-                            disabled={!isFormValid}
-                            onClick={() => handleCreatePiece('images')}
-                            className={
-                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
-                                (isFormValid
-                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
-                            }
-                        >
-                            {isSubmitting ? 'Creating...' : 'Create & Add Images'}
-                        </button>
-                        <button
-                            type="button"
-                            disabled={!isFormValid}
-                            onClick={() => handleCreatePiece('view')}
-                            className={
-                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
-                                (isFormValid
-                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
-                            }
-                        >
-                            {isSubmitting ? 'Creating...' : 'Create & View'}
-                        </button>
+        <div className="owner-upload-workspace">
+            <ResizeUploader handleUploadComplete={completed} handleResetInputs={reset} backToEditLink="/admin/artwork" />
+            {upload.url ? (
+                <div className="owner-upload-review">
+                    <div className="owner-upload-preview">
+                        <Image src={upload.url} alt="New artwork" width={upload.width} height={upload.height} quality={100} />
                     </div>
-                    {statusMessage && (
-                        <div
-                            className={`mt-4 rounded p-2 ${statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
-                        >
-                            {statusMessage.message}
+                    <section className="owner-panel owner-form-grid">
+                        <label className="owner-field is-wide">
+                            <span>Artwork title</span>
+                            <input
+                                value={upload.title}
+                                onChange={(event) => setUpload((current) => ({ ...current, title: event.target.value }))}
+                                required
+                            />
+                        </label>
+                        <div className="owner-upload-facts is-wide">
+                            <span>
+                                <Check size={15} /> Original retained
+                            </span>
+                            <span>
+                                {upload.width.toLocaleString()} × {upload.height.toLocaleString()} pixels
+                            </span>
+                            <span>Starts unpublished until details are complete</span>
                         </div>
-                    )}
+                        <div className="owner-inline-form is-wide">
+                            <button
+                                className="owner-button is-primary"
+                                type="button"
+                                onClick={() => create('edit')}
+                                disabled={saving || !upload.title.trim()}
+                            >
+                                {saving ? 'Creating…' : 'Create and add details'}
+                            </button>
+                            <button
+                                className="owner-button"
+                                type="button"
+                                onClick={() => create('media')}
+                                disabled={saving || !upload.title.trim()}
+                            >
+                                <ImagePlus size={16} /> Create and add images
+                            </button>
+                        </div>
+                    </section>
                 </div>
-            </div>
+            ) : (
+                <div className="owner-upload-empty">
+                    <ImagePlus size={34} />
+                    <h2>Begin with the primary image</h2>
+                    <p>The new artwork stays out of the public catalog until Jill completes its details and marks it available.</p>
+                </div>
+            )}
+            {message ? <p className="owner-editor-message is-warning">{message}</p> : null}
         </div>
     );
 }

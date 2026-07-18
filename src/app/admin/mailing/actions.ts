@@ -10,7 +10,7 @@ function chunks<T>(items: T[], size: number): T[][] {
     return Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
 }
 
-export async function sendCampaign(campaignId: Id<'campaigns'>) {
+export async function sendCampaign(campaignId: Id<'campaigns'>): Promise<void> {
     const client = await getAuthenticatedOwnerConvexClient('send a campaign');
     const campaign = await client.mutation(api.ownerWorkspace.beginCampaignSend, { campaignId });
 
@@ -48,5 +48,5 @@ export async function sendCampaign(campaignId: Id<'campaigns'>) {
 
     const result = await client.mutation(api.ownerWorkspace.completeCampaignSend, { campaignId });
     revalidatePath('/admin/mailing');
-    return result;
+    if (result.status === 'failed') throw new Error('One or more campaign messages could not be sent.');
 }

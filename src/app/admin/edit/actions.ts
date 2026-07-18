@@ -12,6 +12,7 @@ function revalidateArtworkSurfaces(id?: number) {
     revalidatePath('/gallery');
     revalidatePath('/slideshow');
     revalidatePath('/admin/edit');
+    revalidatePath('/admin/artwork');
     revalidatePath('/admin/manage');
     if (id) {
         revalidatePath(`/details/${id}`);
@@ -51,7 +52,10 @@ function nullableNumber(value: string) {
 export async function inspectUploadedImage(url: string): Promise<{ width: number; height: number }> {
     await getAuthenticatedOwnerConvexClient('inspect uploaded artwork');
     const parsed = new URL(url);
-    if (parsed.protocol !== 'https:' || !['utfs.io', 'ufs.sh'].some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`))) {
+    if (
+        parsed.protocol !== 'https:' ||
+        !['utfs.io', 'ufs.sh'].some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`))
+    ) {
         throw new Error('Uploaded image URL is not from the configured media provider.');
     }
     const response = await fetch(parsed, { cache: 'no-store' });

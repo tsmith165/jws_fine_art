@@ -178,7 +178,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                     ]}
                     onChange={handleMultiSelectChange}
                 />
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                     <InputSelect
                         idName="piece_type"
                         name="Piece Type"
@@ -204,7 +204,7 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                         ]}
                     />
                 </div>
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                     <InputSelect
                         idName="framed"
                         name="Framed"
@@ -226,15 +226,15 @@ const EditForm: React.FC<EditFormProps> = ({ current_piece }) => {
                         ]}
                     />
                 </div>
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                     <InputTextbox idName="instagram" name="Instagram" value={formData.instagram} onChange={handleChange} />
                     <InputTextbox idName="price" name="Price" value={formData.price} onChange={handleChange} />
                 </div>
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                     <InputTextbox idName="real_width" name="Width (in)" value={formData.real_width} onChange={handleChange} />
                     <InputTextbox idName="real_height" name="Height (in)" value={formData.real_height} onChange={handleChange} />
                 </div>
-                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+                <div className="flex h-fit w-full flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                     <InputTextbox idName="width" name="Width (px)" value={formData.width} onChange={handleChange} />
                     <InputTextbox idName="height" name="Height (px)" value={formData.height} onChange={handleChange} />
                 </div>

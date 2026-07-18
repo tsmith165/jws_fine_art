@@ -14,8 +14,8 @@ interface ToolsProps {
 const Tools: React.FC<ToolsProps> = ({ activeTab }) => {
     return (
         <div className="flex w-4/5 flex-col space-y-4">
-            <div className="w-full rounded-lg bg-primary_dark text-lg font-bold text-secondary_dark">
-                <div className="w-full rounded-t-md bg-primary_dark text-lg font-bold text-secondary_dark">
+            <div className="bg-primary_dark text-secondary_dark w-full rounded-lg text-lg font-bold">
+                <div className="bg-primary_dark text-secondary_dark w-full rounded-t-md text-lg font-bold">
                     <div className="flex pt-1">
                         <Link
                             href="/admin/tools?tab=backup"
@@ -59,7 +59,7 @@ const Tools: React.FC<ToolsProps> = ({ activeTab }) => {
                         </Link>
                     </div>
                 </div>
-                <div className="rounded-b-lg bg-secondary p-4">
+                <div className="bg-secondary rounded-b-lg p-4">
                     {activeTab === 'backup' && <DataBackup />}
                     {activeTab === 'email' && <TestEmail />}
                     {activeTab === 'small-images' && <GenerateSmallImages />}

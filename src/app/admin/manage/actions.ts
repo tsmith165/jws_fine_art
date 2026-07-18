@@ -41,6 +41,7 @@ export async function changeOrder(currIdList: number[], nextIdList: number[]): P
         });
 
         revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/artwork');
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');
@@ -68,6 +69,7 @@ export async function changePriority(currIdList: number[], nextIdList: number[])
             kind: 'homepage',
         });
         revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/artwork');
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');
@@ -88,6 +90,7 @@ export async function setInactive(id: number): Promise<{ success: boolean; error
         const client = await getAuthenticatedOwnerConvexClient('archive artwork');
         await client.mutation(api.ownerMutations.setArtworkActive, { legacyId: id, active: false });
         revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/artwork');
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');
@@ -108,6 +111,7 @@ export async function setActive(id: number): Promise<{ success: boolean; error?:
         const client = await getAuthenticatedOwnerConvexClient('restore artwork');
         await client.mutation(api.ownerMutations.setArtworkActive, { legacyId: id, active: true });
         revalidatePath(`/admin/edit`);
+        revalidatePath('/admin/artwork');
         revalidatePath('/admin/manage');
         revalidatePath('/admin/gallery');
         revalidatePath('/admin/slideshow');

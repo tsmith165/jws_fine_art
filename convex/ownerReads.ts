@@ -21,6 +21,7 @@ async function ownerArtworks(ctx: QueryCtx) {
         .filter((artwork) => !artwork.absentFromSource)
         .map((artwork) => ({
             legacyId: artwork.legacyId,
+            slug: artwork.slug,
             title: artwork.title,
             description: artwork.description,
             medium: artwork.medium,

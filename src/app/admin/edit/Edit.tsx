@@ -81,7 +81,7 @@ const Edit: React.FC<EditProps> = ({ pieceDataPromise, current_id }) => {
                     className="h-fit max-h-full w-auto rounded-lg object-contain"
                 />
             </div>
-            <div className="h-2/3 overflow-y-auto p-4 pt-0 md:h-full md:w-3/5 md:pl-0 md:pt-4 lg:w-1/2">
+            <div className="h-2/3 overflow-y-auto p-4 pt-0 md:h-full md:w-3/5 md:pt-4 md:pl-0 lg:w-1/2">
                 <div className="mb-2 flex h-fit flex-row items-center space-x-2">
                     <div className="flex h-[48px] flex-col space-y-1">
                         <Link href={`/admin/edit?id=${next_id}`}>

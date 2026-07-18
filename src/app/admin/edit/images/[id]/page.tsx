@@ -1,43 +1,22 @@
 import type { Metadata } from 'next';
-export const metadata: Metadata = {
-    title: 'JWS Fine Art - Edit Piece Details',
-    description: 'Edit gallery piece details for JWS Fine Art',
-    keywords:
-        'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Edit Images',
-    applicationName: 'JWS Fine Art',
-    icons: {
-        icon: '/logo/JWS_ICON_260.png',
-        shortcut: '/logo/JWS_ICON_260.png',
-        apple: '/favicon/apple-icon.png',
-    },
-    openGraph: {
-        title: 'JWS Fine Art - Edit Images',
-        description: 'Edit Images for JWS Fine Art',
-        siteName: 'JWS Fine Art',
-        url: 'https://www.jwsfineart.com',
-        images: [
-            {
-                url: '/favicon/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'JWS Fine Art',
-            },
-        ],
-        locale: 'en_US',
-        type: 'website',
-    },
-};
+import ImageEditor from './ImageEditor';
+import { OwnerHeading, OwnerShell } from '@/components/owner/OwnerShell';
 
-import PageLayout from '@/components/layout/PageLayout';
-import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
-
+export const metadata: Metadata = { title: 'Artwork media · JWS Fine Art' };
 export const dynamic = 'force-dynamic';
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-    const params = await props.params;
+export default async function OwnerMediaPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     return (
-        <PageLayout page={`/admin/edit/images/${params.id}`}>
-            <ImageEditor pieceId={params.id} />
-        </PageLayout>
+        <OwnerShell active="/admin/artwork" title="Artwork media">
+            <section className="owner-content">
+                <OwnerHeading
+                    eyebrow="Media library"
+                    title="Add artwork images"
+                    description="Upload the untouched original, identify its role, and review its dimensions before it joins the artwork record."
+                />
+                <ImageEditor pieceId={id} />
+            </section>
+        </OwnerShell>
     );
 }

@@ -1,5 +1,8 @@
-import React, { useState, useCallback, useRef } from 'react';
+'use client';
+
+import { ArrowLeft, Upload } from 'lucide-react';
 import Link from 'next/link';
+import { useCallback, useRef, useState } from 'react';
 import { generateReactHelpers } from '@uploadthing/react';
 import type { OurFileRouter } from '@/app/api/uploadthing/core';
 import { inspectUploadedImage } from './actions';
@@ -20,102 +23,71 @@ interface ResizeUploaderProps {
     backToEditLink: string;
 }
 
-const ResizeUploader: React.FC<ResizeUploaderProps> = ({ handleUploadComplete, handleResetInputs, backToEditLink }) => {
+export default function ResizeUploader({ handleUploadComplete, handleResetInputs, backToEditLink }: ResizeUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const [loadingState, setLoadingState] = useState<string>('');
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
+    const [progress, setProgress] = useState(0);
+    const [error, setError] = useState<string | null>(null);
+    const input = useRef<HTMLInputElement>(null);
     const { startUpload } = useUploadThing('imageUploader', {
-        onClientUploadComplete: async (res) => {
-            console.log('Upload complete:', res);
-            setLoadingState('Loading Data');
-            handleResetInputs();
-            if (res?.length === 1) {
-                const uploaded = res[0];
-                try {
-                    const dimensions = await inspectUploadedImage(uploaded.url);
-                    handleUploadComplete(uploaded.name, uploaded.url, '', dimensions.width, dimensions.height, 0, 0);
-                } catch (error) {
-                    console.error('Error inspecting uploaded image:', error);
-                    alert(error instanceof Error ? error.message : 'The uploaded image could not be inspected.');
-                }
-            } else {
-                console.error('Unexpected response format');
+        onClientUploadComplete: async (result) => {
+            const uploaded = result?.[0];
+            if (!uploaded) {
+                setError('The upload did not return a file. Please try again.');
+                setIsUploading(false);
+                return;
             }
+            try {
+                const dimensions = await inspectUploadedImage(uploaded.url);
+                handleUploadComplete(uploaded.name, uploaded.url, '', dimensions.width, dimensions.height, 0, 0);
+            } catch (uploadError) {
+                setError(uploadError instanceof Error ? uploadError.message : 'The image could not be inspected.');
+            } finally {
+                setIsUploading(false);
+                setProgress(0);
+            }
+        },
+        onUploadError: (uploadError) => {
+            setError(uploadError.message);
             setIsUploading(false);
-            setUploadProgress(0);
-            setLoadingState('');
+            setProgress(0);
         },
-        onUploadError: (error: Error) => {
-            alert(`ERROR! ${error.message}`);
-            setIsUploading(false);
-            setUploadProgress(0);
-            setLoadingState('');
-        },
-        onUploadProgress: (progress: number) => {
-            setUploadProgress(progress);
-        },
+        onUploadProgress: setProgress,
     });
 
-    const handleFileChange = useCallback(
-        async (e: React.ChangeEvent<HTMLInputElement>) => {
-            const selectedFiles = e.target.files;
-            if (selectedFiles && selectedFiles.length > 0) {
-                const originalFile = selectedFiles[0];
-
-                setIsUploading(true);
-                handleResetInputs();
-
-                setLoadingState('Uploading Original');
-                await startUpload([originalFile]);
-            }
+    const selectFile = useCallback(
+        async (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            setError(null);
+            setIsUploading(true);
+            handleResetInputs();
+            await startUpload([file]);
         },
         [handleResetInputs, startUpload],
     );
 
-    const handleSelectFilesClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
-
     return (
-        <>
+        <div className="owner-uploader">
             <input
+                ref={input}
                 type="file"
-                ref={fileInputRef}
                 accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                onChange={handleFileChange}
-                className="hidden"
+                onChange={selectFile}
                 disabled={isUploading}
             />
-            <div className="flex space-x-2">
-                <button
-                    onClick={handleSelectFilesClick}
-                    disabled={isUploading}
-                    className={`group relative overflow-hidden rounded-md ${
-                        isUploading ? 'bg-primary_dark' : 'bg-primary_dark hover:bg-primary'
-                    } px-4 py-1 text-lg font-bold`}
-                >
-                    {isUploading && (
-                        <div
-                            className="absolute left-0 top-0 z-0 h-full bg-primary"
-                            style={{ width: `${uploadProgress}%`, transition: 'width 0.3s ease-in-out' }}
-                        />
-                    )}
-                    <span className={`relative z-10 text-stone-300 ${isUploading ? '' : 'group-hover:text-stone-950'}`}>
-                        {isUploading ? loadingState : 'Select and Upload File'}
-                    </span>
-                </button>
-                <Link href={backToEditLink} passHref>
-                    <button className="rounded-md bg-primary_dark px-4 py-1 text-lg font-bold text-stone-300 hover:bg-primary hover:text-stone-950">
-                        Back To Edit
-                    </button>
-                </Link>
+            <Upload size={28} aria-hidden="true" />
+            <div>
+                <strong>{isUploading ? `Uploading original · ${progress}%` : 'Choose the highest-quality original'}</strong>
+                <p>JPEG, PNG, WebP, HEIC, or HEIF. The original is stored without client compression or downscaling.</p>
             </div>
-        </>
+            <button className="owner-button is-primary" type="button" onClick={() => input.current?.click()} disabled={isUploading}>
+                <Upload size={16} /> {isUploading ? 'Uploading…' : 'Select image'}
+            </button>
+            <Link className="owner-button" href={backToEditLink}>
+                <ArrowLeft size={16} /> Back
+            </Link>
+            {isUploading ? <span className="owner-upload-progress" style={{ width: `${progress}%` }} /> : null}
+            {error ? <p className="owner-upload-error">{error}</p> : null}
+        </div>
     );
-};
-
-export default ResizeUploader;
+}

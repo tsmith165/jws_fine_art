@@ -1,183 +1,104 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Check, ImagePlus } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storeUploadedImageDetails } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
-import InputTextbox from '@/components/inputs/InputTextbox';
-import InputSelect from '@/components/inputs/InputSelect';
 
-interface ImageEditorProps {
-    pieceId: string;
-}
-
-const ImageEditor: React.FC<ImageEditorProps> = ({ pieceId }) => {
-    const [imageUrl, setImageUrl] = useState('Not yet uploaded');
-    const [title, setTitle] = useState('Not yet uploaded');
-    const [selectedOption, setSelectedOption] = useState('extra');
-    const [width, setWidth] = useState(0);
-    const [height, setHeight] = useState(0);
-    const [smallImageUrl, setSmallImageUrl] = useState('Not yet uploaded');
-    const [smallWidth, setSmallWidth] = useState(0);
-    const [smallHeight, setSmallHeight] = useState(0);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-
+export default function ImageEditor({ pieceId }: { pieceId: string }) {
     const router = useRouter();
-
-    const resetInputs = useCallback(() => {
-        setImageUrl('Not yet uploaded');
-        setTitle('Not yet uploaded');
-        setWidth(0);
-        setHeight(0);
-        setSmallImageUrl('Not yet uploaded');
-        setSmallWidth(0);
-        setSmallHeight(0);
-        setIsSubmitting(false);
-        setStatusMessage(null);
+    const [upload, setUpload] = useState({ url: '', title: '', width: 0, height: 0 });
+    const [role, setRole] = useState('extra');
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+    const reset = useCallback(() => {
+        setUpload({ url: '', title: '', width: 0, height: 0 });
+        setMessage(null);
+    }, []);
+    const completed = useCallback((name: string, url: string, _small: string, width: number, height: number) => {
+        setUpload({ url, title: name.replace(/\.[^.]+$/, ''), width, height });
+        setMessage(null);
     }, []);
 
-    useEffect(() => {
-        resetInputs();
-    }, [pieceId, resetInputs]);
-
-    const handleUploadComplete = useCallback(
-        (
-            fileName: string,
-            originalImageUrl: string,
-            smallImageUrl: string,
-            originalWidth: number,
-            originalHeight: number,
-            smallWidth: number,
-            smallHeight: number,
-        ) => {
-            setTitle(fileName.split('.')[0] || 'Not yet uploaded');
-            setImageUrl(originalImageUrl);
-            setSmallImageUrl(smallImageUrl);
-            setWidth(originalWidth);
-            setHeight(originalHeight);
-            setSmallWidth(smallWidth);
-            setSmallHeight(smallHeight);
-            setIsSubmitting(false);
-            setStatusMessage(null);
-        },
-        [],
-    );
-
-    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedOption(e.target.value);
-    };
-
-    const handleSubmit = async (shouldNavigate: boolean) => {
-        setIsSubmitting(true);
-        try {
-            await storeUploadedImageDetails({
-                piece_id: pieceId,
-                image_path: imageUrl,
-                title: title,
-                piece_type: selectedOption,
-                width: width.toString(),
-                height: height.toString(),
-                small_image_path: smallImageUrl,
-                small_width: smallWidth.toString(),
-                small_height: smallHeight.toString(),
-            });
-            setStatusMessage({ type: 'success', message: 'Changes submitted successfully. You can upload another image.' });
-            if (shouldNavigate) {
-                router.push(`/admin/edit?id=${pieceId}`);
-            } else {
-                resetInputs();
-            }
-        } catch (error) {
-            console.error('Error submitting changes:', error);
-            setStatusMessage({ type: 'error', message: 'Failed to submit changes. Please try again.' });
-        } finally {
-            setIsSubmitting(false);
+    async function save(addAnother: boolean) {
+        setSaving(true);
+        const result = await storeUploadedImageDetails({
+            piece_id: pieceId,
+            image_path: upload.url,
+            title: upload.title,
+            piece_type: role,
+            width: String(upload.width),
+            height: String(upload.height),
+            small_image_path: '',
+            small_width: '0',
+            small_height: '0',
+        });
+        setSaving(false);
+        if (!result.success) {
+            setMessage(result.error || 'The image could not be saved.');
+            return;
         }
-    };
-
-    const isFormValid = imageUrl !== 'Not yet uploaded' && !isSubmitting;
+        if (addAnother) {
+            reset();
+            setMessage('Image saved. Choose another original when ready.');
+        } else {
+            router.push(`/admin/edit?id=${pieceId}`);
+        }
+    }
 
     return (
-        <div className="flex h-full w-full flex-col items-center justify-center bg-stone-900">
-            <div className="flex w-4/5 flex-col items-center justify-center rounded-lg bg-stone-900">
-                <div
-                    id="header"
-                    className="w-fit rounded-t-lg bg-gradient-to-r from-primary_dark from-15% via-primary via-50% to-primary_dark to-85% bg-clip-text text-center text-4xl font-bold text-transparent"
-                >
-                    Edit Images
-                </div>
-                <div className="flex w-full flex-col items-center space-y-2 p-2">
-                    <ResizeUploader
-                        handleUploadComplete={handleUploadComplete}
-                        handleResetInputs={resetInputs}
-                        backToEditLink={`/admin/edit?id=${pieceId}`}
-                    />
-                    <InputSelect
-                        idName="image_type"
-                        key="image_type"
-                        name="Type"
-                        defaultValue={{ value: selectedOption, label: selectedOption }}
-                        select_options={[
-                            ['main', 'Modify Main Image'],
-                            ['extra', 'Add Extra Image'],
-                            ['progress', 'Add Progress Image'],
-                        ]}
-                        onChange={handleSelectChange}
-                    />
-                    <InputTextbox idName="title" name="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                    <InputTextbox idName="image_path" name="Image URL" value={imageUrl} />
-                    <InputTextbox idName="px_width" name="Px Width" value={width.toString()} />
-                    <InputTextbox idName="px_height" name="Px Height" value={height.toString()} />
-                    <InputTextbox idName="small_image_path" name="Small URL" value={smallImageUrl} />
-                    <InputTextbox idName="small_px_width" name="Sm Width" value={smallWidth.toString()} />
-                    <InputTextbox idName="small_px_height" name="Sm Height" value={smallHeight.toString()} />
-                    {imageUrl !== '' && imageUrl !== null ? null : width < 800 && height < 800 ? (
-                        <div className="text-red-500">Warning: Image width and height are less than 800px.</div>
-                    ) : width < 800 ? (
-                        <div className="text-red-500">Warning: Image width is less than 800px.</div>
-                    ) : height < 800 ? (
-                        <div className="text-red-500">Warning: Image height is less than 800px.</div>
-                    ) : null}
-                    <div className="flex space-x-4">
-                        <button
-                            type="button"
-                            onClick={() => handleSubmit(false)}
-                            disabled={!isFormValid}
-                            className={
-                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
-                                (isFormValid
-                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
-                            }
-                        >
-                            {isSubmitting ? 'Submitting...' : 'Submit'}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => handleSubmit(true)}
-                            disabled={!isFormValid}
-                            className={
-                                'relative rounded-md px-4 py-1 text-lg font-bold ' +
-                                (isFormValid
-                                    ? ' bg-primary_dark text-stone-300 hover:bg-primary hover:text-stone-950'
-                                    : 'cursor-not-allowed bg-stone-300 text-secondary_dark hover:bg-stone-300 hover:text-red-600')
-                            }
-                        >
-                            {isSubmitting ? 'Submitting...' : 'Submit & Edit'}
-                        </button>
+        <div className="owner-upload-workspace">
+            <ResizeUploader handleUploadComplete={completed} handleResetInputs={reset} backToEditLink={`/admin/edit?id=${pieceId}`} />
+            {upload.url ? (
+                <div className="owner-upload-review">
+                    <div className="owner-upload-preview">
+                        <Image src={upload.url} alt="Uploaded artwork" width={upload.width} height={upload.height} quality={100} />
                     </div>
-                    {statusMessage && (
-                        <div
-                            className={`mt-4 rounded p-2 ${statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
-                        >
-                            {statusMessage.message}
+                    <section className="owner-panel owner-form-grid">
+                        <label className="owner-field">
+                            <span>Image role</span>
+                            <select value={role} onChange={(event) => setRole(event.target.value)}>
+                                <option value="main">Replace primary image</option>
+                                <option value="extra">Supporting image</option>
+                                <option value="progress">Process image</option>
+                            </select>
+                        </label>
+                        <label className="owner-field">
+                            <span>Internal title</span>
+                            <input
+                                value={upload.title}
+                                onChange={(event) => setUpload((current) => ({ ...current, title: event.target.value }))}
+                            />
+                        </label>
+                        <div className="owner-upload-facts is-wide">
+                            <span>
+                                <Check size={15} /> Original retained
+                            </span>
+                            <span>
+                                {upload.width.toLocaleString()} × {upload.height.toLocaleString()} pixels
+                            </span>
+                            <span>No destructive compression</span>
                         </div>
-                    )}
+                        <div className="owner-inline-form is-wide">
+                            <button className="owner-button is-primary" type="button" onClick={() => save(false)} disabled={saving}>
+                                {saving ? 'Saving…' : 'Save and return'}
+                            </button>
+                            <button className="owner-button" type="button" onClick={() => save(true)} disabled={saving}>
+                                <ImagePlus size={16} /> Save and add another
+                            </button>
+                        </div>
+                    </section>
                 </div>
-            </div>
+            ) : (
+                <div className="owner-upload-empty">
+                    <ImagePlus size={34} />
+                    <h2>No image selected</h2>
+                    <p>The uploaded original will appear here for review before it is added to the artwork.</p>
+                </div>
+            )}
+            {message ? <p className="owner-editor-message">{message}</p> : null}
         </div>
     );
-};
-
-export default ImageEditor;
+}

@@ -34,7 +34,7 @@ const DataBackup: React.FC = () => {
     return (
         <div className="flex items-center justify-center">
             <button
-                className="text-dark cursor-pointer rounded-md border-none bg-secondary_dark px-4 py-2 font-lato uppercase text-white hover:bg-primary_dark disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-dark bg-secondary_dark font-lato hover:bg-primary_dark cursor-pointer rounded-md border-none px-4 py-2 text-white uppercase disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={exportPiecesAsXLSX}
                 disabled={isExporting}
             >

@@ -67,7 +67,7 @@ const TestEmail: React.FC = () => {
                 <button
                     onClick={handleSendTestEmail}
                     disabled={isEmailSending}
-                    className="flex w-fit items-center rounded-md border-none bg-secondary_dark px-4 py-2 font-lato uppercase text-white hover:bg-stone-400 hover:font-bold hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-secondary_dark font-lato hover:text-primary flex w-fit items-center rounded-md border-none px-4 py-2 text-white uppercase hover:bg-stone-400 hover:font-bold disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {isEmailSending ? 'Sending...' : 'Send Test Email'}
                 </button>

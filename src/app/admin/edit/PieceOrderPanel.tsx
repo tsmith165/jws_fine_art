@@ -76,7 +76,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                             <input type="hidden" name="targetPieceId" value={prevPieceId.toString()} />
                             <input type="hidden" name="imageType" value={imageType} />
                             <button type="submit">
-                                <IoIosArrowUp className="h-[20px] w-[20px] cursor-pointer rounded-sm bg-primary fill-stone-950 p-1 hover:bg-primary_dark hover:fill-stone-400" />
+                                <IoIosArrowUp className="bg-primary hover:bg-primary_dark h-[20px] w-[20px] cursor-pointer rounded-sm fill-stone-950 p-1 hover:fill-stone-400" />
                             </button>
                         </form>
                         <form action={handleImageReorderAction}>
@@ -85,7 +85,7 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
                             <input type="hidden" name="targetPieceId" value={nextPieceId.toString()} />
                             <input type="hidden" name="imageType" value={imageType} />
                             <button type="submit">
-                                <IoIosArrowDown className="h-[20px] w-[20px] cursor-pointer rounded-sm bg-primary fill-stone-950 p-1 hover:bg-primary_dark hover:fill-stone-400" />
+                                <IoIosArrowDown className="bg-primary hover:bg-primary_dark h-[20px] w-[20px] cursor-pointer rounded-sm fill-stone-950 p-1 hover:fill-stone-400" />
                             </button>
                         </form>
                     </div>
@@ -114,13 +114,13 @@ const PieceOrderPanel: React.FC<PieceOrderPanelProps> = ({ current_piece }) => {
             <div className="rounded-lg">
                 {extra_images.length > 0 && (
                     <div>
-                        <h3 className="rounded-t-lg px-2 py-2 text-center text-2xl font-semibold gradient-primary-main">Extra Images</h3>
+                        <h3 className="gradient-primary-main rounded-t-lg px-2 py-2 text-center text-2xl font-semibold">Extra Images</h3>
                         <div className="flex h-fit flex-col">{renderImages(extra_images, 'extra')}</div>
                     </div>
                 )}
                 {progress_images.length > 0 && (
                     <div className="">
-                        <h3 className="rounded-t-lg px-2 py-2 text-center text-2xl font-semibold gradient-primary-main">Progress Images</h3>
+                        <h3 className="gradient-primary-main rounded-t-lg px-2 py-2 text-center text-2xl font-semibold">Progress Images</h3>
                         <div className="flex h-fit flex-col">{renderImages(progress_images, 'progress')}</div>
                     </div>
                 )}

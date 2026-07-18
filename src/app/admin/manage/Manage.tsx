@@ -59,8 +59,8 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
 
     return (
         <div className="flex h-full w-full flex-col items-center overflow-y-auto py-4">
-            <div className="w-[95%] rounded-lg bg-primary_dark text-lg font-bold text-secondary_dark md:w-4/5">
-                <div className="w-full rounded-t-md bg-primary_dark text-lg font-bold text-secondary_dark">
+            <div className="bg-primary_dark text-secondary_dark w-[95%] rounded-lg text-lg font-bold md:w-4/5">
+                <div className="bg-primary_dark text-secondary_dark w-full rounded-t-md text-lg font-bold">
                     <div className="flex pt-1">
                         {pieces.length > 0 && (
                             <Link
@@ -109,9 +109,9 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                             return (
                                 <div
                                     key={piece.id.toString()}
-                                    className="flex w-full flex-row items-center space-x-4 rounded-b-lg border-b-2 border-primary_dark bg-secondary p-1 hover:bg-primary"
+                                    className="border-primary_dark bg-secondary hover:bg-primary flex w-full flex-row items-center space-x-4 rounded-b-lg border-b-2 p-1"
                                 >
-                                    <div className="flex max-h-24 min-h-24 min-w-24 max-w-24 items-center justify-center rounded bg-secondary p-1">
+                                    <div className="bg-secondary flex max-h-24 min-h-24 max-w-24 min-w-24 items-center justify-center rounded p-1">
                                         <Image
                                             src={piece.image_path}
                                             alt={piece.title}
@@ -127,7 +127,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             <input type="hidden" name="nextId" value={last_piece.id.toString()} />
                                             <input type="hidden" name="nextOrderId" value={last_piece.o_id.toString()} />
                                             <button type="submit">
-                                                <IoIosArrowForward className="h-8 w-8 -rotate-90 transform cursor-pointer rounded-lg bg-secondary_dark fill-primary hover:bg-primary_dark hover:fill-secondary_dark" />
+                                                <IoIosArrowForward className="bg-secondary_dark fill-primary hover:bg-primary_dark hover:fill-secondary_dark h-8 w-8 -rotate-90 transform cursor-pointer rounded-lg" />
                                             </button>
                                         </form>
 
@@ -137,23 +137,23 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             <input type="hidden" name="nextId" value={next_piece.id.toString()} />
                                             <input type="hidden" name="nextOrderId" value={next_piece.o_id.toString()} />
                                             <button type="submit">
-                                                <IoIosArrowForward className="h-8 w-8 rotate-90 transform cursor-pointer rounded-lg bg-secondary_dark fill-primary hover:bg-primary_dark hover:fill-secondary_dark" />
+                                                <IoIosArrowForward className="bg-secondary_dark fill-primary hover:bg-primary_dark hover:fill-secondary_dark h-8 w-8 rotate-90 transform cursor-pointer rounded-lg" />
                                             </button>
                                         </form>
                                     </div>
                                     <div className="flex flex-col items-center space-y-2">
                                         <Link href={`/admin/edit?id=${piece.id.toString()}`} className="">
-                                            <FaEdit className="h-10 w-10 rounded-lg bg-secondary_dark fill-primary p-1.5 hover:bg-primary_dark hover:fill-secondary_dark" />
+                                            <FaEdit className="bg-secondary_dark fill-primary hover:bg-primary_dark hover:fill-secondary_dark h-10 w-10 rounded-lg p-1.5" />
                                         </Link>
                                         <form action={handleSetInactive} className="flex h-fit w-fit">
                                             <input type="hidden" name="id" value={piece.id.toString()} />
                                             <button type="submit" className="h-full w-full">
-                                                <MdDeleteForever className="h-10 w-10 rounded-lg bg-secondary_dark fill-red-700 p-1 hover:bg-primary_dark hover:fill-red-900" />
+                                                <MdDeleteForever className="bg-secondary_dark hover:bg-primary_dark h-10 w-10 rounded-lg fill-red-700 p-1 hover:fill-red-900" />
                                             </button>
                                         </form>
                                     </div>
                                     <div className="flex-grow">
-                                        <h3 className="font-bold text-secondary_dark">{piece.title}</h3>
+                                        <h3 className="text-secondary_dark font-bold">{piece.title}</h3>
                                     </div>
                                 </div>
                             );
@@ -167,9 +167,9 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                             return (
                                 <div
                                     key={piece.id.toString()}
-                                    className="flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 border-primary_dark bg-primary p-1 hover:bg-secondary_light"
+                                    className="border-primary_dark bg-primary hover:bg-secondary_light flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 p-1"
                                 >
-                                    <div className="flex max-h-24 min-h-24 min-w-24 max-w-24 items-center justify-center rounded bg-secondary p-1">
+                                    <div className="bg-secondary flex max-h-24 min-h-24 max-w-24 min-w-24 items-center justify-center rounded p-1">
                                         <Image
                                             src={piece.image_path}
                                             alt={piece.title}
@@ -185,7 +185,7 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             <input type="hidden" name="nextId" value={last_piece.id.toString()} />
                                             <input type="hidden" name="nextPriorityId" value={last_piece.p_id.toString()} />
                                             <button type="submit">
-                                                <IoIosArrowForward className="h-8 w-8 -rotate-90 transform cursor-pointer rounded-lg bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark" />
+                                                <IoIosArrowForward className="bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark h-8 w-8 -rotate-90 transform cursor-pointer rounded-lg" />
                                             </button>
                                         </form>
 
@@ -195,12 +195,12 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                             <input type="hidden" name="nextId" value={next_piece.id.toString()} />
                                             <input type="hidden" name="nextPriorityId" value={next_piece.p_id.toString()} />
                                             <button type="submit">
-                                                <IoIosArrowForward className="h-8 w-8 rotate-90 transform cursor-pointer rounded-lg bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark" />
+                                                <IoIosArrowForward className="bg-secondary fill-primary hover:bg-primary hover:fill-secondary_dark h-8 w-8 rotate-90 transform cursor-pointer rounded-lg" />
                                             </button>
                                         </form>
                                     </div>
                                     <div className="flex-grow">
-                                        <h3 className="font-bold text-secondary_dark">{piece.title}</h3>
+                                        <h3 className="text-secondary_dark font-bold">{piece.title}</h3>
                                     </div>
                                 </div>
                             );
@@ -210,9 +210,9 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                         deletedPieces.map((piece) => (
                             <div
                                 key={piece.id.toString()}
-                                className="flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 border-primary_dark bg-primary p-1 hover:bg-secondary_light"
+                                className="border-primary_dark bg-primary hover:bg-secondary_light flex w-full flex-row items-center space-x-4 rounded-lg border-b-2 p-1"
                             >
-                                <div className="flex max-h-24 min-h-24 min-w-24 max-w-24 items-center justify-center rounded bg-secondary p-1">
+                                <div className="bg-secondary flex max-h-24 min-h-24 max-w-24 min-w-24 items-center justify-center rounded p-1">
                                     <Image
                                         src={piece.image_path}
                                         alt={piece.title}
@@ -224,11 +224,11 @@ export function Manage({ pieces, deletedPieces, prioritized_pieces, activeTab }:
                                 <form action={handleSetActive} className="flex h-fit w-fit">
                                     <input type="hidden" name="id" value={piece.id.toString()} />
                                     <button type="submit" className="h-full w-full">
-                                        <MdRestore className="h-10 w-10 rounded-lg bg-secondary fill-green-700 p-1 hover:bg-primary hover:fill-green-900" />
+                                        <MdRestore className="bg-secondary hover:bg-primary h-10 w-10 rounded-lg fill-green-700 p-1 hover:fill-green-900" />
                                     </button>
                                 </form>
                                 <div className="flex-grow">
-                                    <h3 className="font-bold text-secondary_dark">{piece.title}</h3>
+                                    <h3 className="text-secondary_dark font-bold">{piece.title}</h3>
                                 </div>
                             </div>
                         ))}

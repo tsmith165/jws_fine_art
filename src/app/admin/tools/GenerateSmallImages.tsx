@@ -86,14 +86,14 @@ const GenerateSmallImages: React.FC = () => {
                     <button
                         onClick={handleGenerateSmallImages}
                         disabled={isGenerating}
-                        className="flex w-fit items-center rounded-md border-none bg-secondary_dark px-4 py-2 font-lato uppercase text-white hover:bg-stone-400 hover:font-bold hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                        className="bg-secondary_dark font-lato hover:text-primary flex w-fit items-center rounded-md border-none px-4 py-2 text-white uppercase hover:bg-stone-400 hover:font-bold disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {isGenerating ? 'Generating...' : 'Generate Missing Small Images'}
                     </button>
                     {isGenerating && (
                         <button
                             onClick={handleStopGeneration}
-                            className="flex w-fit items-center rounded-md border-none bg-red-600 px-4 py-2 font-lato uppercase text-white hover:bg-red-700 hover:font-bold"
+                            className="font-lato flex w-fit items-center rounded-md border-none bg-red-600 px-4 py-2 text-white uppercase hover:bg-red-700 hover:font-bold"
                         >
                             Stop
                         </button>
@@ -114,7 +114,7 @@ const GenerateSmallImages: React.FC = () => {
                                 step={100}
                                 value={generateTimeout}
                                 onChange={handleTimeoutChange}
-                                className="w-24 cursor-pointer appearance-none rounded-lg bg-stone-600 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-lg [&::-webkit-slider-runnable-track]:bg-stone-900 [&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
+                                className="[&::-webkit-slider-thumb]:bg-primary w-24 cursor-pointer appearance-none rounded-lg bg-stone-600 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-lg [&::-webkit-slider-runnable-track]:bg-stone-900 [&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full"
                             />
                             <span className="w-16 text-center text-stone-900">{(generateTimeout / 1000).toFixed(2)}s</span>
                         </div>
