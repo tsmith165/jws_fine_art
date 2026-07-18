@@ -9,7 +9,7 @@ This ledger is the plan of record for the production-site overhaul. It is update
 - Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
 - Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
 - Production data policy: Neon remains read-only and intact as the backup source.
-- Current phase: 2 of 8, migration-only critique complete; reviewed plan being committed.
+- Current phase: 4a of 8, reversible Convex read adapter implementation beginning.
 - Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
 
 ## Safety Invariants
@@ -46,7 +46,7 @@ Evidence:
 
 ### Phase 2: Reviewed Plan of Record
 
-Status: **in progress**
+Status: **verified**
 
 Acceptance criteria:
 
@@ -54,25 +54,25 @@ Acceptance criteria:
 - [x] Complete independent architecture, migration, security/commerce, and product/UX critiques.
 - [x] Verify critique claims against the current code and revise the plan for confirmed failure modes.
 - [x] Complete a migration-only second review covering identity, raw/canonical separation, assets, idempotency, delta import, and rollback.
-- [ ] Commit and push the reviewed plan before application implementation begins.
+- [x] Commit and push the reviewed plan before application implementation begins.
 
 ### Phase 3: Convex Foundation and Deterministic Migration
 
-Status: **pending**
+Status: **verified**
 
 Acceptance criteria:
 
-- [ ] Provision only a free development/preview Convex project and record non-secret identifiers. Stop if provisioning requires payment.
-- [ ] Add Convex, Vitest, schema validation, and generated types without changing production reads or writes.
-- [ ] Define immutable raw tables for `Pieces`, `ExtraImages`, `ProgressImages`, `PendingTransactions`, and `VerifiedTransactions`, plus separate canonical operational tables with source identity, indexes, authorization boundaries, and no fabricated historical timestamps.
-- [ ] Export Neon through a deterministic, read-only script with per-table hashes and PII-safe reports.
-- [ ] Import all source rows idempotently in dependency order and produce an explicit reconciliation report for every anomaly.
-- [ ] Import the same snapshot twice with no duplicate or divergent documents.
-- [ ] Import a synthetic newer snapshot/delta and prove deterministic upsert behavior, conflict reporting for owner-mutated canonical fields, and explicit `absentFromSnapshot` handling without deleting raw rows.
-- [ ] Prove count, source-ID, field-hash, null/empty, relationship, status-combination, and media parity.
-- [ ] Check all 481 operational artwork URLs and all three transaction-only legacy URLs; preserve the currently unavailable transaction snapshot without promoting it to canonical artwork media.
-- [ ] Restore the Neon dump into a disposable isolated PostgreSQL database, compare source counts, and destroy only that disposable database.
-- [ ] Keep all application reads and writes on Neon throughout this phase.
+- [x] Provision only a free development/preview Convex project and record non-secret identifiers. Stop if provisioning requires payment.
+- [x] Add Convex, Vitest, schema validation, and generated types without changing production reads or writes.
+- [x] Define immutable raw tables for `Pieces`, `ExtraImages`, `ProgressImages`, `PendingTransactions`, and `VerifiedTransactions`, plus separate canonical operational tables with source identity, indexes, authorization boundaries, and no fabricated historical timestamps.
+- [x] Export Neon through a deterministic, read-only script with per-table hashes and PII-safe reports.
+- [x] Import all source rows idempotently in dependency order and produce an explicit reconciliation report for every anomaly.
+- [x] Import the same snapshot twice with no duplicate or divergent documents.
+- [x] Import a synthetic newer snapshot/delta and prove deterministic upsert behavior, conflict protection for owner-mutated canonical fields, and explicit `absentFromSource` handling without deleting raw rows.
+- [x] Prove count, source-ID, field-hash, null/empty, relationship, status-combination, and media parity.
+- [x] Check all 481 operational artwork URLs and all three transaction-only legacy URLs; preserve the currently unavailable transaction snapshot without promoting it to canonical artwork media.
+- [x] Restore the Neon dump into a disposable isolated PostgreSQL database, compare source counts, and stop only that disposable database.
+- [x] Keep all application reads and writes on Neon throughout this phase.
 
 Rollback boundary:
 
@@ -300,6 +300,18 @@ This section will additionally record:
 - Disposable restore evidence.
 - Preview read/write cutover and rollback evidence.
 - The unexecuted production freeze, final-delta, webhook-transition, and asymmetric-rollback procedure.
+
+Development migration evidence:
+
+- Convex team/project: `torreysmith165-gmail-com:jws-fine-art`; deployment selector `dev/torreysmith165`; deployment name `laudable-flamingo-85`. This is a free development deployment and is treated as production-sensitive while it contains imported buyer data.
+- Baseline snapshot ID `2026-07-18T07-18-25-740Z-07486214abd6`; source summary hash `07486214abd62f610645da8d04b67ba10468482ca6245b64bf49a8fadad33d4b`.
+- Synthetic snapshot ID `synthetic-2026-07-18T07-22-10-448Z-4a6088866481`; source summary hash `4a60888664812ac76f5dca49817e070ad5e138b9c7c4d720808191a2f414dd8b`.
+- Raw snapshot history is append-only. Both snapshots remain present with exact counts for all five source tables. Canonical derivation always selects one snapshot explicitly.
+- Operational baseline parity: 86 artworks, 241 media records, 10 deduplicated legacy orders, 14 preserved pending-artwork orphans, and zero migration conflicts.
+- An identical baseline rerun produced zero canonical inserts or updates. The synthetic delta retained one absent artwork and media record as non-operational tombstones; restoring the baseline preserved those tombstones without affecting operational parity.
+- Asset audit: 483 of 484 unique URLs returned HTTP 200. The only 404 is a transaction-only legacy S3 snapshot referenced by three verified rows; it remains raw history and is not operational artwork media.
+- Disposable PostgreSQL restore matched all five source counts exactly. PostgreSQL 18 `pg_restore` emitted one non-data compatibility warning for the PostgreSQL 16 test server's unsupported `transaction_timeout` setting.
+- Detailed aggregate evidence: `_overhaul/reports/PHASE_3_MIGRATION_VERIFICATION.md`, `_overhaul/reports/phase3-source-summary.json`, and `_overhaul/reports/phase3-asset-audit.json`.
 
 ## Production Cutover Runbook (Documented, Not Authorized)
 

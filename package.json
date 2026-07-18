@@ -9,7 +9,15 @@
         "build": "next build",
         "start": "next start",
         "lint": "eslint .",
-        "prettier": "prettier --write \"**/*.{js,jsx,json,md,ts,tsx}\""
+        "prettier": "prettier --write \"**/*.{js,jsx,json,md,ts,tsx}\"",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "typecheck": "tsc --noEmit",
+        "migration:export": "tsx scripts/migration/export-neon.ts",
+        "migration:import": "tsx scripts/migration/import-convex.ts",
+        "migration:synthetic": "tsx scripts/migration/build-synthetic-snapshot.ts",
+        "migration:audit-assets": "tsx scripts/migration/audit-assets.ts",
+        "migration:verify": "tsx scripts/migration/verify-parity.ts"
     },
     "dependencies": {
         "@clerk/nextjs": "^6.39.5",
@@ -22,8 +30,9 @@
         "@uploadthing/react": "^7.3.3",
         "@vercel/speed-insights": "^2.0.0",
         "autoprefixer": "^10.5.2",
-        "drizzle-orm": "0.45.2",
+        "convex": "1.42.3",
         "date-fns-tz": "^3.2.0",
+        "drizzle-orm": "0.45.2",
         "exceljs": "^4.4.0",
         "file-saver": "^2.0.5",
         "framer-motion": "^12.42.2",
@@ -57,17 +66,21 @@
         "@next/env": "16.2.10",
         "@types/inquirer": "^9.0.7",
         "@types/node": "^26.1.0",
+        "@types/pg": "^8.20.0",
         "@types/qrcode": "^1.5.5",
         "@types/react": "^19.2.17",
         "@types/react-datepicker": "^6.2.0",
         "@types/react-dom": "^19.2.3",
         "@types/react-places-autocomplete": "^7.2.14",
         "@types/uuid": "^10.0.0",
+        "@vitest/coverage-v8": "4.1.10",
         "drizzle-kit": "0.31.10",
         "eslint": "^9.39.2",
         "eslint-config-next": "16.2.10",
         "prettier": "^3.3.3",
-        "typescript": "^5.6.3"
+        "tsx": "^4.23.1",
+        "typescript": "^5.6.3",
+        "vitest": "4.1.10"
     },
     "pnpm": {
         "onlyBuiltDependencies": [

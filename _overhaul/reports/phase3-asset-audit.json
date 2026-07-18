@@ -1,0 +1,42 @@
+{
+  "snapshotDirectory": "/Users/tsmith/dev/_codex/jws-fine-art-migration/2026-07-17-initial",
+  "checkedAt": "2026-07-18T07:29:08.856Z",
+  "uniqueUrls": 484,
+  "operationalUniqueUrls": 481,
+  "transactionOnlyUniqueUrls": 3,
+  "statuses": {
+    "200": 483,
+    "404": 1
+  },
+  "hosts": {
+    "utfs.io": 481,
+    "jwsfineart.s3.us-west-1.amazonaws.com": 1,
+    "jwsfineartpieces.s3.us-west-1.amazonaws.com": 2
+  },
+  "nonHttp": 0,
+  "operationalFailures": 0,
+  "failures": [
+    {
+      "status": 404,
+      "host": "jwsfineart.s3.us-west-1.amazonaws.com",
+      "references": [
+        {
+          "sourceTable": "VerifiedTransactions",
+          "legacyId": 2,
+          "scope": "transaction_snapshot"
+        },
+        {
+          "sourceTable": "VerifiedTransactions",
+          "legacyId": 3,
+          "scope": "transaction_snapshot"
+        },
+        {
+          "sourceTable": "VerifiedTransactions",
+          "legacyId": 4,
+          "scope": "transaction_snapshot"
+        }
+      ]
+    }
+  ],
+  "verified": true
+}
