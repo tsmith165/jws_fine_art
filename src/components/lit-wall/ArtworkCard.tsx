@@ -15,7 +15,7 @@ export function ArtworkCard({ piece, priority = false }: { piece: PiecesWithImag
                     width={piece.small_width || piece.width}
                     height={piece.small_height || piece.height}
                     sizes="(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 31vw"
-                    quality={90}
+                    quality={85}
                     priority={priority}
                 />
                 <span className="lw-art-card-open">

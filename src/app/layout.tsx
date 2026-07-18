@@ -1,9 +1,6 @@
 import React, { Suspense } from 'react';
-import { ClerkProvider } from '@clerk/nextjs';
 import { PHProvider } from './providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-
-import { dark } from '@clerk/themes';
 
 import '@/styles/globals.css';
 import '@/styles/lit-wall.css';
@@ -33,18 +30,16 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
-        <ClerkProvider appearance={{ baseTheme: dark }}>
-            <html lang="en" className={`${cinzel.variable} ${libreCaslon.variable} ${manrope.variable}`}>
-                <body>
-                    <PHProvider>
-                        <Suspense fallback={null}>
-                            <PostHogPageView />
-                        </Suspense>
-                        <SpeedInsights />
-                        {children}
-                    </PHProvider>
-                </body>
-            </html>
-        </ClerkProvider>
+        <html lang="en" className={`${cinzel.variable} ${libreCaslon.variable} ${manrope.variable}`}>
+            <body>
+                <PHProvider>
+                    <Suspense fallback={null}>
+                        <PostHogPageView />
+                    </Suspense>
+                    <SpeedInsights />
+                    {children}
+                </PHProvider>
+            </body>
+        </html>
     );
 }

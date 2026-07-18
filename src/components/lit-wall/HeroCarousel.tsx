@@ -29,8 +29,9 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                     alt={current.title}
                     fill
                     sizes="100vw"
-                    quality={90}
+                    quality={82}
                     priority={index === 0}
+                    fetchPriority={index === 0 ? 'high' : 'auto'}
                 />
             </div>
             <div className="lw-hero-scrim" aria-hidden="true" />
