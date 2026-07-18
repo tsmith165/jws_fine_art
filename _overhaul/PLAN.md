@@ -9,7 +9,7 @@ This ledger is the plan of record for the production-site overhaul. It is update
 -   Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
 -   Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
 -   Production data policy: Neon remains read-only and intact as the backup source.
--   Current phase: 5 of 8. The Convex application cutover is verified on a branch preview; production and live-provider cutover remain explicitly unexecuted.
+-   Current phase: 6 of 8. Tailwind CSS v4 is verified on the Convex-backed branch preview; production and live-provider cutover remain explicitly unexecuted.
 -   Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
 
 ## Safety Invariants
@@ -126,16 +126,21 @@ Evidence:
 
 ### Phase 5: Tailwind CSS v4 and Deliberate Client State
 
-Status: **pending**
+Status: **verified**
 
 Acceptance criteria:
 
--   [ ] Upgrade Tailwind/PostCSS to v4 and encode the Lit Wall tokens in CSS-first theme variables.
--   [ ] Preserve build behavior and route usability through targeted smoke QA; pixel parity with the legacy skin is not required because Phase 6 replaces it.
--   [ ] Name and record the revert commit before public redesign work begins.
--   [ ] Use URL state for catalog filters/sort/search and React state for local controls.
--   [ ] Keep Zustand only if a real cross-route client state survives product implementation. Do not mirror Convex or URL state.
--   [ ] Pass typecheck, lint, tests, production build, and desktop/mobile smoke QA.
+-   [x] Upgrade Tailwind/PostCSS to v4 and encode the Lit Wall tokens in CSS-first theme variables.
+-   [x] Preserve build behavior and route usability through targeted smoke QA; pixel parity with the legacy skin is not required because Phase 6 replaces it.
+-   [x] Name and record the revert commit before public redesign work begins.
+-   [x] Use URL state for catalog filters/sort/search and React state for local controls.
+-   [x] Keep Zustand only if a real cross-route client state survives product implementation. Do not mirror Convex or URL state.
+-   [x] Pass typecheck, lint, tests, production build, and desktop/mobile smoke QA.
+
+Evidence:
+
+-   `_overhaul/reports/PHASE_5_TAILWIND_V4_VERIFICATION.md`
+-   Revert commit: `b6777b2`
 
 ### Phase 6: `d2 v1` Product Implementation
 
