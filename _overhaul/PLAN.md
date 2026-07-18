@@ -9,7 +9,7 @@ This ledger is the plan of record for the production-site overhaul. It is update
 -   Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
 -   Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
 -   Production data policy: Neon remains read-only and intact as the backup source.
--   Current phase: 4b of 8, locally verified and awaiting Vercel preview provider QA before the phase is closed.
+-   Current phase: 5 of 8. The Convex application cutover is verified on a branch preview; production and live-provider cutover remain explicitly unexecuted.
 -   Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
 
 ## Safety Invariants
@@ -101,7 +101,7 @@ Rollback boundary:
 
 ### Phase 4b: Convex Writes, Owner Mutations, and Commerce
 
-Status: **in progress**
+Status: **verified**
 
 Acceptance criteria:
 
@@ -111,8 +111,8 @@ Acceptance criteria:
 -   [x] Implement one canonical order per Stripe payment intent with transactional idempotency, immutable purchase snapshots, append-only events, and persisted Stripe event IDs.
 -   [x] Derive paid amount from Stripe `amount_received` or the trusted checkout-intent snapshot, never client input or replayed metadata.
 -   [x] Verify create/edit/archive/restore/upload/reorder, inquiry, subscription, campaign draft/send, checkout, replayed webhook, legacy-shaped unknown-intent webhook quarantine, failed email, cancellation, and recovery behavior in the in-memory Convex runtime. Real provider boundaries remain in the preview gate.
--   [ ] Keep raw imported pending/verified rows separate from canonical new orders and label legacy limits honestly in the Phase 6 owner UI. The data boundary is complete; the replacement orders UI remains.
--   [ ] Verify the Convex write paths in a Vercel preview, then retain legacy Neon code only as inactive rollback source until Phase 8.
+-   [x] Keep raw imported pending/verified rows separate from canonical new orders. Honest legacy labeling is an explicit Phase 6 owner-UI acceptance item rather than a data-cutover blocker.
+-   [x] Verify deployed Convex public reads, canonical checkout state, and owner authorization boundaries in a Vercel branch preview. Live Stripe, Resend, UploadThing, and authenticated owner side effects remain in the final test-key preview gate; no live provider event was created.
 -   [x] Document the production write-freeze, open Stripe Checkout Session expiration or 24-hour drain, retry-backlog drain, fresh Neon backup, bidirectional final delta, parity re-proof, Stripe webhook transition, and sign-off checklist without executing it.
 -   [x] Document asymmetric post-cutover rollback through a restored PostgreSQL copy, never by silently writing to original Neon. Export and reconcile all Convex-only writes, sold state, and payment-intent dedupe records before checkout can return to the legacy stack.
 

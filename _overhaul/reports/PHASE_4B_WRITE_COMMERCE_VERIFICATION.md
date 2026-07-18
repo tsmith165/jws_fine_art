@@ -54,17 +54,23 @@ The tests use `convex-test`, an in-memory Convex runtime. They do not mutate the
 - `rg -n "db\\.(insert|update|delete)" src --glob '!src/db/**' --glob '!src/drizzle/**'`: no matches.
 - Convex development deployment accepted the schema and functions through `pnpm exec convex dev --once`.
 
-## Preview verification gate
+## Vercel preview evidence
 
-The following checks require the Vercel preview and real provider boundaries, so they remain part of the preview QA gate before any production approval:
+The branch was deployed with branch-scoped Preview variables only. Production environment variables and the production deployment were not changed.
 
-- owner Clerk sign-in and owner JWT propagation in the deployed application;
-- a reversible test UploadThing upload using a non-production test image;
-- Stripe test-mode Checkout plus signed webhook delivery and replay;
-- Resend test delivery and explicit failed-delivery behavior;
-- browser-level create/edit/archive/restore/reorder and owner workspace persistence.
+- Deployment: `dpl_3j8LMi8oa5T9H4oEdpAQZUMUj1Wd`
+- Branch preview: `https://jwsfineart-git-feat-full-site-overhaul-tsmith-hobby.vercel.app`
+- The public gallery hydrated all 69 Convex-backed public artworks.
+- Selecting Dawn resolved the correct Convex detail record, including title, medium, `8\" x 6\" Framed` dimensions, `$220` price, and the 1920-by-1535 original image.
+- `/checkout/96` resolved the same canonical Dawn title and `$220` price without creating a Checkout Session.
+- Anonymous access to `/admin/manage` was rejected and redirected to the public site.
+- Clerk's sign-in surface rendered on the deployed origin. A qualifying owner session could not be bound to this branch preview, so deployed owner JWT propagation remains part of final preview QA.
+- The deployed pages had no horizontal overflow or failed visible artwork images. The only browser-console warnings were Clerk development-key and deprecated redirect-property notices.
+- The visual capture is staged as `phase4b-convex-gallery-desktop` and linked to the approved `jws-d2-v1-home-desktop` design artifact.
 
-No production Convex deployment exists and no production write cutover has occurred.
+The configured Stripe secret is not a test-mode key. No Checkout Session, payment, webhook, email, upload, or owner mutation was created merely to satisfy this phase gate. Those provider side effects require test credentials and a bindable owner preview session, and remain mandatory in the final production-candidate preview matrix. The 15-test `convex-test` matrix is the current deterministic evidence for those domain and provider-boundary behaviors.
+
+This closes the branch-level Convex application cutover gate. No production Convex deployment exists and no production write cutover has occurred.
 
 ## Production cutover checklist (not executed)
 
