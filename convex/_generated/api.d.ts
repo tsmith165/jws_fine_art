@@ -8,9 +8,12 @@
  * @module
  */
 
+import type * as artworks from "../artworks.js";
 import type * as lib_importMerge from "../lib/importMerge.js";
 import type * as lib_legacy from "../lib/legacy.js";
+import type * as lib_ownerAuth from "../lib/ownerAuth.js";
 import type * as migrations from "../migrations.js";
+import type * as ownerReads from "../ownerReads.js";
 
 import type {
   ApiFromModules,
@@ -19,9 +22,12 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  artworks: typeof artworks;
   "lib/importMerge": typeof lib_importMerge;
   "lib/legacy": typeof lib_legacy;
+  "lib/ownerAuth": typeof lib_ownerAuth;
   migrations: typeof migrations;
+  ownerReads: typeof ownerReads;
 }>;
 
 /**

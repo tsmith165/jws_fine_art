@@ -1,5 +1,5 @@
 export function planImportedFieldMerge<Field extends string>(options: {
-    existing: Record<Field, unknown>;
+    existing: Partial<Record<Field, unknown>>;
     imported: Record<Field, unknown>;
     fields: readonly Field[];
     ownerMutatedFields: readonly string[];

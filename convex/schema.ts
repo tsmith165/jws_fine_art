@@ -117,6 +117,8 @@ export default defineSchema({
         instagramUrl: nullableString,
         ownerNotes: nullableString,
         className: v.string(),
+        legacyGalleryOrder: v.optional(v.number()),
+        legacyHomepagePriority: v.optional(v.number()),
         priceCents: v.number(),
         sold: v.boolean(),
         available: v.boolean(),

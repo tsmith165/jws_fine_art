@@ -1,40 +1,26 @@
 'use server';
 
-import { eq, asc, desc } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { db, piecesTable } from '@/db/db';
 import { Pieces } from '@/db/schema';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/utils/auth/requireAdmin';
+import { readOwnerArtworks } from '@/data/ownerReads';
 
 async function checkUserRole(): Promise<{ isAdmin: boolean; error?: string }> {
     return requireAdmin('manage pieces');
 }
 
 export async function getPieces(): Promise<Pieces[]> {
-    const { isAdmin, error } = await checkUserRole();
-    if (!isAdmin) {
-        throw new Error(error);
-    }
-
-    return await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(asc(piecesTable.o_id));
+    return readOwnerArtworks('gallery');
 }
 
 export async function getPrioritizedPieces(): Promise<Pieces[]> {
-    const { isAdmin, error } = await checkUserRole();
-    if (!isAdmin) {
-        throw new Error(error);
-    }
-
-    return await db.select().from(piecesTable).where(eq(piecesTable.active, true)).orderBy(desc(piecesTable.p_id));
+    return readOwnerArtworks('homepage');
 }
 
 export async function getDeletedPieces(): Promise<Pieces[]> {
-    const { isAdmin, error } = await checkUserRole();
-    if (!isAdmin) {
-        throw new Error(error);
-    }
-
-    return await db.select().from(piecesTable).where(eq(piecesTable.active, false)).orderBy(asc(piecesTable.o_id));
+    return readOwnerArtworks('archive');
 }
 
 export async function changeOrder(currIdList: number[], nextIdList: number[]): Promise<{ success: boolean; error?: string }> {

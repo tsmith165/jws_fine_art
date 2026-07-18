@@ -1,68 +1,47 @@
 {
-  "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "esnext",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "incremental": true,
+        "sourceMap": true,
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "baseUrl": "./src",
+        "paths": {
+            "@/components/*": ["components/*"],
+            "@/styles/*": ["styles/*"],
+            "@/lib/*": ["lib/*"],
+            "@/app/*": ["app/*"],
+            "@/stores/*": ["stores/*"],
+            "@/utils/*": ["utils/*"],
+            "@/db/*": ["db/*"],
+            "@/data/*": ["data/*"],
+            "@/server/*": ["server/*"]
+        }
+    },
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".next/types/**/*.ts",
+        "middleware.js",
+        "src/app/api/checkout/webhook/route.js",
+        "src/lib/*",
+        ".next/dev/types/**/*.ts"
     ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true,
-    "sourceMap": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": "./src",
-    "paths": {
-      "@/components/*": [
-        "components/*"
-      ],
-      "@/styles/*": [
-        "styles/*"
-      ],
-      "@/lib/*": [
-        "lib/*"
-      ],
-      "@/app/*": [
-        "app/*"
-      ],
-      "@/stores/*": [
-        "stores/*"
-      ],
-      "@/utils/*": [
-        "utils/*"
-      ],
-      "@/db/*": [
-        "db/*"
-      ],
-      "@/server/*": [
-        "server/*"
-      ]
-    }
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "middleware.js",
-    "src/app/api/checkout/webhook/route.js",
-    "src/lib/*",
-    ".next/dev/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "exclude": ["node_modules"]
 }

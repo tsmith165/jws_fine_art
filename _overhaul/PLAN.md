@@ -4,13 +4,13 @@ This ledger is the plan of record for the production-site overhaul. It is update
 
 ## Current State
 
-- Branch: `feat/full-site-overhaul`
-- Baseline commit: `be3b821`
-- Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
-- Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
-- Production data policy: Neon remains read-only and intact as the backup source.
-- Current phase: 4a of 8, reversible Convex read adapter implementation beginning.
-- Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
+-   Branch: `feat/full-site-overhaul`
+-   Baseline commit: `be3b821`
+-   Draft PR: `https://github.com/tsmith165/jws_fine_art/pull/56`
+-   Target design: `d2 v1` (The Lit Wall) from `/Users/tsmith/dev/_codex/jwsfineart-wireframes`
+-   Production data policy: Neon remains read-only and intact as the backup source.
+-   Current phase: 4b of 8, Convex writes and commerce implementation beginning.
+-   Production release policy: preview deployments are allowed for QA; production deployment, DNS changes, and production write cutover require explicit approval.
 
 ## Safety Invariants
 
@@ -30,19 +30,19 @@ Status: **verified**
 
 Acceptance criteria:
 
-- [x] Record every application route and its public, commerce, authentication, or owner-console role.
-- [x] Record package versions, known vulnerabilities, unused dependencies, and justified upgrade targets.
-- [x] Record the complete Neon schema, relationships, row counts, nullability, source anomalies, and UI-dependent fields without modifying Neon.
-- [x] Record where image assets live, how URLs are formed, and representative resolution and availability checks.
-- [x] Record the complete `d2 v1` design surface and map each real route to its target screen or an explicit extension.
-- [x] Capture baseline typecheck, lint, production build, package audit, browser behavior, accessibility, performance, and image-payload measurements.
-- [x] Create a full custom-format Neon dump and schema snapshot outside the repository with restrictive permissions and recorded checksums.
+-   [x] Record every application route and its public, commerce, authentication, or owner-console role.
+-   [x] Record package versions, known vulnerabilities, unused dependencies, and justified upgrade targets.
+-   [x] Record the complete Neon schema, relationships, row counts, nullability, source anomalies, and UI-dependent fields without modifying Neon.
+-   [x] Record where image assets live, how URLs are formed, and representative resolution and availability checks.
+-   [x] Record the complete `d2 v1` design surface and map each real route to its target screen or an explicit extension.
+-   [x] Capture baseline typecheck, lint, production build, package audit, browser behavior, accessibility, performance, and image-payload measurements.
+-   [x] Create a full custom-format Neon dump and schema snapshot outside the repository with restrictive permissions and recorded checksums.
 
 Evidence:
 
-- `_overhaul/INVENTORY.md`
-- `_overhaul/BASELINE.md`
-- Backup details in the Migration Record below.
+-   `_overhaul/INVENTORY.md`
+-   `_overhaul/BASELINE.md`
+-   Backup details in the Migration Record below.
 
 ### Phase 2: Reviewed Plan of Record
 
@@ -50,11 +50,11 @@ Status: **verified**
 
 Acceptance criteria:
 
-- [x] Write the implementation sequence, rollback boundaries, measurable optimization targets, and verification matrix.
-- [x] Complete independent architecture, migration, security/commerce, and product/UX critiques.
-- [x] Verify critique claims against the current code and revise the plan for confirmed failure modes.
-- [x] Complete a migration-only second review covering identity, raw/canonical separation, assets, idempotency, delta import, and rollback.
-- [x] Commit and push the reviewed plan before application implementation begins.
+-   [x] Write the implementation sequence, rollback boundaries, measurable optimization targets, and verification matrix.
+-   [x] Complete independent architecture, migration, security/commerce, and product/UX critiques.
+-   [x] Verify critique claims against the current code and revise the plan for confirmed failure modes.
+-   [x] Complete a migration-only second review covering identity, raw/canonical separation, assets, idempotency, delta import, and rollback.
+-   [x] Commit and push the reviewed plan before application implementation begins.
 
 ### Phase 3: Convex Foundation and Deterministic Migration
 
@@ -62,38 +62,42 @@ Status: **verified**
 
 Acceptance criteria:
 
-- [x] Provision only a free development/preview Convex project and record non-secret identifiers. Stop if provisioning requires payment.
-- [x] Add Convex, Vitest, schema validation, and generated types without changing production reads or writes.
-- [x] Define immutable raw tables for `Pieces`, `ExtraImages`, `ProgressImages`, `PendingTransactions`, and `VerifiedTransactions`, plus separate canonical operational tables with source identity, indexes, authorization boundaries, and no fabricated historical timestamps.
-- [x] Export Neon through a deterministic, read-only script with per-table hashes and PII-safe reports.
-- [x] Import all source rows idempotently in dependency order and produce an explicit reconciliation report for every anomaly.
-- [x] Import the same snapshot twice with no duplicate or divergent documents.
-- [x] Import a synthetic newer snapshot/delta and prove deterministic upsert behavior, conflict protection for owner-mutated canonical fields, and explicit `absentFromSource` handling without deleting raw rows.
-- [x] Prove count, source-ID, field-hash, null/empty, relationship, status-combination, and media parity.
-- [x] Check all 481 operational artwork URLs and all three transaction-only legacy URLs; preserve the currently unavailable transaction snapshot without promoting it to canonical artwork media.
-- [x] Restore the Neon dump into a disposable isolated PostgreSQL database, compare source counts, and stop only that disposable database.
-- [x] Keep all application reads and writes on Neon throughout this phase.
+-   [x] Provision only a free development/preview Convex project and record non-secret identifiers. Stop if provisioning requires payment.
+-   [x] Add Convex, Vitest, schema validation, and generated types without changing production reads or writes.
+-   [x] Define immutable raw tables for `Pieces`, `ExtraImages`, `ProgressImages`, `PendingTransactions`, and `VerifiedTransactions`, plus separate canonical operational tables with source identity, indexes, authorization boundaries, and no fabricated historical timestamps.
+-   [x] Export Neon through a deterministic, read-only script with per-table hashes and PII-safe reports.
+-   [x] Import all source rows idempotently in dependency order and produce an explicit reconciliation report for every anomaly.
+-   [x] Import the same snapshot twice with no duplicate or divergent documents.
+-   [x] Import a synthetic newer snapshot/delta and prove deterministic upsert behavior, conflict protection for owner-mutated canonical fields, and explicit `absentFromSource` handling without deleting raw rows.
+-   [x] Prove count, source-ID, field-hash, null/empty, relationship, status-combination, and media parity.
+-   [x] Check all 481 operational artwork URLs and all three transaction-only legacy URLs; preserve the currently unavailable transaction snapshot without promoting it to canonical artwork media.
+-   [x] Restore the Neon dump into a disposable isolated PostgreSQL database, compare source counts, and stop only that disposable database.
+-   [x] Keep all application reads and writes on Neon throughout this phase.
 
 Rollback boundary:
 
-- Remove or recreate only the new development Convex deployment and migration outputs. Neon and production remain unchanged.
+-   Remove or recreate only the new development Convex deployment and migration outputs. Neon and production remain unchanged.
 
 ### Phase 4a: Reversible Convex Read Cutover
 
-Status: **pending**
+Status: **verified**
 
 Acceptance criteria:
 
-- [ ] Introduce a thin server-side read adapter for public and owner read contracts. Do not retrofit a large dual-backend repository around legacy UI.
-- [ ] Keep public routes server-rendered and free of the Convex WebSocket client unless a route needs live interaction.
-- [ ] Switch local and preview reads to Convex through explicit environment configuration while writes remain on Neon. An unset or unrecognized backend value must fail safe to Neon; Convex requires an exact opt-in value.
-- [ ] Prove contract parity for artwork lists, artwork detail/media, owner catalog, legacy transactions, and site-content reads.
-- [ ] Exercise every existing public and owner read surface against a production build.
-- [ ] Record the exact read rollback procedure and verify it on the same commit by rebuilding once with the backend variable removed.
+-   [x] Introduce a thin server-side read adapter for public and owner read contracts. Do not retrofit a large dual-backend repository around legacy UI.
+-   [x] Keep public routes server-rendered and free of the Convex WebSocket client unless a route needs live interaction.
+-   [x] Switch local and preview reads to Convex through explicit environment configuration while writes remain on Neon. An unset or unrecognized backend value must fail safe to Neon; Convex requires an exact opt-in value.
+-   [x] Prove contract parity for artwork lists, artwork detail/media, owner catalog, legacy transactions, and site-content reads.
+-   [x] Exercise every existing public and owner read surface against a production build.
+-   [x] Record the exact read rollback procedure and verify it on the same commit by rebuilding once with the backend variable removed.
+
+Evidence:
+
+-   `_overhaul/reports/PHASE_4A_READ_CUTOVER_VERIFICATION.md`
 
 Rollback boundary:
 
-- Flip the preview read backend to Neon and rebuild. No production writes have moved.
+-   Flip the preview read backend to Neon and rebuild. No production writes have moved.
 
 ### Phase 4b: Convex Writes, Owner Mutations, and Commerce
 
@@ -101,20 +105,20 @@ Status: **pending**
 
 Acceptance criteria:
 
-- [ ] Centralize Clerk owner authorization in one helper used by Next route handlers, UploadThing callbacks, and every private Convex function. Owner claims must come from the verified Clerk-to-Convex JWT, not a Convex-side Clerk API call.
-- [ ] Implement Convex mutations for artwork facts, media metadata/order, visibility/order, content settings, inquiries, subscribers, simple campaign drafts/sends, fulfillment state, and maintenance jobs.
-- [ ] Create server-side checkout intents and persist them atomically from current canonical artwork state; reject sold, inactive, unavailable, or non-positive-price purchases.
-- [ ] Implement one canonical order per Stripe payment intent with transactional idempotency, immutable purchase snapshots, append-only events, and persisted Stripe event IDs.
-- [ ] Derive paid amount from Stripe `amount_received` or the trusted checkout-intent snapshot, never client input or replayed metadata.
-- [ ] Verify create/edit/archive/restore/upload/reorder, inquiry, subscription, campaign draft/send, checkout, replayed webhook, legacy-shaped unknown-intent webhook quarantine, failed email, cancellation, and recovery behavior.
-- [ ] Keep raw imported pending/verified rows separate from canonical new orders and label legacy limits honestly in the owner UI.
-- [ ] Disable Neon write code in the branch only after preview verification; do not delete it until Phase 8.
-- [ ] Document the production write-freeze, open Stripe Checkout Session expiration or 24-hour drain, retry-backlog drain, fresh Neon backup, bidirectional final delta, parity re-proof, Stripe webhook transition, and sign-off checklist without executing it.
-- [ ] Document asymmetric post-cutover rollback through a restored PostgreSQL copy, never by silently writing to original Neon. Export and reconcile all Convex-only writes, sold state, and payment-intent dedupe records before checkout can return to the legacy stack.
+-   [ ] Centralize Clerk owner authorization in one helper used by Next route handlers, UploadThing callbacks, and every private Convex function. Owner claims must come from the verified Clerk-to-Convex JWT, not a Convex-side Clerk API call.
+-   [ ] Implement Convex mutations for artwork facts, media metadata/order, visibility/order, content settings, inquiries, subscribers, simple campaign drafts/sends, fulfillment state, and maintenance jobs.
+-   [ ] Create server-side checkout intents and persist them atomically from current canonical artwork state; reject sold, inactive, unavailable, or non-positive-price purchases.
+-   [ ] Implement one canonical order per Stripe payment intent with transactional idempotency, immutable purchase snapshots, append-only events, and persisted Stripe event IDs.
+-   [ ] Derive paid amount from Stripe `amount_received` or the trusted checkout-intent snapshot, never client input or replayed metadata.
+-   [ ] Verify create/edit/archive/restore/upload/reorder, inquiry, subscription, campaign draft/send, checkout, replayed webhook, legacy-shaped unknown-intent webhook quarantine, failed email, cancellation, and recovery behavior.
+-   [ ] Keep raw imported pending/verified rows separate from canonical new orders and label legacy limits honestly in the owner UI.
+-   [ ] Disable Neon write code in the branch only after preview verification; do not delete it until Phase 8.
+-   [ ] Document the production write-freeze, open Stripe Checkout Session expiration or 24-hour drain, retry-backlog drain, fresh Neon backup, bidirectional final delta, parity re-proof, Stripe webhook transition, and sign-off checklist without executing it.
+-   [ ] Document asymmetric post-cutover rollback through a restored PostgreSQL copy, never by silently writing to original Neon. Export and reconcile all Convex-only writes, sold state, and payment-intent dedupe records before checkout can return to the legacy stack.
 
 Rollback boundary:
 
-- Before production approval, production still writes to Neon. The branch can revert to the Neon implementation. After an approved production write cutover, rollback requires a Convex delta export and explicit reconciliation.
+-   Before production approval, production still writes to Neon. The branch can revert to the Neon implementation. After an approved production write cutover, rollback requires a Convex delta export and explicit reconciliation.
 
 ### Phase 5: Tailwind CSS v4 and Deliberate Client State
 
@@ -122,12 +126,12 @@ Status: **pending**
 
 Acceptance criteria:
 
-- [ ] Upgrade Tailwind/PostCSS to v4 and encode the Lit Wall tokens in CSS-first theme variables.
-- [ ] Preserve build behavior and route usability through targeted smoke QA; pixel parity with the legacy skin is not required because Phase 6 replaces it.
-- [ ] Name and record the revert commit before public redesign work begins.
-- [ ] Use URL state for catalog filters/sort/search and React state for local controls.
-- [ ] Keep Zustand only if a real cross-route client state survives product implementation. Do not mirror Convex or URL state.
-- [ ] Pass typecheck, lint, tests, production build, and desktop/mobile smoke QA.
+-   [ ] Upgrade Tailwind/PostCSS to v4 and encode the Lit Wall tokens in CSS-first theme variables.
+-   [ ] Preserve build behavior and route usability through targeted smoke QA; pixel parity with the legacy skin is not required because Phase 6 replaces it.
+-   [ ] Name and record the revert commit before public redesign work begins.
+-   [ ] Use URL state for catalog filters/sort/search and React state for local controls.
+-   [ ] Keep Zustand only if a real cross-route client state survives product implementation. Do not mirror Convex or URL state.
+-   [ ] Pass typecheck, lint, tests, production build, and desktop/mobile smoke QA.
 
 ### Phase 6: `d2 v1` Product Implementation
 
@@ -135,16 +139,16 @@ Status: **pending**
 
 Acceptance criteria:
 
-- [ ] Implement the Lit Wall public Home, Work, Artwork, Studio & Story, Commissions, Contact & Collector Guide, Checkout, confirmation/cancel, error, and not-found surfaces with real data.
-- [ ] Implement the Lit Wall owner Dashboard, Catalog, Artwork Editor, Orders, Inbox, Mailing & Campaigns MVP, Analytics, and Tools surfaces with real operations.
-- [ ] Make search, availability, faceting, sorting, selected-artwork routing, image navigation, 2D room visualization, forms, upload, and owner workflows functional.
-- [ ] Use real links and semantic controls. Preserve middle-click, keyboard, screen-reader, reduced-motion, pause, and focus behavior.
-- [ ] Match the reviewed `d2 v1` hierarchy, charcoal/ivory/brass palette, typography, fixed app bars, and artwork-first presentation across desktop and mobile.
-- [ ] Keep artwork at opacity 1 with `filter: none`; readability treatment uses separate scrim layers and must not alter the image element.
-- [ ] Render description-less works with honest facts-only content. Do not generate fictional artwork stories.
-- [ ] Expose real catalog gaps through owner needs-attention and publish-check rules; do not copy synthetic wireframe analytics or counts.
-- [ ] Implement Mailing MVP as consent/suppression, subscriber list, simple draft/preview/send, and provider outcomes. Defer segmentation, scheduling, and a full ESP workflow.
-- [ ] Verify every route and meaningful state against a production build with screenshots plus DOM/layout, console, and failed-network evidence.
+-   [ ] Implement the Lit Wall public Home, Work, Artwork, Studio & Story, Commissions, Contact & Collector Guide, Checkout, confirmation/cancel, error, and not-found surfaces with real data.
+-   [ ] Implement the Lit Wall owner Dashboard, Catalog, Artwork Editor, Orders, Inbox, Mailing & Campaigns MVP, Analytics, and Tools surfaces with real operations.
+-   [ ] Make search, availability, faceting, sorting, selected-artwork routing, image navigation, 2D room visualization, forms, upload, and owner workflows functional.
+-   [ ] Use real links and semantic controls. Preserve middle-click, keyboard, screen-reader, reduced-motion, pause, and focus behavior.
+-   [ ] Match the reviewed `d2 v1` hierarchy, charcoal/ivory/brass palette, typography, fixed app bars, and artwork-first presentation across desktop and mobile.
+-   [ ] Keep artwork at opacity 1 with `filter: none`; readability treatment uses separate scrim layers and must not alter the image element.
+-   [ ] Render description-less works with honest facts-only content. Do not generate fictional artwork stories.
+-   [ ] Expose real catalog gaps through owner needs-attention and publish-check rules; do not copy synthetic wireframe analytics or counts.
+-   [ ] Implement Mailing MVP as consent/suppression, subscriber list, simple draft/preview/send, and provider outcomes. Defer segmentation, scheduling, and a full ESP workflow.
+-   [ ] Verify every route and meaningful state against a production build with screenshots plus DOM/layout, console, and failed-network evidence.
 
 ### Phase 7: Optimization, Security, Accessibility, and Discoverability
 
@@ -152,24 +156,24 @@ Status: **pending**
 
 Acceptance criteria:
 
-- [ ] Resolve actionable package and application security findings without hiding remaining risk.
-- [ ] Meet or explain the public performance targets below using before/after Lighthouse reports with identical profiles.
-- [ ] Preserve originals, generate responsive derivatives from originals once, validate dimensions/orientation/color profile, and avoid repeated lossy transforms.
-- [ ] Load only the active hero slide eagerly; use accurate `sizes`, bounded hero selection, route-level caching, and minimal root providers.
-- [ ] Implement redirects, canonical URLs, metadata, dynamic sitemap, robots policy, Open Graph, and accurate artwork JSON-LD.
-- [ ] Keep sold artwork indexable as archive records and omit `Offer` data for sold or non-positive-price records.
-- [ ] Add security headers, input validation, rate limits/abuse controls, webhook signature/replay tests, and PII-safe logging.
-- [ ] Verify keyboard navigation, focus visibility, semantic landmarks, contrast, labels, reduced motion, screen-reader paths, and mobile touch targets.
+-   [ ] Resolve actionable package and application security findings without hiding remaining risk.
+-   [ ] Meet or explain the public performance targets below using before/after Lighthouse reports with identical profiles.
+-   [ ] Preserve originals, generate responsive derivatives from originals once, validate dimensions/orientation/color profile, and avoid repeated lossy transforms.
+-   [ ] Load only the active hero slide eagerly; use accurate `sizes`, bounded hero selection, route-level caching, and minimal root providers.
+-   [ ] Implement redirects, canonical URLs, metadata, dynamic sitemap, robots policy, Open Graph, and accurate artwork JSON-LD.
+-   [ ] Keep sold artwork indexable as archive records and omit `Offer` data for sold or non-positive-price records.
+-   [ ] Add security headers, input validation, rate limits/abuse controls, webhook signature/replay tests, and PII-safe logging.
+-   [ ] Verify keyboard navigation, focus visibility, semantic landmarks, contrast, labels, reduced motion, screen-reader paths, and mobile touch targets.
 
 Measured targets:
 
-- Home mobile Lighthouse performance at least 85 and LCP below 3.5 seconds.
-- Work mobile Lighthouse performance at least 85 and LCP below 3.5 seconds.
-- Home and Work desktop Lighthouse performance at least 95.
-- Accessibility, best practices, and SEO at least 95 on Home, Work, Artwork, and Checkout where Lighthouse scoring applies.
-- No layout shift above 0.05 on key public routes.
-- No critical/high production dependency advisories and no untriaged moderate production advisories.
-- No console errors or failed first-party requests in the tested happy paths.
+-   Home mobile Lighthouse performance at least 85 and LCP below 3.5 seconds.
+-   Work mobile Lighthouse performance at least 85 and LCP below 3.5 seconds.
+-   Home and Work desktop Lighthouse performance at least 95.
+-   Accessibility, best practices, and SEO at least 95 on Home, Work, Artwork, and Checkout where Lighthouse scoring applies.
+-   No layout shift above 0.05 on key public routes.
+-   No critical/high production dependency advisories and no untriaged moderate production advisories.
+-   No console errors or failed first-party requests in the tested happy paths.
 
 ### Phase 8: Old-Stack Removal and Final Verification
 
@@ -177,141 +181,141 @@ Status: **pending**
 
 Acceptance criteria:
 
-- [ ] Remove Neon, Drizzle, PostgreSQL, and legacy transaction code from application paths after the reversible preview cutover window.
-- [ ] Remove verified dead packages/files, obsolete migrations/configuration, orphaned styles, unused components, compatibility redirects that are no longer needed, and superseded implementations.
-- [ ] Preserve the external Neon dump, schema snapshot, deterministic export/import tooling, migration reports, and rollback documentation.
-- [ ] Pass a clean install, typecheck, lint with zero warnings, tests, production build, production dependency audit, asset verification, and full browser QA.
-- [ ] Create a Vercel preview deployment and verify public and owner flows there. Do not deploy production.
-- [ ] Record before/after performance, bundle, route, and asset evidence; complete all ledger checkboxes; state known limitations plainly.
-- [ ] Push the completed branch and update the single draft PR with the final branch-level description. Do not merge.
+-   [ ] Remove Neon, Drizzle, PostgreSQL, and legacy transaction code from application paths after the reversible preview cutover window.
+-   [ ] Remove verified dead packages/files, obsolete migrations/configuration, orphaned styles, unused components, compatibility redirects that are no longer needed, and superseded implementations.
+-   [ ] Preserve the external Neon dump, schema snapshot, deterministic export/import tooling, migration reports, and rollback documentation.
+-   [ ] Pass a clean install, typecheck, lint with zero warnings, tests, production build, production dependency audit, asset verification, and full browser QA.
+-   [ ] Create a Vercel preview deployment and verify public and owner flows there. Do not deploy production.
+-   [ ] Record before/after performance, bundle, route, and asset evidence; complete all ledger checkboxes; state known limitations plainly.
+-   [ ] Push the completed branch and update the single draft PR with the final branch-level description. Do not merge.
 
 ## Canonical Data Decisions
 
 ### Raw preservation and canonical operations
 
-- `legacyPieces`, `legacyExtraImages`, `legacyProgressImages`, `legacyPendingTransactions`, and `legacyVerifiedTransactions` preserve source values verbatim. Raw nullable booleans remain tri-state even though the July 17 production snapshot contains zero null status flags.
-- `artworks` stores the operational artwork record plus `legacyTable = "Pieces"` and `legacyId`. Canonical booleans normalize source null to the source-column default only through an explicit migration rule and record that normalization.
-- `artworkMedia` stores primary, supporting, and progress media. Identity is `(legacyTable, legacyId)` because source media IDs overlap across tables. Each source record preserves full and small URL/dimension fields; primary identity is `("Pieces", pieceId)`.
-- Canonical imports update an imported field only when no audited owner mutation has changed it since the previous import. Conflicts are reported and never overwritten automatically.
-- `legacyPendingTransactions` remain raw history with an optional resolved-artwork link for display. The legacy `(piece_db_id, full_name)` match is heuristic and never creates a canonical order.
-- `orders` contains one canonical legacy order per distinct raw `stripe_id` string and one per new payment intent. A legacy identifier is not assumed to have a `pi_` prefix. Canonical legacy rows link all contributing raw source IDs.
-- Legacy transaction `price` is stored as `legacyRecordedPrice` in integer dollars and explicitly excludes the separately charged $25 international shipping amount. Historical `amountPaid` remains unknown rather than being fabricated.
-- No source `createdAt` exists. Migration records `importedAt` and preserves the verified source `date` at its actual day precision; it does not fabricate history.
-- Source hashes cover canonicalized source fields only and exclude import bookkeeping. Objects use recursively sorted keys, verified dates remain `YYYY-MM-DD`, source JSON numbers retain their exported value, and the serializer version is recorded on every migration run. An unchanged source hash produces no write.
+-   `legacyPieces`, `legacyExtraImages`, `legacyProgressImages`, `legacyPendingTransactions`, and `legacyVerifiedTransactions` preserve source values verbatim. Raw nullable booleans remain tri-state even though the July 17 production snapshot contains zero null status flags.
+-   `artworks` stores the operational artwork record plus `legacyTable = "Pieces"` and `legacyId`. Canonical booleans normalize source null to the source-column default only through an explicit migration rule and record that normalization.
+-   `artworkMedia` stores primary, supporting, and progress media. Identity is `(legacyTable, legacyId)` because source media IDs overlap across tables. Each source record preserves full and small URL/dimension fields; primary identity is `("Pieces", pieceId)`.
+-   Canonical imports update an imported field only when no audited owner mutation has changed it since the previous import. Conflicts are reported and never overwritten automatically.
+-   `legacyPendingTransactions` remain raw history with an optional resolved-artwork link for display. The legacy `(piece_db_id, full_name)` match is heuristic and never creates a canonical order.
+-   `orders` contains one canonical legacy order per distinct raw `stripe_id` string and one per new payment intent. A legacy identifier is not assumed to have a `pi_` prefix. Canonical legacy rows link all contributing raw source IDs.
+-   Legacy transaction `price` is stored as `legacyRecordedPrice` in integer dollars and explicitly excludes the separately charged $25 international shipping amount. Historical `amountPaid` remains unknown rather than being fabricated.
+-   No source `createdAt` exists. Migration records `importedAt` and preserves the verified source `date` at its actual day precision; it does not fabricate history.
+-   Source hashes cover canonicalized source fields only and exclude import bookkeeping. Objects use recursively sorted keys, verified dates remain `YYYY-MM-DD`, source JSON numbers retain their exported value, and the serializer version is recorded on every migration run. An unchanged source hash produces no write.
 
 ### Slugs and redirects
 
-- Artwork slugs are computed only on first import and are immutable. Slug algorithm `v1` applies Unicode NFKD, strips combining marks, lowercases, converts `&` to `and`, collapses non-ASCII alphanumerics to one hyphen, trims hyphens, falls back to `untitled`, and appends `-<legacyId>`.
-- Old `/details/[id]` links resolve by `legacyId` and redirect permanently to `/work/<slug>`.
-- Duplicate titles never compete for the same slug.
+-   Artwork slugs are computed only on first import and are immutable. Slug algorithm `v1` applies Unicode NFKD, strips combining marks, lowercases, converts `&` to `and`, collapses non-ASCII alphanumerics to one hyphen, trims hyphens, falls back to `untitled`, and appends `-<legacyId>`.
+-   Old `/details/[id]` links resolve by `legacyId` and redirect permanently to `/work/<slug>`.
+-   Duplicate titles never compete for the same slug.
 
 ### Availability and pricing
 
-- Raw `active`, `available`, `sold`, and `price` values are preserved exactly, including nullable source semantics. The July 17 source snapshot contains zero nulls for all four artwork boolean flags.
-- Derived `purchasable` is true only when canonical `active === true && available === true && sold !== true && price > 0`.
-- Sold plus available records remain visible as sold archive works but are never purchasable.
-- Active works with non-positive prices display an inquiry path without a price offer and never enter Stripe checkout.
-- Owner reconciliation can change operational fields later through normal audited mutations; migration does not silently repair them.
+-   Raw `active`, `available`, `sold`, and `price` values are preserved exactly, including nullable source semantics. The July 17 source snapshot contains zero nulls for all four artwork boolean flags.
+-   Derived `purchasable` is true only when canonical `active === true && available === true && sold !== true && price > 0`.
+-   Sold plus available records remain visible as sold archive works but are never purchasable.
+-   Active works with non-positive prices display an inquiry path without a price offer and never enter Stripe checkout.
+-   Owner reconciliation can change operational fields later through normal audited mutations; migration does not silently repair them.
 
 ### Ordering
 
-- Preserve `o_id`, `p_id`, sentinels, and duplicates as legacy fields.
-- Seed new unique `galleryOrder` and `homepageOrder` only when the canonical field is absent, deterministically from descending legacy order then ascending legacy ID. Identical imports never rewrite order; delta-added rows append deterministically without reshuffling existing work.
-- Use gap-based integer positions for normal reordering and rebalance transactionally when gaps are exhausted.
-- Media order is deterministic by role and ascending source ID on import.
+-   Preserve `o_id`, `p_id`, sentinels, and duplicates as legacy fields.
+-   Seed new unique `galleryOrder` and `homepageOrder` only when the canonical field is absent, deterministically from descending legacy order then ascending legacy ID. Identical imports never rewrite order; delta-added rows append deterministically without reshuffling existing work.
+-   Use gap-based integer positions for normal reordering and rebalance transactionally when gaps are exhausted.
+-   Media order is deterministic by role and ascending source ID on import.
 
 ### Images
 
-- Existing UploadThing URLs remain source URLs during migration.
-- The original upload is retained unmodified as the preservation source.
-- Metadata and responsive display derivatives are generated server-side from the original once. Client-side canvas recompression is removed from the new flow.
-- Hero eligibility excludes images whose intrinsic dimensions cannot cover the target without material upscaling; those works remain available elsewhere.
-- Artwork elements use no saturation, contrast, opacity, blur, or color-grading filters.
+-   Existing UploadThing URLs remain source URLs during migration.
+-   The original upload is retained unmodified as the preservation source.
+-   Metadata and responsive display derivatives are generated server-side from the original once. Client-side canvas recompression is removed from the new flow.
+-   Hero eligibility excludes images whose intrinsic dimensions cannot cover the target without material upscaling; those works remain available elsewhere.
+-   Artwork elements use no saturation, contrast, opacity, blur, or color-grading filters.
 
 ### Authentication and privacy
 
-- Clerk remains identity. Convex receives Clerk identity through its supported JWT integration and private functions call one owner-authorization helper.
-- Owner authorization is not inferred from client state or route visibility.
-- Public query shapes are allowlists. PII tables are private and excluded from public Convex functions, logs, reports, and analytics.
-- Any Convex development deployment containing imported buyer PII is treated as production-sensitive: membership is recorded, access is minimized, reports contain aggregates only, and superseded PII-bearing deployments are deleted after verified replacement.
+-   Clerk remains identity. Convex receives Clerk identity through its supported JWT integration and private functions call one owner-authorization helper.
+-   Owner authorization is not inferred from client state or route visibility.
+-   Public query shapes are allowlists. PII tables are private and excluded from public Convex functions, logs, reports, and analytics.
+-   Any Convex development deployment containing imported buyer PII is treated as production-sensitive: membership is recorded, access is minimized, reports contain aggregates only, and superseded PII-bearing deployments are deleted after verified replacement.
 
 ### Provider roles
 
-- Convex is operational data and first-party business outcomes.
-- Stripe is payment authority.
-- UploadThing is original/media storage initially.
-- Resend is transactional and simple campaign delivery.
-- PostHog remains behavioral analytics. Dashboard aggregates are cached and labeled; widgets are omitted rather than populated with synthetic data if the API is unavailable or unsuitable.
-- React Email produces versioned rendered output for simple campaign and transactional templates.
+-   Convex is operational data and first-party business outcomes.
+-   Stripe is payment authority.
+-   UploadThing is original/media storage initially.
+-   Resend is transactional and simple campaign delivery.
+-   PostHog remains behavioral analytics. Dashboard aggregates are cached and labeled; widgets are omitted rather than populated with synthetic data if the API is unavailable or unsuitable.
+-   React Email produces versioned rendered output for simple campaign and transactional templates.
 
 ## Verification Matrix
 
-- Data: counts, source IDs, source-field hashes, null/empty distributions, state combinations, relationships, ordering, assets, identical rerun, and newer-snapshot rerun.
-- Auth: anonymous, signed-in non-owner, and owner behavior for Next routes, Convex functions, UploadThing, and tools.
-- Commerce: stale price, sold/unavailable/non-positive-price artwork, concurrent checkout, successful payment, canceled session, replayed webhook, legacy-shaped unknown-intent webhook quarantine, failed email, and duplicate legacy sources.
-- Images: JPEG/PNG/WebP/HEIC where provider support allows, portrait/landscape, large files, EXIF orientation, color profile, dimensions, derivative retry, and no double compression.
-- Public UI: desktop 1600x1100, tablet portrait/landscape, mobile 390x844, keyboard, reduced motion, filters/search/sort, carousel, room view, forms, checkout, redirects, and metadata.
-- Owner UI: dashboard, catalog, editor, orders, inbox, mailing, analytics, and tools; loading, empty, error, permission-denied, optimistic, and persistence states.
-- Quality: clean install, typecheck, lint, Vitest, production build, audit, bundle comparison, Lighthouse, screenshot plus DOM/layout review, console, and failed-network review.
+-   Data: counts, source IDs, source-field hashes, null/empty distributions, state combinations, relationships, ordering, assets, identical rerun, and newer-snapshot rerun.
+-   Auth: anonymous, signed-in non-owner, and owner behavior for Next routes, Convex functions, UploadThing, and tools.
+-   Commerce: stale price, sold/unavailable/non-positive-price artwork, concurrent checkout, successful payment, canceled session, replayed webhook, legacy-shaped unknown-intent webhook quarantine, failed email, and duplicate legacy sources.
+-   Images: JPEG/PNG/WebP/HEIC where provider support allows, portrait/landscape, large files, EXIF orientation, color profile, dimensions, derivative retry, and no double compression.
+-   Public UI: desktop 1600x1100, tablet portrait/landscape, mobile 390x844, keyboard, reduced motion, filters/search/sort, carousel, room view, forms, checkout, redirects, and metadata.
+-   Owner UI: dashboard, catalog, editor, orders, inbox, mailing, analytics, and tools; loading, empty, error, permission-denied, optimistic, and persistence states.
+-   Quality: clean install, typecheck, lint, Vitest, production build, audit, bundle comparison, Lighthouse, screenshot plus DOM/layout review, console, and failed-network review.
 
 ## Decisions
 
-| Date | Decision | Rejected alternative | Reason | Reversal cost |
-| --- | --- | --- | --- | --- |
-| 2026-07-17 | Use one branch with phase commits and one continuously updated draft PR. | Separate PR per stack change. | The directive requires one reviewable overhaul while phase commits preserve bisectability. | Low. |
-| 2026-07-17 | Treat Neon as strictly read-only and preserve it after Convex cutover. | Dual writes or destructive cleanup. | Neon is the independent backup and rollback source. | None. |
-| 2026-07-17 | Keep existing UploadThing binaries initially and migrate URL records, not image bytes. | Re-host all artwork during the database migration. | It keeps database parity attributable and avoids a second irreversible migration. | Medium. A later verified copy can update storage keys. |
-| 2026-07-17 | Preserve all five Neon tables in immutable raw tables and derive separate canonical operational records. | Use canonical artwork/media records as the parity source. | Owner edits and delta imports would otherwise destroy the ability to prove source parity. | Low. Canonical records can evolve independently. |
-| 2026-07-17 | Use deterministic ID-suffixed immutable slugs. | Conditional suffixes or title-only slugs. | Source titles collide and may change. | Low. Redirect rules can be changed later. |
-| 2026-07-17 | Derive purchasability conservatively without changing raw flags. | Treat `available` alone as sellable or auto-fix contradictory rows. | Prevents accidental resale of sold work and preserves owner data. | Low. Owner mutations can reconcile records later. |
-| 2026-07-17 | Split Convex read and write/commerce cutovers. | One combined backend cutover. | Reads can be proven and rolled back independently before any new writes exist only in Convex. | Low. |
-| 2026-07-17 | Use a thin read adapter and parity scripts. | Build a broad dual-backend repository around legacy UI. | Most legacy UI is replaced; the larger abstraction would be temporary and harder to verify. | Medium. |
-| 2026-07-17 | Use Vitest for domain, migration, authorization, and webhook tests. | No runner or a large browser-only suite. | The repository currently has no runner, and deterministic business logic needs fast isolated coverage. | Low. |
-| 2026-07-17 | Use Zustand only if a real cross-route UI need remains. | Mirror catalog or Convex records in a client store. | URL and server state already own those concerns. | Low. |
-| 2026-07-17 | Scope Mailing to consent, suppression, draft/preview/send, and outcomes. | Build segmentation, scheduling, automation, and a full email service provider. | The expanded system is high-risk scope and duplicates provider capabilities. | Low. Deferred features can extend the schema. |
-| 2026-07-17 | Keep artwork source-faithful and use separate scrims. | Apply filters or lower opacity on image elements. | Artwork fidelity is a core product requirement. | None. |
-| 2026-07-17 | Do not deploy production or change DNS without explicit approval. | Automatic production cutover at completion. | This is an explicit halt condition. | None. |
-| 2026-07-17 | Use one free Convex development deployment for local and Vercel preview QA; do not create paid preview deployments. | Create one Convex deployment per Vercel preview. | No paid infrastructure is authorized. The shared deployment is handled as production-sensitive while it contains imported PII. | Medium. Preview isolation can be added after plan approval. |
-| 2026-07-17 | Post-cutover rollback targets a restored PostgreSQL copy after approved provisioning, not original Neon. | Temporarily lift the Neon read-only invariant during an incident. | Original Neon remains an untouched backup and reconciliation source. | High. A rollback requires explicit approval, provisioning, and a controlled Convex export/import. |
+| Date       | Decision                                                                                                            | Rejected alternative                                                           | Reason                                                                                                                         | Reversal cost                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| 2026-07-17 | Use one branch with phase commits and one continuously updated draft PR.                                            | Separate PR per stack change.                                                  | The directive requires one reviewable overhaul while phase commits preserve bisectability.                                     | Low.                                                                                              |
+| 2026-07-17 | Treat Neon as strictly read-only and preserve it after Convex cutover.                                              | Dual writes or destructive cleanup.                                            | Neon is the independent backup and rollback source.                                                                            | None.                                                                                             |
+| 2026-07-17 | Keep existing UploadThing binaries initially and migrate URL records, not image bytes.                              | Re-host all artwork during the database migration.                             | It keeps database parity attributable and avoids a second irreversible migration.                                              | Medium. A later verified copy can update storage keys.                                            |
+| 2026-07-17 | Preserve all five Neon tables in immutable raw tables and derive separate canonical operational records.            | Use canonical artwork/media records as the parity source.                      | Owner edits and delta imports would otherwise destroy the ability to prove source parity.                                      | Low. Canonical records can evolve independently.                                                  |
+| 2026-07-17 | Use deterministic ID-suffixed immutable slugs.                                                                      | Conditional suffixes or title-only slugs.                                      | Source titles collide and may change.                                                                                          | Low. Redirect rules can be changed later.                                                         |
+| 2026-07-17 | Derive purchasability conservatively without changing raw flags.                                                    | Treat `available` alone as sellable or auto-fix contradictory rows.            | Prevents accidental resale of sold work and preserves owner data.                                                              | Low. Owner mutations can reconcile records later.                                                 |
+| 2026-07-17 | Split Convex read and write/commerce cutovers.                                                                      | One combined backend cutover.                                                  | Reads can be proven and rolled back independently before any new writes exist only in Convex.                                  | Low.                                                                                              |
+| 2026-07-17 | Use a thin read adapter and parity scripts.                                                                         | Build a broad dual-backend repository around legacy UI.                        | Most legacy UI is replaced; the larger abstraction would be temporary and harder to verify.                                    | Medium.                                                                                           |
+| 2026-07-17 | Use Vitest for domain, migration, authorization, and webhook tests.                                                 | No runner or a large browser-only suite.                                       | The repository currently has no runner, and deterministic business logic needs fast isolated coverage.                         | Low.                                                                                              |
+| 2026-07-17 | Use Zustand only if a real cross-route UI need remains.                                                             | Mirror catalog or Convex records in a client store.                            | URL and server state already own those concerns.                                                                               | Low.                                                                                              |
+| 2026-07-17 | Scope Mailing to consent, suppression, draft/preview/send, and outcomes.                                            | Build segmentation, scheduling, automation, and a full email service provider. | The expanded system is high-risk scope and duplicates provider capabilities.                                                   | Low. Deferred features can extend the schema.                                                     |
+| 2026-07-17 | Keep artwork source-faithful and use separate scrims.                                                               | Apply filters or lower opacity on image elements.                              | Artwork fidelity is a core product requirement.                                                                                | None.                                                                                             |
+| 2026-07-17 | Do not deploy production or change DNS without explicit approval.                                                   | Automatic production cutover at completion.                                    | This is an explicit halt condition.                                                                                            | None.                                                                                             |
+| 2026-07-17 | Use one free Convex development deployment for local and Vercel preview QA; do not create paid preview deployments. | Create one Convex deployment per Vercel preview.                               | No paid infrastructure is authorized. The shared deployment is handled as production-sensitive while it contains imported PII. | Medium. Preview isolation can be added after plan approval.                                       |
+| 2026-07-17 | Post-cutover rollback targets a restored PostgreSQL copy after approved provisioning, not original Neon.            | Temporarily lift the Neon read-only invariant during an incident.              | Original Neon remains an untouched backup and reconciliation source.                                                           | High. A rollback requires explicit approval, provisioning, and a controlled Convex export/import. |
 
 ## Migration Record
 
 Pre-migration source protection and inventory:
 
-- Full custom-format dump: `/Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-pre-convex.dump`
-- Dump SHA-256: `1c42170b66ca617bb275b60930e0ad943dca553bf92def6b52c4ecae8e7c6d9c`
-- Schema snapshot: `/Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-schema.sql`
-- Schema SHA-256: `c632c9331b49f6b1269eaf2adc91242d3237d17e2285f59515dc40108e211d5f`
-- Source server: PostgreSQL 16.14. Dump tool: PostgreSQL 18.4.
-- Backup directory permissions: `0700`; backup file permissions: `0600`.
-- The dump catalog parses successfully and includes all five tables, sequences, data sections, primary keys, and two media foreign keys.
-- Restore command for an empty, disposable database: `pg_restore --clean --if-exists --no-owner --no-acl --dbname "$RESTORE_DATABASE_URL" /Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-pre-convex.dump`.
-- Source counts: 86 artworks, 150 supporting images, 5 progress images, 115 pending transactions, and 12 verified transactions.
-- Source anomalies to preserve: 14 unresolved pending-artwork references; 3 verified rows sharing one Stripe payment intent; 15 sold plus available artworks; 9 non-positive prices; duplicate legacy order values; 3 normalized-title duplicate groups.
-- Asset baseline: 481 unique operational artwork URLs returned `200`; nine sampled primary files matched stored dimensions exactly. Verified transaction snapshots add three distinct HTTP URLs not used by current artwork records: two return `200` and one returns `404`. No non-HTTP values exist in the July 17 snapshot.
+-   Full custom-format dump: `/Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-pre-convex.dump`
+-   Dump SHA-256: `1c42170b66ca617bb275b60930e0ad943dca553bf92def6b52c4ecae8e7c6d9c`
+-   Schema snapshot: `/Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-schema.sql`
+-   Schema SHA-256: `c632c9331b49f6b1269eaf2adc91242d3237d17e2285f59515dc40108e211d5f`
+-   Source server: PostgreSQL 16.14. Dump tool: PostgreSQL 18.4.
+-   Backup directory permissions: `0700`; backup file permissions: `0600`.
+-   The dump catalog parses successfully and includes all five tables, sequences, data sections, primary keys, and two media foreign keys.
+-   Restore command for an empty, disposable database: `pg_restore --clean --if-exists --no-owner --no-acl --dbname "$RESTORE_DATABASE_URL" /Users/tsmith/dev/_codex/jws-fine-art-backups/2026-07-17/neon-production-pre-convex.dump`.
+-   Source counts: 86 artworks, 150 supporting images, 5 progress images, 115 pending transactions, and 12 verified transactions.
+-   Source anomalies to preserve: 14 unresolved pending-artwork references; 3 verified rows sharing one Stripe payment intent; 15 sold plus available artworks; 9 non-positive prices; duplicate legacy order values; 3 normalized-title duplicate groups.
+-   Asset baseline: 481 unique operational artwork URLs returned `200`; nine sampled primary files matched stored dimensions exactly. Verified transaction snapshots add three distinct HTTP URLs not used by current artwork records: two return `200` and one returns `404`. No non-HTTP values exist in the July 17 snapshot.
 
 This section will additionally record:
 
-- Convex project/deployment identifiers without secret values.
-- Export and import run IDs, source hashes, and migration script versions.
-- Raw and canonical table counts and the explicit explanation for canonical deduplication.
-- Field, relationship, null/empty, ordering, state, and asset parity results.
-- Identical-rerun and newer-snapshot/delta-rerun results.
-- Disposable restore evidence.
-- Preview read/write cutover and rollback evidence.
-- The unexecuted production freeze, final-delta, webhook-transition, and asymmetric-rollback procedure.
+-   Convex project/deployment identifiers without secret values.
+-   Export and import run IDs, source hashes, and migration script versions.
+-   Raw and canonical table counts and the explicit explanation for canonical deduplication.
+-   Field, relationship, null/empty, ordering, state, and asset parity results.
+-   Identical-rerun and newer-snapshot/delta-rerun results.
+-   Disposable restore evidence.
+-   Preview read/write cutover and rollback evidence.
+-   The unexecuted production freeze, final-delta, webhook-transition, and asymmetric-rollback procedure.
 
 Development migration evidence:
 
-- Convex team/project: `torreysmith165-gmail-com:jws-fine-art`; deployment selector `dev/torreysmith165`; deployment name `laudable-flamingo-85`. This is a free development deployment and is treated as production-sensitive while it contains imported buyer data.
-- Baseline snapshot ID `2026-07-18T07-18-25-740Z-07486214abd6`; source summary hash `07486214abd62f610645da8d04b67ba10468482ca6245b64bf49a8fadad33d4b`.
-- Synthetic snapshot ID `synthetic-2026-07-18T07-22-10-448Z-4a6088866481`; source summary hash `4a60888664812ac76f5dca49817e070ad5e138b9c7c4d720808191a2f414dd8b`.
-- Raw snapshot history is append-only. Both snapshots remain present with exact counts for all five source tables. Canonical derivation always selects one snapshot explicitly.
-- Operational baseline parity: 86 artworks, 241 media records, 10 deduplicated legacy orders, 14 preserved pending-artwork orphans, and zero migration conflicts.
-- An identical baseline rerun produced zero canonical inserts or updates. The synthetic delta retained one absent artwork and media record as non-operational tombstones; restoring the baseline preserved those tombstones without affecting operational parity.
-- Asset audit: 483 of 484 unique URLs returned HTTP 200. The only 404 is a transaction-only legacy S3 snapshot referenced by three verified rows; it remains raw history and is not operational artwork media.
-- Disposable PostgreSQL restore matched all five source counts exactly. PostgreSQL 18 `pg_restore` emitted one non-data compatibility warning for the PostgreSQL 16 test server's unsupported `transaction_timeout` setting.
-- Detailed aggregate evidence: `_overhaul/reports/PHASE_3_MIGRATION_VERIFICATION.md`, `_overhaul/reports/phase3-source-summary.json`, and `_overhaul/reports/phase3-asset-audit.json`.
+-   Convex team/project: `torreysmith165-gmail-com:jws-fine-art`; deployment selector `dev/torreysmith165`; deployment name `laudable-flamingo-85`. This is a free development deployment and is treated as production-sensitive while it contains imported buyer data.
+-   Baseline snapshot ID `2026-07-18T07-18-25-740Z-07486214abd6`; source summary hash `07486214abd62f610645da8d04b67ba10468482ca6245b64bf49a8fadad33d4b`.
+-   Synthetic snapshot ID `synthetic-2026-07-18T07-22-10-448Z-4a6088866481`; source summary hash `4a60888664812ac76f5dca49817e070ad5e138b9c7c4d720808191a2f414dd8b`.
+-   Raw snapshot history is append-only. Both snapshots remain present with exact counts for all five source tables. Canonical derivation always selects one snapshot explicitly.
+-   Operational baseline parity: 86 artworks, 241 media records, 10 deduplicated legacy orders, 14 preserved pending-artwork orphans, and zero migration conflicts.
+-   An identical baseline rerun produced zero canonical inserts or updates. The synthetic delta retained one absent artwork and media record as non-operational tombstones; restoring the baseline preserved those tombstones without affecting operational parity.
+-   Asset audit: 483 of 484 unique URLs returned HTTP 200. The only 404 is a transaction-only legacy S3 snapshot referenced by three verified rows; it remains raw history and is not operational artwork media.
+-   Disposable PostgreSQL restore matched all five source counts exactly. PostgreSQL 18 `pg_restore` emitted one non-data compatibility warning for the PostgreSQL 16 test server's unsupported `transaction_timeout` setting.
+-   Detailed aggregate evidence: `_overhaul/reports/PHASE_3_MIGRATION_VERIFICATION.md`, `_overhaul/reports/phase3-source-summary.json`, and `_overhaul/reports/phase3-asset-audit.json`.
 
 ## Production Cutover Runbook (Documented, Not Authorized)
 
@@ -334,32 +338,32 @@ Development migration evidence:
 
 ## Deferred
 
-- WebGL/3D gallery. The product uses an accessible 2D room visualization first.
-- Full email-service-provider features: complex segmentation, automation, recurring scheduling, visual drag-and-drop email builder, and deliverability infrastructure.
-- Fabricated artwork narratives. Missing stories remain owner-authored work.
-- Production Convex linkage, production data cutover, production Vercel deployment, DNS changes, and destructive Neon operations.
-- Re-hosting all legacy image binaries unless reliability, quality, or provider constraints later justify a separate migration.
+-   WebGL/3D gallery. The product uses an accessible 2D room visualization first.
+-   Full email-service-provider features: complex segmentation, automation, recurring scheduling, visual drag-and-drop email builder, and deliverability infrastructure.
+-   Fabricated artwork narratives. Missing stories remain owner-authored work.
+-   Production Convex linkage, production data cutover, production Vercel deployment, DNS changes, and destructive Neon operations.
+-   Re-hosting all legacy image binaries unless reliability, quality, or provider constraints later justify a separate migration.
 
 ## Assumptions
 
-- The checked-out baseline at `be3b821` represents current production code.
-- `d2 v1` is the canonical visual and interaction direction; the inner site frame, not wireframe review chrome, is the target.
-- Missing mobile and non-Home design captures are implementation references to be derived from the authored `d2 v1` source and its responsive behavior, then verified in preview. They are not blockers to non-destructive implementation.
-- Existing free service projects should be reused where available. No paid infrastructure is authorized.
-- `/events` redirects to Studio & Story and `/faq` redirects to Contact & Collector Guide unless real retained content proves a better target during route implementation.
-- Commissions launches with only real available artwork/process material. If source content is insufficient, the route uses an honest inquiry-oriented process page without invented case studies.
+-   The checked-out baseline at `be3b821` represents current production code.
+-   `d2 v1` is the canonical visual and interaction direction; the inner site frame, not wireframe review chrome, is the target.
+-   Missing mobile and non-Home design captures are implementation references to be derived from the authored `d2 v1` source and its responsive behavior, then verified in preview. They are not blockers to non-destructive implementation.
+-   Existing free service projects should be reused where available. No paid infrastructure is authorized.
+-   `/events` redirects to Studio & Story and `/faq` redirects to Contact & Collector Guide unless real retained content proves a better target during route implementation.
+-   Commissions launches with only real available artwork/process material. If source content is insufficient, the route uses an honest inquiry-oriented process page without invented case studies.
 
 ## Evidence
 
-- Source inventory: `_overhaul/INVENTORY.md`
-- Baseline: `_overhaul/BASELINE.md`
-- Pre-critique draft: `_overhaul/DRAFT_PLAN.md`
-- First critique reports:
-  - `_context/omp-overhaul-architecture-plan.md`
-  - `_context/omp-overhaul-migration-plan.md`
-  - `_context/omp-overhaul-security-commerce-plan.md`
-  - `_context/omp-overhaul-product-ux-plan.md`
-- Migration-only second critique reports:
-  - `_context/omp-overhaul-migration-r2-correctness.md`
-  - `_context/omp-overhaul-migration-r2-cutover.md`
-- Approved design artifact: `jws-d2-v1-home-desktop`, `sha256:8cc5eb14f95c408ce785ac8372083586050a1612856a7387ad363689617a2f14`
+-   Source inventory: `_overhaul/INVENTORY.md`
+-   Baseline: `_overhaul/BASELINE.md`
+-   Pre-critique draft: `_overhaul/DRAFT_PLAN.md`
+-   First critique reports:
+    -   `_context/omp-overhaul-architecture-plan.md`
+    -   `_context/omp-overhaul-migration-plan.md`
+    -   `_context/omp-overhaul-security-commerce-plan.md`
+    -   `_context/omp-overhaul-product-ux-plan.md`
+-   Migration-only second critique reports:
+    -   `_context/omp-overhaul-migration-r2-correctness.md`
+    -   `_context/omp-overhaul-migration-r2-cutover.md`
+-   Approved design artifact: `jws-d2-v1-home-desktop`, `sha256:8cc5eb14f95c408ce785ac8372083586050a1612856a7387ad363689617a2f14`

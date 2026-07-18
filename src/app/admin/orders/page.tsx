@@ -28,8 +28,8 @@ export const metadata: Metadata = {
     },
 };
 
-import { db, verifiedTransactionsTable } from '@/db/db';
 import { VerifiedTransactions } from '@/db/schema';
+import { readOwnerLegacyTransactions } from '@/data/ownerReads';
 
 import PageLayout from '@/components/layout/PageLayout';
 import Orders from '@/app/admin/orders/orders';
@@ -47,8 +47,7 @@ export default async function Page() {
 }
 
 async function fetchVerifiedPayments(): Promise<VerifiedTransactions[]> {
-    console.log(`Fetching verified payments with Drizzle`);
-    const verified_list = await db.select().from(verifiedTransactionsTable);
+    const verified_list = await readOwnerLegacyTransactions();
 
     for (let i = 0; i < verified_list.length; i++) {
         const date_string = new Date(verified_list[i].date).toUTCString();

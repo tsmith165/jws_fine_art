@@ -17,7 +17,10 @@
         "migration:import": "tsx scripts/migration/import-convex.ts",
         "migration:synthetic": "tsx scripts/migration/build-synthetic-snapshot.ts",
         "migration:audit-assets": "tsx scripts/migration/audit-assets.ts",
-        "migration:verify": "tsx scripts/migration/verify-parity.ts"
+        "migration:verify": "tsx scripts/migration/verify-parity.ts",
+        "migration:verify-reads": "NODE_OPTIONS=--conditions=react-server tsx scripts/migration/verify-read-parity.ts",
+        "migration:verify-owner-reads": "NODE_OPTIONS=--conditions=react-server tsx scripts/migration/verify-owner-read-parity.ts",
+        "setup:clerk-convex": "tsx scripts/setup/configure-clerk-convex.ts"
     },
     "dependencies": {
         "@clerk/nextjs": "^6.39.5",
@@ -54,6 +57,7 @@
         "react-select": "^5.10.2",
         "react-tooltip": "^5.28.0",
         "resend": "^6.17.1",
+        "server-only": "^0.0.1",
         "sharp": "^0.33.5",
         "stripe": "^22.3.0",
         "tailwindcss": "^3.4.14",

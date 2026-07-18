@@ -12,6 +12,8 @@ type ImportedArtworkField =
     | 'instagramUrl'
     | 'ownerNotes'
     | 'className'
+    | 'legacyGalleryOrder'
+    | 'legacyHomepagePriority'
     | 'priceCents'
     | 'sold'
     | 'available'
@@ -28,6 +30,8 @@ const importedArtworkFields: ImportedArtworkField[] = [
     'instagramUrl',
     'ownerNotes',
     'className',
+    'legacyGalleryOrder',
+    'legacyHomepagePriority',
     'priceCents',
     'sold',
     'available',
@@ -46,6 +50,8 @@ function sourceArtwork(piece: Doc<'legacyPieces'>) {
         instagramUrl: piece.instagram,
         ownerNotes: piece.comments,
         className: piece.className,
+        legacyGalleryOrder: piece.oId,
+        legacyHomepagePriority: piece.pId,
         priceCents: piece.price * 100,
         sold: normalizeLegacyBoolean(piece.sold, false),
         available: normalizeLegacyBoolean(piece.available, true),
@@ -170,7 +176,12 @@ export const deriveCanonical = internalMutation({
                 continue;
             }
 
-            if (existing.sourceHash === piece.sourceHash && !existing.absentFromSource) {
+            if (
+                existing.sourceHash === piece.sourceHash &&
+                !existing.absentFromSource &&
+                existing.legacyGalleryOrder !== undefined &&
+                existing.legacyHomepagePriority !== undefined
+            ) {
                 continue;
             }
 
@@ -511,6 +522,8 @@ export const auditSummary = internalQuery({
                         instagramUrl,
                         ownerNotes,
                         className,
+                        legacyGalleryOrder,
+                        legacyHomepagePriority,
                         priceCents,
                         sold,
                         available,
@@ -532,6 +545,8 @@ export const auditSummary = internalQuery({
                         instagramUrl,
                         ownerNotes,
                         className,
+                        legacyGalleryOrder,
+                        legacyHomepagePriority,
                         priceCents,
                         sold,
                         available,
