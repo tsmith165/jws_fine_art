@@ -1,0 +1,33 @@
+'use client';
+
+import { ArrowRight } from 'lucide-react';
+import { useActionState } from 'react';
+import { subscribeAction, type PublicFormState } from '@/app/public-actions';
+
+const initialState: PublicFormState = { status: 'idle', message: '' };
+
+export function Newsletter() {
+    const [state, action, pending] = useActionState(subscribeAction, initialState);
+    return (
+        <section className="lw-newsletter">
+            <div>
+                <span className="lw-eyebrow">From the studio</span>
+                <h2>New work, first look.</h2>
+                <p>One thoughtful note each month with paintings, process, and studio news.</p>
+            </div>
+            <form action={action}>
+                <input type="hidden" name="source" value="website-footer" />
+                <label>
+                    <span>Email address</span>
+                    <input name="email" type="email" required autoComplete="email" placeholder="you@example.com" />
+                </label>
+                <button className="lw-button lw-button-brass" disabled={pending}>
+                    {pending ? 'Joining…' : 'Join the list'} <ArrowRight size={16} />
+                </button>
+                <p className={`lw-form-message is-${state.status}`} aria-live="polite">
+                    {state.message}
+                </p>
+            </form>
+        </section>
+    );
+}

@@ -1,46 +1,43 @@
 import type { Metadata } from 'next';
-export const metadata: Metadata = {
-    title: 'JWS Fine Art - Successful Checkout',
-    description: 'Successful Checkout for JWS Fine Art',
-    keywords:
-        'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Checkout, Success',
-    applicationName: 'JWS Fine Art',
-    icons: {
-        icon: '/logo/JWS_ICON_260.png',
-        shortcut: '/logo/JWS_ICON_260.png',
-        apple: '/favicon/apple-icon.png',
-    },
-    openGraph: {
-        title: 'JWS Fine Art - Successful Checkout',
-        description: 'Successful Checkout for JWS Fine Art',
-        siteName: 'JWS Fine Art',
-        url: 'https://www.jwsfineart.com',
-        images: [
-            {
-                url: '/favicon/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'JWS Fine Art',
-            },
-        ],
-        locale: 'en_US',
-        type: 'website',
-    },
-};
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { notFound } from 'next/navigation';
+import { SiteShell } from '@/components/lit-wall/SiteShell';
+import { readPublicArtwork } from '@/data/artworkReads';
 
-import { fetchPieceById } from '@/app/actions';
-import { PiecesWithImages } from '@/db/schema';
-import PageLayout from '@/components/layout/PageLayout';
-import Success from '@/app/checkout/success/[id]/Success';
+export const metadata: Metadata = { title: 'Purchase received', robots: { index: false, follow: false } };
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-    const current_id = parseInt((await props.params).id);
-    const current_piece: PiecesWithImages = await fetchPieceById(current_id);
-
+export default async function SuccessPage({ params }: { params: Promise<{ id: string }> }) {
+    const id = Number((await params).id);
+    const piece = Number.isSafeInteger(id) ? await readPublicArtwork(id) : null;
+    if (!piece) notFound();
     return (
-        <PageLayout page={`/checkout/success/${current_id}`}>
-            <Success current_piece={current_piece} current_id={current_id} />
-        </PageLayout>
+        <SiteShell>
+            <section className="lw-purchase-status">
+                <div>
+                    <Image
+                        src={piece.image_path}
+                        alt={piece.title}
+                        width={piece.width || 1}
+                        height={piece.height || 1}
+                        sizes="(max-width: 760px) 92vw, 42vw"
+                    />
+                </div>
+                <article>
+                    <CheckCircle2 size={36} />
+                    <span className="lw-eyebrow">Purchase received</span>
+                    <h1>Thank you for collecting {piece.title}.</h1>
+                    <p>A receipt is on its way to your email. Jill will follow up with packing and insured shipping details.</p>
+                    <p>
+                        Questions? Email <a href="mailto:jwsfineart@gmail.com">jwsfineart@gmail.com</a>.
+                    </p>
+                    <Link className="lw-button lw-button-brass" href="/work">
+                        Continue through the collection <ArrowRight size={16} />
+                    </Link>
+                </article>
+            </section>
+        </SiteShell>
     );
 }
 

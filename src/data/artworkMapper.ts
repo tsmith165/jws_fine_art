@@ -32,6 +32,7 @@ export function toLegacyArtwork(artwork: ConvexArtwork): PiecesWithImages {
         .map((media) => ({ ...legacyMedia(media), piece_id: artwork.legacyId }) as ProgressImages);
 
     return {
+        slug: artwork.slug,
         id: artwork.legacyId,
         o_id: artwork.legacyGalleryOrder,
         p_id: artwork.legacyHomepagePriority,

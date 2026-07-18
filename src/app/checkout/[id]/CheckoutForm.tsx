@@ -1,112 +1,75 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useLoadScript, Libraries } from '@react-google-maps/api';
-// Icons
-import { TbProgress } from 'react-icons/tb';
-// Server Actions
+import { CreditCard, LoaderCircle, LockKeyhole } from 'lucide-react';
+import { useState } from 'react';
+import type { PiecesWithImages } from '@/db/schema';
+import { money } from '@/lib/artwork';
 import { runStripePurchase } from '../actions';
-// Components
-import InputTextbox from '@/components/inputs/InputTextbox';
-import InputAutoComplete from '@/components/inputs/InputAutoComplete';
-import StripeBrandedButton from '@/components/svg/StripeBrandedButton';
 
-const INTERNATIONAL_SHIPPING_RATE = 25;
-const googleMapsLibraries: Libraries = ['places'];
+export default function CheckoutForm({ current_piece }: { current_piece: PiecesWithImages }) {
+    const [pending, setPending] = useState(false);
+    const [error, setError] = useState('');
 
-interface CheckoutFormProps {
-    current_piece: any;
-}
-
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ current_piece }) => {
-    const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-        libraries: googleMapsLibraries,
-    });
-
-    const [loading, setLoading] = React.useState(false);
-    const [submitted, setSubmitted] = React.useState(false);
-    const [errorFound, setErrorFound] = React.useState(false);
-    const [address, setAddress] = React.useState('');
-    const [isInternational, setIsInternational] = useState(Boolean(current_piece.international));
-
-    // CHECK THAT GOOGLE MAPS API IS LOADED
-    if (loadError) {
-        return <div>Error loading Google Maps API: {loadError.message}</div>;
+    async function submit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        setPending(true);
+        setError('');
+        try {
+            const result = await runStripePurchase(new FormData(event.currentTarget));
+            if (!result.redirectUrl) throw new Error('Checkout URL is missing.');
+            window.location.assign(result.redirectUrl);
+        } catch (reason) {
+            setError(reason instanceof Error ? reason.message : 'Checkout could not be started.');
+            setPending(false);
+        }
     }
 
-    const handleStripePurchaseClick = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setLoading(true);
-        setSubmitted(false);
-        setErrorFound(false);
-
-        const formData = new FormData(event.currentTarget);
-        const response = await runStripePurchase(formData);
-
-        if (response && response.success && response.redirectUrl) {
-            window.location.href = response.redirectUrl;
-        } else {
-            console.error('Stripe purchase failed');
-            setLoading(false);
-            setSubmitted(false);
-            setErrorFound(true);
-        }
-    };
-
-    const handleAddressChange = (value: string) => {
-        setAddress(value);
-        const isInternationalAddress = value.includes('USA') ? false : true;
-        setIsInternational(isInternationalAddress);
-    };
-
-    const submit_loader_spinner = <TbProgress className="animate-spin text-primary" />;
-    const submit_successful_jsx = <div className="text-green-500">Checkout submit successful.</div>;
-    const submit_unsuccessful_jsx = <div className="text-red-500">Checkout submit was not successful.</div>;
-
-    const loader_container = loading
-        ? submit_loader_spinner
-        : submitted
-          ? submit_successful_jsx
-          : errorFound
-            ? submit_unsuccessful_jsx
-            : null;
-
-    const submit_container = loader_container && <div className="mt-4">{loader_container}</div>;
-
     return (
-        <div className="flex h-full w-full flex-col overflow-y-auto">
-            <form onSubmit={handleStripePurchaseClick} className="flex flex-col">
-                <input type="hidden" name="piece_id" value={current_piece.id} />
-
-                <div className="flex flex-col space-y-2">
-                    <InputTextbox idName="full_name" name="Full Name" placeholder="Enter Full Name..." />
-                    <InputTextbox idName="phone" name="Phone" placeholder="Enter Phone Number..." />
-                    <InputTextbox idName="email" name="Email" placeholder="Enter Email Address..." />
-                    {isLoaded ? (
-                        <InputAutoComplete name="address" value={address} onChange={handleAddressChange} />
-                    ) : (
-                        <InputTextbox idName="address" name="address" placeholder="Enter Address..." />
-                    )}
-                </div>
-
-                <div className="mt-4">
-                    <StripeBrandedButton
-                        url={'submit'}
-                        price={isInternational ? current_piece.price + INTERNATIONAL_SHIPPING_RATE : current_piece.price}
-                        text="purchase"
-                    />
-                    <div className="mt-2">
-                        <div className="font-sans text-stone-300">
-                            {`Pieces ship within 5 days. ${isInternational ? 'International shipping costs $25 and can take up to 1 month.' : 'Domestic shipping can take up to a week.'}`}
-                        </div>
-                    </div>
-                </div>
-
-                {submit_container}
-            </form>
-        </div>
+        <form className="lw-checkout-form" onSubmit={submit}>
+            <input type="hidden" name="piece_id" value={current_piece.id} />
+            <div className="lw-field-row">
+                <label>
+                    Full name
+                    <input name="full_name" required autoComplete="name" />
+                </label>
+                <label>
+                    Email
+                    <input name="email" type="email" required autoComplete="email" />
+                </label>
+            </div>
+            <label>
+                Phone
+                <input name="phone" type="tel" required autoComplete="tel" />
+            </label>
+            <label>
+                Shipping address
+                <textarea
+                    name="address"
+                    required
+                    autoComplete="street-address"
+                    rows={4}
+                    placeholder="Street, city, region, postal code, and country"
+                />
+            </label>
+            <div className="lw-checkout-total">
+                <span>Artwork</span>
+                <strong>{money(current_piece.price)}</strong>
+                <small>
+                    International shipping, when applicable, is calculated as a separate $25 line item after the address is submitted.
+                </small>
+            </div>
+            <button className="lw-button lw-button-brass lw-wide-button" disabled={pending}>
+                {pending ? <LoaderCircle className="lw-spin" size={17} /> : <CreditCard size={17} />}{' '}
+                {pending ? 'Opening secure checkout…' : `Continue to secure payment · ${money(current_piece.price)}`}
+            </button>
+            <p className="lw-secure-note">
+                <LockKeyhole size={14} /> Payment is completed on Stripe. Card details never touch this site.
+            </p>
+            {error && (
+                <p className="lw-form-message is-error" role="alert">
+                    {error}
+                </p>
+            )}
+        </form>
     );
-};
-
-export default CheckoutForm;
+}

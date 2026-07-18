@@ -144,7 +144,7 @@ Evidence:
 
 ### Phase 6: `d2 v1` Product Implementation
 
-Status: **pending**
+Status: **in progress**
 
 Acceptance criteria:
 
@@ -158,6 +158,10 @@ Acceptance criteria:
 -   [ ] Expose real catalog gaps through owner needs-attention and publish-check rules; do not copy synthetic wireframe analytics or counts.
 -   [ ] Implement Mailing MVP as consent/suppression, subscriber list, simple draft/preview/send, and provider outcomes. Defer segmentation, scheduling, and a full ESP workflow.
 -   [ ] Verify every route and meaningful state against a production build with screenshots plus DOM/layout, console, and failed-network evidence.
+
+Progress:
+
+-   The canonical Lit Wall public routes, slug-based artwork detail, real-data catalog controls, image gallery, room visualization, inquiry/newsletter forms, commissions, studio story, contact guide, and server-authoritative Stripe checkout states are implemented and pass a production build. Preview browser verification and the owner console remain before this phase can be marked verified.
 
 ### Phase 7: Optimization, Security, Accessibility, and Discoverability
 

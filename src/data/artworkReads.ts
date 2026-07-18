@@ -50,6 +50,15 @@ export async function readPublicArtwork(id: number): Promise<PiecesWithImages | 
     return { ...piece, extraImages, progressImages };
 }
 
+export async function readPublicArtworkBySlug(slug: string): Promise<PiecesWithImages | null> {
+    if (getReadBackend() === 'convex') {
+        const artwork = await getConvexClient().query(api.artworks.getPublicBySlug, { slug });
+        return artwork ? toLegacyArtwork(artwork) : null;
+    }
+    const trailingId = Number(slug.match(/-(\d+)$/)?.[1] ?? slug);
+    return Number.isSafeInteger(trailingId) ? readPublicArtwork(trailingId) : null;
+}
+
 export async function readPublicArtworksByIds(ids: number[]): Promise<PiecesWithImages[]> {
     if (ids.length === 0) return [];
     if (getReadBackend() === 'convex') {

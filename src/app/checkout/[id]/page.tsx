@@ -1,47 +1,66 @@
 import type { Metadata } from 'next';
-export const metadata: Metadata = {
-    title: 'JWS Fine Art - Checkout',
-    description: 'Checkout for JWS Fine Art',
-    keywords:
-        'Jill Weeks Smith, JWS Fine Art, Jill Weeks Smith Art, JWS Art, Art, Artist, Oil Painting, Oil, Gallery, Jill, Weeks, Smith, Checkout',
-    applicationName: 'JWS Fine Art',
-    icons: {
-        icon: '/logo/JWS_ICON_260.png',
-        shortcut: '/logo/JWS_ICON_260.png',
-        apple: '/favicon/apple-icon.png',
-    },
-    openGraph: {
-        title: 'JWS Fine Art - Checkout',
-        description: 'Checkout for JWS Fine Art',
-        siteName: 'JWS Fine Art',
-        url: 'https://www.jwsfineart.com',
-        images: [
-            {
-                url: '/favicon/og-image.png',
-                width: 1200,
-                height: 630,
-                alt: 'JWS Fine Art',
-            },
-        ],
-        locale: 'en_US',
-        type: 'website',
-    },
-};
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft, Check, PackageCheck, ShieldCheck } from 'lucide-react';
+import { notFound, redirect } from 'next/navigation';
+import CheckoutForm from './CheckoutForm';
+import { SiteShell } from '@/components/lit-wall/SiteShell';
+import { readPublicArtwork } from '@/data/artworkReads';
+import { artworkHref, dimensions, isPurchasable, money } from '@/lib/artwork';
 
-import { fetchPieceById } from '@/app/actions';
-import { PiecesWithImages } from '@/db/schema';
+export const metadata: Metadata = { title: 'Checkout', robots: { index: false, follow: false } };
 
-import PageLayout from '@/components/layout/PageLayout';
-import Checkout from '@/app/checkout/[id]/Checkout';
-
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-    const current_id = parseInt((await props.params).id);
-    const current_piece: PiecesWithImages = await fetchPieceById(current_id);
-
+export default async function CheckoutPage({ params }: { params: Promise<{ id: string }> }) {
+    const id = Number((await params).id);
+    const piece = Number.isSafeInteger(id) ? await readPublicArtwork(id) : null;
+    if (!piece) notFound();
+    if (!isPurchasable(piece)) redirect(artworkHref(piece));
     return (
-        <PageLayout page={`/checkout/${(await props.params).id}`}>
-            <Checkout current_piece={current_piece} current_id={current_id} />
-        </PageLayout>
+        <SiteShell>
+            <nav className="lw-checkout-back">
+                <Link href={artworkHref(piece)}>
+                    <ArrowLeft size={16} /> Back to {piece.title}
+                </Link>
+            </nav>
+            <section className="lw-checkout-layout">
+                <aside className="lw-checkout-piece">
+                    <div>
+                        <Image
+                            src={piece.image_path}
+                            alt={piece.title}
+                            width={piece.width || 1}
+                            height={piece.height || 1}
+                            sizes="(max-width: 800px) 92vw, 42vw"
+                            priority
+                            quality={90}
+                        />
+                    </div>
+                    <span className="lw-eyebrow">Original artwork</span>
+                    <h1>{piece.title}</h1>
+                    <p>
+                        {piece.piece_type || 'Original artwork'} · {dimensions(piece)}
+                    </p>
+                    <strong>{money(piece.price)}</strong>
+                </aside>
+                <div className="lw-checkout-panel">
+                    <span className="lw-eyebrow">Secure checkout</span>
+                    <h2>Where should the artwork go?</h2>
+                    <p>Enter your contact and shipping details. You will review the final amount before paying on Stripe.</p>
+                    <CheckoutForm current_piece={piece} />
+                    <ul>
+                        <li>
+                            <ShieldCheck size={16} /> Insured shipping
+                        </li>
+                        <li>
+                            <PackageCheck size={16} /> Packed by Jill’s studio
+                        </li>
+                        <li>
+                            <Check size={16} /> 30-day returns
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </SiteShell>
     );
 }
 

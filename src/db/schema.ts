@@ -99,6 +99,7 @@ export type VerifiedTransactions = InferSelectModel<typeof verifiedTransactionsT
 export type InsertVerifiedTransactions = InferInsertModel<typeof verifiedTransactionsTable>;
 
 export type PiecesWithImages = Pieces & {
+    slug?: string;
     extraImages: ExtraImages[];
     progressImages: ProgressImages[];
     next_id?: number;

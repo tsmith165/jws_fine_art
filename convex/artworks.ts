@@ -98,3 +98,22 @@ export const getPublicByLegacyId = query({
         );
     },
 });
+
+export const getPublicBySlug = query({
+    args: { slug: v.string() },
+    handler: async (ctx, args) => {
+        const artwork = await ctx.db
+            .query('artworks')
+            .withIndex('by_slug', (q) => q.eq('slug', args.slug))
+            .unique();
+        if (!artwork || !artwork.active || artwork.absentFromSource) return null;
+        const media = await ctx.db
+            .query('artworkMedia')
+            .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', artwork.legacyId))
+            .collect();
+        return publicArtwork(
+            artwork,
+            media.filter((item) => !item.absentFromSource).sort((a, b) => a.displayOrder - b.displayOrder),
+        );
+    },
+});
