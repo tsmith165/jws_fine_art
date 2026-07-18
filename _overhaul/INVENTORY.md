@@ -78,9 +78,9 @@ The source schema has primary-key indexes only. It contains no `created_at`, `up
 
 ## Asset Inventory
 
-- 481 unique HTTP asset URLs are referenced across primary, supporting, progress, and derived small images.
-- All 481 return HTTP `200` during the July 17 audit.
-- 480 references use `utfs.io`; one non-HTTP/legacy value is retained for explicit reconciliation.
+- 481 unique operational HTTP asset URLs are referenced across primary, supporting, progress, and derived small images; all 481 returned HTTP `200` during the July 17 audit.
+- Verified transaction snapshots reference three additional distinct HTTP URLs not used by current artwork records. Two returned `200` and one returned `404` during the migration review.
+- Across operational and transaction snapshot media there are 484 unique HTTP URLs and zero non-HTTP values. Current references use `utfs.io`; historical transaction snapshots also include legacy S3 hosts.
 - Stored primary dimensions range from 461-1920px wide and 573-1920px high.
 - No primary or derived image has invalid stored dimensions.
 - Nine primary images sampled across the ID range exactly matched their stored source width and height.
