@@ -39,7 +39,9 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
     const active = media[selected] || media[0];
     const move = (amount: number) => setSelected((value) => (value + amount + media.length) % media.length);
     useEffect(() => setSelected(0), [piece.id]);
-    useEffect(() => refs.current[selected]?.scrollIntoView({ block: 'nearest', inline: 'nearest' }), [selected]);
+    useEffect(() => {
+        refs.current[selected]?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }, [selected]);
     const keyboard = (event: React.KeyboardEvent, index: number) => {
         if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();
