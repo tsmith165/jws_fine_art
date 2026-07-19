@@ -19,8 +19,18 @@ async function checkoutSessionId(stripe: Stripe, paymentIntentId: string) {
 
 function stripeEventDetails(event: Stripe.Event) {
     const object = event.data.object;
+    if (object.object === 'checkout.session') {
+        const paymentIntent = object.payment_intent;
+        return {
+            checkoutSessionId: object.id,
+            paymentIntentId: typeof paymentIntent === 'string' ? paymentIntent : (paymentIntent?.id ?? null),
+            amountCents: object.amount_total,
+            currency: object.currency,
+        };
+    }
     if (object.object === 'payment_intent') {
         return {
+            checkoutSessionId: null,
             paymentIntentId: object.id,
             amountCents: event.type === 'payment_intent.succeeded' ? object.amount_received : null,
             currency: object.currency,
@@ -29,6 +39,7 @@ function stripeEventDetails(event: Stripe.Event) {
     if (object.object === 'charge') {
         const paymentIntentId = typeof object.payment_intent === 'string' ? object.payment_intent : (object.payment_intent?.id ?? null);
         return {
+            checkoutSessionId: null,
             paymentIntentId,
             amountCents: event.type === 'charge.refunded' ? object.amount_refunded : object.amount,
             currency: object.currency,
@@ -37,12 +48,13 @@ function stripeEventDetails(event: Stripe.Event) {
     if (object.object === 'dispute') {
         const paymentIntent = object.payment_intent;
         return {
+            checkoutSessionId: null,
             paymentIntentId: typeof paymentIntent === 'string' ? paymentIntent : (paymentIntent?.id ?? null),
             amountCents: object.amount,
             currency: object.currency,
         };
     }
-    return { paymentIntentId: null, amountCents: null, currency: null };
+    return { checkoutSessionId: null, paymentIntentId: null, amountCents: null, currency: null };
 }
 
 export async function POST(request: Request) {
@@ -69,7 +81,7 @@ export async function POST(request: Request) {
     try {
         const details = stripeEventDetails(event);
         const paymentIntentId = details.paymentIntentId;
-        const sessionId = paymentIntentId ? await checkoutSessionId(stripe, paymentIntentId) : null;
+        const sessionId = details.checkoutSessionId ?? (paymentIntentId ? await checkoutSessionId(stripe, paymentIntentId) : null);
         const { client, serverSecret } = getServerConvexClient();
         const result = await client.mutation(api.commerce.processStripeEvent, {
             serverSecret,

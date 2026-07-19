@@ -196,6 +196,7 @@ export const processStripeEvent = mutation({
         if (processed) return { outcome: 'duplicate' as const };
 
         const handledEventTypes = new Set([
+            'checkout.session.expired',
             'payment_intent.succeeded',
             'payment_intent.payment_failed',
             'payment_intent.canceled',
@@ -268,7 +269,11 @@ export const processStripeEvent = mutation({
             return { outcome: 'processed' as const, notification: null };
         }
 
-        if (args.eventType === 'payment_intent.payment_failed' || args.eventType === 'payment_intent.canceled') {
+        if (
+            args.eventType === 'checkout.session.expired' ||
+            args.eventType === 'payment_intent.payment_failed' ||
+            args.eventType === 'payment_intent.canceled'
+        ) {
             await ctx.db.patch(intent._id, {
                 status: args.eventType === 'payment_intent.canceled' ? 'canceled' : 'expired',
                 stripePaymentIntentId: args.paymentIntentId ?? intent.stripePaymentIntentId,

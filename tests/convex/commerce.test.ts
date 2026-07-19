@@ -434,6 +434,43 @@ describe('Convex commerce', () => {
         expect(state.orders).toHaveLength(0);
         expect(state.quarantine).toHaveLength(1);
     });
+
+    it('expires a checkout intent when its Stripe Checkout Session expires before payment', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_expired',
+            paymentIntentId: null,
+        });
+
+        const result = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_session_expired',
+            eventType: 'checkout.session.expired',
+            paymentIntentId: null,
+            checkoutSessionId: 'cs_expired',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+
+        expect(result.outcome).toBe('processed');
+        const state = await t.run(async (ctx) => ({
+            checkout: await ctx.db.get(intent.intentId),
+            events: await ctx.db.query('stripeEvents').collect(),
+            quarantine: await ctx.db.query('webhookQuarantine').collect(),
+        }));
+        expect(state.checkout?.status).toBe('expired');
+        expect(state.events).toHaveLength(1);
+        expect(state.events[0]).toMatchObject({ eventType: 'checkout.session.expired', status: 'processed' });
+        expect(state.quarantine).toHaveLength(0);
+    });
 });
 
 describe('owner authorization', () => {
