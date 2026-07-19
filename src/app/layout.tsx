@@ -1,4 +1,6 @@
 import React, { Suspense } from 'react';
+import { ClerkProvider } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import { PHProvider } from './providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -34,13 +36,25 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang="en" className={`${cinzel.variable} ${libreCaslon.variable} ${manrope.variable}`}>
             <body>
-                <PHProvider>
-                    <Suspense fallback={null}>
-                        <PostHogPageView />
-                    </Suspense>
-                    {isVercelRuntime ? <SpeedInsights /> : null}
-                    {children}
-                </PHProvider>
+                <ClerkProvider
+                    appearance={{
+                        baseTheme: dark,
+                        elements: {
+                            formButtonPrimary: {
+                                backgroundColor: '#c6a466',
+                                color: '#17140f',
+                            },
+                        },
+                    }}
+                >
+                    <PHProvider>
+                        <Suspense fallback={null}>
+                            <PostHogPageView />
+                        </Suspense>
+                        {isVercelRuntime ? <SpeedInsights /> : null}
+                        {children}
+                    </PHProvider>
+                </ClerkProvider>
             </body>
         </html>
     );

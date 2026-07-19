@@ -23,6 +23,14 @@ const nextConfig = {
         qualities: [75, 82, 85, 90, 100],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
     },
+    async redirects() {
+        return [
+            { source: '/login/:path*', destination: '/signin/:path*', permanent: false },
+            { source: '/sign-in/:path*', destination: '/signin/:path*', permanent: false },
+            { source: '/logout/:path*', destination: '/signout/:path*', permanent: false },
+            { source: '/sign-out/:path*', destination: '/signout/:path*', permanent: false },
+        ];
+    },
     async headers() {
         return [
             {

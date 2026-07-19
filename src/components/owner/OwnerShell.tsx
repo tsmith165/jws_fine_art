@@ -51,9 +51,9 @@ export function OwnerShell({ active, title, children }: { active: string; title:
                     <Link href="/" target="_blank">
                         View site <ExternalLink size={14} aria-hidden="true" />
                     </Link>
-                    <span className="owner-avatar" aria-label="Jill Weeks Smith account">
+                    <Link className="owner-avatar" href="/signin" aria-label="Manage Jill Weeks Smith account" title="Manage account">
                         J
-                    </span>
+                    </Link>
                 </header>
                 <div className="owner-scroll">{children}</div>
             </main>

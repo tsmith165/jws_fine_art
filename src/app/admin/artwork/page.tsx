@@ -1,7 +1,8 @@
-import { Archive, Edit3, Plus, Search } from 'lucide-react';
+import { Archive, Edit3, Plus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
+import { OwnerCatalogFilters } from '@/components/owner/OwnerCatalogFilters';
 import { readOwnerArtworks } from '@/data/ownerReads';
 import { setActive, setInactive } from '@/app/admin/manage/actions';
 
@@ -15,6 +16,7 @@ export default async function OwnerArtworkPage({ searchParams }: { searchParams:
     const pieces = all.filter((piece) => {
         if (filter === 'active' && !piece.active) return false;
         if (filter === 'archive' && piece.active) return false;
+        if (filter === 'needs-details' && !piece.active) return false;
         if (
             filter === 'needs-details' &&
             piece.title &&
@@ -47,24 +49,7 @@ export default async function OwnerArtworkPage({ searchParams }: { searchParams:
                         </Link>
                     }
                 />
-                <form className="owner-toolbar" action="/admin/artwork">
-                    <label className="owner-search">
-                        <Search size={17} aria-hidden="true" />
-                        <span className="sr-only">Search artwork</span>
-                        <input name="q" defaultValue={params.q} placeholder="Search title, medium, or collection" />
-                    </label>
-                    <div className="owner-inline-form">
-                        <select name="filter" defaultValue={filter} aria-label="Catalog view">
-                            <option value="active">Active artwork</option>
-                            <option value="all">All artwork</option>
-                            <option value="needs-details">Needs details</option>
-                            <option value="archive">Archive</option>
-                        </select>
-                        <button className="owner-button" type="submit">
-                            Apply
-                        </button>
-                    </div>
-                </form>
+                <OwnerCatalogFilters initialQuery={params.q || ''} initialFilter={filter} />
                 <div className="owner-catalog">
                     {pieces.length ? (
                         pieces.map((piece) => (

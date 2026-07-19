@@ -1,6 +1,8 @@
 import { ArrowRight, FileWarning, Inbox, PackageCheck } from 'lucide-react';
 import Link from 'next/link';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
+import { OwnerPostHogSummary } from '@/components/owner/OwnerPostHogSummary';
+import { readPostHogAnalytics } from '@/data/posthogAnalytics';
 import { readOwnerDashboard } from '@/data/ownerWorkspaceReads';
 
 export const dynamic = 'force-dynamic';
@@ -8,8 +10,14 @@ export const dynamic = 'force-dynamic';
 const number = new Intl.NumberFormat('en-US');
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
+function fulfillmentTone(value: string): 'neutral' | 'good' | 'warning' {
+    if (value === 'needs_attention') return 'warning';
+    if (value === 'untracked') return 'neutral';
+    return 'good';
+}
+
 export default async function OwnerDashboardPage() {
-    const dashboard = await readOwnerDashboard();
+    const [dashboard, posthog] = await Promise.all([readOwnerDashboard(), readPostHogAnalytics()]);
     const attention =
         Number(dashboard.ordersToFulfill > 0) + Number(dashboard.artwork.needsDetails > 0) + Number(dashboard.newInquiries > 0);
     return (
@@ -46,7 +54,7 @@ export default async function OwnerDashboardPage() {
                         </span>
                         <h2>
                             {dashboard.artwork.needsDetails
-                                ? `${dashboard.artwork.needsDetails} pieces need details`
+                                ? `${dashboard.artwork.needsDetails} ${dashboard.artwork.needsDetails === 1 ? 'piece needs' : 'pieces need'} details`
                                 : 'Catalog is complete'}
                         </h2>
                         <p>Missing dimensions, medium, or price can keep a piece from being ready to publish.</p>
@@ -82,6 +90,9 @@ export default async function OwnerDashboardPage() {
                         <span>Campaign drafts</span>
                         <strong>{number.format(dashboard.draftCampaigns)}</strong>
                     </div>
+                </div>
+                <div className="owner-dashboard-analytics">
+                    <OwnerPostHogSummary analytics={posthog} compact />
                 </div>
                 <div className="owner-dashboard-lower">
                     <section className="owner-panel">
@@ -130,7 +141,7 @@ export default async function OwnerDashboardPage() {
                                             <strong>
                                                 {money.format((order.amountPaidCents ?? order.legacyRecordedPriceCents ?? 0) / 100)}
                                             </strong>
-                                            <OwnerStatus tone={order.fulfillmentStatus === 'needs_attention' ? 'warning' : 'good'}>
+                                            <OwnerStatus tone={fulfillmentTone(order.fulfillmentStatus)}>
                                                 {order.fulfillmentStatus.replace('_', ' ')}
                                             </OwnerStatus>
                                         </div>

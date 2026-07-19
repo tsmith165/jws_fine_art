@@ -6,9 +6,9 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (req.nextUrl.pathname.startsWith('/admin')) {
         if (!userId) {
-            const signIn = new URL('/signin', req.url);
-            signIn.searchParams.set('redirect_url', req.nextUrl.pathname + req.nextUrl.search);
-            return NextResponse.redirect(signIn);
+            const denied = new URL('/not-authorized', req.url);
+            denied.searchParams.set('return_to', req.nextUrl.pathname + req.nextUrl.search);
+            return NextResponse.redirect(denied);
         }
     }
 
@@ -16,5 +16,5 @@ export default clerkMiddleware(async (auth, req) => {
 });
 
 export const config = {
-    matcher: ['/admin/:path*', '/api/uploadthing'],
+    matcher: ['/admin/:path*', '/api/uploadthing', '/signin/:path*', '/signout', '/not-authorized'],
 };

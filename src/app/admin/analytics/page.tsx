@@ -1,13 +1,13 @@
-import { ExternalLink } from 'lucide-react';
 import type { CSSProperties } from 'react';
-import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
+import { OwnerHeading, OwnerShell } from '@/components/owner/OwnerShell';
+import { OwnerPostHogSummary } from '@/components/owner/OwnerPostHogSummary';
+import { readPostHogAnalytics } from '@/data/posthogAnalytics';
 import { readOwnerDashboard } from '@/data/ownerWorkspaceReads';
 
 export const dynamic = 'force-dynamic';
 
 export default async function OwnerAnalyticsPage() {
-    const dashboard = await readOwnerDashboard();
-    const posthogConfigured = Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY);
+    const [dashboard, posthog] = await Promise.all([readOwnerDashboard(), readPostHogAnalytics()]);
     const funnel = [
         ['Active artwork', dashboard.artwork.active],
         ['Available now', dashboard.artwork.available],
@@ -41,31 +41,7 @@ export default async function OwnerAnalyticsPage() {
                             ))}
                         </div>
                     </section>
-                    <section className="owner-panel">
-                        <header className="owner-panel-header">
-                            <div>
-                                <span className="owner-panel-eyebrow">Behavior analytics</span>
-                                <h2>PostHog</h2>
-                            </div>
-                            <OwnerStatus tone={posthogConfigured ? 'good' : 'warning'}>
-                                {posthogConfigured ? 'Capturing' : 'Not configured'}
-                            </OwnerStatus>
-                        </header>
-                        <p style={{ color: 'var(--owner-muted)', maxWidth: 560 }}>
-                            Page views and interaction events remain in PostHog, which is purpose-built for retention, funnels, paths, bot
-                            filtering, and privacy controls. Duplicating raw event capture in Convex would increase cost and privacy risk
-                            without improving Jill’s workflow.
-                        </p>
-                        <a
-                            className="owner-button"
-                            href="https://us.posthog.com"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ marginTop: 24 }}
-                        >
-                            Open PostHog <ExternalLink size={15} />
-                        </a>
-                    </section>
+                    <OwnerPostHogSummary analytics={posthog} />
                     <section className="owner-panel">
                         <header className="owner-panel-header">
                             <div>
