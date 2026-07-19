@@ -26,6 +26,7 @@ export type PostHogAnalytics =
           artworkViews: number;
           firstEventAt: string | null;
           lastEventAt: string | null;
+          trend: Array<{ date: string; pageviews: number; visitors: number }>;
           topPages: Array<{ label: string; path: string; value: number }>;
           sources: Array<{ label: string; value: number }>;
       }
@@ -102,6 +103,29 @@ function normalizedPages(pageResults: unknown) {
         .map(([path, value]) => ({ path, label: analyticsPathLabel(path), value }));
 }
 
+function sourceLabel(value: unknown) {
+    const raw = String(value || '').trim();
+    if (!raw || raw === '$direct' || raw.toLowerCase().includes('direct')) return 'Direct';
+    const domain = raw.replace(/^(www\.|m\.|l\.)/, '').toLowerCase();
+    if (domain.includes('instagram')) return 'Instagram';
+    if (domain.includes('facebook')) return 'Facebook';
+    if (domain.includes('google')) return 'Google';
+    if (domain === 'californiaartclub.org') return 'California Art Club';
+    return domain;
+}
+
+function normalizedSources(sourceResults: unknown) {
+    const grouped = new Map<string, number>();
+    for (const row of rows(sourceResults)) {
+        const label = sourceLabel(row[0]);
+        grouped.set(label, (grouped.get(label) ?? 0) + numberAt(row, 1));
+    }
+    return [...grouped.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([label, value]) => ({ label, value }));
+}
+
 async function readUncachedPostHogAnalytics(range: PostHogRange): Promise<PostHogAnalytics> {
     const projectId = process.env.POSTHOG_PROJECT_ID;
     const apiKey = process.env.POSTHOG_PERSONAL_API_KEY;
@@ -114,7 +138,7 @@ async function readUncachedPostHogAnalytics(range: PostHogRange): Promise<PostHo
 
     const where = productionPageviewWhere(range);
     try {
-        const [metricResults, pageResults, sourceResults] = await Promise.all([
+        const [metricResults, trendResults, pageResults, sourceResults] = await Promise.all([
             hogql(
                 projectId,
                 apiKey,
@@ -129,6 +153,15 @@ async function readUncachedPostHogAnalytics(range: PostHogRange): Promise<PostHo
                     max(timestamp)
                  FROM events
                  WHERE ${where}`,
+            ),
+            hogql(
+                projectId,
+                apiKey,
+                `SELECT toDate(timestamp), count(), uniq(distinct_id)
+                 FROM events
+                 WHERE ${where}
+                 GROUP BY toDate(timestamp)
+                 ORDER BY toDate(timestamp) ASC`,
             ),
             hogql(
                 projectId,
@@ -161,11 +194,13 @@ async function readUncachedPostHogAnalytics(range: PostHogRange): Promise<PostHo
             artworkViews: numberAt(metricRow, 2),
             firstEventAt: stringAt(metricRow, 3),
             lastEventAt: stringAt(metricRow, 4),
-            topPages: normalizedPages(pageResults),
-            sources: rows(sourceResults).map((row) => ({
-                label: String(row[0] || 'Direct / unknown'),
-                value: numberAt(row, 1),
+            trend: rows(trendResults).map((row) => ({
+                date: String(row[0] || ''),
+                pageviews: numberAt(row, 1),
+                visitors: numberAt(row, 2),
             })),
+            topPages: normalizedPages(pageResults),
+            sources: normalizedSources(sourceResults),
         };
     } catch (error) {
         console.error('Unable to load PostHog analytics', error);
@@ -173,7 +208,7 @@ async function readUncachedPostHogAnalytics(range: PostHogRange): Promise<PostHo
     }
 }
 
-const readCachedPostHogAnalytics = unstable_cache(readUncachedPostHogAnalytics, ['posthog-owner-analytics-v2'], {
+const readCachedPostHogAnalytics = unstable_cache(readUncachedPostHogAnalytics, ['posthog-owner-analytics-v3'], {
     revalidate: 300,
 });
 

@@ -22,9 +22,10 @@ export default async function OwnerAnalyticsPage({ searchParams }: { searchParam
                 <OwnerHeading
                     eyebrow="Studio intelligence"
                     title="What is drawing attention"
-                    description="PostHog owns anonymous behavior. Convex owns consent, inquiries, and purchases. The two systems stay deliberately separate."
+                    description="See how people find the studio, which work holds their attention, and where interest becomes a collector conversation."
                 />
                 <div className="owner-analytics-grid">
+                    <OwnerPostHogSummary analytics={posthog} />
                     <section className="owner-panel">
                         <header className="owner-panel-header">
                             <div>
@@ -42,7 +43,6 @@ export default async function OwnerAnalyticsPage({ searchParams }: { searchParam
                             ))}
                         </div>
                     </section>
-                    <OwnerPostHogSummary analytics={posthog} />
                     <section className="owner-panel">
                         <header className="owner-panel-header">
                             <div>
@@ -60,28 +60,6 @@ export default async function OwnerAnalyticsPage({ searchParams }: { searchParam
                                 <strong>{dashboard.draftCampaigns}</strong>
                             </div>
                         </div>
-                    </section>
-                    <section className="owner-panel">
-                        <header className="owner-panel-header">
-                            <div>
-                                <span className="owner-panel-eyebrow">Data policy</span>
-                                <h2>What stays first-party</h2>
-                            </div>
-                        </header>
-                        <ul className="owner-list">
-                            <li>
-                                <div>
-                                    <strong>Convex</strong>
-                                    <p>Subscribers, explicit consent, collector inquiries, orders, fulfillment, and campaigns.</p>
-                                </div>
-                            </li>
-                            <li>
-                                <div>
-                                    <strong>PostHog</strong>
-                                    <p>Anonymous sessions, paths, referrers, device classes, and interaction trends.</p>
-                                </div>
-                            </li>
-                        </ul>
                     </section>
                 </div>
             </section>

@@ -48,12 +48,14 @@ export function OwnerShell({ active, title, children }: { active: string; title:
                 <header className="owner-topbar">
                     <span>JWS Fine Art</span>
                     <strong>{title}</strong>
-                    <Link href="/" target="_blank">
-                        View site <ExternalLink size={14} aria-hidden="true" />
-                    </Link>
-                    <Link className="owner-avatar" href="/signin" aria-label="Manage Jill Weeks Smith account" title="Manage account">
-                        J
-                    </Link>
+                    <div className="owner-topbar-actions">
+                        <Link className="owner-topbar-site-link" href="/" target="_blank">
+                            View site <ExternalLink size={14} aria-hidden="true" />
+                        </Link>
+                        <Link className="owner-avatar" href="/signin" aria-label="Manage Jill Weeks Smith account" title="Manage account">
+                            J
+                        </Link>
+                    </div>
                 </header>
                 <div className="owner-scroll">{children}</div>
             </main>

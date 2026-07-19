@@ -1,8 +1,8 @@
 import { Plus, Send } from 'lucide-react';
 import Link from 'next/link';
+import { OwnerCampaignComposer } from '@/components/owner/OwnerCampaignComposer';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
 import { readOwnerCampaigns, readOwnerSubscribers } from '@/data/ownerWorkspaceReads';
-import { saveCampaign } from '@/app/admin/actions';
 import { sendCampaign } from '@/app/admin/mailing/actions';
 
 export const dynamic = 'force-dynamic';
@@ -75,87 +75,67 @@ export default async function OwnerMailingPage({
                         </div>
                     </section>
                 ) : (
-                    <div className="owner-workspace-grid">
+                    <div className="owner-workspace-grid owner-mail-workspace">
                         <aside className="owner-panel owner-campaign-list">
                             <header className="owner-panel-header">
                                 <h2>Campaigns</h2>
                                 <OwnerStatus>{campaigns.length}</OwnerStatus>
                             </header>
-                            {campaigns.map((campaign) => (
-                                <a className="owner-select-row" href={`/admin/mailing?campaign=${campaign._id}`} key={campaign._id}>
-                                    <span>
-                                        <strong>{campaign.name}</strong>
-                                        <small>{campaign.subject}</small>
-                                    </span>
-                                    <OwnerStatus
-                                        tone={campaign.status === 'sent' ? 'good' : campaign.status === 'failed' ? 'warning' : 'neutral'}
-                                    >
-                                        {campaign.status}
-                                    </OwnerStatus>
-                                </a>
-                            ))}
+                            {campaigns.length ? (
+                                <div className="owner-campaign-rows">
+                                    {campaigns.map((campaign) => (
+                                        <a
+                                            className={`owner-select-row${selected?._id === campaign._id ? ' is-selected' : ''}`}
+                                            href={`/admin/mailing?campaign=${campaign._id}`}
+                                            key={campaign._id}
+                                        >
+                                            <span>
+                                                <strong>{campaign.name}</strong>
+                                                <small>{campaign.subject}</small>
+                                            </span>
+                                            <OwnerStatus
+                                                tone={campaign.status === 'sent' ? 'good' : campaign.status === 'failed' ? 'warning' : 'neutral'}
+                                            >
+                                                {campaign.status}
+                                            </OwnerStatus>
+                                        </a>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="owner-campaign-empty">
+                                    <span>No campaigns yet</span>
+                                    <p>Your saved drafts and sent studio letters will stay organized here.</p>
+                                    <Link className="owner-button" href="/admin/mailing?new=1">
+                                        <Plus size={15} aria-hidden="true" /> Start a draft
+                                    </Link>
+                                </div>
+                            )}
                         </aside>
-                        <section className="owner-panel">
-                            <form action={saveCampaign} className="owner-form-grid">
-                                <input type="hidden" name="campaignId" value={selected?.status === 'draft' ? selected._id : ''} />
-                                <label className="owner-field">
-                                    <span>Campaign name</span>
-                                    <input name="name" defaultValue={selected?.name || ''} required placeholder="July studio note" />
-                                </label>
-                                <label className="owner-field">
-                                    <span>Subject line</span>
-                                    <input
-                                        name="subject"
-                                        defaultValue={selected?.subject || ''}
-                                        required
-                                        placeholder="New work from the coast"
-                                    />
-                                </label>
-                                <label className="owner-field is-wide">
-                                    <span>Preview text</span>
-                                    <input
-                                        name="previewText"
-                                        defaultValue={selected?.previewText || ''}
-                                        placeholder="A short introduction visible in the inbox"
-                                    />
-                                </label>
-                                <label className="owner-field is-wide">
-                                    <span>Headline</span>
-                                    <input name="headline" defaultValue={copy.headline} required placeholder="From the studio this month" />
-                                </label>
-                                <label className="owner-field is-wide">
-                                    <span>Message</span>
-                                    <textarea
-                                        name="body"
-                                        defaultValue={copy.body}
-                                        required
-                                        placeholder="Share the story behind the work..."
-                                    />
-                                </label>
-                                <button
-                                    className="owner-button is-primary"
-                                    type="submit"
-                                    disabled={Boolean(selected && selected.status !== 'draft')}
-                                >
-                                    Save draft
-                                </button>
-                            </form>
-                            <div className="owner-mail-preview" style={{ marginTop: 22 }}>
-                                <span>Jill Weeks Smith Fine Art</span>
-                                <h2>{copy.headline || 'A note from Jill’s studio'}</h2>
-                                <p>
-                                    {copy.body ||
-                                        'Write the story behind the work, share what is new, and invite the reader to look closer.'}
-                                </p>
-                            </div>
+                        <div>
+                            <OwnerCampaignComposer
+                                key={selected?._id || 'new'}
+                                campaign={
+                                    selected
+                                        ? {
+                                              id: selected._id,
+                                              name: selected.name,
+                                              subject: selected.subject,
+                                              previewText: selected.previewText,
+                                              headline: copy.headline,
+                                              body: copy.body,
+                                              status: selected.status,
+                                          }
+                                        : undefined
+                                }
+                            />
                             {selected && ['draft', 'failed'].includes(selected.status) ? (
-                                <form action={sendCampaign.bind(null, selected._id)} style={{ marginTop: 16 }}>
+                                <form action={sendCampaign.bind(null, selected._id)} className="owner-campaign-send-form">
                                     <button className="owner-button" type="submit">
                                         <Send size={16} /> Send to subscribed audience
                                     </button>
                                 </form>
                             ) : null}
-                        </section>
+                        </div>
                     </div>
                 )}
             </section>

@@ -1,4 +1,4 @@
-import { PackageCheck } from 'lucide-react';
+import { ChevronRight, PackageCheck, ReceiptText } from 'lucide-react';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
 import { readOwnerOrders } from '@/data/ownerWorkspaceReads';
 import { updateFulfillment } from '@/app/admin/actions';
@@ -38,17 +38,23 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                 <OwnerStatus>{orders.length}</OwnerStatus>
                             </header>
                             <div className="owner-order-rows">
-                                {orders.map((order) => (
+                                {orders.map((order, index) => (
                                     <a
-                                        className={`owner-select-row${selected._id === order._id ? 'is-selected' : ''}`}
+                                        className={`owner-select-row${selected._id === order._id ? ' is-selected' : ''}`}
                                         href={`/admin/orders?id=${order._id}`}
                                         key={order._id}
                                         aria-current={selected._id === order._id ? 'page' : undefined}
                                     >
+                                        <span className="owner-order-row-marker" aria-hidden="true">
+                                            <ReceiptText size={16} />
+                                            <small>{String(index + 1).padStart(2, '0')}</small>
+                                        </span>
                                         <span className="owner-order-row-copy">
                                             <strong>{order.artworkTitle}</strong>
-                                            <small>{order.buyerName}</small>
-                                            <small>{date.format(new Date(order.createdAt))}</small>
+                                            <span>
+                                                <small>{order.buyerName}</small>
+                                                <small>{date.format(new Date(order.createdAt))}</small>
+                                            </span>
                                         </span>
                                         <span className="owner-order-row-summary">
                                             <strong>
@@ -58,6 +64,7 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                                 {fulfillmentLabel(order.fulfillmentStatus)}
                                             </OwnerStatus>
                                         </span>
+                                        <ChevronRight className="owner-order-row-arrow" size={15} aria-hidden="true" />
                                     </a>
                                 ))}
                             </div>
