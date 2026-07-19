@@ -435,6 +435,42 @@ describe('Convex commerce', () => {
         expect(state.quarantine).toHaveLength(1);
     });
 
+    it('keeps a declined Checkout session locked until Stripe expires or cancels it', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_declined',
+            paymentIntentId: null,
+        });
+
+        const declined = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_declined',
+            eventType: 'payment_intent.payment_failed',
+            paymentIntentId: 'pi_declined',
+            checkoutSessionId: 'cs_declined',
+            amountReceivedCents: null,
+            currency: 'usd',
+        });
+
+        expect(declined.outcome).toBe('processed');
+        expect(await t.run(async (ctx) => (await ctx.db.get(intent.intentId))?.status)).toBe('checkout_open');
+        await expect(
+            t.mutation(api.commerce.createCheckoutIntent, {
+                serverSecret,
+                artworkLegacyId: 101,
+                ...buyer,
+            }),
+        ).rejects.toThrow('already in progress');
+    });
+
     it('expires a checkout intent when its Stripe Checkout Session expires before payment', async () => {
         const t = createHarness();
         await seedArtwork(t);

@@ -296,11 +296,16 @@ export const processStripeEvent = mutation({
             return { outcome: 'processed' as const, notification: null };
         }
 
-        if (
-            args.eventType === 'checkout.session.expired' ||
-            args.eventType === 'payment_intent.payment_failed' ||
-            args.eventType === 'payment_intent.canceled'
-        ) {
+        if (args.eventType === 'payment_intent.payment_failed') {
+            await ctx.db.patch(intent._id, {
+                status: 'checkout_open',
+                stripePaymentIntentId: args.paymentIntentId ?? intent.stripePaymentIntentId,
+                updatedAt: Date.now(),
+            });
+            await recordStripeEvent(ctx, eventIdentity, 'processed');
+            return { outcome: 'processed' as const, notification: null };
+        }
+        if (args.eventType === 'checkout.session.expired' || args.eventType === 'payment_intent.canceled') {
             await ctx.db.patch(intent._id, {
                 status: args.eventType === 'payment_intent.canceled' ? 'canceled' : 'expired',
                 stripePaymentIntentId: args.paymentIntentId ?? intent.stripePaymentIntentId,
