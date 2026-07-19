@@ -9,7 +9,7 @@ import { captureAnalytics } from '@/lib/analytics';
 
 const MEDIA_TRANSITION_MS = 520;
 
-type Media = { id: string; url: string; smallUrl: string; width: number; height: number; alt: string };
+type Media = { id: string; url: string; smallUrl: string; alt: string };
 
 export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
     const media: Media[] = [
@@ -17,24 +17,18 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
             id: 'primary',
             url: piece.image_path,
             smallUrl: piece.small_image_path || piece.image_path,
-            width: piece.width,
-            height: piece.height,
             alt: piece.title,
         },
         ...piece.extraImages.map((image) => ({
             id: `extra-${image.id}`,
             url: image.image_path,
             smallUrl: image.small_image_path || image.image_path,
-            width: image.width,
-            height: image.height,
             alt: `${piece.title} detail`,
         })),
         ...piece.progressImages.map((image) => ({
             id: `progress-${image.id}`,
             url: image.image_path,
             smallUrl: image.small_image_path || image.image_path,
-            width: image.width,
-            height: image.height,
             alt: `${piece.title} in progress`,
         })),
     ];
@@ -76,15 +70,11 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
         <div className="lw-artwork-media">
             <div className="lw-artwork-main">
                 <div className="lw-artwork-image-stage">
-                    <div
-                        className={`lw-artwork-image-layer is-current${phase === 'transitioning' ? ' is-exiting' : ''}`}
-                        key={active.id}
-                    >
+                    <div className={`lw-artwork-image-layer is-current${phase === 'transitioning' ? 'is-exiting' : ''}`} key={active.id}>
                         <Image
                             src={active.url}
                             alt={displayIndex === activeIndex ? active.alt : ''}
-                            width={active.width}
-                            height={active.height}
+                            fill
                             sizes="(max-width: 900px) 92vw, 58vw"
                             quality={92}
                             priority
@@ -92,15 +82,14 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
                     </div>
                     {incoming && incomingIndex !== null ? (
                         <div
-                            className={`lw-artwork-image-layer is-incoming${phase === 'transitioning' ? ' is-active' : ''}`}
+                            className={`lw-artwork-image-layer is-incoming${phase === 'transitioning' ? 'is-active' : ''}`}
                             key={incoming.id}
                             onTransitionEnd={(event) => transitionEnd(incomingIndex, event.propertyName)}
                         >
                             <Image
                                 src={incoming.url}
                                 alt={displayIndex === incomingIndex ? incoming.alt : ''}
-                                width={incoming.width}
-                                height={incoming.height}
+                                fill
                                 sizes="(max-width: 900px) 92vw, 58vw"
                                 quality={92}
                                 onLoad={() => ready(incomingIndex)}

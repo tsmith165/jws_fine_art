@@ -60,10 +60,10 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                         </p>
                     </details>
                     <details id="shipping">
-                        <summary>Shipping and returns</summary>
+                        <summary>Shipping</summary>
                         <p>
-                            Artwork is packed by the studio and shipped insured. Contact the studio within 30 days if the work is not right
-                            for your space.
+                            Artwork is packed by the studio and shipped insured. Contact the studio before purchasing if you need a shipping
+                            estimate or have specific delivery requirements.
                         </p>
                     </details>
                     <details>

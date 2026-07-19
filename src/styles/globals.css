@@ -58,6 +58,7 @@ body {
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    background: var(--track-color);
 }
 
 a {
@@ -72,11 +73,11 @@ a {
 /* Webkit scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
-    color: var(--track-color);
+    background: var(--track-color);
 }
 
 ::-webkit-scrollbar-track {
-    background-color: var(--track-color);
+    background: var(--track-color);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -88,10 +89,14 @@ a {
     background-color: var(--scrollbar-hover-color);
 }
 
+::-webkit-scrollbar-corner {
+    background: var(--track-color);
+}
+
 /* Firefox scrollbar */
 * {
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-color) transparent;
+    scrollbar-color: var(--scrollbar-color) var(--track-color);
 }
 
 /* Slider styles */

@@ -2,11 +2,12 @@ import 'server-only';
 
 import { unstable_cache } from 'next/cache';
 import { analyticsPathLabel, isPublicAnalyticsPath, normalizedAnalyticsPath } from '@/lib/analyticsPolicy';
+import { postHogRanges, type PostHogAnalytics, type PostHogRange } from './posthogAnalytics.types';
+
+export { postHogRanges } from './posthogAnalytics.types';
+export type { PostHogAnalytics, PostHogRange } from './posthogAnalytics.types';
 
 type PostHogQueryResponse = { results?: unknown };
-
-export const postHogRanges = ['7d', '30d', '90d', '365d', 'all'] as const;
-export type PostHogRange = (typeof postHogRanges)[number];
 
 const rangeConfig: Record<PostHogRange, { label: string; sql: string }> = {
     '7d': { label: 'Last 7 days', sql: 'timestamp >= now() - INTERVAL 7 DAY' },
@@ -15,22 +16,6 @@ const rangeConfig: Record<PostHogRange, { label: string; sql: string }> = {
     '365d': { label: 'Last 12 months', sql: 'timestamp >= now() - INTERVAL 365 DAY' },
     all: { label: 'All time', sql: "timestamp >= toDateTime('2000-01-01 00:00:00')" },
 };
-
-export type PostHogAnalytics =
-    | {
-          status: 'ready';
-          range: PostHogRange;
-          rangeLabel: string;
-          visitors: number;
-          pageviews: number;
-          artworkViews: number;
-          firstEventAt: string | null;
-          lastEventAt: string | null;
-          trend: Array<{ date: string; pageviews: number; visitors: number }>;
-          topPages: Array<{ label: string; path: string; value: number }>;
-          sources: Array<{ label: string; value: number }>;
-      }
-    | { status: 'unconfigured' | 'error'; message: string };
 
 export function parsePostHogRange(value: unknown): PostHogRange {
     return typeof value === 'string' && postHogRanges.includes(value as PostHogRange) ? (value as PostHogRange) : '30d';

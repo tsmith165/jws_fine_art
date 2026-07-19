@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Check, PackageCheck, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, PackageCheck, ShieldCheck } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { ArtworkActions } from '@/components/lit-wall/ArtworkActions';
 import { AnalyticsEventOnMount } from '@/components/lit-wall/AnalyticsEvent';
@@ -107,9 +107,6 @@ export default async function ArtworkPage({ params }: Props) {
                         </li>
                         <li>
                             <PackageCheck size={16} /> Carefully packed by the studio
-                        </li>
-                        <li>
-                            <Check size={16} /> 30-day returns
                         </li>
                     </ul>
                     <details className="lw-artwork-details" open>

@@ -1,7 +1,9 @@
+'use client';
+
 import { BarChart3, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import type { CSSProperties } from 'react';
-import { postHogRanges, type PostHogAnalytics, type PostHogRange } from '@/data/posthogAnalytics';
+import { useState, type CSSProperties } from 'react';
+import { postHogRanges, type PostHogAnalytics, type PostHogRange } from '@/data/posthogAnalytics.types';
 import { OwnerStatus } from './OwnerShell';
 
 const number = new Intl.NumberFormat('en-US');
@@ -29,6 +31,8 @@ function chartDate(value: string) {
 }
 
 function TrendChart({ items, compact }: { items: Array<{ date: string; pageviews: number; visitors: number }>; compact?: boolean }) {
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
     if (!items.length) return <p className="owner-chart-empty">Traffic will appear here after the first production visit.</p>;
 
     const width = 760;
@@ -45,6 +49,18 @@ function TrendChart({ items, compact }: { items: Array<{ date: string; pageviews
     const visitorLine = line('visitors');
     const pageviewArea = `${pageviewLine} L ${x(items.length - 1).toFixed(1)} ${(height - inset).toFixed(1)} L ${x(0).toFixed(1)} ${(height - inset).toFixed(1)} Z`;
     const labelIndexes = [...new Set([0, Math.floor((items.length - 1) / 2), items.length - 1])];
+    const activeItem = activeIndex === null ? null : items[activeIndex];
+    const activeX = activeIndex === null ? null : x(activeIndex);
+    const activePageviewY = activeItem ? y(activeItem.pageviews) : null;
+    const activeVisitorY = activeItem ? y(activeItem.visitors) : null;
+    const activeText = activeItem
+        ? `${chartDate(activeItem.date)}, ${number.format(activeItem.pageviews)} page views, ${number.format(activeItem.visitors)} visitors`
+        : 'Use the arrow keys to inspect daily traffic';
+
+    const selectFromPointer = (clientX: number, left: number, renderedWidth: number) => {
+        const position = Math.min(1, Math.max(0, (clientX - left) / renderedWidth));
+        setActiveIndex(Math.round(position * (items.length - 1)));
+    };
 
     return (
         <figure className={`owner-trend-chart${compact ? 'is-compact' : ''}`}>
@@ -60,43 +76,97 @@ function TrendChart({ items, compact }: { items: Array<{ date: string; pageviews
                     </div>
                 </div>
             ) : null}
-            <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Daily page views and visitors">
-                {[0, 0.25, 0.5, 0.75, 1].map((position) => (
-                    <line
-                        className="owner-chart-gridline"
-                        key={position}
-                        x1={inset}
-                        x2={width - inset}
-                        y1={inset + plotHeight * position}
-                        y2={inset + plotHeight * position}
+            <div className="owner-chart-canvas">
+                <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Daily page views and visitors">
+                    {[0, 0.25, 0.5, 0.75, 1].map((position) => (
+                        <line
+                            className="owner-chart-gridline"
+                            key={position}
+                            x1={inset}
+                            x2={width - inset}
+                            y1={inset + plotHeight * position}
+                            y2={inset + plotHeight * position}
+                        />
+                    ))}
+                    <path className="owner-trend-area" d={pageviewArea} />
+                    <path className="owner-trend-line is-pageviews" d={pageviewLine} />
+                    <path className="owner-trend-line is-visitors" d={visitorLine} />
+                    {items.length <= 31
+                        ? items.flatMap((item, index) => [
+                              <circle
+                                  className="owner-trend-point is-pageviews"
+                                  cx={x(index)}
+                                  cy={y(item.pageviews)}
+                                  key={`p-${item.date}`}
+                                  r="2.8"
+                              />,
+                              <circle
+                                  className="owner-trend-point is-visitors"
+                                  cx={x(index)}
+                                  cy={y(item.visitors)}
+                                  key={`v-${item.date}`}
+                                  r="2.8"
+                              />,
+                          ])
+                        : null}
+                    {activeItem && activeX !== null && activePageviewY !== null && activeVisitorY !== null ? (
+                        <g aria-hidden="true" className="owner-chart-active">
+                            <line className="owner-chart-crosshair" x1={activeX} x2={activeX} y1={inset} y2={height - inset} />
+                            <circle className="owner-trend-point is-pageviews is-active" cx={activeX} cy={activePageviewY} r="5" />
+                            <circle className="owner-trend-point is-visitors is-active" cx={activeX} cy={activeVisitorY} r="5" />
+                        </g>
+                    ) : null}
+                    <rect
+                        aria-label="Inspect daily traffic"
+                        aria-valuemax={items.length - 1}
+                        aria-valuemin={0}
+                        aria-valuenow={activeIndex ?? items.length - 1}
+                        aria-valuetext={activeText}
+                        className="owner-chart-hitbox"
+                        height={plotHeight}
+                        onBlur={() => setActiveIndex(null)}
+                        onFocus={() => setActiveIndex((current) => current ?? items.length - 1)}
+                        onKeyDown={(event) => {
+                            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                            event.preventDefault();
+                            setActiveIndex((current) => {
+                                if (event.key === 'Home') return 0;
+                                if (event.key === 'End') return items.length - 1;
+                                const index = current ?? items.length - 1;
+                                return Math.min(items.length - 1, Math.max(0, index + (event.key === 'ArrowRight' ? 1 : -1)));
+                            });
+                        }}
+                        onPointerDown={(event) => event.currentTarget.focus()}
+                        onPointerLeave={() => setActiveIndex(null)}
+                        onPointerMove={(event) => {
+                            const bounds = event.currentTarget.getBoundingClientRect();
+                            selectFromPointer(event.clientX, bounds.left, bounds.width);
+                        }}
+                        role="slider"
+                        tabIndex={0}
+                        width={plotWidth}
+                        x={inset}
+                        y={inset}
                     />
-                ))}
-                <path className="owner-trend-area" d={pageviewArea} />
-                <path className="owner-trend-line is-pageviews" d={pageviewLine} />
-                <path className="owner-trend-line is-visitors" d={visitorLine} />
-                {items.length <= 31
-                    ? items.flatMap((item, index) => [
-                          <circle
-                              className="owner-trend-point is-pageviews"
-                              cx={x(index)}
-                              cy={y(item.pageviews)}
-                              key={`p-${item.date}`}
-                              r="2.8"
-                          >
-                              <title>{`${chartDate(item.date)}: ${number.format(item.pageviews)} page views`}</title>
-                          </circle>,
-                          <circle
-                              className="owner-trend-point is-visitors"
-                              cx={x(index)}
-                              cy={y(item.visitors)}
-                              key={`v-${item.date}`}
-                              r="2.8"
-                          >
-                              <title>{`${chartDate(item.date)}: ${number.format(item.visitors)} visitors`}</title>
-                          </circle>,
-                      ])
-                    : null}
-            </svg>
+                </svg>
+                {activeItem && activeX !== null ? (
+                    <div
+                        aria-live="polite"
+                        className="owner-chart-tooltip"
+                        data-align={activeIndex !== null && activeIndex > (items.length - 1) / 2 ? 'right' : 'left'}
+                        role="status"
+                        style={{ '--owner-chart-x': `${(activeX / width) * 100}%` } as CSSProperties}
+                    >
+                        <strong>{chartDate(activeItem.date)}</strong>
+                        <span className="is-pageviews">
+                            <i /> Page views <b>{number.format(activeItem.pageviews)}</b>
+                        </span>
+                        <span className="is-visitors">
+                            <i /> Visitors <b>{number.format(activeItem.visitors)}</b>
+                        </span>
+                    </div>
+                ) : null}
+            </div>
             {!compact ? (
                 <div className="owner-chart-dates" aria-hidden="true">
                     {labelIndexes.map((index) => (
@@ -203,7 +273,7 @@ function PageTable({ items }: { items: Array<{ label: string; path: string; valu
 
 export function OwnerPostHogSummary({ analytics, compact = false }: { analytics: PostHogAnalytics; compact?: boolean }) {
     return (
-        <section className={`owner-panel owner-posthog${compact ? ' is-compact' : ''}`}>
+        <section className={`owner-panel owner-posthog${compact ? 'is-compact' : ''}`}>
             <header className="owner-panel-header">
                 <div>
                     <span className="owner-panel-eyebrow">Audience</span>

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Check, PackageCheck, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, PackageCheck, ShieldCheck } from 'lucide-react';
 import { notFound, redirect } from 'next/navigation';
 import CheckoutForm from './CheckoutForm';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
@@ -53,9 +53,6 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
                         </li>
                         <li>
                             <PackageCheck size={16} /> Packed by Jill’s studio
-                        </li>
-                        <li>
-                            <Check size={16} /> 30-day returns
                         </li>
                     </ul>
                 </div>
