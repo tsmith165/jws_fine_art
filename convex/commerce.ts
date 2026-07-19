@@ -18,23 +18,50 @@ function validateBuyer(args: { buyerName: string; buyerEmail: string; buyerPhone
         throw new Error('A valid shipping address is required.');
 }
 
+async function settleQuarantine(ctx: MutationCtx, eventId: string, status: 'resolved' | 'ignored') {
+    const existing = await ctx.db
+        .query('webhookQuarantine')
+        .withIndex('by_event_id', (q) => q.eq('eventId', eventId))
+        .unique();
+    if (existing && existing.status === 'open') {
+        await ctx.db.patch(existing._id, { status, resolvedAt: Date.now() });
+    }
+}
+
 async function recordStripeEvent(
     ctx: MutationCtx,
     args: { eventId: string; eventType: string; paymentIntentId: string | null },
     status: 'processed' | 'quarantined' | 'ignored',
 ) {
-    await ctx.db.insert('stripeEvents', { ...args, status, createdAt: Date.now() });
+    const existing = await ctx.db
+        .query('stripeEvents')
+        .withIndex('by_event_id', (q) => q.eq('eventId', args.eventId))
+        .unique();
+    if (existing) {
+        await ctx.db.patch(existing._id, { ...args, status });
+    } else {
+        await ctx.db.insert('stripeEvents', { ...args, status, createdAt: Date.now() });
+    }
+    if (status !== 'quarantined') await settleQuarantine(ctx, args.eventId, status === 'ignored' ? 'ignored' : 'resolved');
 }
 
 async function quarantine(ctx: MutationCtx, args: { eventId: string; eventType: string; paymentIntentId: string | null }, reason: string) {
-    await ctx.db.insert('webhookQuarantine', {
-        provider: 'stripe',
-        ...args,
-        reason,
-        status: 'open',
-        createdAt: Date.now(),
-        resolvedAt: null,
-    });
+    const existing = await ctx.db
+        .query('webhookQuarantine')
+        .withIndex('by_event_id', (q) => q.eq('eventId', args.eventId))
+        .unique();
+    if (existing) {
+        await ctx.db.patch(existing._id, { ...args, reason, status: 'open', resolvedAt: null });
+    } else {
+        await ctx.db.insert('webhookQuarantine', {
+            provider: 'stripe',
+            ...args,
+            reason,
+            status: 'open',
+            createdAt: Date.now(),
+            resolvedAt: null,
+        });
+    }
     await recordStripeEvent(ctx, args, 'quarantined');
     return { outcome: 'quarantined' as const, reason };
 }
@@ -193,7 +220,7 @@ export const processStripeEvent = mutation({
             .query('stripeEvents')
             .withIndex('by_event_id', (q) => q.eq('eventId', args.eventId))
             .unique();
-        if (processed) return { outcome: 'duplicate' as const };
+        if (processed && processed.status !== 'quarantined') return { outcome: 'duplicate' as const };
 
         const handledEventTypes = new Set([
             'checkout.session.expired',

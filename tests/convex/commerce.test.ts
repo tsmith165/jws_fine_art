@@ -341,7 +341,7 @@ describe('Convex commerce', () => {
             amountReceivedCents: 95000,
             currency: 'usd',
         });
-        expect(replay.outcome).toBe('duplicate');
+        expect(replay.outcome).toBe('quarantined');
 
         const state = await t.run(async (ctx) => ({
             quarantine: await ctx.db.query('webhookQuarantine').collect(),
@@ -470,6 +470,55 @@ describe('Convex commerce', () => {
         expect(state.events).toHaveLength(1);
         expect(state.events[0]).toMatchObject({ eventType: 'checkout.session.expired', status: 'processed' });
         expect(state.quarantine).toHaveLength(0);
+    });
+
+    it('reprocesses a quarantined event after its checkout session becomes identifiable', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const firstAttempt = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_recoverable_expiration',
+            eventType: 'checkout.session.expired',
+            paymentIntentId: null,
+            checkoutSessionId: 'cs_recoverable',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+        expect(firstAttempt.outcome).toBe('quarantined');
+
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_recoverable',
+            paymentIntentId: null,
+        });
+        const replay = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_recoverable_expiration',
+            eventType: 'checkout.session.expired',
+            paymentIntentId: null,
+            checkoutSessionId: 'cs_recoverable',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+
+        expect(replay.outcome).toBe('processed');
+        const state = await t.run(async (ctx) => ({
+            checkout: await ctx.db.get(intent.intentId),
+            events: await ctx.db.query('stripeEvents').collect(),
+            quarantine: await ctx.db.query('webhookQuarantine').collect(),
+        }));
+        expect(state.checkout?.status).toBe('expired');
+        expect(state.events).toHaveLength(1);
+        expect(state.events[0].status).toBe('processed');
+        expect(state.quarantine).toHaveLength(1);
+        expect(state.quarantine[0].status).toBe('resolved');
+        expect(state.quarantine[0].resolvedAt).toEqual(expect.any(Number));
     });
 });
 
