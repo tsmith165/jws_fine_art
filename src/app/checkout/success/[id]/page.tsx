@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import Stripe from 'stripe';
 import { api } from '../../../../../convex/_generated/api';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
+import { AnalyticsEventOnMount } from '@/components/lit-wall/AnalyticsEvent';
 import { readPublicArtwork } from '@/data/artworkReads';
 import { getServerConvexClient } from '@/data/serverConvex';
 import { assertStripeEnvironment } from '@/lib/providerSafety';
@@ -45,6 +46,13 @@ export default async function SuccessPage({
     const processing = verification.state === 'processing';
     return (
         <SiteShell>
+            {confirmed ? (
+                <AnalyticsEventOnMount
+                    event="checkout_succeeded"
+                    oncePerSession={`checkout-succeeded:${id}`}
+                    properties={{ artwork_id: piece.id, artwork_slug: piece.slug }}
+                />
+            ) : null}
             <section className="lw-purchase-status">
                 <div>
                     <Image

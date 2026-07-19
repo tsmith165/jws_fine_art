@@ -2,8 +2,9 @@
 
 import { Check, ChevronDown, Filter, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
+import { captureAnalytics } from '@/lib/analytics';
 import { ArtworkCard } from './ArtworkCard';
 
 type Availability = 'available' | 'all' | 'sold';
@@ -67,6 +68,14 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
         title: 'Title: A–Z',
     };
     const filterCount = Number(framed) + Number(Boolean(theme));
+    useEffect(() => {
+        if (!query.trim()) return;
+        const timer = window.setTimeout(
+            () => captureAnalytics('catalog_searched', { query_length: query.trim().length, result_count: list.length }),
+            700,
+        );
+        return () => window.clearTimeout(timer);
+    }, [list.length, query]);
     return (
         <>
             <section className="lw-catalog-toolbar" aria-label="Catalog controls">
@@ -77,7 +86,10 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                             role="tab"
                             aria-selected={availability === value}
                             className={availability === value ? 'is-active' : ''}
-                            onClick={() => setParam('availability', value === 'available' ? undefined : value)}
+                            onClick={() => {
+                                captureAnalytics('catalog_availability_changed', { availability: value });
+                                setParam('availability', value === 'available' ? undefined : value);
+                            }}
                         >
                             {value === 'sold' ? 'Sold archive' : value === 'all' ? 'All work' : 'Available'} <span>{counts[value]}</span>
                         </button>
@@ -112,7 +124,16 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                                 <strong>Refine the collection</strong>
                                 <label>
                                     Subject
-                                    <select value={theme} onChange={(event) => setParam('theme', event.target.value)}>
+                                    <select
+                                        value={theme}
+                                        onChange={(event) => {
+                                            captureAnalytics('catalog_filter_changed', {
+                                                filter: 'theme',
+                                                value: event.target.value || 'all',
+                                            });
+                                            setParam('theme', event.target.value);
+                                        }}
+                                    >
                                         <option value="">All subjects</option>
                                         <option value="water">Water & coast</option>
                                         <option value="landscape">Landscape</option>
@@ -123,13 +144,26 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                                     <input
                                         type="checkbox"
                                         checked={framed}
-                                        onChange={(event) => setParam('framed', event.target.checked ? '1' : undefined)}
+                                        onChange={(event) => {
+                                            captureAnalytics('catalog_filter_changed', {
+                                                filter: 'framed',
+                                                value: event.target.checked,
+                                            });
+                                            setParam('framed', event.target.checked ? '1' : undefined);
+                                        }}
                                     />
                                     <span>
                                         <Check size={13} /> Framed work
                                     </span>
                                 </label>
-                                <button onClick={clear}>Clear all</button>
+                                <button
+                                    onClick={() => {
+                                        captureAnalytics('catalog_filters_cleared');
+                                        clear();
+                                    }}
+                                >
+                                    Clear all
+                                </button>
                             </div>
                         )}
                     </div>
@@ -151,6 +185,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                                         key={value}
                                         className={sort === value ? 'is-selected' : ''}
                                         onClick={() => {
+                                            captureAnalytics('catalog_sort_changed', { sort: value });
                                             setParam('sort', value === 'newest' ? undefined : value);
                                             setSortOpen(false);
                                         }}
@@ -186,7 +221,12 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                     {list.length} {list.length === 1 ? 'work' : 'works'}
                 </span>
                 {(theme || framed || query) && (
-                    <button onClick={clear}>
+                    <button
+                        onClick={() => {
+                            captureAnalytics('catalog_filters_cleared');
+                            clear();
+                        }}
+                    >
                         Clear filters <X size={13} />
                     </button>
                 )}
@@ -202,7 +242,13 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                     <Search size={30} />
                     <h2>No work matches these filters.</h2>
                     <p>Clear the filters or ask Jill about an upcoming piece.</p>
-                    <button className="lw-button lw-button-brass" onClick={clear}>
+                    <button
+                        className="lw-button lw-button-brass"
+                        onClick={() => {
+                            captureAnalytics('catalog_filters_cleared');
+                            clear();
+                        }}
+                    >
                         Clear filters
                     </button>
                 </section>

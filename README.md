@@ -36,14 +36,17 @@ Required application variables are checked by `pnpm release:check-env` without p
 - `UPLOADTHING_TOKEN`
 - `RESEND_API_KEY`
 - `UNSUBSCRIBE_SIGNING_SECRET`
+- `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`
+- `POSTHOG_PROJECT_ID`, `POSTHOG_PERSONAL_API_KEY`, and `POSTHOG_API_HOST`
 
-The owner analytics view also accepts a server-only PostHog read integration:
+The owner analytics view uses a server-only PostHog read integration:
 
 - `POSTHOG_PROJECT_ID`
 - `POSTHOG_PERSONAL_API_KEY` (a read-only personal API key with query access)
 - `POSTHOG_API_HOST` (optional; defaults to the matching US or EU PostHog dashboard host)
 
 These variables are intentionally separate from the public browser capture key. Never expose the personal API key with a `NEXT_PUBLIC_` prefix.
+Browser capture runs only on `jwsfineart.com` and `www.jwsfineart.com`, excludes owner/auth routes, strips query strings, disables autocapture and session recording, and records only explicit privacy-safe events. Preview capture remains off unless `NEXT_PUBLIC_POSTHOG_CAPTURE_PREVIEWS=true` is deliberately configured.
 
 The Convex deployment also requires Clerk's JWT issuer configuration. Never share live Stripe credentials with Development or Preview scopes.
 

@@ -1,13 +1,18 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { subscribeAction, type PublicFormState } from '@/app/public-actions';
+import { captureAnalytics } from '@/lib/analytics';
 
 const initialState: PublicFormState = { status: 'idle', message: '' };
 
 export function Newsletter() {
     const [state, action, pending] = useActionState(subscribeAction, initialState);
+    useEffect(() => {
+        if (state.status !== 'success' && state.status !== 'error') return;
+        captureAnalytics('newsletter_signup_submitted', { result: state.status, source: 'website-footer' });
+    }, [state.status]);
     return (
         <section className="lw-newsletter">
             <div>

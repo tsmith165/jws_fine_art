@@ -361,18 +361,38 @@
     overflow: hidden;
 }
 .lw-hero-slides,
-.lw-hero-slides img,
 .lw-hero-scrim {
     position: absolute;
     inset: 0;
 }
-.lw-hero-slides img {
-    object-fit: cover;
-    opacity: 0 !important;
-    transition: opacity 1.2s ease;
+.lw-hero-slides {
+    overflow: hidden;
+    background: #090c09;
 }
-.lw-hero-slides img.is-active {
-    opacity: 1 !important;
+.lw-hero-slide {
+    position: absolute;
+    inset: -1.5%;
+    opacity: 0;
+    transform: scale(1.035);
+    will-change: opacity, transform;
+    transition:
+        opacity 1150ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 1700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lw-hero-slide img {
+    object-fit: cover;
+}
+.lw-hero-slide.is-current,
+.lw-hero-slide.is-incoming.is-active {
+    opacity: 1;
+    transform: scale(1);
+}
+.lw-hero-slide.is-current.is-exiting {
+    opacity: 0;
+    transform: scale(0.99);
+}
+.lw-hero-slide.is-incoming {
+    z-index: 1;
 }
 .lw-hero-scrim {
     z-index: 1;
@@ -923,7 +943,38 @@
     padding: 42px;
     background: var(--lw-raised);
 }
-.lw-artwork-main > img {
+.lw-artwork-image-stage {
+    position: absolute;
+    inset: 42px;
+    display: grid;
+    place-items: center;
+}
+.lw-artwork-image-layer {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-area: 1 / 1;
+    place-items: center;
+    opacity: 0;
+    transform: scale(0.992);
+    will-change: opacity, transform;
+    transition:
+        opacity 520ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 680ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lw-artwork-image-layer.is-current,
+.lw-artwork-image-layer.is-incoming.is-active {
+    opacity: 1;
+    transform: scale(1);
+}
+.lw-artwork-image-layer.is-current.is-exiting {
+    opacity: 0;
+    transform: scale(1.008);
+}
+.lw-artwork-image-layer.is-incoming {
+    z-index: 1;
+}
+.lw-artwork-image-layer > img {
     width: auto;
     height: auto;
     max-width: 100%;
@@ -2034,7 +2085,7 @@
         background: linear-gradient(0deg, rgba(7, 10, 8, 0.9) 0%, rgba(7, 10, 8, 0.58) 58%, rgba(7, 10, 8, 0.1) 100%);
     }
     .lw-art-credit {
-        right: 120px;
+        right: 160px;
         bottom: 19px;
         left: 20px;
     }
@@ -2117,6 +2168,9 @@
     .lw-artwork-main {
         min-height: 60dvh;
         padding: 24px 40px;
+    }
+    .lw-artwork-image-stage {
+        inset: 24px 40px;
     }
     .lw-artwork-main > button {
         width: 42px;

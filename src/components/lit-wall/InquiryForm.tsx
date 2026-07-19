@@ -1,8 +1,9 @@
 'use client';
 
 import { Send } from 'lucide-react';
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { inquiryAction, type PublicFormState } from '@/app/public-actions';
+import { captureAnalytics } from '@/lib/analytics';
 
 const initialState: PublicFormState = { status: 'idle', message: '' };
 
@@ -18,6 +19,15 @@ export function InquiryForm({
     sourcePath?: string;
 }) {
     const [state, action, pending] = useActionState(inquiryAction, initialState);
+    useEffect(() => {
+        if (state.status !== 'success' && state.status !== 'error') return;
+        captureAnalytics('collector_inquiry_submitted', {
+            result: state.status,
+            inquiry_kind: kind,
+            artwork_id: artworkId,
+            source_path: sourcePath,
+        });
+    }, [artworkId, kind, sourcePath, state.status]);
     return (
         <form className="lw-inquiry-form" action={action}>
             <input type="hidden" name="artwork_id" value={artworkId || ''} />

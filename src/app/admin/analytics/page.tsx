@@ -1,13 +1,14 @@
 import type { CSSProperties } from 'react';
 import { OwnerHeading, OwnerShell } from '@/components/owner/OwnerShell';
 import { OwnerPostHogSummary } from '@/components/owner/OwnerPostHogSummary';
-import { readPostHogAnalytics } from '@/data/posthogAnalytics';
+import { parsePostHogRange, readPostHogAnalytics } from '@/data/posthogAnalytics';
 import { readOwnerDashboard } from '@/data/ownerWorkspaceReads';
 
 export const dynamic = 'force-dynamic';
 
-export default async function OwnerAnalyticsPage() {
-    const [dashboard, posthog] = await Promise.all([readOwnerDashboard(), readPostHogAnalytics()]);
+export default async function OwnerAnalyticsPage({ searchParams }: { searchParams: Promise<{ range?: string }> }) {
+    const range = parsePostHogRange((await searchParams).range);
+    const [dashboard, posthog] = await Promise.all([readOwnerDashboard(), readPostHogAnalytics(range)]);
     const funnel = [
         ['Active artwork', dashboard.artwork.active],
         ['Available now', dashboard.artwork.available],

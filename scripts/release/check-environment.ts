@@ -17,6 +17,11 @@ const required = [
     'UPLOADTHING_TOKEN',
     'RESEND_API_KEY',
     'UNSUBSCRIBE_SIGNING_SECRET',
+    'NEXT_PUBLIC_POSTHOG_KEY',
+    'NEXT_PUBLIC_POSTHOG_HOST',
+    'POSTHOG_PROJECT_ID',
+    'POSTHOG_PERSONAL_API_KEY',
+    'POSTHOG_API_HOST',
 ] as const;
 
 const missing = required.filter((name) => !process.env[name]);

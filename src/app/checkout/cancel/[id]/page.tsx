@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
+import { AnalyticsEventOnMount } from '@/components/lit-wall/AnalyticsEvent';
 import { readPublicArtwork } from '@/data/artworkReads';
 import { artworkHref } from '@/lib/artwork';
 
@@ -15,6 +16,11 @@ export default async function CancelPage({ params }: { params: Promise<{ id: str
     if (!piece) notFound();
     return (
         <SiteShell>
+            <AnalyticsEventOnMount
+                event="checkout_canceled"
+                oncePerSession={`checkout-canceled:${id}`}
+                properties={{ artwork_id: piece.id, artwork_slug: piece.slug }}
+            />
             <section className="lw-purchase-status">
                 <div>
                     <Image

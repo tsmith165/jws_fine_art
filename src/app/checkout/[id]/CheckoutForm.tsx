@@ -4,6 +4,7 @@ import { CreditCard, LoaderCircle, LockKeyhole } from 'lucide-react';
 import { useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { money } from '@/lib/artwork';
+import { captureAnalytics } from '@/lib/analytics';
 import { runStripePurchase } from '../actions';
 
 export default function CheckoutForm({ current_piece }: { current_piece: PiecesWithImages }) {
@@ -12,6 +13,11 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
 
     async function submit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        captureAnalytics('checkout_payment_started', {
+            artwork_id: current_piece.id,
+            artwork_slug: current_piece.slug,
+            source: 'checkout_form',
+        });
         setPending(true);
         setError('');
         try {

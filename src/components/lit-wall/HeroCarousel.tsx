@@ -6,33 +6,58 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { artworkHref, dimensions } from '@/lib/artwork';
+import { captureAnalytics } from '@/lib/analytics';
+import { useImageTransition } from '@/hooks/useImageTransition';
+
+const HERO_TRANSITION_MS = 1150;
 
 export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
     const slides = pieces.slice(0, 5);
-    const [index, setIndex] = useState(0);
     const [paused, setPaused] = useState(false);
+    const { activeIndex, incomingIndex, phase, displayIndex, targetIndex, select, ready, transitionEnd } = useImageTransition(
+        slides.length,
+        HERO_TRANSITION_MS,
+    );
     useEffect(() => {
-        if (paused || slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        const timer = window.setInterval(() => setIndex((current) => (current + 1) % slides.length), 6200);
-        return () => window.clearInterval(timer);
-    }, [paused, slides.length]);
+        if (paused || phase !== 'idle' || slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const timer = window.setTimeout(() => select(activeIndex + 1), 6200);
+        return () => window.clearTimeout(timer);
+    }, [activeIndex, paused, phase, select, slides.length]);
     if (!slides.length) return null;
-    const current = slides[index];
-    const move = (amount: number) => setIndex((value) => (value + amount + slides.length) % slides.length);
+    const current = slides[activeIndex];
+    const incoming = incomingIndex === null ? null : slides[incomingIndex];
+    const displayed = slides[displayIndex];
+    const move = (amount: number) => {
+        const next = (targetIndex + amount + slides.length) % slides.length;
+        captureAnalytics('hero_artwork_changed', { artwork_id: slides[next]?.id, direction: amount < 0 ? 'previous' : 'next' });
+        select(next);
+    };
     return (
         <section className="lw-hero" aria-label="Featured artwork">
-            <div className="lw-hero-slides" aria-live="polite">
-                <Image
+            <div className="lw-hero-slides" aria-hidden="true">
+                <div
+                    className={`lw-hero-slide is-current${phase === 'transitioning' ? ' is-exiting' : ''}`}
                     key={current.id}
-                    className="is-active"
-                    src={current.image_path}
-                    alt={current.title}
-                    fill
-                    sizes="100vw"
-                    quality={82}
-                    priority={index === 0}
-                    fetchPriority={index === 0 ? 'high' : 'auto'}
-                />
+                >
+                    <Image
+                        src={current.image_path}
+                        alt=""
+                        fill
+                        sizes="100vw"
+                        quality={88}
+                        priority={activeIndex === 0}
+                        fetchPriority={activeIndex === 0 ? 'high' : 'auto'}
+                    />
+                </div>
+                {incoming && incomingIndex !== null ? (
+                    <div
+                        className={`lw-hero-slide is-incoming${phase === 'transitioning' ? ' is-active' : ''}`}
+                        key={incoming.id}
+                        onTransitionEnd={(event) => transitionEnd(incomingIndex, event.propertyName)}
+                    >
+                        <Image src={incoming.image_path} alt="" fill sizes="100vw" quality={88} onLoad={() => ready(incomingIndex)} />
+                    </div>
+                ) : null}
             </div>
             <div className="lw-hero-scrim" aria-hidden="true" />
             <div className="lw-hero-copy">
@@ -52,21 +77,24 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                         <button
                             key={piece.id}
                             aria-label={`Show ${piece.title}`}
-                            aria-current={slideIndex === index ? 'true' : undefined}
-                            className={slideIndex === index ? 'is-active' : ''}
-                            onClick={() => setIndex(slideIndex)}
+                            aria-current={slideIndex === targetIndex ? 'true' : undefined}
+                            className={slideIndex === targetIndex ? 'is-active' : ''}
+                            onClick={() => {
+                                captureAnalytics('hero_artwork_changed', { artwork_id: piece.id, direction: 'direct' });
+                                select(slideIndex);
+                            }}
                         />
                     ))}
                 </div>
             </div>
-            <Link className="lw-art-credit" href={artworkHref(current)}>
-                <strong>{current.title}</strong>
+            <Link className="lw-art-credit" href={artworkHref(displayed)} aria-live="polite">
+                <strong>{displayed.title}</strong>
                 <small>
-                    {current.piece_type || 'Original artwork'} · {dimensions(current)}
+                    {displayed.piece_type || 'Original artwork'} · {dimensions(displayed)}
                 </small>
             </Link>
             <div className="lw-hero-index" aria-hidden="true">
-                <span>{String(index + 1).padStart(2, '0')}</span>
+                <span>{String(displayIndex + 1).padStart(2, '0')}</span>
                 <i />
                 <span>{String(slides.length).padStart(2, '0')}</span>
             </div>

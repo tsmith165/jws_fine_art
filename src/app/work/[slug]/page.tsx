@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Check, PackageCheck, ShieldCheck } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { ArtworkActions } from '@/components/lit-wall/ArtworkActions';
+import { AnalyticsEventOnMount } from '@/components/lit-wall/AnalyticsEvent';
 import { ArtworkCard } from '@/components/lit-wall/ArtworkCard';
 import { ArtworkMedia } from '@/components/lit-wall/ArtworkMedia';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
@@ -61,6 +62,16 @@ export default async function ArtworkPage({ params }: Props) {
     };
     return (
         <SiteShell newsletter>
+            <AnalyticsEventOnMount
+                event="artwork_viewed"
+                oncePerSession={`artwork-viewed:${piece.id}`}
+                properties={{
+                    artwork_id: piece.id,
+                    artwork_slug: piece.slug,
+                    availability: status,
+                    medium: piece.piece_type,
+                }}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replaceAll('<', '\\u003c') }}

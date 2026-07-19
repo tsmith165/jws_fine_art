@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { dimensions } from '@/lib/artwork';
+import { captureAnalytics } from '@/lib/analytics';
 
 const rooms = [
     { id: 'living', label: 'Living room', width: 144, height: 96, reference: '84 in sofa', referenceWidth: 84 },
@@ -86,7 +87,14 @@ export function RoomVisualizer({ piece, open, onClose }: { piece: PiecesWithImag
                             role="tab"
                             aria-selected={room.id === item.id}
                             className={room.id === item.id ? 'is-active' : ''}
-                            onClick={() => setRoomId(item.id)}
+                            onClick={() => {
+                                captureAnalytics('room_visualizer_room_changed', {
+                                    artwork_id: piece.id,
+                                    artwork_slug: piece.slug,
+                                    room: item.id,
+                                });
+                                setRoomId(item.id);
+                            }}
                         >
                             {item.label}
                         </button>

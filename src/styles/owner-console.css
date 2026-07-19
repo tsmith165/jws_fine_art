@@ -706,6 +706,32 @@
 .owner-posthog-metrics {
     margin-top: 0;
 }
+.owner-analytics-ranges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 18px;
+}
+.owner-analytics-ranges a {
+    min-height: 34px;
+    padding: 7px 11px;
+    border: 1px solid var(--owner-line);
+    color: var(--owner-muted);
+    font-size: 10px;
+    font-weight: 700;
+}
+.owner-analytics-ranges a:hover,
+.owner-analytics-ranges a.is-active {
+    border-color: var(--owner-green);
+    background: var(--owner-raised);
+    color: var(--owner-ink);
+}
+.owner-analytics-coverage {
+    margin-top: 16px !important;
+    color: var(--owner-muted);
+    font-size: 10px;
+    line-height: 1.6;
+}
 .owner-posthog-breakdown {
     display: grid;
     grid-template-columns: 1fr 1fr;
