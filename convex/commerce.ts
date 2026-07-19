@@ -1,6 +1,7 @@
 import { v } from 'convex/values';
-import { mutation, type MutationCtx } from './_generated/server';
+import { mutation, query, type MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
+import { assertWritesEnabled } from './lib/writeFreeze';
 
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
@@ -13,7 +14,8 @@ function validateBuyer(args: { buyerName: string; buyerEmail: string; buyerPhone
     if (args.buyerName.trim().length < 2 || args.buyerName.length > 120) throw new Error('A valid name is required.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(args.buyerEmail))) throw new Error('A valid email is required.');
     if (args.buyerPhone.trim().length < 7 || args.buyerPhone.length > 40) throw new Error('A valid phone number is required.');
-    if (args.shippingAddress.trim().length < 8 || args.shippingAddress.length > 1000) throw new Error('A valid shipping address is required.');
+    if (args.shippingAddress.trim().length < 8 || args.shippingAddress.length > 1000)
+        throw new Error('A valid shipping address is required.');
 }
 
 async function recordStripeEvent(
@@ -24,11 +26,7 @@ async function recordStripeEvent(
     await ctx.db.insert('stripeEvents', { ...args, status, createdAt: Date.now() });
 }
 
-async function quarantine(
-    ctx: MutationCtx,
-    args: { eventId: string; eventType: string; paymentIntentId: string | null },
-    reason: string,
-) {
+async function quarantine(ctx: MutationCtx, args: { eventId: string; eventType: string; paymentIntentId: string | null }, reason: string) {
     await ctx.db.insert('webhookQuarantine', {
         provider: 'stripe',
         ...args,
@@ -53,6 +51,7 @@ export const createCheckoutIntent = mutation({
     },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
+        assertWritesEnabled('checkout');
         validateBuyer(args);
         const artwork = await ctx.db
             .query('artworks')
@@ -153,6 +152,30 @@ export const abandonCheckoutIntent = mutation({
     },
 });
 
+export const checkoutStatus = query({
+    args: { serverSecret: v.string(), sessionId: v.string(), artworkLegacyId: v.number() },
+    handler: async (ctx, args) => {
+        requireServerSecret(args.serverSecret);
+        const intent = await ctx.db
+            .query('checkoutIntents')
+            .withIndex('by_session_id', (q) => q.eq('stripeCheckoutSessionId', args.sessionId))
+            .unique();
+        if (!intent || intent.artworkLegacyId !== args.artworkLegacyId) return null;
+        const order = intent.stripePaymentIntentId
+            ? await ctx.db
+                  .query('orders')
+                  .withIndex('by_payment_intent_id', (q) => q.eq('paymentIntentId', intent.stripePaymentIntentId))
+                  .unique()
+            : null;
+        return {
+            intentId: String(intent._id),
+            intentStatus: intent.status,
+            orderRecorded: Boolean(order),
+            orderStatus: order?.status ?? null,
+        };
+    },
+});
+
 export const processStripeEvent = mutation({
     args: {
         serverSecret: v.string(),
@@ -166,13 +189,20 @@ export const processStripeEvent = mutation({
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
         const eventIdentity = { eventId: args.eventId, eventType: args.eventType, paymentIntentId: args.paymentIntentId };
-        const processed = await ctx.db.query('stripeEvents').withIndex('by_event_id', (q) => q.eq('eventId', args.eventId)).unique();
+        const processed = await ctx.db
+            .query('stripeEvents')
+            .withIndex('by_event_id', (q) => q.eq('eventId', args.eventId))
+            .unique();
         if (processed) return { outcome: 'duplicate' as const };
 
         const handledEventTypes = new Set([
             'payment_intent.succeeded',
             'payment_intent.payment_failed',
             'payment_intent.canceled',
+            'charge.refunded',
+            'charge.dispute.created',
+            'charge.dispute.updated',
+            'charge.dispute.closed',
         ]);
         if (!handledEventTypes.has(args.eventType)) {
             await recordStripeEvent(ctx, eventIdentity, 'ignored');
@@ -192,6 +222,51 @@ export const processStripeEvent = mutation({
                 .unique();
         }
         if (!intent) return quarantine(ctx, eventIdentity, 'No canonical checkout intent matches this verified Stripe event.');
+
+        if (args.eventType === 'charge.refunded' || args.eventType.startsWith('charge.dispute.')) {
+            if (!args.paymentIntentId) return quarantine(ctx, eventIdentity, 'The Stripe event did not include a payment intent ID.');
+            const order = await ctx.db
+                .query('orders')
+                .withIndex('by_payment_intent_id', (q) => q.eq('paymentIntentId', args.paymentIntentId))
+                .unique();
+            if (!order) return quarantine(ctx, eventIdentity, 'No canonical order matches this verified Stripe event.');
+            const now = Date.now();
+            if (args.eventType === 'charge.refunded') {
+                const refundedCents = args.amountReceivedCents;
+                if (
+                    !Number.isSafeInteger(refundedCents) ||
+                    refundedCents! < 0 ||
+                    refundedCents! > (order.amountPaidCents ?? 0) ||
+                    args.currency !== order.currency
+                ) {
+                    return quarantine(ctx, eventIdentity, 'Stripe refund amount or currency is inconsistent with the canonical order.');
+                }
+                const fullyRefunded = refundedCents === order.amountPaidCents;
+                await ctx.db.patch(order._id, {
+                    ...(fullyRefunded ? { status: 'refunded' as const } : {}),
+                    fulfillmentStatus: 'needs_attention',
+                    updatedAt: now,
+                });
+                await ctx.db.insert('orderEvents', {
+                    orderId: order._id,
+                    type: fullyRefunded ? 'payment.refunded' : 'payment.partially_refunded',
+                    stripeEventId: args.eventId,
+                    detailsJson: JSON.stringify({ refundedCents, currency: args.currency }),
+                    createdAt: now,
+                });
+            } else {
+                await ctx.db.patch(order._id, { fulfillmentStatus: 'needs_attention', updatedAt: now });
+                await ctx.db.insert('orderEvents', {
+                    orderId: order._id,
+                    type: args.eventType.replace('charge.', 'payment.'),
+                    stripeEventId: args.eventId,
+                    detailsJson: JSON.stringify({ amountCents: args.amountReceivedCents, currency: args.currency }),
+                    createdAt: now,
+                });
+            }
+            await recordStripeEvent(ctx, eventIdentity, 'processed');
+            return { outcome: 'processed' as const, notification: null };
+        }
 
         if (args.eventType === 'payment_intent.payment_failed' || args.eventType === 'payment_intent.canceled') {
             await ctx.db.patch(intent._id, {

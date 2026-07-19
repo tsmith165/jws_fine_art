@@ -20,7 +20,7 @@ const nextConfig = {
                 pathname: '**',
             },
         ],
-        qualities: [75, 90],
+        qualities: [75, 82, 85, 90, 100],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
     },
     async headers() {

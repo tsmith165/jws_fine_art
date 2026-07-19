@@ -29,6 +29,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+    const isVercelRuntime = process.env.VERCEL === '1';
+
     return (
         <html lang="en" className={`${cinzel.variable} ${libreCaslon.variable} ${manrope.variable}`}>
             <body>
@@ -36,7 +38,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                     <Suspense fallback={null}>
                         <PostHogPageView />
                     </Suspense>
-                    <SpeedInsights />
+                    {isVercelRuntime ? <SpeedInsights /> : null}
                     {children}
                 </PHProvider>
             </body>

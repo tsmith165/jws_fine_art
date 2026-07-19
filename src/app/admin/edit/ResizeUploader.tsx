@@ -37,8 +37,9 @@ export default function ResizeUploader({ handleUploadComplete, handleResetInputs
                 return;
             }
             try {
-                const dimensions = await inspectUploadedImage(uploaded.url);
-                handleUploadComplete(uploaded.name, uploaded.url, '', dimensions.width, dimensions.height, 0, 0);
+                const imageUrl = uploaded.ufsUrl || uploaded.url;
+                const dimensions = await inspectUploadedImage(imageUrl);
+                handleUploadComplete(uploaded.name, imageUrl, '', dimensions.width, dimensions.height, 0, 0);
             } catch (uploadError) {
                 setError(uploadError instanceof Error ? uploadError.message : 'The image could not be inspected.');
             } finally {
@@ -68,17 +69,11 @@ export default function ResizeUploader({ handleUploadComplete, handleResetInputs
 
     return (
         <div className="owner-uploader">
-            <input
-                ref={input}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                onChange={selectFile}
-                disabled={isUploading}
-            />
+            <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" onChange={selectFile} disabled={isUploading} />
             <Upload size={28} aria-hidden="true" />
             <div>
                 <strong>{isUploading ? `Uploading original · ${progress}%` : 'Choose the highest-quality original'}</strong>
-                <p>JPEG, PNG, WebP, HEIC, or HEIF. The original is stored without client compression or downscaling.</p>
+                <p>JPEG, PNG, or WebP. The original is stored without client compression or downscaling.</p>
             </div>
             <button className="owner-button is-primary" type="button" onClick={() => input.current?.click()} disabled={isUploading}>
                 <Upload size={16} /> {isUploading ? 'Uploading…' : 'Select image'}

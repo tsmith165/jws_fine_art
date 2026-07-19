@@ -5,6 +5,7 @@ import { api } from '../../../../convex/_generated/api';
 import type { Id } from '../../../../convex/_generated/dataModel';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { sendBatchEmails } from '@/utils/emails/resend_utils';
+import { appendUnsubscribeFooter, unsubscribeUrls } from '@/lib/unsubscribe';
 
 function chunks<T>(items: T[], size: number): T[][] {
     return Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
@@ -17,12 +18,19 @@ export async function sendCampaign(campaignId: Id<'campaigns'>): Promise<void> {
     for (const recipients of chunks(campaign.recipients, 100)) {
         try {
             const messages = await sendBatchEmails(
-                recipients.map((recipient) => ({
-                    from: 'JWS Fine Art <contact@jwsfineart.com>',
-                    to: recipient.email,
-                    subject: campaign.subject,
-                    html: campaign.renderedHtml,
-                })),
+                recipients.map((recipient) => {
+                    const urls = unsubscribeUrls(recipient.email);
+                    return {
+                        from: 'JWS Fine Art <contact@jwsfineart.com>',
+                        to: recipient.email,
+                        subject: campaign.subject,
+                        html: appendUnsubscribeFooter(campaign.renderedHtml, urls.page),
+                        headers: {
+                            'List-Unsubscribe': `<${urls.oneClick}>, <${urls.page}>`,
+                            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+                        },
+                    };
+                }),
             );
             await Promise.all(
                 recipients.map((recipient, index) =>

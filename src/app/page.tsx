@@ -18,11 +18,42 @@ export const metadata: Metadata = {
 export default async function HomePage() {
     const [heroPieces, allPieces] = await Promise.all([readHomepageArtworks(5), readPublicArtworks()]);
     const available = allPieces.filter((piece) => piece.available && !piece.sold).slice(0, 6);
-    const collectionPieces = [
-        allPieces.find((piece) => /water|coast/i.test(piece.theme || '')) || allPieces[0],
-        allPieces.find((piece) => /snow|mountain/i.test(piece.theme || '')) || allPieces[1],
-        allPieces.find((piece) => piece.real_width && piece.real_width <= 10) || allPieces[2],
-    ].filter(Boolean);
+    const selectedCollectionIds = new Set<number>();
+    const selectedCollectionImages = new Set<string>();
+    const collectionCards = [
+        {
+            label: 'California coast',
+            theme: 'water',
+            preferredTitle: 'Solana Beach',
+            matches: (piece: (typeof allPieces)[number]) => /water|coast/i.test(piece.theme || ''),
+        },
+        {
+            label: 'Snow & mountain',
+            theme: 'snow',
+            preferredTitle: 'Northstar Upper Main',
+            matches: (piece: (typeof allPieces)[number]) => /snow|mountain/i.test(piece.theme || ''),
+        },
+        {
+            label: 'Small originals',
+            theme: 'small',
+            preferredTitle: 'Friend or Foe',
+            matches: (piece: (typeof allPieces)[number]) => Boolean(piece.real_width && piece.real_width <= 10),
+        },
+    ]
+        .map((card) => {
+            const isUnused = (candidate: (typeof allPieces)[number]) =>
+                !selectedCollectionIds.has(candidate.id) && !selectedCollectionImages.has(candidate.image_path);
+            const piece =
+                allPieces.find((candidate) => isUnused(candidate) && candidate.title === card.preferredTitle) ||
+                allPieces.find((candidate) => isUnused(candidate) && card.matches(candidate)) ||
+                allPieces.find(isUnused);
+            if (piece) {
+                selectedCollectionIds.add(piece.id);
+                selectedCollectionImages.add(piece.image_path);
+            }
+            return piece ? { ...card, piece } : null;
+        })
+        .filter((card): card is NonNullable<typeof card> => Boolean(card));
 
     return (
         <SiteShell newsletter>
@@ -49,14 +80,12 @@ export default async function HomePage() {
                     copy="Browse the full studio catalog through the subjects Jill returns to most often."
                 />
                 <div className="lw-collection-grid">
-                    {collectionPieces.map((piece, index) => {
-                        const labels = ['California coast', 'Snow & mountain', 'Small originals'];
-                        const themes = ['water', 'snow', 'small'];
+                    {collectionCards.map(({ label, theme, piece }) => {
                         return (
-                            <Link key={piece.id} href={`/work?theme=${themes[index]}`} className="lw-collection-card">
+                            <Link key={theme} href={`/work?theme=${theme}`} className="lw-collection-card">
                                 <Image src={piece.image_path} alt="" fill sizes="(max-width: 760px) 92vw, 31vw" quality={90} />
                                 <span>
-                                    {labels[index]} <ArrowRight size={17} />
+                                    {label} <ArrowRight size={17} />
                                 </span>
                             </Link>
                         );

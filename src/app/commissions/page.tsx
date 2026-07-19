@@ -96,20 +96,22 @@ export default async function CommissionsPage() {
                     <span className="lw-eyebrow">Before we begin</span>
                     <h2>A few useful details.</h2>
                 </div>
-                <ul>
-                    <li>
-                        <Check size={16} /> Availability varies by season and requested size.
-                    </li>
-                    <li>
-                        <Check size={16} /> Final pricing is confirmed before a deposit is requested.
-                    </li>
-                    <li>
-                        <Check size={16} /> Strong reference images help preserve the character of the subject.
-                    </li>
-                </ul>
-                <Link className="lw-button lw-button-brass" href="/contact?kind=commission">
-                    Ask about a commission <ArrowRight size={16} />
-                </Link>
+                <div className="lw-commission-notes-body">
+                    <ul>
+                        <li>
+                            <Check size={16} /> Availability varies by season and requested size.
+                        </li>
+                        <li>
+                            <Check size={16} /> Final pricing is confirmed before a deposit is requested.
+                        </li>
+                        <li>
+                            <Check size={16} /> Strong reference images help preserve the character of the subject.
+                        </li>
+                    </ul>
+                    <Link className="lw-button lw-button-brass" href="/contact?kind=commission">
+                        Ask about a commission <ArrowRight size={16} />
+                    </Link>
+                </div>
             </section>
         </SiteShell>
     );

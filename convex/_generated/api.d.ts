@@ -14,11 +14,13 @@ import type * as lib_importMerge from "../lib/importMerge.js";
 import type * as lib_legacy from "../lib/legacy.js";
 import type * as lib_ownerAuth from "../lib/ownerAuth.js";
 import type * as lib_serverSecret from "../lib/serverSecret.js";
+import type * as lib_writeFreeze from "../lib/writeFreeze.js";
 import type * as migrations from "../migrations.js";
 import type * as ownerMutations from "../ownerMutations.js";
 import type * as ownerReads from "../ownerReads.js";
 import type * as ownerWorkspace from "../ownerWorkspace.js";
 import type * as publicWrites from "../publicWrites.js";
+import type * as release from "../release.js";
 
 import type {
   ApiFromModules,
@@ -33,11 +35,13 @@ declare const fullApi: ApiFromModules<{
   "lib/legacy": typeof lib_legacy;
   "lib/ownerAuth": typeof lib_ownerAuth;
   "lib/serverSecret": typeof lib_serverSecret;
+  "lib/writeFreeze": typeof lib_writeFreeze;
   migrations: typeof migrations;
   ownerMutations: typeof ownerMutations;
   ownerReads: typeof ownerReads;
   ownerWorkspace: typeof ownerWorkspace;
   publicWrites: typeof publicWrites;
+  release: typeof release;
 }>;
 
 /**

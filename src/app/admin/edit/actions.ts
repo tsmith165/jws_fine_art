@@ -5,7 +5,7 @@ import { api } from '../../../../convex/_generated/api';
 import type { Pieces } from '@/types/artwork';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { ownerArtworkToLegacy } from '@/data/ownerMapper';
-import sharp from 'sharp';
+import { inspectUploadThingImage } from '@/lib/uploadedImage';
 
 function revalidateArtworkSurfaces(id?: number) {
     revalidatePath('/');
@@ -51,20 +51,7 @@ function nullableNumber(value: string) {
 
 export async function inspectUploadedImage(url: string): Promise<{ width: number; height: number }> {
     await getAuthenticatedOwnerConvexClient('inspect uploaded artwork');
-    const parsed = new URL(url);
-    if (
-        parsed.protocol !== 'https:' ||
-        !['utfs.io', 'ufs.sh'].some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`))
-    ) {
-        throw new Error('Uploaded image URL is not from the configured media provider.');
-    }
-    const response = await fetch(parsed, { cache: 'no-store' });
-    if (!response.ok) throw new Error('The uploaded image could not be inspected.');
-    const contentLength = Number(response.headers.get('content-length') ?? 0);
-    if (contentLength > 40 * 1024 * 1024) throw new Error('The uploaded image is too large to inspect.');
-    const metadata = await sharp(Buffer.from(await response.arrayBuffer()), { failOn: 'error' }).metadata();
-    if (!metadata.width || !metadata.height) throw new Error('The uploaded image dimensions could not be determined.');
-    return { width: metadata.width, height: metadata.height };
+    return inspectUploadThingImage(url);
 }
 
 async function findOwnerArtwork(legacyId: number) {
@@ -122,16 +109,18 @@ export async function storeUploadedImageDetails(data: UploadFormData): Promise<{
         const artworkLegacyId = Number(data.piece_id);
         const role = data.piece_type === 'main' ? 'primary' : data.piece_type === 'progress' ? 'progress' : 'supporting';
         const client = await getAuthenticatedOwnerConvexClient('store artwork media');
+        const source = await inspectUploadThingImage(data.image_path);
+        const small = data.small_image_path ? await inspectUploadThingImage(data.small_image_path) : null;
         await client.mutation(api.ownerMutations.storeArtworkMedia, {
             artworkLegacyId,
             role,
             title: nullableText(data.title),
             sourceUrl: data.image_path,
-            sourceWidth: Number(data.width),
-            sourceHeight: Number(data.height),
+            sourceWidth: source.width,
+            sourceHeight: source.height,
             smallUrl: nullableText(data.small_image_path),
-            smallWidth: nullableNumber(data.small_width),
-            smallHeight: nullableNumber(data.small_height),
+            smallWidth: small?.width ?? null,
+            smallHeight: small?.height ?? null,
         });
         revalidateArtworkSurfaces(artworkLegacyId);
         return { success: true, imageUrl: data.image_path };
@@ -248,6 +237,8 @@ interface NewPieceData {
 export async function createPiece(newPieceData: NewPieceData): Promise<{ success: boolean; piece?: Pieces; error?: string }> {
     try {
         const client = await getAuthenticatedOwnerConvexClient('create artwork');
+        const source = await inspectUploadThingImage(newPieceData.imagePath);
+        const small = newPieceData.smallImagePath ? await inspectUploadThingImage(newPieceData.smallImagePath) : null;
         const created = await client.mutation(api.ownerMutations.createArtwork, {
             title: newPieceData.title.trim(),
             description: null,
@@ -264,11 +255,11 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
             heightInches: null,
             primaryImage: {
                 sourceUrl: newPieceData.imagePath,
-                sourceWidth: newPieceData.width,
-                sourceHeight: newPieceData.height,
+                sourceWidth: source.width,
+                sourceHeight: source.height,
                 smallUrl: nullableText(newPieceData.smallImagePath),
-                smallWidth: newPieceData.smallWidth || null,
-                smallHeight: newPieceData.smallHeight || null,
+                smallWidth: small?.width ?? null,
+                smallHeight: small?.height ?? null,
             },
         });
         const artworks = await client.query(api.ownerReads.listArtworks, {});

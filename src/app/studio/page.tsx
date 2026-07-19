@@ -34,8 +34,8 @@ export default function StudioPage() {
                 </div>
             </section>
             <section className="lw-practice lw-band lw-band-raised">
-                <span className="lw-eyebrow">The practice</span>
-                <div>
+                <div className="lw-practice-content">
+                    <span className="lw-eyebrow">The practice</span>
                     <h2>Light, texture, and what is often overlooked.</h2>
                     <p>
                         Jill began painting in oil at twelve. Her practice moves between direct observation, remembered places, and

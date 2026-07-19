@@ -148,8 +148,10 @@ export default async function ArtworkPage({ params }: Props) {
             {related.length > 0 && (
                 <section className="lw-related lw-band lw-band-raised">
                     <header>
-                        <span className="lw-eyebrow">Continue looking</span>
-                        <h2>More from the studio.</h2>
+                        <div>
+                            <span className="lw-eyebrow">Continue looking</span>
+                            <h2>More from the studio.</h2>
+                        </div>
                         <Link href="/work">
                             View the collection <ArrowRight size={16} />
                         </Link>

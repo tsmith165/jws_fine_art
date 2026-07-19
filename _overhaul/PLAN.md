@@ -351,6 +351,51 @@ Development migration evidence:
 4. Repoint the legacy application and webhook only after count/hash checks, order reconciliation, and double-sale checks pass. Non-commerce records remain in the frozen Convex deployment plus the export manifest because the legacy schema has no destination for them.
 5. Production deployment, webhook changes, and checkout re-enable again require explicit approval. A blind code rollback is prohibited after Convex has accepted writes.
 
+## Release Hardening Follow-up (2026-07-18)
+
+Status: **engineering gates pass; production cutover remains blocked pending provider and operational approval**
+
+Completed safeguards:
+
+- Convex imports now require an explicit target selector and exact non-development confirmation. Every non-development import creates an external file-storage-inclusive Convex export plus SHA-256 manifest before writing.
+- Release audits fail on migration conflicts, open checkout intents, unresolved webhook quarantine, campaigns still sending, or failed campaign recipients. A development audit currently reports zero blockers.
+- A server-enforced `JWS_WRITE_FREEZE` supports independent `owner`, `checkout`, and `public` scopes while leaving reads, unsubscribe, and Stripe webhook drain available.
+- Upload persistence re-inspects provider-hosted JPEG, PNG, and WebP originals server-side with MIME, format, byte, pixel, redirect, timeout, and EXIF-orientation checks. Client-provided image dimensions are not trusted.
+- Stripe checkout success now verifies the Checkout Session, Convex intent, artwork, and recorded order. Refund and dispute events are idempotently recorded, surface owner attention, and never automatically relist artwork.
+- Campaign mail includes signed one-click unsubscribe links and standard list-unsubscribe headers. Invalid links do not mutate subscriber state.
+- Node.js `24.x` is pinned in `.nvmrc` and `package.json`. Node 24.18.0 typecheck, lint, 28 tests, and the Next 16 production build pass.
+- Public npm production and full dependency audits report no known vulnerabilities.
+- The development Convex snapshot verifies at 86 operational artworks, 241 media records, 10 deduplicated legacy orders, 14 preserved pending-artwork orphans, and zero migration conflicts.
+- Read-only UploadThing reconciliation found all 481 Convex-referenced provider objects. Fifty-two unreferenced provider objects are recorded in an external restricted report for owner review; none were deleted.
+
+Remaining production gates:
+
+- Development and the `feat/full-site-overhaul` Preview branch now have Stripe test-key overrides. Preserve Production's live keys in a production-only record, then remove the legacy generic Preview live-key target so unrelated previews cannot inherit live credentials.
+- Reauthenticate Stripe CLI, create a test-mode webhook endpoint for the branch Preview, and replace its inherited live webhook signing secret with the test endpoint secret.
+- Complete authenticated owner QA for artwork creation/editing/media, archive/restore/reorder, orders, inquiries, campaign draft, unsubscribe, and tools using test-scoped providers.
+- Complete Stripe test-mode checkout, cancellation, payment failure, duplicate webhook replay, partial/full refund, and dispute fixtures. Configure the production webhook with the additional refund/dispute subscriptions during the approved transition.
+- Freeze writes on the current live application, create a final Neon T0 dump/snapshot, and prove there is no delta from the production rehearsal import (or import the verified delta) before traffic switches.
+- Review the 52 UploadThing orphans against legacy/raw records and retention requirements before any separately approved deletion.
+- Obtain explicit approval for the write freeze, final delta, provider transition, production deployment, DNS/domain cutover, controlled purchase, and write re-enable.
+
+Latest non-destructive evidence:
+
+- Convex development export: `/Users/tsmith/dev/_codex/jws-fine-art-convex-backups/2026-07-18T23-43-17-692Z-development.zip`; SHA-256 `8c20752ea0dfa2507599ab958b0a3175dc19807890d7c1639bfc39a8c5281bda`.
+- UploadThing report: `/Users/tsmith/dev/_codex/jws-fine-art-release-reports/uploadthing-development-1784418623475.json` (mode `0600`).
+- Production-build Home desktop artifact: `cutover-home-desktop-node24`, `sha256:bfffa172fc4d70f0a4775f2fb4c6e5b94fef1c037e3e6479b9e206bb1a41a515`.
+- Production-build Home mobile artifact: `cutover-home-mobile-node24`, `sha256:a0571833574033622916fd276c562da576c43afbd9b249ceb742bf423a4b2e96`.
+- Browser smoke covered Home, Work, dynamic artwork, invalid unsubscribe, invalid checkout-success verification, and anonymous admin redirect at 1440x1000 and 390x844. No broken artwork images or horizontal overflow were found. The final Node 24 production-build reload produced zero console errors, zero HTTP 4xx/5xx responses, and no local PostHog or Vercel Speed Insights traffic.
+
+Production Convex rehearsal evidence (2026-07-19):
+
+- Deployment: `hushed-crane-268`; schema/functions deployed with `owner`, `checkout`, and `public` writes frozen.
+- Fresh read-only Neon snapshot: `/Users/tsmith/dev/_codex/jws-fine-art-migration/production-rehearsal-20260719T161302Z/neon-snapshot`; snapshot ID `2026-07-19T16-13-03-178Z-07486214abd6`; source hash `07486214abd62f610645da8d04b67ba10468482ca6245b64bf49a8fadad33d4b`.
+- Pre-import Convex rollback archive and SHA-256 manifest are stored beside the snapshot with restrictive permissions.
+- Exact production parity passed: 86 artworks, 241 media records, 10 deduplicated historical orders, 14 preserved pending-artwork orphans, and zero migration conflicts.
+- Production release audit passed with zero open checkout intents, webhook quarantines, sending campaigns, and failed recipients.
+- Production UploadThing audit found 481 referenced objects, zero missing objects, and 52 unreferenced objects. No objects were deleted.
+- Vercel project Node.js is `24.x`; production Convex URLs, read-backend selector, site URL, unique server secret, and unsubscribe secret are staged without redeploying the live application.
+
 ## Deferred
 
 - WebGL/3D gallery. The product uses an accessible 2D room visualization first.

@@ -5,8 +5,11 @@ import Stripe from 'stripe';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { getServerConvexClient } from '@/data/serverConvex';
+import { assertStripeEnvironment } from '@/lib/providerSafety';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-06-24.dahlia' });
+function stripeClient() {
+    return new Stripe(assertStripeEnvironment().secretKey, { apiVersion: '2026-06-24.dahlia' });
+}
 
 function siteOrigin(requestHeaders: Headers) {
     const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '');
@@ -24,6 +27,7 @@ function requiredFormValue(data: FormData, key: string) {
 }
 
 export async function runStripePurchase(data: FormData) {
+    const stripe = stripeClient();
     const artworkLegacyId = Number(requiredFormValue(data, 'piece_id'));
     if (!Number.isSafeInteger(artworkLegacyId) || artworkLegacyId <= 0) throw new Error('Artwork ID is invalid.');
     const buyerName = requiredFormValue(data, 'full_name');

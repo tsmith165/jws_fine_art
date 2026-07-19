@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 import { mutation } from './_generated/server';
 import type { MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
+import { assertWritesEnabled } from './lib/writeFreeze';
 
 const nullableNumber = v.union(v.number(), v.null());
 const nullableString = v.union(v.string(), v.null());
@@ -46,6 +47,7 @@ export const submitInquiry = mutation({
     },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
+        assertWritesEnabled('public');
         await enforceRateLimit(ctx, args.rateLimitKey, 'inquiry', 4, 60 * 60 * 1000);
         const name = args.name.trim();
         const email = normalizeEmail(args.email);
@@ -82,6 +84,7 @@ export const subscribe = mutation({
     args: { serverSecret: v.string(), email: v.string(), name: nullableString, consentSource: v.string(), rateLimitKey: v.string() },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
+        assertWritesEnabled('public');
         await enforceRateLimit(ctx, args.rateLimitKey, 'subscribe', 6, 60 * 60 * 1000);
         const email = normalizeEmail(args.email);
         if (!validEmail(email)) throw new Error('A valid email is required.');

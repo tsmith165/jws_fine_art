@@ -95,6 +95,7 @@ const buyer = {
 
 beforeEach(() => {
     process.env.CONVEX_SERVER_WRITE_SECRET = serverSecret;
+    delete process.env.JWS_WRITE_FREEZE;
 });
 
 describe('Convex commerce', () => {
@@ -188,6 +189,132 @@ describe('Convex commerce', () => {
         expect(state.orders).toHaveLength(1);
         expect(state.orders[0]).toMatchObject({ paymentIntentId: 'pi_test_1', amountPaidCents: 97500, shippingPaidCents: 2500 });
         expect(state.events).toHaveLength(2);
+    });
+
+    it('records partial and full refunds without automatically relisting the artwork', async () => {
+        const t = createHarness();
+        const artworkId = await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_refund',
+            paymentIntentId: 'pi_refund',
+        });
+        await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_paid_refund',
+            eventType: 'payment_intent.succeeded',
+            paymentIntentId: 'pi_refund',
+            checkoutSessionId: 'cs_refund',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+        await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_partial_refund',
+            eventType: 'charge.refunded',
+            paymentIntentId: 'pi_refund',
+            checkoutSessionId: 'cs_refund',
+            amountReceivedCents: 20000,
+            currency: 'usd',
+        });
+        await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_full_refund',
+            eventType: 'charge.refunded',
+            paymentIntentId: 'pi_refund',
+            checkoutSessionId: 'cs_refund',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+
+        const state = await t.run(async (ctx) => ({
+            artwork: await ctx.db.get(artworkId),
+            orders: await ctx.db.query('orders').collect(),
+            events: await ctx.db.query('orderEvents').collect(),
+        }));
+        expect(state.artwork).toMatchObject({ sold: true, available: false });
+        expect(state.orders[0]).toMatchObject({ status: 'refunded', fulfillmentStatus: 'needs_attention' });
+        expect(state.events.map((event) => event.type)).toEqual(expect.arrayContaining(['payment.partially_refunded', 'payment.refunded']));
+    });
+
+    it('records disputes as owner attention events', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, { serverSecret, artworkLegacyId: 101, ...buyer });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_dispute',
+            paymentIntentId: 'pi_dispute',
+        });
+        await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_dispute_paid',
+            eventType: 'payment_intent.succeeded',
+            paymentIntentId: 'pi_dispute',
+            checkoutSessionId: 'cs_dispute',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+        const result = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_dispute_opened',
+            eventType: 'charge.dispute.created',
+            paymentIntentId: 'pi_dispute',
+            checkoutSessionId: 'cs_dispute',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+        expect(result.outcome).toBe('processed');
+        const events = await t.run((ctx) => ctx.db.query('orderEvents').collect());
+        expect(events.map((event) => event.type)).toContain('payment.dispute.created');
+    });
+
+    it('returns a server-authorized checkout confirmation status', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, { serverSecret, artworkLegacyId: 101, ...buyer });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_status',
+            paymentIntentId: 'pi_status',
+        });
+        const open = await t.query(api.commerce.checkoutStatus, { serverSecret, sessionId: 'cs_status', artworkLegacyId: 101 });
+        expect(open).toMatchObject({ intentStatus: 'checkout_open', orderRecorded: false });
+        expect(await t.query(api.commerce.checkoutStatus, { serverSecret, sessionId: 'cs_status', artworkLegacyId: 999 })).toBeNull();
+    });
+
+    it('blocks new checkouts while allowing webhook drain during a checkout freeze', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, { serverSecret, artworkLegacyId: 101, ...buyer });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_freeze',
+            paymentIntentId: 'pi_freeze',
+        });
+        process.env.JWS_WRITE_FREEZE = 'checkout';
+        await expect(t.mutation(api.commerce.createCheckoutIntent, { serverSecret, artworkLegacyId: 101, ...buyer })).rejects.toThrow(
+            'temporarily paused',
+        );
+        const drained = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_freeze_drain',
+            eventType: 'payment_intent.succeeded',
+            paymentIntentId: 'pi_freeze',
+            checkoutSessionId: 'cs_freeze',
+            amountReceivedCents: 97500,
+            currency: 'usd',
+        });
+        expect(drained.outcome).toBe('processed');
     });
 
     it('quarantines unknown and mismatched payments exactly once', async () => {
@@ -317,6 +444,17 @@ describe('owner authorization', () => {
         const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
         const dashboard = await owner.query(api.ownerWorkspace.dashboard, {});
         expect(dashboard.artwork.total).toBe(0);
+    });
+
+    it('keeps owner reads available while freezing owner mutations', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
+        process.env.JWS_WRITE_FREEZE = 'owner';
+        expect((await owner.query(api.ownerWorkspace.dashboard, {})).artwork.total).toBe(1);
+        await expect(owner.mutation(api.ownerMutations.setArtworkActive, { legacyId: 101, active: false })).rejects.toThrow(
+            'temporarily paused',
+        );
     });
 
     it('audits artwork edits, ordering, archive, restore, and media operations', async () => {

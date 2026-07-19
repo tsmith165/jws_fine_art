@@ -1,47 +1,60 @@
-# Jill Weeks Smith Fine Art Gallery
+# JWS Fine Art
 
-This is a Next.js 14 project for Jill Weeks Smith, an artist showcasing and selling her artwork through a full-featured online gallery and sales platform.
+Private production application for Jill Weeks Smith Fine Art. The repository contains the public gallery, Stripe checkout, collector contact and mailing flows, and the authenticated owner workspace.
 
-## Features
+## Runtime
 
--   Full gallery displaying Jill Weeks Smith's artwork
--   Artwork sales platform with integrated payments
--   Admin panel for managing artwork, sales, and site content
--   Responsive design for optimal viewing on various devices
+- Next.js 16 and React 19
+- TypeScript, Tailwind CSS 4, and Zustand 5
+- Convex for operational data and server-enforced authorization
+- Clerk for owner identity
+- UploadThing for original artwork media
+- Stripe Checkout and signed webhooks for purchases
+- Resend for transactional and campaign email
+- Vercel for hosting
 
-## Tech Stack
+Use Node 24 and pnpm 10. The version files and `packageManager` field are authoritative.
 
--   **Next.js 14**: The project is built using Next.js 14, leveraging its powerful features and performance optimizations. The site extensively utilizes server components for efficient rendering and data fetching.
--   **TypeScript**: The codebase is written in TypeScript, providing static typing and enhanced developer experience.
--   **Tailwind CSS**: Styling is done using Tailwind CSS, a utility-first CSS framework that allows for rapid development and easy customization.
--   **Clerk**: User authentication and management are handled by Clerk, ensuring secure access to the admin panel and user-specific features.
--   **Uploadthing**: Uploadthing is used for efficient and secure file uploads, allowing the artist to easily add new artwork to the gallery.
--   **Google Maps API**: The site integrates with the Google Maps API to display the location of the artist's studio or gallery.
--   **Stripe**: Payments for artwork purchases are processed securely through Stripe, providing a seamless and reliable payment experience for customers.
--   **Drizzle ORM**: The project uses Drizzle ORM as the ORM (Object-Relational Mapping) tool for database management, simplifying database queries and interactions.
--   **PostgreSQL**: PostgreSQL is used as the database system to store artwork information, user details, and sales data.
--   **Zustand**: Zustand is utilized for state management, providing a simple and efficient way to manage application state.
--   **AWS S3**: Artwork images and other static assets are stored and served from Amazon S3 (Simple Storage Service) for scalable and reliable file storage.
--   **Vercel**: The site is deployed and hosted on Vercel, ensuring fast and efficient delivery of the application to users worldwide.
+## Local Development
 
-## Getting Started
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+pnpm exec convex dev --once
+pnpm dev
+```
 
-To run the project locally, follow these steps:
+Local and preview environments must use Stripe test credentials. The application refuses live Stripe credentials outside `VERCEL_ENV=production`, and production refuses test credentials.
 
-1. Clone the repository: `git clone https://github.com/your-repo.git`
-2. Install dependencies: `npm install`
-3. Set up environment variables for required services (e.g., Clerk, Stripe, Google Maps API)
-4. Run the development server: `npm run dev`
-5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Required application variables are checked by `pnpm release:check-env` without printing their values:
 
-## Deployment
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_CONVEX_URL` and `NEXT_PUBLIC_CONVEX_SITE_URL`
+- `CONVEX_SERVER_WRITE_SECRET`
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`
+- `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`
+- `UPLOADTHING_TOKEN`
+- `RESEND_API_KEY`
+- `UNSUBSCRIBE_SIGNING_SECRET`
 
-The project is deployed on Vercel. To deploy your own instance, you can follow the Vercel deployment documentation and connect your repository.
+The Convex deployment also requires Clerk's JWT issuer configuration. Never share live Stripe credentials with Development or Preview scopes.
 
-## Contributing
+## Verification
 
-Contributions are welcome! If you find any issues or have suggestions for improvement, please open an issue or submit a pull request.
+```bash
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
+pnpm audit --prod
+```
+
+Release-specific checks are documented in [_overhaul/CUTOVER_RUNBOOK.md](_overhaul/CUTOVER_RUNBOOK.md). The scripts fail closed on unresolved migrations, provider drift, open checkouts, webhook quarantine, campaign failures, missing environment configuration, and unsafe Stripe credential modes.
+
+## Data Safety
+
+Neon is the immutable legacy backup source and must remain read-only. Production Convex imports require an explicit target confirmation and create a checksummed export before importing. Production deployment, DNS, webhook, secret, and write-cutover changes require explicit approval.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This is proprietary, private software. See [LICENSE](LICENSE).

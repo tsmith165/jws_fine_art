@@ -6,15 +6,53 @@ import { api } from '../../../../../convex/_generated/api';
 import { getServerConvexClient } from '@/data/serverConvex';
 import { sendEmail } from '@/utils/emails/resend_utils';
 import CheckoutSuccessEmail from '@/utils/emails/templates/checkoutSuccessEmail';
+import { assertStripeEnvironment } from '@/lib/providerSafety';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-06-24.dahlia' });
+function stripeClient() {
+    return new Stripe(assertStripeEnvironment().secretKey, { apiVersion: '2026-06-24.dahlia' });
+}
 
-async function checkoutSessionId(paymentIntentId: string) {
+async function checkoutSessionId(stripe: Stripe, paymentIntentId: string) {
     const sessions = await stripe.checkout.sessions.list({ payment_intent: paymentIntentId, limit: 1 });
     return sessions.data[0]?.id ?? null;
 }
 
+function stripeEventDetails(event: Stripe.Event) {
+    const object = event.data.object;
+    if (object.object === 'payment_intent') {
+        return {
+            paymentIntentId: object.id,
+            amountCents: event.type === 'payment_intent.succeeded' ? object.amount_received : null,
+            currency: object.currency,
+        };
+    }
+    if (object.object === 'charge') {
+        const paymentIntentId = typeof object.payment_intent === 'string' ? object.payment_intent : (object.payment_intent?.id ?? null);
+        return {
+            paymentIntentId,
+            amountCents: event.type === 'charge.refunded' ? object.amount_refunded : object.amount,
+            currency: object.currency,
+        };
+    }
+    if (object.object === 'dispute') {
+        const paymentIntent = object.payment_intent;
+        return {
+            paymentIntentId: typeof paymentIntent === 'string' ? paymentIntent : (paymentIntent?.id ?? null),
+            amountCents: object.amount,
+            currency: object.currency,
+        };
+    }
+    return { paymentIntentId: null, amountCents: null, currency: null };
+}
+
 export async function POST(request: Request) {
+    let stripe: Stripe;
+    try {
+        stripe = stripeClient();
+    } catch (error) {
+        console.error('Stripe environment validation failed.', error);
+        return Response.json({ error: 'Webhook configuration is invalid.' }, { status: 503 });
+    }
     const payload = await request.text();
     const signature = request.headers.get('stripe-signature');
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -29,9 +67,9 @@ export async function POST(request: Request) {
     }
 
     try {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        const paymentIntentId = paymentIntent.object === 'payment_intent' ? paymentIntent.id : null;
-        const sessionId = paymentIntentId ? await checkoutSessionId(paymentIntentId) : null;
+        const details = stripeEventDetails(event);
+        const paymentIntentId = details.paymentIntentId;
+        const sessionId = paymentIntentId ? await checkoutSessionId(stripe, paymentIntentId) : null;
         const { client, serverSecret } = getServerConvexClient();
         const result = await client.mutation(api.commerce.processStripeEvent, {
             serverSecret,
@@ -39,11 +77,8 @@ export async function POST(request: Request) {
             eventType: event.type,
             paymentIntentId,
             checkoutSessionId: sessionId,
-            amountReceivedCents:
-                event.type === 'payment_intent.succeeded' && paymentIntent.object === 'payment_intent'
-                    ? paymentIntent.amount_received
-                    : null,
-            currency: paymentIntent.object === 'payment_intent' ? paymentIntent.currency : null,
+            amountReceivedCents: details.amountCents,
+            currency: details.currency,
         });
 
         if (result.outcome === 'processed' && 'notification' in result && result.notification && paymentIntentId) {

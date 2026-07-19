@@ -10,7 +10,7 @@ export const ourFileRouter = {
             return { userId };
         })
         .onUploadComplete(async ({ metadata, file }) => {
-            return { uploadedBy: metadata.userId, uploadedFileUrl: file.url };
+            return { uploadedBy: metadata.userId, uploadedFileUrl: file.ufsUrl };
         }),
 } satisfies FileRouter;
 

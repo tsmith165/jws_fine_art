@@ -3,6 +3,9 @@
     "version": "2.1.0",
     "type": "module",
     "private": true,
+    "engines": {
+        "node": "24.x"
+    },
     "packageManager": "pnpm@10.33.0",
     "scripts": {
         "dev": "next dev --turbopack",
@@ -18,6 +21,11 @@
         "migration:synthetic": "tsx scripts/migration/build-synthetic-snapshot.ts",
         "migration:audit-assets": "tsx scripts/migration/audit-assets.ts",
         "migration:verify": "tsx scripts/migration/verify-parity.ts",
+        "release:convex-export": "tsx scripts/release/export-convex.ts",
+        "release:check-env": "tsx scripts/release/check-environment.ts",
+        "release:audit-convex": "tsx scripts/release/audit-convex.ts",
+        "release:audit-uploadthing": "tsx scripts/release/audit-uploadthing.ts",
+        "release:audit-stripe": "tsx scripts/release/audit-stripe.ts",
         "setup:clerk-convex": "tsx scripts/setup/configure-clerk-convex.ts"
     },
     "dependencies": {

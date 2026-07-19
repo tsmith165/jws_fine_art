@@ -8,7 +8,7 @@ export default function SignInPage() {
     return (
         <SiteShell>
             <section className="lw-auth">
-                <div>
+                <div className="lw-auth-copy">
                     <span className="lw-eyebrow">Owner access</span>
                     <h1>Studio manager</h1>
                     <p>Sign in to manage artwork, orders, collector inquiries, campaigns, and site health.</p>

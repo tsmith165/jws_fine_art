@@ -3,17 +3,24 @@ import path from 'node:path';
 import process from 'node:process';
 import { legacyArtworkSlug } from '../../convex/lib/legacy';
 import { legacyTables, readJsonLines, readManifest, type LegacyTableName, type SourceDocument } from './shared';
+import { convexArgs, parseConvexTarget } from '../release/convex-target';
 
 const snapshotDirectory = process.argv.find((argument) => argument.startsWith('--snapshot='))?.slice('--snapshot='.length);
 if (!snapshotDirectory) throw new Error('Pass --snapshot=/absolute/path/to/snapshot.');
 
 const manifest = await readManifest(snapshotDirectory);
+const target = parseConvexTarget();
 const source = {} as Record<LegacyTableName, SourceDocument[]>;
 for (const table of legacyTables) source[table] = await readJsonLines(snapshotDirectory, table);
 
 const auditCommand = spawnSync(
     'corepack',
-    ['pnpm', 'exec', 'convex', 'run', 'migrations:auditSummary', JSON.stringify({ snapshotId: manifest.snapshotId })],
+    [
+        'pnpm',
+        'exec',
+        'convex',
+        ...convexArgs(['run', 'migrations:auditSummary', JSON.stringify({ snapshotId: manifest.snapshotId })], target),
+    ],
     {
         cwd: process.cwd(),
         encoding: 'utf8',
@@ -42,6 +49,9 @@ const audit = JSON.parse(auditCommand.stdout) as {
     conflictCount: number;
 };
 const failures: string[] = [];
+if (audit.conflictCount > 0) {
+    failures.push(`migration conflicts: ${audit.conflictCount} unresolved conflict(s) must be dispositioned before cutover.`);
+}
 
 function compareRaw(table: LegacyTableName): void {
     const expected = new Map(source[table].map((row) => [row.legacyId, row.sourceHash]));
