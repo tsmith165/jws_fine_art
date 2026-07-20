@@ -1,3 +1,5 @@
+import { ConvexError } from 'convex/values';
+
 export type WriteScope = 'owner' | 'checkout' | 'public';
 
 function frozenScopes(): Set<string> {
@@ -12,6 +14,8 @@ function frozenScopes(): Set<string> {
 export function assertWritesEnabled(scope: WriteScope): void {
     const scopes = frozenScopes();
     if (scopes.has('all') || scopes.has(scope)) {
-        throw new Error('Studio updates are temporarily paused while the site is being updated. Please try again shortly.');
+        throw new ConvexError(
+            'Studio updates are temporarily paused while the site is being updated. Please try again shortly.',
+        );
     }
 }
