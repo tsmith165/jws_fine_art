@@ -1,6 +1,7 @@
 import { v } from 'convex/values';
 import type { Doc } from './_generated/dataModel';
 import { query, type QueryCtx } from './_generated/server';
+import { deriveArtworkCategories } from '../shared/artworkCategories';
 
 function publicArtwork(artwork: Doc<'artworks'>, media: Doc<'artworkMedia'>[]) {
     return {
@@ -10,6 +11,7 @@ function publicArtwork(artwork: Doc<'artworks'>, media: Doc<'artworkMedia'>[]) {
         description: artwork.description,
         medium: artwork.medium,
         theme: artwork.theme,
+        categories: artwork.categories ?? deriveArtworkCategories({ theme: artwork.theme, medium: artwork.medium }),
         instagramUrl: artwork.instagramUrl,
         className: artwork.className,
         legacyGalleryOrder: artwork.legacyGalleryOrder ?? -artwork.galleryOrder,

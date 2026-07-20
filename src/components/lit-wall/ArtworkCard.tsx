@@ -10,12 +10,12 @@ export function ArtworkCard({ piece, priority = false }: { piece: PiecesWithImag
         <Link className="lw-art-card" href={artworkHref(piece)}>
             <span className="lw-art-card-image">
                 <Image
-                    src={imageSource(piece, true)}
+                    src={imageSource(piece)}
                     alt={piece.title}
-                    width={piece.small_width || piece.width}
-                    height={piece.small_height || piece.height}
+                    width={piece.width}
+                    height={piece.height}
                     sizes="(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 31vw"
-                    quality={85}
+                    quality={92}
                     priority={priority}
                 />
                 <span className="lw-art-card-open">

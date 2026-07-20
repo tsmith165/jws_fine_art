@@ -6,6 +6,14 @@ import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { captureAnalytics } from '@/lib/analytics';
 import { ArtworkCard } from './ArtworkCard';
+import {
+    ARTWORK_CATEGORIES,
+    artworkCategoryLabel,
+    deriveArtworkCategories,
+    isArtworkCategoryId,
+    resolveArtworkCategory,
+    type ArtworkCategoryId,
+} from '@shared/artworkCategories';
 
 type Availability = 'available' | 'all' | 'sold';
 type Sort = 'newest' | 'price-asc' | 'price-desc' | 'title';
@@ -18,10 +26,11 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
     const router = useRouter();
     const pathname = usePathname();
     const params = useSearchParams();
-    const availability = (params.get('availability') as Availability) || 'available';
+    const availability = (params.get('availability') as Availability) || 'all';
     const sort = (params.get('sort') as Sort) || 'newest';
     const query = params.get('q') || '';
-    const theme = params.get('theme') || '';
+    const requestedCategory = params.get('category') || params.get('theme') || '';
+    const category: ArtworkCategoryId | '' = resolveArtworkCategory(requestedCategory);
     const framed = boolParam(new URLSearchParams(params.toString()), 'framed');
     const [searchOpen, setSearchOpen] = useState(Boolean(query));
     const [filterOpen, setFilterOpen] = useState(false);
@@ -34,6 +43,13 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
         router.replace(`${pathname}?${next.toString()}`, { scroll: false });
     };
     const clear = () => router.replace(pathname, { scroll: false });
+    const setCategory = (value?: ArtworkCategoryId) => {
+        const next = new URLSearchParams(params.toString());
+        next.delete('theme');
+        if (value) next.set('category', value);
+        else next.delete('category');
+        router.replace(next.size ? `${pathname}?${next.toString()}` : pathname, { scroll: false });
+    };
     const list = useMemo(() => {
         const normalized = query.trim().toLowerCase();
         return pieces
@@ -41,10 +57,16 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                 if (availability === 'available' && (!piece.available || piece.sold)) return false;
                 if (availability === 'sold' && !piece.sold) return false;
                 if (framed && !piece.framed) return false;
-                if (theme && !(piece.theme || '').toLowerCase().includes(theme.toLowerCase())) return false;
+                const categories = piece.categories?.length
+                    ? piece.categories
+                    : deriveArtworkCategories({ theme: piece.theme, medium: piece.piece_type });
+                if (category && !categories.includes(category)) return false;
                 if (
                     normalized &&
-                    ![piece.title, piece.description, piece.piece_type, piece.theme].join(' ').toLowerCase().includes(normalized)
+                    ![piece.title, piece.description, piece.piece_type, piece.theme, ...categories.map(artworkCategoryLabel)]
+                        .join(' ')
+                        .toLowerCase()
+                        .includes(normalized)
                 )
                     return false;
                 return true;
@@ -55,7 +77,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                 if (sort === 'title') return a.title.localeCompare(b.title);
                 return b.id - a.id;
             });
-    }, [availability, framed, pieces, query, sort, theme]);
+    }, [availability, category, framed, pieces, query, sort]);
     const counts = {
         available: pieces.filter((piece) => piece.available && !piece.sold).length,
         all: pieces.length,
@@ -67,7 +89,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
         'price-desc': 'Price: high to low',
         title: 'Title: A–Z',
     };
-    const filterCount = Number(framed) + Number(Boolean(theme));
+    const filterCount = Number(framed) + Number(Boolean(category));
     useEffect(() => {
         if (!query.trim()) return;
         const timer = window.setTimeout(
@@ -80,7 +102,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
         <>
             <section className="lw-catalog-toolbar" aria-label="Catalog controls">
                 <div className="lw-tabs" role="tablist" aria-label="Artwork availability">
-                    {(['available', 'all', 'sold'] as Availability[]).map((value) => (
+                    {(['all', 'available', 'sold'] as Availability[]).map((value) => (
                         <button
                             key={value}
                             role="tab"
@@ -88,7 +110,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                             className={availability === value ? 'is-active' : ''}
                             onClick={() => {
                                 captureAnalytics('catalog_availability_changed', { availability: value });
-                                setParam('availability', value === 'available' ? undefined : value);
+                                setParam('availability', value === 'all' ? undefined : value);
                             }}
                         >
                             {value === 'sold' ? 'Sold archive' : value === 'all' ? 'All work' : 'Available'} <span>{counts[value]}</span>
@@ -125,19 +147,22 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                                 <label>
                                     Subject
                                     <select
-                                        value={theme}
+                                        value={category}
                                         onChange={(event) => {
+                                            const value = event.target.value;
                                             captureAnalytics('catalog_filter_changed', {
-                                                filter: 'theme',
-                                                value: event.target.value || 'all',
+                                                filter: 'category',
+                                                value: value || 'all',
                                             });
-                                            setParam('theme', event.target.value);
+                                            setCategory(isArtworkCategoryId(value) ? value : undefined);
                                         }}
                                     >
-                                        <option value="">All subjects</option>
-                                        <option value="water">Water & coast</option>
-                                        <option value="landscape">Landscape</option>
-                                        <option value="snow">Snow & mountain</option>
+                                        <option value="">All categories</option>
+                                        {ARTWORK_CATEGORIES.map((option) => (
+                                            <option key={option.id} value={option.id}>
+                                                {option.label}
+                                            </option>
+                                        ))}
                                     </select>
                                 </label>
                                 <label className="lw-check">
@@ -220,7 +245,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                 <span aria-live="polite">
                     {list.length} {list.length === 1 ? 'work' : 'works'}
                 </span>
-                {(theme || framed || query) && (
+                {(category || framed || query) && (
                     <button
                         onClick={() => {
                             captureAnalytics('catalog_filters_cleared');

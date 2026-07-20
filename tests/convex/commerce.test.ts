@@ -579,6 +579,31 @@ describe('owner authorization', () => {
         );
     });
 
+    it('updates only artwork categories and records an owner audit event', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
+
+        const result = await owner.mutation(api.ownerMutations.setArtworkCategories, {
+            legacyId: 101,
+            categories: ['coastal', 'urban'],
+        });
+
+        expect(result).toEqual({ changed: true, categories: ['coastal', 'urban'] });
+        const state = await t.run(async (ctx) => ({
+            artwork: await ctx.db
+                .query('artworks')
+                .withIndex('by_legacy_id', (q) => q.eq('legacyId', 101))
+                .unique(),
+            auditEvents: await ctx.db.query('ownerAuditEvents').collect(),
+        }));
+        expect(state.artwork?.categories).toEqual(['coastal', 'urban']);
+        expect(state.artwork?.title).toBe('Test Artwork');
+        expect(state.artwork?.ownerMutatedFields).toContain('categories');
+        expect(state.auditEvents).toHaveLength(1);
+        expect(state.auditEvents[0]).toMatchObject({ action: 'artwork.categories_updated', actorId: 'owner-test' });
+    });
+
     it('audits artwork edits, ordering, archive, restore, and media operations', async () => {
         const t = createHarness();
         await seedArtwork(t, { legacyId: 101, galleryOrder: 1000, homepageOrder: 1000 });

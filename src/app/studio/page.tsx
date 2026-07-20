@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
+import { readPublicArtworks } from '@/data/artworkReads';
 
 export const metadata: Metadata = {
     title: 'Studio & Story',
@@ -10,13 +11,15 @@ export const metadata: Metadata = {
     alternates: { canonical: '/studio' },
 };
 
-export default function StudioPage() {
+export default async function StudioPage() {
+    const pieces = await readPublicArtworks();
+    const studioImages = pieces.filter((piece) => piece.image_path).slice(0, 3);
     return (
         <SiteShell newsletter>
             <section className="lw-studio-hero lw-band">
                 <div className="lw-studio-portrait">
                     <Image
-                        src="/bio/bio_pic_updated_small.jpg"
+                        src="/bio/jill-weeks-smith-portrait.jpg"
                         alt="Jill Weeks Smith"
                         fill
                         sizes="(max-width: 760px) 92vw, 40vw"
@@ -42,34 +45,57 @@ export default function StudioPage() {
                         experiments with the tools and surfaces that let a moment remain alive.
                     </p>
                     <p>
-                        Oil offers color and atmosphere. Printmaking answers with restraint, pressure, and the satisfaction of an image
-                        revealed.
+                        Oil is where color and atmosphere live. Printmaking trades softness for pressure, hard edges, and the moment the
+                        image is revealed.
                     </p>
                 </div>
             </section>
             <section className="lw-timeline lw-band">
                 <header>
                     <span className="lw-eyebrow">A working life</span>
-                    <h2>From the first lesson to the present studio.</h2>
+                    <h2>From the first brushstroke to the studio today.</h2>
                 </header>
-                <ol>
-                    <li>
-                        <strong>San Diego beginnings</strong>
-                        <p>A local artist and family friend mentored Jill in oil painting from the age of twelve.</p>
-                    </li>
-                    <li>
-                        <strong>Utah State University</strong>
-                        <p>Fine Art with an emphasis in Oil Painting, alongside a minor in Interior Design.</p>
-                    </li>
-                    <li>
-                        <strong>Northern California</strong>
-                        <p>Gallery exhibitions, publications, art walks, and fine art fairs throughout Sacramento and Lake Tahoe.</p>
-                    </li>
-                    <li>
-                        <strong>Back to the studio</strong>
-                        <p>A renewed focus on intimate paintings, printmaking, and work that can become part of daily life.</p>
-                    </li>
-                </ol>
+                <div className="lw-timeline-layout">
+                    <ol>
+                        <li>
+                            <strong>San Diego beginnings</strong>
+                            <p>A local artist and family friend mentored Jill in oil painting from the age of twelve.</p>
+                        </li>
+                        <li>
+                            <strong>Utah State University</strong>
+                            <p>
+                                Majored in Fine Art and minored in Interior Design. Jill worked as a commissioned silk screen and print
+                                artist during college and after graduation.
+                            </p>
+                        </li>
+                        <li>
+                            <strong>Northern California</strong>
+                            <p>
+                                Alongside coaching, Jill served as an art docent and continued exhibiting through galleries, art walks, and
+                                regional fairs.
+                            </p>
+                        </li>
+                        <li>
+                            <strong>Southern California</strong>
+                            <p>A studio practice built on light and atmosphere.</p>
+                        </li>
+                    </ol>
+                    {studioImages.length > 0 && (
+                        <div className="lw-timeline-media" aria-label="Selected work from Jill's studio">
+                            {studioImages.map((piece, index) => (
+                                <figure key={piece.id} className={index === 0 ? 'is-featured' : ''}>
+                                    <Image
+                                        src={piece.image_path}
+                                        alt={piece.title}
+                                        fill
+                                        sizes="(max-width: 760px) 92vw, 24vw"
+                                        quality={92}
+                                    />
+                                </figure>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </section>
             <section className="lw-studio-cta lw-band lw-band-raised">
                 <h2>Find the work that stays with you.</h2>

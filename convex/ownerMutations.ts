@@ -2,9 +2,11 @@ import { v } from 'convex/values';
 import { mutation, type MutationCtx } from './_generated/server';
 import { legacyArtworkSlug } from './lib/legacy';
 import { requireOwnerIdentity } from './lib/ownerAuth';
+import { deriveArtworkCategories, normalizeArtworkCategories } from '../shared/artworkCategories';
 
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
+const artworkCategory = v.union(v.literal('coastal'), v.literal('mountain'), v.literal('urban'), v.literal('intaglio-lino-cut'));
 
 async function audit(
     ctx: MutationCtx,
@@ -51,6 +53,7 @@ const artworkFields = {
     description: nullableString,
     medium: nullableString,
     theme: nullableString,
+    categories: v.optional(v.array(artworkCategory)),
     instagramUrl: nullableString,
     ownerNotes: nullableString,
     priceCents: v.number(),
@@ -67,7 +70,11 @@ export const updateArtwork = mutation({
     handler: async (ctx, args) => {
         const actorId = await owner(ctx);
         const artwork = await artworkByLegacyId(ctx, args.legacyId);
-        const { legacyId: _legacyId, ...fields } = args;
+        const { legacyId: _legacyId, categories, ...remainingFields } = args;
+        const fields = {
+            ...remainingFields,
+            ...(categories ? { categories } : {}),
+        };
         const changed = Object.entries(fields)
             .filter(([field, value]) => !Object.is(artwork[field as keyof typeof artwork], value))
             .map(([field]) => field);
@@ -82,6 +89,32 @@ export const updateArtwork = mutation({
         });
         await audit(ctx, actorId, 'artwork.updated', 'artwork', String(artwork._id), { fields: changed });
         return { changed: true };
+    },
+});
+
+export const setArtworkCategories = mutation({
+    args: {
+        legacyId: v.number(),
+        categories: v.array(artworkCategory),
+    },
+    handler: async (ctx, args) => {
+        const actorId = await owner(ctx);
+        const artwork = await artworkByLegacyId(ctx, args.legacyId);
+        const categories = normalizeArtworkCategories(args.categories);
+        const currentCategories = normalizeArtworkCategories(artwork.categories ?? []);
+        if (categories.join('|') === currentCategories.join('|')) return { changed: false, categories };
+
+        await ctx.db.patch(artwork._id, {
+            categories,
+            ownerMutatedFields: [...new Set([...artwork.ownerMutatedFields, 'categories'])],
+            ownerRevision: artwork.ownerRevision + 1,
+            updatedAt: Date.now(),
+        });
+        await audit(ctx, actorId, 'artwork.categories_updated', 'artwork', String(artwork._id), {
+            legacyId: args.legacyId,
+            categories,
+        });
+        return { changed: true, categories };
     },
 });
 
@@ -104,7 +137,11 @@ export const createArtwork = mutation({
         const legacyId = Math.max(0, ...artworks.map((item) => item.legacyId)) + 1;
         const galleryOrder = Math.max(0, ...artworks.map((item) => item.galleryOrder)) + 1000;
         const homepageOrder = Math.max(0, ...artworks.map((item) => item.homepageOrder)) + 1000;
-        const { primaryImage, ...fields } = args;
+        const { primaryImage, categories, ...remainingFields } = args;
+        const fields = {
+            ...remainingFields,
+            categories: categories ?? deriveArtworkCategories({ theme: remainingFields.theme, medium: remainingFields.medium }),
+        };
         const artworkId = await ctx.db.insert('artworks', {
             origin: 'owner',
             legacyTable: 'Pieces',

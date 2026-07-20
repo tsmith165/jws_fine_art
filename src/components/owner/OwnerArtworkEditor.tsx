@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { onSubmitEditForm } from '@/app/admin/edit/actions';
+import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 
 type EditorForm = {
     piece_id: string;
@@ -20,6 +21,7 @@ type EditorForm = {
     real_width: string;
     real_height: string;
     theme: string;
+    categories: ArtworkCategoryId[];
     available: boolean;
     framed: boolean;
     comments: string;
@@ -40,6 +42,7 @@ function initialForm(piece: PiecesWithImages): EditorForm {
         real_width: piece.real_width ? String(piece.real_width) : '',
         real_height: piece.real_height ? String(piece.real_height) : '',
         theme: piece.theme || '',
+        categories: piece.categories,
         available: Boolean(piece.available),
         framed: Boolean(piece.framed),
         comments: piece.comments || '',
@@ -154,14 +157,29 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                 ))}
                             </select>
                         </label>
-                        <label className="owner-field">
-                            <span>Collection tags</span>
-                            <input
-                                value={form.theme}
-                                onChange={(event) => update('theme', event.target.value)}
-                                placeholder="Water, Landscape"
-                            />
-                        </label>
+                        <fieldset className="owner-field is-wide owner-category-fieldset">
+                            <legend>Categories</legend>
+                            <div className="owner-category-options">
+                                {ARTWORK_CATEGORIES.map((category) => (
+                                    <label key={category.id}>
+                                        <input
+                                            type="checkbox"
+                                            checked={form.categories.includes(category.id)}
+                                            onChange={(event) =>
+                                                update(
+                                                    'categories',
+                                                    event.target.checked
+                                                        ? [...form.categories, category.id]
+                                                        : form.categories.filter((id) => id !== category.id),
+                                                )
+                                            }
+                                        />
+                                        <span>{category.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                            <small>Choose every collection where this work belongs.</small>
+                        </fieldset>
                         <label className="owner-field">
                             <span>Price (USD)</span>
                             <input

@@ -6,6 +6,8 @@ import type { Pieces } from '@/types/artwork';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { ownerArtworkToLegacy } from '@/data/ownerMapper';
 import { inspectUploadThingImage } from '@/lib/uploadedImage';
+import type { ArtworkCategoryId } from '@shared/artworkCategories';
+import { normalizeArtworkCategories } from '@shared/artworkCategories';
 
 function revalidateArtworkSurfaces(id?: number) {
     revalidatePath('/');
@@ -33,6 +35,7 @@ interface SubmitFormData {
     real_width: string;
     real_height: string;
     theme: string;
+    categories: ArtworkCategoryId[];
     available: boolean;
     framed: boolean;
     comments: string;
@@ -74,6 +77,7 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
             description: nullableText(data.description),
             medium: nullableText(data.piece_type),
             theme: nullableText(data.theme.replace('None, ', '')),
+            categories: normalizeArtworkCategories(data.categories),
             instagramUrl: nullableText(data.instagram),
             ownerNotes: nullableText(data.comments),
             priceCents: Math.max(0, Math.round(Number(data.price || 0) * 100)),
@@ -206,6 +210,7 @@ export async function handleTitleUpdate(formData: FormData): Promise<{ success: 
             description: artwork.description,
             medium: artwork.medium,
             theme: artwork.theme,
+            categories: artwork.categories,
             instagramUrl: artwork.instagramUrl,
             ownerNotes: artwork.ownerNotes,
             priceCents: artwork.priceCents,
@@ -244,6 +249,7 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
             description: null,
             medium: null,
             theme: null,
+            categories: [],
             instagramUrl: null,
             ownerNotes: null,
             priceCents: 0,

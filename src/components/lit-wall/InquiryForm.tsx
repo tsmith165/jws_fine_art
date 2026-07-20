@@ -62,7 +62,10 @@ export function InquiryForm({
                 </label>
             </div>
             <label>
-                Phone <small>Optional</small>
+                <span className="lw-label-row">
+                    <span>Phone</span>
+                    <small>Optional</small>
+                </span>
                 <input name="phone" type="tel" autoComplete="tel" />
             </label>
             {artworkTitle && (

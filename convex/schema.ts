@@ -4,6 +4,7 @@ import { v } from 'convex/values';
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
 const nullableBoolean = v.union(v.boolean(), v.null());
+const artworkCategory = v.union(v.literal('coastal'), v.literal('mountain'), v.literal('urban'), v.literal('intaglio-lino-cut'));
 
 const legacySourceFields = {
     legacyId: v.number(),
@@ -34,6 +35,7 @@ export default defineSchema({
         realHeight: nullableNumber,
         active: nullableBoolean,
         theme: nullableString,
+        categories: v.optional(v.array(artworkCategory)),
         framed: nullableBoolean,
         comments: nullableString,
     })
@@ -115,6 +117,7 @@ export default defineSchema({
         description: nullableString,
         medium: nullableString,
         theme: nullableString,
+        categories: v.optional(v.array(artworkCategory)),
         instagramUrl: nullableString,
         ownerNotes: nullableString,
         className: v.string(),

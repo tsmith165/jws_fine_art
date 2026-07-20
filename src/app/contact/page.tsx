@@ -47,7 +47,13 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
             </section>
             <section id="collector-guide" className="lw-collector-guide lw-band lw-band-raised">
                 <div className="lw-guide-image">
-                    <Image src="/bio/bio_pic_updated_small.jpg" alt="Jill Weeks Smith" fill sizes="(max-width: 760px) 92vw, 40vw" />
+                    <Image
+                        src="/bio/jill-weeks-smith-portrait.jpg"
+                        alt="Jill Weeks Smith"
+                        fill
+                        sizes="(max-width: 760px) 92vw, 40vw"
+                        quality={92}
+                    />
                 </div>
                 <div>
                     <span className="lw-eyebrow">Collector guide</span>
@@ -62,14 +68,18 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                     <details id="shipping">
                         <summary>Shipping</summary>
                         <p>
-                            Artwork is packed by the studio and shipped insured. Contact the studio before purchasing if you need a shipping
-                            estimate or have specific delivery requirements.
+                            Artwork is packed by the studio and shipped insured. Review the shipping guide for packing, delivery, damage,
+                            and estimate details.
                         </p>
+                        <Link className="lw-text-link" href="/shipping">
+                            Read the shipping guide
+                        </Link>
                     </details>
                     <details>
                         <summary>Seeing more detail</summary>
                         <p>
-                            Use the image gallery on each artwork page for close views, or ask Jill for any additional photographs you need.
+                            Use the image gallery on each artwork page for close views, or ask Jill for additional photographs or a short
+                            video of the work.
                         </p>
                     </details>
                     <details>

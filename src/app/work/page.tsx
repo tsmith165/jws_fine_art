@@ -17,7 +17,7 @@ export default async function WorkPage() {
             <header className="lw-page-intro lw-work-intro">
                 <span className="lw-eyebrow">The collection</span>
                 <h1>Original work by Jill Weeks Smith.</h1>
-                <p>Oil paintings, pastels, and original prints, including available work and selected pieces from private collections.</p>
+                <p>Original paintings of familiar shores, shifting light, and the quiet details noticed along the way.</p>
             </header>
             <div className="lw-catalog-wrap">
                 <Suspense fallback={<div className="lw-catalog-loading">Preparing the collection…</div>}>

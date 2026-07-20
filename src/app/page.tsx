@@ -7,6 +7,7 @@ import { HeroCarousel } from '@/components/lit-wall/HeroCarousel';
 import { SectionHeading } from '@/components/lit-wall/SectionHeading';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readHomepageArtworks, readPublicArtworks } from '@/data/artworkReads';
+import { deriveArtworkCategories, type ArtworkCategoryId } from '@shared/artworkCategories';
 
 export const metadata: Metadata = {
     title: 'Original paintings by Jill Weeks Smith',
@@ -22,22 +23,19 @@ export default async function HomePage() {
     const selectedCollectionImages = new Set<string>();
     const collectionCards = [
         {
-            label: 'California coast',
-            theme: 'water',
+            label: 'Coastal',
+            category: 'coastal' as ArtworkCategoryId,
             preferredTitle: 'Solana Beach',
-            matches: (piece: (typeof allPieces)[number]) => /water|coast/i.test(piece.theme || ''),
         },
         {
-            label: 'Snow & mountain',
-            theme: 'snow',
+            label: 'Mountain',
+            category: 'mountain' as ArtworkCategoryId,
             preferredTitle: 'Northstar Upper Main',
-            matches: (piece: (typeof allPieces)[number]) => /snow|mountain/i.test(piece.theme || ''),
         },
         {
-            label: 'Small originals',
-            theme: 'small',
-            preferredTitle: 'Friend or Foe',
-            matches: (piece: (typeof allPieces)[number]) => Boolean(piece.real_width && piece.real_width <= 10),
+            label: 'Urban',
+            category: 'urban' as ArtworkCategoryId,
+            preferredTitle: 'Pacific Beach Nocturne',
         },
     ]
         .map((card) => {
@@ -45,7 +43,12 @@ export default async function HomePage() {
                 !selectedCollectionIds.has(candidate.id) && !selectedCollectionImages.has(candidate.image_path);
             const piece =
                 allPieces.find((candidate) => isUnused(candidate) && candidate.title === card.preferredTitle) ||
-                allPieces.find((candidate) => isUnused(candidate) && card.matches(candidate)) ||
+                allPieces.find((candidate) => {
+                    const categories = candidate.categories.length
+                        ? candidate.categories
+                        : deriveArtworkCategories({ theme: candidate.theme, medium: candidate.piece_type });
+                    return isUnused(candidate) && categories.includes(card.category);
+                }) ||
                 allPieces.find(isUnused);
             if (piece) {
                 selectedCollectionIds.add(piece.id);
@@ -69,20 +72,20 @@ export default async function HomePage() {
                         <ArtworkCard key={piece.id} piece={piece} priority={index < 3} />
                     ))}
                 </div>
-                <Link className="lw-text-link" href="/work">
+                <Link className="lw-text-link" href="/work?availability=available">
                     See all available work <ArrowRight size={16} />
                 </Link>
             </section>
             <section className="lw-collections lw-band lw-band-raised">
                 <SectionHeading
                     eyebrow="Explore the collection"
-                    title="Paintings gathered by place and scale."
+                    title="Explore the collection from the shoreline to the summit."
                     copy="Browse the full studio catalog through the subjects Jill returns to most often."
                 />
                 <div className="lw-collection-grid">
-                    {collectionCards.map(({ label, theme, piece }) => {
+                    {collectionCards.map(({ label, category, piece }) => {
                         return (
-                            <Link key={theme} href={`/work?theme=${theme}`} className="lw-collection-card">
+                            <Link key={category} href={`/work?category=${category}`} className="lw-collection-card">
                                 <Image src={piece.image_path} alt="" fill sizes="(max-width: 760px) 92vw, 31vw" quality={90} />
                                 <span>
                                     {label} <ArrowRight size={17} />
@@ -95,7 +98,7 @@ export default async function HomePage() {
             <section className="lw-artist-intro lw-band">
                 <div className="lw-artist-photo">
                     <Image
-                        src="/bio/bio_pic_updated_small.jpg"
+                        src="/bio/jill-weeks-smith-portrait.jpg"
                         alt="Jill Weeks Smith by the coast"
                         fill
                         sizes="(max-width: 760px) 92vw, 38vw"
@@ -105,8 +108,8 @@ export default async function HomePage() {
                     <span className="lw-eyebrow">The artist</span>
                     <h2>Light, texture, and what is often overlooked.</h2>
                     <p>
-                        Jill Weeks Smith paints from direct observation and remembered places, building color and atmosphere in oils and
-                        answering with the tactile restraint of printmaking.
+                        Jill Weeks Smith paints in oils from observation and remembered places, drawn to the light, color, and atmosphere
+                        that make a place worth returning to.
                     </p>
                     <blockquote>“My work captures moments I can’t let go of, so I can revisit often and bring others with me.”</blockquote>
                     <Link className="lw-button lw-button-ghost" href="/studio">

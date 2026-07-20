@@ -20,8 +20,8 @@ export default async function CommissionsPage() {
             <section className="lw-commission-hero">
                 <div>
                     <span className="lw-eyebrow">Commissioned originals</span>
-                    <h1>A place, companion, or memory painted to keep.</h1>
-                    <p>Jill accepts a small number of house, pet, and meaningful-place commissions each season.</p>
+                    <h1>The place you can&apos;t stop thinking about becomes a painting you keep forever.</h1>
+                    <p>Connect with Jill as she accepts a small number of commissions each season.</p>
                     <Link className="lw-button lw-button-brass" href="/contact?kind=commission">
                         Start a conversation <ArrowRight size={16} />
                     </Link>

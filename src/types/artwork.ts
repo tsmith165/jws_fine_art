@@ -35,6 +35,7 @@ export interface Pieces {
     real_height: number | null;
     active: boolean | null;
     theme: string | null;
+    categories: ArtworkCategoryId[];
     framed: boolean | null;
     comments: string | null;
 }
@@ -63,3 +64,4 @@ export type PiecesWithImages = Pieces & {
     next_id?: number;
     last_id?: number;
 };
+import type { ArtworkCategoryId } from '@shared/artworkCategories';

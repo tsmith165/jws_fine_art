@@ -35,10 +35,7 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
     return (
         <section className="lw-hero" aria-label="Featured artwork">
             <div className="lw-hero-slides" aria-hidden="true">
-                <div
-                    className={`lw-hero-slide is-current${phase === 'transitioning' ? ' is-exiting' : ''}`}
-                    key={current.id}
-                >
+                <div className={`lw-hero-slide is-current${phase === 'transitioning' ? 'is-exiting' : ''}`} key={current.id}>
                     <Image
                         src={current.image_path}
                         alt=""
@@ -51,7 +48,7 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                 </div>
                 {incoming && incomingIndex !== null ? (
                     <div
-                        className={`lw-hero-slide is-incoming${phase === 'transitioning' ? ' is-active' : ''}`}
+                        className={`lw-hero-slide is-incoming${phase === 'transitioning' ? 'is-active' : ''}`}
                         key={incoming.id}
                         onTransitionEnd={(event) => transitionEnd(incomingIndex, event.propertyName)}
                     >
@@ -63,9 +60,9 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
             <div className="lw-hero-copy">
                 <span className="lw-eyebrow">California coast · Selected works</span>
                 <h1>Where the coast stays with you.</h1>
-                <p>Original paintings of familiar shores, fleeting weather, and the quiet details Jill notices along the way.</p>
+                <p>Original paintings of familiar shores, shifting light, and the quiet details noticed along the way.</p>
                 <div>
-                    <Link className="lw-button lw-button-brass" href="/work?theme=water">
+                    <Link className="lw-button lw-button-brass" href="/work?category=coastal">
                         View coastal paintings <ArrowRight size={16} />
                     </Link>
                     <Link className="lw-button lw-button-ghost" href="/studio">

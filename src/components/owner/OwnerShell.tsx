@@ -1,4 +1,4 @@
-import { BarChart3, ExternalLink, Images, Inbox, LayoutDashboard, Mail, PackageCheck, Wrench } from 'lucide-react';
+import { BarChart3, ExternalLink, Images, Inbox, LayoutDashboard, Mail, PackageCheck, Tags, Wrench } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 const navigation = [
     { href: '/admin', label: 'Today', detail: 'Tasks and studio health', icon: LayoutDashboard },
     { href: '/admin/artwork', label: 'Artwork', detail: 'Catalog, order, and archive', icon: Images },
+    { href: '/admin/categories', label: 'Categorize', detail: 'Review artwork taxonomy', icon: Tags },
     { href: '/admin/orders', label: 'Orders', detail: 'Sales and fulfillment', icon: PackageCheck },
     { href: '/admin/inbox', label: 'Inbox', detail: 'Collector inquiries', icon: Inbox },
     { href: '/admin/mailing', label: 'Mailing', detail: 'Audience and campaigns', icon: Mail },

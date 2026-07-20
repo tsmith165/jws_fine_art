@@ -3,12 +3,14 @@ import type { Doc, Id } from './_generated/dataModel';
 import { internalMutation, internalQuery } from './_generated/server';
 import { planImportedFieldMerge } from './lib/importMerge';
 import { legacyArtworkSlug, normalizeLegacyBoolean, SERIALIZER_VERSION } from './lib/legacy';
+import { deriveArtworkCategories } from '../shared/artworkCategories';
 
 type ImportedArtworkField =
     | 'title'
     | 'description'
     | 'medium'
     | 'theme'
+    | 'categories'
     | 'instagramUrl'
     | 'ownerNotes'
     | 'className'
@@ -27,6 +29,7 @@ const importedArtworkFields: ImportedArtworkField[] = [
     'description',
     'medium',
     'theme',
+    'categories',
     'instagramUrl',
     'ownerNotes',
     'className',
@@ -47,6 +50,7 @@ function sourceArtwork(piece: Doc<'legacyPieces'>) {
         description: piece.description,
         medium: piece.pieceType,
         theme: piece.theme,
+        categories: deriveArtworkCategories({ theme: piece.theme, medium: piece.pieceType }),
         instagramUrl: piece.instagram,
         ownerNotes: piece.comments,
         className: piece.className,
@@ -61,6 +65,43 @@ function sourceArtwork(piece: Doc<'legacyPieces'>) {
         heightInches: piece.realHeight,
     };
 }
+
+export const backfillArtworkCategories = internalMutation({
+    args: { dryRun: v.boolean() },
+    handler: async (ctx, args) => {
+        const artworks = await ctx.db.query('artworks').collect();
+        const activeArtworks = artworks.filter((artwork) => !artwork.absentFromSource);
+        const projected = activeArtworks.map((artwork) => ({
+            artwork,
+            categories: artwork.ownerMutatedFields.includes('categories')
+                ? (artwork.categories ?? [])
+                : deriveArtworkCategories({ theme: artwork.theme, medium: artwork.medium }),
+        }));
+        const changes = projected.filter(
+            ({ artwork, categories }) => JSON.stringify(artwork.categories ?? []) !== JSON.stringify(categories),
+        );
+
+        if (!args.dryRun) {
+            for (const { artwork, categories } of changes) {
+                await ctx.db.patch(artwork._id, { categories, updatedAt: Date.now() });
+            }
+        }
+
+        return {
+            dryRun: args.dryRun,
+            scanned: activeArtworks.length,
+            changed: changes.length,
+            counts: Object.fromEntries(
+                ['coastal', 'mountain', 'urban', 'intaglio-lino-cut'].map((category) => [
+                    category,
+                    projected.filter(({ categories }) =>
+                        categories.includes(category as 'coastal' | 'mountain' | 'urban' | 'intaglio-lino-cut'),
+                    ).length,
+                ]),
+            ),
+        };
+    },
+});
 
 export const deriveCanonical = internalMutation({
     args: {

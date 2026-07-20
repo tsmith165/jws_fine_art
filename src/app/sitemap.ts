@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { url: `${origin}/studio`, changeFrequency: 'monthly', priority: 0.7 },
         { url: `${origin}/commissions`, changeFrequency: 'monthly', priority: 0.7 },
         { url: `${origin}/contact`, changeFrequency: 'yearly', priority: 0.6 },
+        { url: `${origin}/shipping`, changeFrequency: 'yearly', priority: 0.6 },
         ...artwork.map((piece) => ({
             url: `${origin}${artworkHref(piece)}`,
             changeFrequency: 'monthly' as const,

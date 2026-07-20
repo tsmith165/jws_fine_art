@@ -1,6 +1,7 @@
 import type { FunctionReturnType } from 'convex/server';
 import type { api } from '../../convex/_generated/api';
 import type { ExtraImages, PiecesWithImages, ProgressImages } from '@/types/artwork';
+import { deriveArtworkCategories, normalizeArtworkCategories } from '@shared/artworkCategories';
 
 export type ConvexPublicArtwork = FunctionReturnType<typeof api.artworks.getPublicByLegacyId>;
 type ConvexArtwork = NonNullable<ConvexPublicArtwork>;
@@ -30,6 +31,7 @@ export function toLegacyArtwork(artwork: ConvexArtwork): PiecesWithImages {
     const progressImages = artwork.media
         .filter((media) => media.role === 'progress')
         .map((media) => ({ ...legacyMedia(media), piece_id: artwork.legacyId }) as ProgressImages);
+    const categories = normalizeArtworkCategories(artwork.categories ?? []);
 
     return {
         slug: artwork.slug,
@@ -54,6 +56,7 @@ export function toLegacyArtwork(artwork: ConvexArtwork): PiecesWithImages {
         real_height: artwork.heightInches,
         active: artwork.active,
         theme: artwork.theme,
+        categories: categories.length ? categories : deriveArtworkCategories({ theme: artwork.theme, medium: artwork.medium }),
         framed: artwork.framed,
         comments: null,
         extraImages,

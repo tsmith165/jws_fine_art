@@ -1,6 +1,7 @@
 import type { Doc } from './_generated/dataModel';
 import { internalQuery, query, type QueryCtx } from './_generated/server';
 import { requireOwnerIdentity } from './lib/ownerAuth';
+import { deriveArtworkCategories } from '../shared/artworkCategories';
 
 async function latestVerifiedSnapshotId(ctx: QueryCtx): Promise<string | null> {
     const runs = await ctx.db.query('migrationRuns').collect();
@@ -26,6 +27,7 @@ async function ownerArtworks(ctx: QueryCtx) {
             description: artwork.description,
             medium: artwork.medium,
             theme: artwork.theme,
+            categories: artwork.categories ?? deriveArtworkCategories({ theme: artwork.theme, medium: artwork.medium }),
             instagramUrl: artwork.instagramUrl,
             ownerNotes: artwork.ownerNotes,
             className: artwork.className,

@@ -1,6 +1,7 @@
 import type { FunctionReturnType } from 'convex/server';
 import type { api } from '../../convex/_generated/api';
 import type { ExtraImages, Pieces, PiecesWithImages, ProgressImages, VerifiedTransactions } from '@/types/artwork';
+import { normalizeArtworkCategories } from '@shared/artworkCategories';
 
 export type ConvexOwnerArtwork = FunctionReturnType<typeof api.ownerReads.listArtworks>[number];
 export type ConvexOwnerTransaction = FunctionReturnType<typeof api.ownerReads.listLegacyVerifiedTransactions>[number];
@@ -8,6 +9,7 @@ export type ConvexOwnerTransaction = FunctionReturnType<typeof api.ownerReads.li
 export function ownerArtworkToLegacy(artwork: ConvexOwnerArtwork): Pieces {
     const primary = artwork.media.find((media) => media.role === 'primary');
     if (!primary) throw new Error(`Convex artwork ${artwork.legacyId} has no primary image.`);
+    const categories = normalizeArtworkCategories(artwork.categories ?? []);
     return {
         id: artwork.legacyId,
         o_id: artwork.legacyGalleryOrder,
@@ -30,6 +32,7 @@ export function ownerArtworkToLegacy(artwork: ConvexOwnerArtwork): Pieces {
         real_height: artwork.heightInches,
         active: artwork.active,
         theme: artwork.theme,
+        categories,
         framed: artwork.framed,
         comments: artwork.ownerNotes,
     };

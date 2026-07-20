@@ -30,7 +30,8 @@
             "@/hooks/*": ["hooks/*"],
             "@/utils/*": ["utils/*"],
             "@/data/*": ["data/*"],
-            "@/types/*": ["types/*"]
+            "@/types/*": ["types/*"],
+            "@shared/*": ["../shared/*"]
         }
     },
     "include": [
