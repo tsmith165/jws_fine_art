@@ -19,6 +19,16 @@ const nextConfig = {
                 hostname: 'img.clerk.com',
                 pathname: '**',
             },
+            {
+                protocol: 'https',
+                hostname: 'jwsfineart.s3.us-west-1.amazonaws.com',
+                pathname: '/pieces/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'jwsfineartpieces.s3.us-west-1.amazonaws.com',
+                pathname: '/pieces/**',
+            },
         ],
         qualities: [75, 82, 85, 90, 100],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
