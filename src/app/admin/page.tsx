@@ -1,4 +1,5 @@
-import { ArrowRight, FileWarning, Inbox, PackageCheck } from 'lucide-react';
+import { ArrowRight, ChevronRight, FileWarning, Inbox, PackageCheck } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
 import { OwnerPostHogSummary } from '@/components/owner/OwnerPostHogSummary';
@@ -9,11 +10,16 @@ export const dynamic = 'force-dynamic';
 
 const number = new Intl.NumberFormat('en-US');
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+const orderDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
 
 function fulfillmentTone(value: string): 'neutral' | 'good' | 'warning' {
     if (value === 'needs_attention') return 'warning';
     if (value === 'untracked') return 'neutral';
     return 'good';
+}
+
+function fulfillmentLabel(value: string) {
+    return value.replaceAll('_', ' ');
 }
 
 export default async function OwnerDashboardPage() {
@@ -127,28 +133,46 @@ export default async function OwnerDashboardPage() {
                                 <span className="owner-panel-eyebrow">Sales</span>
                                 <h2>Recent orders</h2>
                             </div>
-                            <Link href="/admin/orders">View all</Link>
+                            <Link className="owner-panel-link" href="/admin/orders">
+                                View all <ArrowRight size={14} aria-hidden="true" />
+                            </Link>
                         </header>
-                        <ul className="owner-list">
+                        <ul className="owner-recent-orders">
                             {dashboard.recentOrders.length ? (
-                                dashboard.recentOrders.map((order) => (
+                                dashboard.recentOrders.map((order, index) => (
                                     <li key={order._id}>
-                                        <div>
-                                            <strong>{order.artworkTitle}</strong>
-                                            <small>{order.buyerName}</small>
-                                        </div>
-                                        <div>
-                                            <strong>
-                                                {money.format((order.amountPaidCents ?? order.legacyRecordedPriceCents ?? 0) / 100)}
-                                            </strong>
-                                            <OwnerStatus tone={fulfillmentTone(order.fulfillmentStatus)}>
-                                                {order.fulfillmentStatus.replace('_', ' ')}
-                                            </OwnerStatus>
-                                        </div>
+                                        <Link href={`/admin/orders?id=${order._id}`}>
+                                            <span className="owner-recent-order-artwork" aria-hidden="true">
+                                                {order.artworkImageUrl ? (
+                                                    <Image src={order.artworkImageUrl} alt="" fill sizes="52px" quality={75} />
+                                                ) : (
+                                                    <>
+                                                        <PackageCheck size={17} />
+                                                        <small>{String(index + 1).padStart(2, '0')}</small>
+                                                    </>
+                                                )}
+                                            </span>
+                                            <span className="owner-recent-order-copy">
+                                                <strong>{order.artworkTitle}</strong>
+                                                <span>
+                                                    <small>{order.buyerName}</small>
+                                                    <small>{orderDate.format(new Date(order.createdAt))}</small>
+                                                </span>
+                                            </span>
+                                            <span className="owner-recent-order-summary">
+                                                <strong>
+                                                    {money.format((order.amountPaidCents ?? order.legacyRecordedPriceCents ?? 0) / 100)}
+                                                </strong>
+                                                <OwnerStatus tone={fulfillmentTone(order.fulfillmentStatus)}>
+                                                    {fulfillmentLabel(order.fulfillmentStatus)}
+                                                </OwnerStatus>
+                                            </span>
+                                            <ChevronRight size={16} aria-hidden="true" />
+                                        </Link>
                                     </li>
                                 ))
                             ) : (
-                                <li>
+                                <li className="owner-recent-orders-empty">
                                     <p>No orders yet.</p>
                                 </li>
                             )}
