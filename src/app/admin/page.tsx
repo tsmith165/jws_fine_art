@@ -1,6 +1,6 @@
 import { ArrowRight, ChevronRight, FileWarning, Inbox, PackageCheck } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
+import { OwnerArtworkThumbnail } from '@/components/owner/OwnerArtworkThumbnail';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
 import { OwnerPostHogSummary } from '@/components/owner/OwnerPostHogSummary';
 import { readPostHogAnalytics } from '@/data/posthogAnalytics';
@@ -142,16 +142,7 @@ export default async function OwnerDashboardPage() {
                                 dashboard.recentOrders.map((order, index) => (
                                     <li key={order._id}>
                                         <Link href={`/admin/orders?id=${order._id}`}>
-                                            <span className="owner-recent-order-artwork" aria-hidden="true">
-                                                {order.artworkImageUrl ? (
-                                                    <Image src={order.artworkImageUrl} alt="" fill sizes="52px" quality={75} />
-                                                ) : (
-                                                    <>
-                                                        <PackageCheck size={17} />
-                                                        <small>{String(index + 1).padStart(2, '0')}</small>
-                                                    </>
-                                                )}
-                                            </span>
+                                            <OwnerArtworkThumbnail imageUrl={order.artworkImageUrl} index={index} />
                                             <span className="owner-recent-order-copy">
                                                 <strong>{order.artworkTitle}</strong>
                                                 <span>
