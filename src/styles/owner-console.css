@@ -2096,10 +2096,14 @@
 }
 .owner-categorizer {
     display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
     gap: 14px;
 }
 .owner-categorizer-toolbar {
     display: flex;
+    min-width: 0;
     min-height: 66px;
     align-items: center;
     justify-content: space-between;
@@ -2169,6 +2173,7 @@
 }
 .owner-categorizer-workspace {
     display: grid;
+    width: 100%;
     min-width: 0;
     grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.72fr);
     border: 1px solid var(--owner-line);
@@ -2392,6 +2397,9 @@
     color: #ecaaa1;
 }
 .owner-categorizer-queue {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
     border: 1px solid var(--owner-line);
     background: var(--owner-panel);
 }
@@ -2434,6 +2442,9 @@
 }
 .owner-categorizer-queue-items {
     display: flex;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     gap: 8px;
     overflow-x: auto;
     padding: 12px;
