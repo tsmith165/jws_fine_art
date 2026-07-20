@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Catalog } from '@/components/lit-wall/Catalog';
+import { CollectionBrowse } from '@/components/lit-wall/CollectionBrowse';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readPublicArtworks } from '@/data/artworkReads';
 
@@ -24,6 +25,7 @@ export default async function WorkPage() {
                     <Catalog pieces={pieces} />
                 </Suspense>
             </div>
+            <CollectionBrowse pieces={pieces} />
         </SiteShell>
     );
 }

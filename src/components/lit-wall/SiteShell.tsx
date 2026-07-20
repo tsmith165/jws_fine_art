@@ -12,7 +12,7 @@ export function SiteShell({ children, newsletter = false }: { children: ReactNod
             <main>{children}</main>
             {newsletter && <Newsletter />}
             <footer className="lw-footer">
-                <Brand compact />
+                <Brand />
                 <p>San Diego, California. Oil painting, soft pastel, lino cut, and intaglio by Jill Weeks Smith.</p>
                 <div>
                     <Link href="/contact#collector-guide">Collector guide</Link>

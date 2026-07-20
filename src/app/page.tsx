@@ -3,11 +3,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { ArtworkCard } from '@/components/lit-wall/ArtworkCard';
+import { CollectionBrowse } from '@/components/lit-wall/CollectionBrowse';
 import { HeroCarousel } from '@/components/lit-wall/HeroCarousel';
 import { SectionHeading } from '@/components/lit-wall/SectionHeading';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readHomepageArtworks, readPublicArtworks } from '@/data/artworkReads';
-import { deriveArtworkCategories, type ArtworkCategoryId } from '@shared/artworkCategories';
 
 export const metadata: Metadata = {
     title: 'Original paintings by Jill Weeks Smith',
@@ -19,44 +19,6 @@ export const metadata: Metadata = {
 export default async function HomePage() {
     const [heroPieces, allPieces] = await Promise.all([readHomepageArtworks(5), readPublicArtworks()]);
     const available = allPieces.filter((piece) => piece.available && !piece.sold).slice(0, 6);
-    const selectedCollectionIds = new Set<number>();
-    const selectedCollectionImages = new Set<string>();
-    const collectionCards = [
-        {
-            label: 'Coastal',
-            category: 'coastal' as ArtworkCategoryId,
-            preferredTitle: 'Solana Beach',
-        },
-        {
-            label: 'Mountain',
-            category: 'mountain' as ArtworkCategoryId,
-            preferredTitle: 'Northstar Upper Main',
-        },
-        {
-            label: 'Urban',
-            category: 'urban' as ArtworkCategoryId,
-            preferredTitle: 'Pacific Beach Nocturne',
-        },
-    ]
-        .map((card) => {
-            const isUnused = (candidate: (typeof allPieces)[number]) =>
-                !selectedCollectionIds.has(candidate.id) && !selectedCollectionImages.has(candidate.image_path);
-            const piece =
-                allPieces.find((candidate) => isUnused(candidate) && candidate.title === card.preferredTitle) ||
-                allPieces.find((candidate) => {
-                    const categories = candidate.categories.length
-                        ? candidate.categories
-                        : deriveArtworkCategories({ theme: candidate.theme, medium: candidate.piece_type });
-                    return isUnused(candidate) && categories.includes(card.category);
-                }) ||
-                allPieces.find(isUnused);
-            if (piece) {
-                selectedCollectionIds.add(piece.id);
-                selectedCollectionImages.add(piece.image_path);
-            }
-            return piece ? { ...card, piece } : null;
-        })
-        .filter((card): card is NonNullable<typeof card> => Boolean(card));
 
     return (
         <SiteShell newsletter>
@@ -76,25 +38,7 @@ export default async function HomePage() {
                     See all available work <ArrowRight size={16} />
                 </Link>
             </section>
-            <section className="lw-collections lw-band lw-band-raised">
-                <SectionHeading
-                    eyebrow="Explore the collection"
-                    title="Explore the collection from the shoreline to the summit."
-                    copy="Browse the full studio catalog through the subjects Jill returns to most often."
-                />
-                <div className="lw-collection-grid">
-                    {collectionCards.map(({ label, category, piece }) => {
-                        return (
-                            <Link key={category} href={`/work?category=${category}`} className="lw-collection-card">
-                                <Image src={piece.image_path} alt="" fill sizes="(max-width: 760px) 92vw, 31vw" quality={90} />
-                                <span>
-                                    {label} <ArrowRight size={17} />
-                                </span>
-                            </Link>
-                        );
-                    })}
-                </div>
-            </section>
+            <CollectionBrowse pieces={allPieces} />
             <section className="lw-artist-intro lw-band">
                 <div className="lw-artist-photo">
                     <Image
