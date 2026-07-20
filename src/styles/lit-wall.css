@@ -215,19 +215,40 @@
     display: inline-flex;
     width: fit-content;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
     color: var(--lw-ink);
 }
 .lw-brand-signature {
-    width: 58px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     object-fit: contain;
 }
+.lw-site .lw-brand-signature {
+    filter: brightness(0) invert(1) !important;
+}
 .lw-brand span {
-    line-height: 1.05;
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
 }
 .lw-brand strong {
     font-size: 17px;
+}
+.lw-brand small {
+    margin-top: 5px;
+    color: var(--lw-muted);
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+.lw-brand.is-compact .lw-brand-signature {
+    width: 38px;
+    height: 38px;
+}
+.lw-brand.is-compact strong {
+    font-size: 15px;
 }
 .lw-nav {
     display: flex;
@@ -2252,7 +2273,8 @@
         padding: 66px 20px;
     }
     .lw-brand-signature {
-        width: 50px;
+        width: 40px;
+        height: 40px;
     }
     .lw-hero {
         min-height: 740px;
