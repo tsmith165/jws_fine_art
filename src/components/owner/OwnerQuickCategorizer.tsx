@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { saveArtworkCategories } from '@/app/admin/categories/actions';
+import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
 import type { PiecesWithImages } from '@/types/artwork';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 
@@ -42,8 +43,8 @@ function isTypingTarget(target: EventTarget | null) {
 }
 
 export function OwnerQuickCategorizer({ initialArtworks }: { initialArtworks: PiecesWithImages[] }) {
-    const initialArtwork = initialArtworks.find((artwork) => artwork.categories.length === 0) ?? initialArtworks[0] ?? null;
-    const [artworks, setArtworks] = useState(initialArtworks);
+    const [artworks, setArtworks] = useState(() => filterCategorizerArtworks(initialArtworks));
+    const initialArtwork = artworks.find((artwork) => artwork.categories.length === 0) ?? artworks[0] ?? null;
     const [mode, setMode] = useState<QueueMode>('uncategorized');
     const [currentId, setCurrentId] = useState<number | null>(initialArtwork?.id ?? null);
     const [draftCategories, setDraftCategories] = useState<ArtworkCategoryId[]>(initialArtwork?.categories ?? []);

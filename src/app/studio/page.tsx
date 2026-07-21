@@ -97,7 +97,28 @@ export default async function StudioPage() {
                     )}
                 </div>
             </section>
-            <section className="lw-studio-cta lw-band lw-band-raised">
+            <section className="lw-studio-shows lw-band lw-band-raised">
+                <figure className="lw-studio-shows-media">
+                    <Image
+                        src="/marketing/event_1-inner-small.jpg"
+                        alt="Original artwork displayed in Jill Weeks Smith's booth at an outdoor art show"
+                        width={683}
+                        height={512}
+                        sizes="(max-width: 1024px) 92vw, 54vw"
+                        quality={95}
+                    />
+                </figure>
+                <div className="lw-studio-shows-copy">
+                    <span className="lw-eyebrow">Art shows</span>
+                    <h2>See the work in person.</h2>
+                    <p>
+                        Jill has exhibited original paintings and prints through galleries, art walks, and regional fairs. These shows let
+                        visitors experience the true surface, scale, and framing of each piece and talk with Jill about the places and
+                        process behind the work.
+                    </p>
+                </div>
+            </section>
+            <section className="lw-studio-cta lw-band">
                 <h2>Find the work that stays with you.</h2>
                 <div>
                     <Link className="lw-button lw-button-brass" href="/work">
