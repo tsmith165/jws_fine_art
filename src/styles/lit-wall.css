@@ -1343,7 +1343,7 @@
 
 .lw-commission-hero {
     display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
     min-height: calc(100dvh - 76px);
 }
 .lw-commission-hero > div:first-child {
@@ -1351,12 +1351,12 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    padding: clamp(60px, 8vw, 140px);
+    padding: clamp(56px, 6vw, 112px);
 }
 .lw-commission-hero h1 {
-    max-width: 650px;
-    font-size: clamp(58px, 6.5vw, 105px);
-    line-height: 1.06;
+    max-width: 720px;
+    font-size: clamp(54px, 4.5vw, 82px);
+    line-height: 1.08;
 }
 .lw-commission-hero p {
     max-width: 530px;
@@ -2495,7 +2495,7 @@
         padding: 60px 20px 70px;
     }
     .lw-commission-hero h1 {
-        font-size: 57px;
+        font-size: clamp(42px, 12vw, 48px);
     }
     .lw-commission-types article img {
         height: 300px;
