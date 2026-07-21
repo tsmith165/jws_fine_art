@@ -1231,8 +1231,8 @@
     line-height: 1.75;
 }
 .lw-timeline header {
-    max-width: 900px;
-    margin-bottom: 60px;
+    max-width: 760px;
+    margin-bottom: clamp(38px, 5vw, 64px);
 }
 .lw-timeline h2 {
     font-size: clamp(48px, 6vw, 90px);
@@ -1265,14 +1265,18 @@
 }
 .lw-timeline-layout {
     display: grid;
-    grid-template-columns: minmax(440px, 1fr) minmax(360px, 0.8fr);
-    gap: clamp(48px, 8vw, 120px);
-    align-items: start;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    gap: clamp(36px, 7vw, 112px);
+    align-items: center;
+}
+.lw-timeline-copy {
+    min-width: 0;
 }
 .lw-timeline-media {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
+    align-self: center;
 }
 .lw-timeline-media figure {
     position: relative;
@@ -2252,7 +2256,6 @@
     .lw-commission-notes {
         grid-template-columns: 1fr;
     }
-    .lw-timeline-layout,
     .lw-shipping-estimator,
     .lw-shipping-policy {
         grid-template-columns: 1fr;
@@ -2274,6 +2277,15 @@
         grid-template-columns: 1fr 1fr;
     }
     .lw-footer > p {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .lw-timeline-layout {
+        grid-template-columns: 1fr;
+    }
+    .lw-timeline-media {
         display: none;
     }
 }
@@ -2467,9 +2479,6 @@
     .lw-timeline li {
         grid-template-columns: 1fr;
         gap: 10px;
-    }
-    .lw-timeline-media figure.is-featured {
-        min-height: 360px;
     }
     .lw-shipping-principles,
     .lw-shipping-fields {

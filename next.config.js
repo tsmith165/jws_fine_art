@@ -30,7 +30,7 @@ const nextConfig = {
                 pathname: '/pieces/**',
             },
         ],
-        qualities: [75, 82, 85, 88, 90, 92, 100],
+        qualities: [75, 82, 85, 88, 90, 92, 95, 100],
         minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
     },
     async redirects() {

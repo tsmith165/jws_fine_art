@@ -51,35 +51,37 @@ export default async function StudioPage() {
                 </div>
             </section>
             <section className="lw-timeline lw-band">
-                <header>
-                    <span className="lw-eyebrow">A working life</span>
-                    <h2>From the first brushstroke to the studio today.</h2>
-                </header>
                 <div className="lw-timeline-layout">
-                    <ol>
-                        <li>
-                            <strong>San Diego beginnings</strong>
-                            <p>A local artist and family friend mentored Jill in oil painting from the age of twelve.</p>
-                        </li>
-                        <li>
-                            <strong>Utah State University</strong>
-                            <p>
-                                Majored in Fine Art and minored in Interior Design. Jill worked as a commissioned silk screen and print
-                                artist during college and after graduation.
-                            </p>
-                        </li>
-                        <li>
-                            <strong>Northern California</strong>
-                            <p>
-                                Alongside coaching, Jill served as an art docent and continued exhibiting through galleries, art walks, and
-                                regional fairs.
-                            </p>
-                        </li>
-                        <li>
-                            <strong>Southern California</strong>
-                            <p>A studio practice built on light and atmosphere.</p>
-                        </li>
-                    </ol>
+                    <div className="lw-timeline-copy">
+                        <header>
+                            <span className="lw-eyebrow">A working life</span>
+                            <h2>From the first brushstroke to the studio today.</h2>
+                        </header>
+                        <ol>
+                            <li>
+                                <strong>San Diego beginnings</strong>
+                                <p>A local artist and family friend mentored Jill in oil painting from the age of twelve.</p>
+                            </li>
+                            <li>
+                                <strong>Utah State University</strong>
+                                <p>
+                                    Majored in Fine Art and minored in Interior Design. Jill worked as a commissioned silk screen and print
+                                    artist during college and after graduation.
+                                </p>
+                            </li>
+                            <li>
+                                <strong>Northern California</strong>
+                                <p>
+                                    Alongside coaching, Jill served as an art docent and continued exhibiting through galleries, art walks,
+                                    and regional fairs.
+                                </p>
+                            </li>
+                            <li>
+                                <strong>Southern California</strong>
+                                <p>A studio practice built on light and atmosphere.</p>
+                            </li>
+                        </ol>
+                    </div>
                     {studioImages.length > 0 && (
                         <div className="lw-timeline-media" aria-label="Selected work from Jill's studio">
                             {studioImages.map((piece, index) => (
