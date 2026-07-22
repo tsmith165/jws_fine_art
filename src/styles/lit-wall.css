@@ -563,6 +563,7 @@
     filter: blur(14px);
     opacity: 0.68;
     transform: scale(1.045);
+    transition: opacity 180ms ease;
 }
 .lw-progressive-image-main {
     opacity: 0;
@@ -573,6 +574,9 @@
 .lw-progressive-image.is-loaded .lw-progressive-image-main {
     opacity: 1;
 }
+.lw-progressive-image.is-loaded .lw-progressive-image-placeholder {
+    opacity: 0;
+}
 .lw-image-warmup {
     position: fixed;
     width: 1px;
@@ -582,7 +586,8 @@
     opacity: 0;
     pointer-events: none;
 }
-.lw-art-card-image .lw-progressive-image-main {
+.lw-art-card-image .lw-progressive-image-main,
+.lw-art-card-image .lw-progressive-image-placeholder {
     width: 100%;
     height: 100%;
     max-height: 470px;

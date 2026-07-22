@@ -53,7 +53,7 @@ export function ProgressiveArtworkImage({
     };
 
     return (
-        <span className={`lw-progressive-image${loaded ? 'is-loaded' : ''}`}>
+        <span className={`lw-progressive-image${loaded ? ' is-loaded' : ''}`}>
             {showPlaceholder ? (
                 <Image
                     className="lw-progressive-image-placeholder"
