@@ -6,6 +6,8 @@ import { useEffect, useRef } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { useImageTransition } from '@/hooks/useImageTransition';
 import { captureAnalytics } from '@/lib/analytics';
+import { adjacentImageIndexes } from '@/lib/imageLoading';
+import { ImageWarmup, ProgressiveArtworkImage } from './ProgressiveArtworkImage';
 
 const MEDIA_TRANSITION_MS = 520;
 
@@ -39,6 +41,9 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
     );
     const active = media[activeIndex] || media[0];
     const incoming = incomingIndex === null ? null : media[incomingIndex];
+    const warmupSources = adjacentImageIndexes(media.length, targetIndex)
+        .filter((index) => index !== activeIndex && index !== incomingIndex)
+        .map((index) => media[index].url);
     const choose = (index: number, method: 'arrow' | 'thumbnail' | 'keyboard') => {
         captureAnalytics('artwork_media_navigated', {
             artwork_id: piece.id,
@@ -71,13 +76,13 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
             <div className="lw-artwork-main">
                 <div className="lw-artwork-image-stage">
                     <div className={`lw-artwork-image-layer is-current${phase === 'transitioning' ? 'is-exiting' : ''}`} key={active.id}>
-                        <Image
+                        <ProgressiveArtworkImage
                             src={active.url}
+                            placeholderSrc={active.smallUrl}
                             alt={displayIndex === activeIndex ? active.alt : ''}
-                            fill
                             sizes="(max-width: 900px) 92vw, 58vw"
                             quality={92}
-                            priority
+                            priority={activeIndex === 0}
                         />
                     </div>
                     {incoming && incomingIndex !== null ? (
@@ -86,13 +91,13 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
                             key={incoming.id}
                             onTransitionEnd={(event) => transitionEnd(incomingIndex, event.propertyName)}
                         >
-                            <Image
+                            <ProgressiveArtworkImage
                                 src={incoming.url}
+                                placeholderSrc={incoming.smallUrl}
                                 alt={displayIndex === incomingIndex ? incoming.alt : ''}
-                                fill
                                 sizes="(max-width: 900px) 92vw, 58vw"
                                 quality={92}
-                                onLoad={() => ready(incomingIndex)}
+                                onReady={() => ready(incomingIndex)}
                             />
                         </div>
                     ) : null}
@@ -111,6 +116,7 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
                     </>
                 )}
             </div>
+            <ImageWarmup sources={warmupSources} sizes="(max-width: 900px) 92vw, 58vw" quality={92} />
             {media.length > 1 && (
                 <div className="lw-media-rail" role="tablist" aria-label="Artwork images">
                     {media.map((item, index) => (

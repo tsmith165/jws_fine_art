@@ -1,13 +1,14 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Pause, Play } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { artworkHref, dimensions } from '@/lib/artwork';
 import { captureAnalytics } from '@/lib/analytics';
 import { useImageTransition } from '@/hooks/useImageTransition';
+import { adjacentImageIndexes } from '@/lib/imageLoading';
+import { ImageWarmup, ProgressiveArtworkImage } from './ProgressiveArtworkImage';
 
 const HERO_TRANSITION_MS = 1150;
 
@@ -27,6 +28,9 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
     const current = slides[activeIndex];
     const incoming = incomingIndex === null ? null : slides[incomingIndex];
     const displayed = slides[displayIndex];
+    const warmupSources = adjacentImageIndexes(slides.length, targetIndex)
+        .filter((index) => index !== activeIndex && index !== incomingIndex)
+        .map((index) => slides[index].image_path);
     const move = (amount: number) => {
         const next = (targetIndex + amount + slides.length) % slides.length;
         captureAnalytics('hero_artwork_changed', { artwork_id: slides[next]?.id, direction: amount < 0 ? 'previous' : 'next' });
@@ -36,10 +40,10 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
         <section className="lw-hero" aria-label="Featured artwork">
             <div className="lw-hero-slides" aria-hidden="true">
                 <div className={`lw-hero-slide is-current${phase === 'transitioning' ? 'is-exiting' : ''}`} key={current.id}>
-                    <Image
+                    <ProgressiveArtworkImage
                         src={current.image_path}
+                        placeholderSrc={current.small_image_path}
                         alt=""
-                        fill
                         sizes="100vw"
                         quality={88}
                         priority={activeIndex === 0}
@@ -52,10 +56,18 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                         key={incoming.id}
                         onTransitionEnd={(event) => transitionEnd(incomingIndex, event.propertyName)}
                     >
-                        <Image src={incoming.image_path} alt="" fill sizes="100vw" quality={88} onLoad={() => ready(incomingIndex)} />
+                        <ProgressiveArtworkImage
+                            src={incoming.image_path}
+                            placeholderSrc={incoming.small_image_path}
+                            alt=""
+                            sizes="100vw"
+                            quality={88}
+                            onReady={() => ready(incomingIndex)}
+                        />
                     </div>
                 ) : null}
             </div>
+            <ImageWarmup sources={warmupSources} sizes="100vw" quality={88} />
             <div className="lw-hero-scrim" aria-hidden="true" />
             <div className="lw-hero-copy">
                 <span className="lw-eyebrow">California coast · Selected works</span>

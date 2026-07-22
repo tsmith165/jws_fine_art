@@ -552,14 +552,43 @@
     overflow: hidden;
     background: #090c09;
 }
-.lw-art-card-image > img {
+.lw-progressive-image {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    overflow: hidden;
+    background: #090c09;
+}
+.lw-progressive-image-placeholder {
+    filter: blur(14px);
+    opacity: 0.68;
+    transform: scale(1.045);
+}
+.lw-progressive-image-main {
+    opacity: 0;
+    transition:
+        opacity 280ms ease,
+        transform 0.5s ease;
+}
+.lw-progressive-image.is-loaded .lw-progressive-image-main {
+    opacity: 1;
+}
+.lw-image-warmup {
+    position: fixed;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    opacity: 0;
+    pointer-events: none;
+}
+.lw-art-card-image .lw-progressive-image-main {
     width: 100%;
     height: 100%;
     max-height: 470px;
     object-fit: contain;
-    transition: transform 0.5s ease;
 }
-.lw-art-card:hover img {
+.lw-art-card:hover .lw-progressive-image-main {
     transform: scale(1.018);
 }
 .lw-art-card-open {
@@ -988,7 +1017,7 @@
 .lw-artwork-image-layer.is-incoming {
     z-index: 1;
 }
-.lw-artwork-image-layer > img {
+.lw-artwork-image-layer .lw-progressive-image > img {
     width: 100%;
     height: 100%;
     object-fit: contain;

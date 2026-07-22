@@ -1,19 +1,18 @@
 import { ArrowUpRight } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { PiecesWithImages } from '@/types/artwork';
 import { artworkHref, artworkStatus, dimensions, imageSource, money } from '@/lib/artwork';
+import { ProgressiveArtworkImage } from './ProgressiveArtworkImage';
 
 export function ArtworkCard({ piece, priority = false }: { piece: PiecesWithImages; priority?: boolean }) {
     const status = artworkStatus(piece);
     return (
         <Link className="lw-art-card" href={artworkHref(piece)}>
             <span className="lw-art-card-image">
-                <Image
+                <ProgressiveArtworkImage
                     src={imageSource(piece)}
+                    placeholderSrc={piece.small_image_path}
                     alt={piece.title}
-                    width={piece.width}
-                    height={piece.height}
                     sizes="(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 31vw"
                     quality={92}
                     priority={priority}

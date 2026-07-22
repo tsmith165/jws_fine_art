@@ -30,8 +30,8 @@ export default async function HomePage() {
                     copy="Small originals and considered works, ready to live with."
                 />
                 <div className="lw-art-grid lw-art-grid-featured">
-                    {available.map((piece, index) => (
-                        <ArtworkCard key={piece.id} piece={piece} priority={index < 3} />
+                    {available.map((piece) => (
+                        <ArtworkCard key={piece.id} piece={piece} />
                     ))}
                 </div>
                 <Link className="lw-text-link" href="/work?availability=available">

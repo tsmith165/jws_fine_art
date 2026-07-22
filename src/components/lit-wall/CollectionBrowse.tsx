@@ -1,9 +1,9 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { deriveArtworkCategories, type ArtworkCategoryId } from '@shared/artworkCategories';
 import type { PiecesWithImages } from '@/types/artwork';
 import { SectionHeading } from './SectionHeading';
+import { ProgressiveArtworkImage } from './ProgressiveArtworkImage';
 
 const collectionDefinitions = [
     {
@@ -29,8 +29,7 @@ function buildCollectionCards(pieces: PiecesWithImages[]) {
 
     return collectionDefinitions
         .map((definition) => {
-            const isUnused = (candidate: PiecesWithImages) =>
-                !selectedIds.has(candidate.id) && !selectedImages.has(candidate.image_path);
+            const isUnused = (candidate: PiecesWithImages) => !selectedIds.has(candidate.id) && !selectedImages.has(candidate.image_path);
             const piece =
                 pieces.find((candidate) => isUnused(candidate) && candidate.title === definition.preferredTitle) ||
                 pieces.find((candidate) => {
@@ -64,7 +63,13 @@ export function CollectionBrowse({ pieces }: { pieces: PiecesWithImages[] }) {
             <div className="lw-collection-grid">
                 {cards.map(({ label, category, piece }) => (
                     <Link key={category} href={`/work?category=${category}`} className="lw-collection-card">
-                        <Image src={piece.image_path} alt="" fill sizes="(max-width: 760px) 92vw, 31vw" quality={90} />
+                        <ProgressiveArtworkImage
+                            src={piece.image_path}
+                            placeholderSrc={piece.small_image_path}
+                            alt=""
+                            sizes="(max-width: 760px) 92vw, 31vw"
+                            quality={90}
+                        />
                         <span>
                             {label} <ArrowRight size={17} />
                         </span>
