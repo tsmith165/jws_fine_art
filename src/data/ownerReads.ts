@@ -32,3 +32,9 @@ export async function readOwnerArtworksWithMedia() {
     const client = await getAuthenticatedOwnerConvexClient('read owner artwork media');
     return (await client.query(api.ownerReads.listArtworks, {})).map(ownerArtworkWithMediaToLegacy);
 }
+
+export async function readOwnerHomepageRotation(): Promise<{ configured: boolean; artworkLegacyIds: number[] }> {
+    await assertNextOwner();
+    const client = await getAuthenticatedOwnerConvexClient('read homepage rotation');
+    return client.query(api.ownerReads.getHomepageRotation, {});
+}

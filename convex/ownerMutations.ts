@@ -233,6 +233,49 @@ export const swapArtworkOrder = mutation({
     },
 });
 
+export const setHomepageRotation = mutation({
+    args: { artworkLegacyIds: v.array(v.number()) },
+    handler: async (ctx, args) => {
+        const actorId = await owner(ctx);
+        if (args.artworkLegacyIds.length < 1 || args.artworkLegacyIds.length > 5) {
+            throw new Error('Choose between one and five artworks for the homepage.');
+        }
+        if (args.artworkLegacyIds.some((legacyId) => !Number.isSafeInteger(legacyId) || legacyId <= 0)) {
+            throw new Error('Homepage artwork IDs must be positive integers.');
+        }
+        if (new Set(args.artworkLegacyIds).size !== args.artworkLegacyIds.length) {
+            throw new Error('Each homepage artwork can only appear once.');
+        }
+
+        for (const legacyId of args.artworkLegacyIds) {
+            const artwork = await artworkByLegacyId(ctx, legacyId);
+            if (!artwork.active) throw new Error(`${artwork.title} is archived and cannot appear on the homepage.`);
+            const media = await ctx.db
+                .query('artworkMedia')
+                .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', legacyId))
+                .collect();
+            if (!media.some((item) => item.role === 'primary' && !item.absentFromSource)) {
+                throw new Error(`${artwork.title} does not have an active primary image.`);
+            }
+        }
+
+        const existing = await ctx.db
+            .query('homepageRotations')
+            .withIndex('by_key', (q) => q.eq('key', 'primary'))
+            .unique();
+        const updatedAt = Date.now();
+        if (existing) {
+            await ctx.db.patch(existing._id, { artworkLegacyIds: args.artworkLegacyIds, updatedAt });
+        } else {
+            await ctx.db.insert('homepageRotations', { key: 'primary', artworkLegacyIds: args.artworkLegacyIds, updatedAt });
+        }
+        await audit(ctx, actorId, 'homepage.rotation_updated', 'homepageRotation', 'primary', {
+            artworkLegacyIds: args.artworkLegacyIds,
+        });
+        return { success: true };
+    },
+});
+
 export const setArtworkActive = mutation({
     args: { legacyId: v.number(), active: v.boolean() },
     handler: async (ctx, args) => {

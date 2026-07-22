@@ -93,6 +93,26 @@ export const listArtworks = query({
     },
 });
 
+export const getHomepageRotation = query({
+    args: {},
+    handler: async (ctx) => {
+        await requireOwnerIdentity(ctx);
+        const rotation = await ctx.db
+            .query('homepageRotations')
+            .withIndex('by_key', (q) => q.eq('key', 'primary'))
+            .unique();
+        if (rotation) return { configured: true, artworkLegacyIds: rotation.artworkLegacyIds };
+
+        const artworks = await ownerArtworks(ctx);
+        const artworkLegacyIds = artworks
+            .filter((artwork) => artwork.active && artwork.media.some((item) => item.role === 'primary'))
+            .sort((a, b) => b.legacyHomepagePriority - a.legacyHomepagePriority || b.legacyId - a.legacyId)
+            .slice(0, 5)
+            .map((artwork) => artwork.legacyId);
+        return { configured: false, artworkLegacyIds };
+    },
+});
+
 export const listLegacyVerifiedTransactions = query({
     args: {},
     handler: async (ctx) => {

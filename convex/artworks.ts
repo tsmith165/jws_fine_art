@@ -76,9 +76,25 @@ export const listHomepage = query({
     args: { limit: v.number() },
     handler: async (ctx, args) => {
         const artworks = await activeArtworks(ctx);
+        const limit = Math.min(5, Math.max(0, Math.floor(args.limit)));
+        const rotation = await ctx.db
+            .query('homepageRotations')
+            .withIndex('by_key', (q) => q.eq('key', 'primary'))
+            .unique();
+        const hasPrimaryImage = (artwork: (typeof artworks)[number]) => artwork.media.some((item) => item.role === 'primary');
+
+        if (rotation) {
+            const artworkByLegacyId = new Map(artworks.map((artwork) => [artwork.legacyId, artwork]));
+            return rotation.artworkLegacyIds
+                .map((legacyId) => artworkByLegacyId.get(legacyId))
+                .filter((artwork): artwork is NonNullable<typeof artwork> => Boolean(artwork && hasPrimaryImage(artwork)))
+                .slice(0, limit);
+        }
+
         return artworks
+            .filter(hasPrimaryImage)
             .sort((a, b) => b.legacyHomepagePriority - a.legacyHomepagePriority || b.legacyId - a.legacyId)
-            .slice(0, Math.max(0, args.limit));
+            .slice(0, limit);
     },
 });
 

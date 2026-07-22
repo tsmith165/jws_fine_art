@@ -168,6 +168,12 @@ export default defineSchema({
         .index('by_artwork_and_order', ['artworkLegacyId', 'displayOrder'])
         .index('by_absent_from_source', ['absentFromSource']),
 
+    homepageRotations: defineTable({
+        key: v.literal('primary'),
+        artworkLegacyIds: v.array(v.number()),
+        updatedAt: v.number(),
+    }).index('by_key', ['key']),
+
     checkoutIntents: defineTable({
         artworkId: v.id('artworks'),
         artworkLegacyId: nullableNumber,
