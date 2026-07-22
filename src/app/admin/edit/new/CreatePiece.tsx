@@ -11,7 +11,7 @@ export default function CreatePiece() {
     const router = useRouter();
     const [upload, setUpload] = useState({ url: '', title: '', width: 0, height: 0 });
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState<string | null>(null);
+    const [message, setMessage] = useState<{ text: string; tone: 'warning' } | null>(null);
     const reset = useCallback(() => {
         setUpload({ url: '', title: '', width: 0, height: 0 });
         setMessage(null);
@@ -22,22 +22,32 @@ export default function CreatePiece() {
     }, []);
 
     async function create(destination: 'edit' | 'media') {
-        setSaving(true);
-        const result = await createNewPiece({
-            title: upload.title,
-            imagePath: upload.url,
-            width: upload.width,
-            height: upload.height,
-            smallImagePath: '',
-            smallWidth: 0,
-            smallHeight: 0,
-        });
-        setSaving(false);
-        if (!result.success || !result.piece) {
-            setMessage(result.error || 'The artwork could not be created.');
+        if (!upload.url || !upload.title.trim()) {
+            setMessage({ text: 'Choose an image and enter the artwork title before creating it.', tone: 'warning' });
             return;
         }
-        router.push(destination === 'media' ? `/admin/edit/images/${result.piece.id}` : `/admin/edit?id=${result.piece.id}`);
+        setSaving(true);
+        setMessage(null);
+        try {
+            const result = await createNewPiece({
+                title: upload.title,
+                imagePath: upload.url,
+                width: upload.width,
+                height: upload.height,
+                smallImagePath: '',
+                smallWidth: 0,
+                smallHeight: 0,
+            });
+            if (!result.success || !result.piece) {
+                setMessage({ text: result.error || 'The artwork could not be created.', tone: 'warning' });
+                return;
+            }
+            router.push(destination === 'media' ? `/admin/edit/images/${result.piece.id}` : `/admin/edit?id=${result.piece.id}`);
+        } catch {
+            setMessage({ text: 'The artwork could not be created. Check your connection and try again.', tone: 'warning' });
+        } finally {
+            setSaving(false);
+        }
     }
 
     return (
@@ -46,10 +56,24 @@ export default function CreatePiece() {
             {upload.url ? (
                 <div className="owner-upload-review">
                     <div className="owner-upload-preview">
-                        <Image src={upload.url} alt="New artwork" width={upload.width} height={upload.height} quality={100} />
+                        <span className="owner-upload-preview-label">
+                            Primary image · {upload.width.toLocaleString()} × {upload.height.toLocaleString()} px
+                        </span>
+                        <Image
+                            src={upload.url}
+                            alt="New artwork"
+                            width={upload.width}
+                            height={upload.height}
+                            sizes="(max-width: 1050px) 92vw, 58vw"
+                        />
                     </div>
-                    <section className="owner-panel owner-form-grid">
-                        <label className="owner-field is-wide">
+                    <section className="owner-panel owner-upload-review-panel">
+                        <header>
+                            <span className="owner-eyebrow">New artwork</span>
+                            <h2>Name this piece</h2>
+                            <p>Create the private studio record first. Details and availability can be completed next.</p>
+                        </header>
+                        <label className="owner-field">
                             <span>Artwork title</span>
                             <input
                                 value={upload.title}
@@ -57,7 +81,7 @@ export default function CreatePiece() {
                                 required
                             />
                         </label>
-                        <div className="owner-upload-facts is-wide">
+                        <div className="owner-upload-facts">
                             <span>
                                 <Check size={15} /> Original retained
                             </span>
@@ -66,7 +90,7 @@ export default function CreatePiece() {
                             </span>
                             <span>Starts unpublished until details are complete</span>
                         </div>
-                        <div className="owner-inline-form is-wide">
+                        <div className="owner-upload-actions">
                             <button
                                 className="owner-button is-primary"
                                 type="button"
@@ -93,7 +117,11 @@ export default function CreatePiece() {
                     <p>The new artwork stays out of the public catalog until Jill completes its details and marks it available.</p>
                 </div>
             )}
-            {message ? <p className="owner-editor-message is-warning">{message}</p> : null}
+            {message ? (
+                <p className={`owner-editor-message is-${message.tone}`} role="alert">
+                    {message.text}
+                </p>
+            ) : null}
         </div>
     );
 }

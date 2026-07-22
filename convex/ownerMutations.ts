@@ -3,6 +3,7 @@ import { mutation, type MutationCtx } from './_generated/server';
 import { legacyArtworkSlug } from './lib/legacy';
 import { requireOwnerIdentity } from './lib/ownerAuth';
 import { deriveArtworkCategories, normalizeArtworkCategories } from '../shared/artworkCategories';
+import { normalizeArtworkAvailability } from '../shared/artworkListingState';
 
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
@@ -70,9 +71,10 @@ export const updateArtwork = mutation({
     handler: async (ctx, args) => {
         const actorId = await owner(ctx);
         const artwork = await artworkByLegacyId(ctx, args.legacyId);
-        const { legacyId: _legacyId, categories, ...remainingFields } = args;
+        const { legacyId: _legacyId, categories, sold, available, ...remainingFields } = args;
         const fields = {
             ...remainingFields,
+            ...normalizeArtworkAvailability({ sold, available }),
             ...(categories ? { categories } : {}),
         };
         const changed = Object.entries(fields)
@@ -137,9 +139,10 @@ export const createArtwork = mutation({
         const legacyId = Math.max(0, ...artworks.map((item) => item.legacyId)) + 1;
         const galleryOrder = Math.max(0, ...artworks.map((item) => item.galleryOrder)) + 1000;
         const homepageOrder = Math.max(0, ...artworks.map((item) => item.homepageOrder)) + 1000;
-        const { primaryImage, categories, ...remainingFields } = args;
+        const { primaryImage, categories, sold, available, ...remainingFields } = args;
         const fields = {
             ...remainingFields,
+            ...normalizeArtworkAvailability({ sold, available }),
             categories: categories ?? deriveArtworkCategories({ theme: remainingFields.theme, medium: remainingFields.medium }),
         };
         const artworkId = await ctx.db.insert('artworks', {

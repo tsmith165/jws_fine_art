@@ -5,9 +5,10 @@ import { api } from '../../../../convex/_generated/api';
 import type { Pieces } from '@/types/artwork';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { ownerArtworkToLegacy } from '@/data/ownerMapper';
-import { inspectUploadThingImage } from '@/lib/uploadedImage';
+import { validateUploadedImageReference } from '@/lib/uploadedImageReference';
 import type { ArtworkCategoryId } from '@shared/artworkCategories';
 import { normalizeArtworkCategories } from '@shared/artworkCategories';
+import { normalizeArtworkAvailability } from '@shared/artworkListingState';
 
 function revalidateArtworkSurfaces(id?: number) {
     revalidatePath('/');
@@ -16,6 +17,7 @@ function revalidateArtworkSurfaces(id?: number) {
     revalidatePath('/admin/edit');
     revalidatePath('/admin/artwork');
     revalidatePath('/admin/manage');
+    revalidatePath('/work', 'layout');
     if (id) {
         revalidatePath(`/details/${id}`);
         revalidatePath(`/checkout/${id}`);
@@ -52,11 +54,6 @@ function nullableNumber(value: string) {
     return Number.isFinite(number) && number > 0 ? number : null;
 }
 
-export async function inspectUploadedImage(url: string): Promise<{ width: number; height: number }> {
-    await getAuthenticatedOwnerConvexClient('inspect uploaded artwork');
-    return inspectUploadThingImage(url);
-}
-
 async function findOwnerArtwork(legacyId: number) {
     const client = await getAuthenticatedOwnerConvexClient('manage artwork');
     const artworks = await client.query(api.ownerReads.listArtworks, {});
@@ -71,6 +68,7 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
         if (!Number.isSafeInteger(legacyId) || legacyId <= 0) throw new Error('Artwork ID is invalid.');
         if (!data.piece_title.trim()) throw new Error('Title is required.');
         const { client, artwork } = await findOwnerArtwork(legacyId);
+        const listing = normalizeArtworkAvailability({ sold: data.sold, available: data.available });
         await client.mutation(api.ownerMutations.updateArtwork, {
             legacyId,
             title: data.piece_title.trim(),
@@ -81,8 +79,8 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
             instagramUrl: nullableText(data.instagram),
             ownerNotes: nullableText(data.comments),
             priceCents: Math.max(0, Math.round(Number(data.price || 0) * 100)),
-            sold: data.sold,
-            available: data.available,
+            sold: listing.sold,
+            available: listing.available,
             active: artwork.active,
             framed: data.framed,
             widthInches: nullableNumber(data.real_width),
@@ -113,21 +111,31 @@ export async function storeUploadedImageDetails(data: UploadFormData): Promise<{
         const artworkLegacyId = Number(data.piece_id);
         const role = data.piece_type === 'main' ? 'primary' : data.piece_type === 'progress' ? 'progress' : 'supporting';
         const client = await getAuthenticatedOwnerConvexClient('store artwork media');
-        const source = await inspectUploadThingImage(data.image_path);
-        const small = data.small_image_path ? await inspectUploadThingImage(data.small_image_path) : null;
+        const source = validateUploadedImageReference({
+            url: data.image_path,
+            width: Number(data.width),
+            height: Number(data.height),
+        });
+        const small = data.small_image_path
+            ? validateUploadedImageReference({
+                  url: data.small_image_path,
+                  width: Number(data.small_width),
+                  height: Number(data.small_height),
+              })
+            : null;
         await client.mutation(api.ownerMutations.storeArtworkMedia, {
             artworkLegacyId,
             role,
             title: nullableText(data.title),
-            sourceUrl: data.image_path,
+            sourceUrl: source.url,
             sourceWidth: source.width,
             sourceHeight: source.height,
-            smallUrl: nullableText(data.small_image_path),
+            smallUrl: small?.url ?? null,
             smallWidth: small?.width ?? null,
             smallHeight: small?.height ?? null,
         });
         revalidateArtworkSurfaces(artworkLegacyId);
-        return { success: true, imageUrl: data.image_path };
+        return { success: true, imageUrl: source.url };
     } catch (error) {
         console.error('Unable to store artwork media.', error);
         return { success: false, error: error instanceof Error ? error.message : 'Unable to store artwork media.' };
@@ -241,9 +249,20 @@ interface NewPieceData {
 
 export async function createPiece(newPieceData: NewPieceData): Promise<{ success: boolean; piece?: Pieces; error?: string }> {
     try {
+        if (!newPieceData.title.trim()) throw new Error('Artwork title is required.');
         const client = await getAuthenticatedOwnerConvexClient('create artwork');
-        const source = await inspectUploadThingImage(newPieceData.imagePath);
-        const small = newPieceData.smallImagePath ? await inspectUploadThingImage(newPieceData.smallImagePath) : null;
+        const source = validateUploadedImageReference({
+            url: newPieceData.imagePath,
+            width: newPieceData.width,
+            height: newPieceData.height,
+        });
+        const small = newPieceData.smallImagePath
+            ? validateUploadedImageReference({
+                  url: newPieceData.smallImagePath,
+                  width: newPieceData.smallWidth,
+                  height: newPieceData.smallHeight,
+              })
+            : null;
         const created = await client.mutation(api.ownerMutations.createArtwork, {
             title: newPieceData.title.trim(),
             description: null,
@@ -260,10 +279,10 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
             widthInches: null,
             heightInches: null,
             primaryImage: {
-                sourceUrl: newPieceData.imagePath,
+                sourceUrl: source.url,
                 sourceWidth: source.width,
                 sourceHeight: source.height,
-                smallUrl: nullableText(newPieceData.smallImagePath),
+                smallUrl: small?.url ?? null,
                 smallWidth: small?.width ?? null,
                 smallHeight: small?.height ?? null,
             },

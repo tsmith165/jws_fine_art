@@ -1598,12 +1598,27 @@
     padding: 30px;
     background: #111512;
 }
-.owner-editor-stage img {
+.owner-editor-stage-content {
+    display: grid;
+    max-width: 100%;
+    place-items: center;
+    gap: 14px;
+}
+.owner-editor-stage-content img {
     width: auto;
     max-width: 100%;
     height: auto;
     max-height: 620px;
     object-fit: contain;
+}
+.owner-editor-remove-media {
+    justify-self: center;
+}
+.owner-listing-state-field {
+    margin-top: 14px;
+}
+.owner-listing-state-field small {
+    line-height: 1.5;
 }
 .owner-editor-thumbs {
     display: flex;
@@ -1754,6 +1769,17 @@
     border: 1px dashed var(--owner-line);
     padding: 22px;
     background: var(--owner-panel);
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease;
+}
+.owner-uploader.is-dragging {
+    border-color: var(--owner-accent);
+    background: color-mix(in srgb, var(--owner-accent) 8%, var(--owner-panel));
+}
+.owner-uploader.is-ready {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--owner-green) 55%, var(--owner-line));
 }
 .owner-uploader > input {
     position: absolute;
@@ -1762,7 +1788,12 @@
     overflow: hidden;
     opacity: 0;
 }
-.owner-uploader > svg {
+.owner-upload-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid var(--owner-line);
     color: var(--owner-accent);
 }
 .owner-uploader strong {
@@ -1773,6 +1804,13 @@
     color: var(--owner-muted);
     font-size: 11px;
 }
+.owner-upload-copy small {
+    display: block;
+    margin-top: 8px;
+    color: color-mix(in srgb, var(--owner-muted) 82%, transparent);
+    font-size: 10px;
+    line-height: 1.45;
+}
 .owner-upload-progress {
     position: absolute;
     bottom: 0;
@@ -1780,6 +1818,18 @@
     height: 3px;
     background: var(--owner-accent);
     transition: width 160ms ease;
+}
+.owner-upload-progress.is-indeterminate {
+    width: 32%;
+    animation: owner-upload-progress 1s ease-in-out infinite;
+}
+@keyframes owner-upload-progress {
+    from {
+        transform: translateX(-110%);
+    }
+    to {
+        transform: translateX(420%);
+    }
 }
 .owner-upload-error {
     grid-column: 1 / -1;
@@ -1791,12 +1841,24 @@
     gap: 14px;
 }
 .owner-upload-preview {
+    position: relative;
     display: grid;
     min-height: 560px;
     place-items: center;
     border: 1px solid var(--owner-line);
     padding: 30px;
     background: #101410;
+}
+.owner-upload-preview-label {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1;
+    padding: 7px 9px;
+    background: rgba(7, 10, 8, 0.86);
+    color: #d8ddd8;
+    font-size: 10px;
+    line-height: 1;
 }
 .owner-upload-preview img {
     width: auto;
@@ -1819,6 +1881,92 @@
     align-items: center;
     gap: 7px;
     color: var(--owner-green);
+}
+.owner-upload-review-panel {
+    display: grid;
+    align-content: start;
+    gap: 22px;
+}
+.owner-upload-review-panel > header h2 {
+    margin-top: 7px;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.02;
+}
+.owner-upload-review-panel > header p {
+    max-width: 48ch;
+    margin-top: 10px;
+    color: var(--owner-muted);
+    line-height: 1.55;
+}
+.owner-upload-role-fieldset {
+    min-width: 0;
+    border: 0;
+    padding: 0;
+}
+.owner-upload-role-fieldset legend,
+.owner-upload-review-panel .owner-field > span {
+    margin-bottom: 8px;
+    color: var(--owner-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.owner-upload-role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+.owner-upload-role-grid button {
+    display: grid;
+    min-width: 0;
+    min-height: 94px;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    border: 1px solid var(--owner-line);
+    padding: 14px;
+    background: transparent;
+    color: var(--owner-ink);
+    text-align: left;
+    transition:
+        border-color 140ms ease,
+        background-color 140ms ease;
+}
+.owner-upload-role-grid button:hover,
+.owner-upload-role-grid button:focus-visible {
+    border-color: var(--owner-accent);
+}
+.owner-upload-role-grid button.is-selected {
+    border-color: var(--owner-accent);
+    background: color-mix(in srgb, var(--owner-accent) 10%, transparent);
+}
+.owner-upload-role-grid button span,
+.owner-upload-role-grid button strong,
+.owner-upload-role-grid button small {
+    display: block;
+}
+.owner-upload-role-grid button small {
+    margin-top: 5px;
+    color: var(--owner-muted);
+    font-size: 10px;
+    line-height: 1.35;
+}
+.owner-upload-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.owner-upload-actions .owner-button {
+    justify-content: center;
+}
+.owner-unsaved-indicator {
+    align-self: center;
+    color: var(--owner-accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 .owner-upload-empty {
     display: grid;
@@ -2088,6 +2236,18 @@
     .owner-upload-preview {
         min-height: 420px;
         padding: 18px;
+    }
+    .owner-upload-review {
+        grid-template-columns: 1fr;
+    }
+    .owner-upload-role-grid {
+        grid-template-columns: 1fr;
+    }
+    .owner-upload-role-grid button {
+        min-height: 74px;
+    }
+    .owner-upload-actions {
+        grid-template-columns: 1fr;
     }
 }
 

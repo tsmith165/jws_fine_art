@@ -1,12 +1,13 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Check, ExternalLink, Images, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ExternalLink, Images, Save, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
-import { onSubmitEditForm } from '@/app/admin/edit/actions';
+import { handleImageDelete, onSubmitEditForm } from '@/app/admin/edit/actions';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
+import { artworkAvailabilityForStatus, artworkListingStatus, type ArtworkListingStatus } from '@shared/artworkListingState';
 
 type EditorForm = {
     piece_id: string;
@@ -54,16 +55,37 @@ const mediaOptions = ['Oil On Canvas', 'Oil On Panel', 'Oil On Cradled Panel', '
 
 export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: PiecesWithImages; previousId: number; nextId: number }) {
     const [form, setForm] = useState(() => initialForm(piece));
+    const [savedForm, setSavedForm] = useState(() => initialForm(piece));
     const [selectedImage, setSelectedImage] = useState(piece.image_path);
+    const [removedImageUrls, setRemovedImageUrls] = useState(() => new Set<string>());
+    const [removingImage, setRemovingImage] = useState(false);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
     const media = useMemo(
-        () => [
-            { id: `primary-${piece.id}`, url: piece.image_path, width: piece.width, height: piece.height, role: 'Primary' },
-            ...piece.extraImages.map((image, index) => ({ ...image, url: image.image_path, role: `Supporting ${index + 1}` })),
-            ...piece.progressImages.map((image, index) => ({ ...image, url: image.image_path, role: `Process ${index + 1}` })),
-        ],
-        [piece],
+        () =>
+            [
+                {
+                    id: `primary-${piece.id}`,
+                    url: piece.image_path,
+                    width: piece.width,
+                    height: piece.height,
+                    role: 'Primary',
+                    kind: 'primary' as const,
+                },
+                ...piece.extraImages.map((image, index) => ({
+                    ...image,
+                    url: image.image_path,
+                    role: `Supporting ${index + 1}`,
+                    kind: 'extra' as const,
+                })),
+                ...piece.progressImages.map((image, index) => ({
+                    ...image,
+                    url: image.image_path,
+                    role: `Process ${index + 1}`,
+                    kind: 'progress' as const,
+                })),
+            ].filter((image) => !removedImageUrls.has(image.url)),
+        [piece, removedImageUrls],
     );
     const selected = media.find((image) => image.url === selectedImage) || media[0];
     const checks = [
@@ -74,20 +96,68 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
         ['Artwork story', Boolean(form.description)],
     ] as const;
     const completeness = Math.round((checks.filter(([, ready]) => ready).length / checks.length) * 100);
+    const hasUnsavedChanges = JSON.stringify(form) !== JSON.stringify(savedForm);
+
+    useEffect(() => {
+        if (!hasUnsavedChanges) return;
+        const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+        };
+        window.addEventListener('beforeunload', warnBeforeLeaving);
+        return () => window.removeEventListener('beforeunload', warnBeforeLeaving);
+    }, [hasUnsavedChanges]);
 
     function update<K extends keyof EditorForm>(key: K, value: EditorForm[K]) {
         setForm((current) => ({ ...current, [key]: value }));
         setMessage(null);
     }
 
+    function updateListingStatus(status: ArtworkListingStatus) {
+        const listing = artworkAvailabilityForStatus(status);
+        setForm((current) => ({ ...current, ...listing }));
+        setMessage(null);
+    }
+
+    async function removeSelectedImage() {
+        if (!selected || selected.kind === 'primary') return;
+        if (!window.confirm(`Remove ${selected.role.toLowerCase()} from this artwork?`)) return;
+        setRemovingImage(true);
+        setMessage(null);
+        try {
+            const result = await handleImageDelete(piece.id, selected.url, selected.kind);
+            if (!result.success) {
+                setMessage({ tone: 'warning', text: result.error || 'The image could not be removed.' });
+                return;
+            }
+            setRemovedImageUrls((current) => new Set(current).add(selected.url));
+            setSelectedImage(piece.image_path);
+            setMessage({ tone: 'good', text: 'Image removed from this artwork.' });
+        } catch {
+            setMessage({ tone: 'warning', text: 'The image could not be removed. Check your connection and try again.' });
+        } finally {
+            setRemovingImage(false);
+        }
+    }
+
     async function save() {
+        if (!form.piece_title.trim()) {
+            setMessage({ tone: 'warning', text: 'Add an artwork title before saving.' });
+            return;
+        }
         setSaving(true);
-        const result = await onSubmitEditForm(form);
-        setSaving(false);
-        setMessage({
-            tone: result.success ? 'good' : 'warning',
-            text: result.success ? 'Changes saved.' : result.error || 'The artwork could not be saved.',
-        });
+        setMessage(null);
+        try {
+            const result = await onSubmitEditForm(form);
+            if (result.success) setSavedForm(form);
+            setMessage({
+                tone: result.success ? 'good' : 'warning',
+                text: result.success ? 'Changes saved.' : result.error || 'The artwork could not be saved.',
+            });
+        } catch {
+            setMessage({ tone: 'warning', text: 'The artwork could not be saved. Check your connection and try again.' });
+        } finally {
+            setSaving(false);
+        }
     }
 
     return (
@@ -99,6 +169,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                         <h1>{form.piece_title || 'Untitled artwork'}</h1>
                     </div>
                     <div className="owner-editor-actions">
+                        {hasUnsavedChanges ? <span className="owner-unsaved-indicator">Unsaved changes</span> : null}
                         <Link className="owner-button" href={`/admin/edit?id=${previousId}`} aria-label="Previous artwork">
                             <ArrowLeft size={16} /> Previous
                         </Link>
@@ -108,15 +179,37 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                         <Link className="owner-button" href={`/work/${piece.slug || piece.id}`} target="_blank">
                             Preview <ExternalLink size={15} />
                         </Link>
-                        <button className="owner-button is-primary" type="button" onClick={save} disabled={saving}>
+                        <button className="owner-button is-primary" type="button" onClick={save} disabled={saving || !hasUnsavedChanges}>
                             <Save size={16} /> {saving ? 'Saving…' : 'Save changes'}
                         </button>
                     </div>
                 </header>
-                {message ? <p className={`owner-editor-message is-${message.tone}`}>{message.text}</p> : null}
+                {message ? (
+                    <p className={`owner-editor-message is-${message.tone}`} role="status">
+                        {message.text}
+                    </p>
+                ) : null}
                 <div className="owner-editor-media">
                     <div className="owner-editor-stage">
-                        <Image src={selected.url} alt={form.piece_title} width={selected.width} height={selected.height} quality={100} />
+                        <div className="owner-editor-stage-content">
+                            <Image
+                                src={selected.url}
+                                alt={form.piece_title}
+                                width={selected.width}
+                                height={selected.height}
+                                quality={100}
+                            />
+                            {selected.kind !== 'primary' ? (
+                                <button
+                                    className="owner-button is-danger owner-editor-remove-media"
+                                    type="button"
+                                    onClick={removeSelectedImage}
+                                    disabled={removingImage}
+                                >
+                                    <Trash2 size={16} /> {removingImage ? 'Removing…' : 'Remove image'}
+                                </button>
+                            ) : null}
+                        </div>
                     </div>
                     <div className="owner-editor-thumbs" aria-label="Artwork media">
                         {media.map((image) => (
@@ -253,19 +346,18 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                 </section>
                 <section className="owner-panel">
                     <span className="owner-panel-eyebrow">Listing state</span>
-                    <div className="owner-toggle-list">
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={form.available}
-                                onChange={(event) => update('available', event.target.checked)}
-                            />{' '}
-                            Available for purchase
-                        </label>
-                        <label>
-                            <input type="checkbox" checked={form.sold} onChange={(event) => update('sold', event.target.checked)} /> Sold
-                        </label>
-                    </div>
+                    <label className="owner-field owner-listing-state-field">
+                        <span>Public status</span>
+                        <select
+                            value={artworkListingStatus({ available: form.available, sold: form.sold })}
+                            onChange={(event) => updateListingStatus(event.target.value as ArtworkListingStatus)}
+                        >
+                            <option value="available">Available for purchase</option>
+                            <option value="private-collection">Private collection</option>
+                            <option value="not-for-sale">Not for sale</option>
+                        </select>
+                        <small>Choose one status. Saving updates the public gallery immediately.</small>
+                    </label>
                 </section>
                 <section className="owner-panel owner-search-preview">
                     <span className="owner-panel-eyebrow">Search preview</span>

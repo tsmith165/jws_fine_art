@@ -1,18 +1,12 @@
 import 'server-only';
 import sharp from 'sharp';
+import { parseUploadThingUrl } from './uploadedImageReference';
+
+export { parseUploadThingUrl } from './uploadedImageReference';
 
 const MAX_INSPECTION_BYTES = 40 * 1024 * 1024;
 const ALLOWED_CONTENT_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const ALLOWED_FORMATS = new Set(['jpeg', 'png', 'webp']);
-
-export function parseUploadThingUrl(value: string): URL {
-    const parsed = new URL(value);
-    const allowedHost = ['utfs.io', 'ufs.sh'].some((host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`));
-    if (parsed.protocol !== 'https:' || !allowedHost || parsed.username || parsed.password) {
-        throw new Error('Uploaded image URL is not from the configured media provider.');
-    }
-    return parsed;
-}
 
 async function readBoundedBody(response: Response): Promise<Buffer> {
     if (!response.body) throw new Error('The uploaded image returned an empty response.');

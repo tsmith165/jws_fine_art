@@ -62,8 +62,8 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                 <h1>Where the coast stays with you.</h1>
                 <p>Original paintings of familiar shores, shifting light, and the quiet details noticed along the way.</p>
                 <div>
-                    <Link className="lw-button lw-button-brass" href="/work?category=coastal">
-                        View coastal paintings <ArrowRight size={16} />
+                    <Link className="lw-button lw-button-brass" href="/work">
+                        Explore all paintings <ArrowRight size={16} />
                     </Link>
                     <Link className="lw-button lw-button-ghost" href="/studio">
                         Meet the artist
