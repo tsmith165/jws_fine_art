@@ -1,137 +1,146 @@
-import React from 'react';
-import { render } from '@react-email/render';
-import { revalidatePath } from 'next/cache';
 import Stripe from 'stripe';
 import { api } from '../../../../../convex/_generated/api';
 import { getServerConvexClient } from '@/data/serverConvex';
-import { sendEmail } from '@/utils/emails/resend_utils';
-import CheckoutSuccessEmail from '@/utils/emails/templates/checkoutSuccessEmail';
 import { assertStripeEnvironment } from '@/lib/providerSafety';
 
-function stripeClient() {
-    return new Stripe(assertStripeEnvironment().secretKey, { apiVersion: '2026-06-24.dahlia' });
+function formatAddress(address: Stripe.Address | null | undefined) {
+    if (!address) return null;
+    const locality = [address.city, address.state, address.postal_code].filter(Boolean).join(', ');
+    const formatted = [address.line1, address.line2, locality, address.country].filter(Boolean).join('\n');
+    return formatted || null;
 }
 
-async function checkoutSessionId(stripe: Stripe, paymentIntentId: string) {
-    const sessions = await stripe.checkout.sessions.list({ payment_intent: paymentIntentId, limit: 1 });
-    return sessions.data[0]?.id ?? null;
-}
-
-function stripeEventDetails(event: Stripe.Event) {
+function stripeEventPayload(event: Stripe.Event) {
     const object = event.data.object;
     if (object.object === 'checkout.session') {
         const paymentIntent = object.payment_intent;
+        const shippingDetails = object.collected_information?.shipping_details;
         return {
-            checkoutSessionId: object.id,
+            eventId: event.id,
+            eventType: event.type,
             paymentIntentId: typeof paymentIntent === 'string' ? paymentIntent : (paymentIntent?.id ?? null),
-            amountCents: object.amount_total,
+            checkoutSessionId: object.id,
+            amountReceivedCents: object.amount_total,
             currency: object.currency,
+            paymentStatus: object.payment_status,
+            taxCents: object.total_details?.amount_tax ?? null,
+            customerName: object.customer_details?.name ?? shippingDetails?.name ?? null,
+            customerEmail: object.customer_details?.email ?? object.customer_email ?? null,
+            customerPhone: object.customer_details?.phone ?? null,
+            shippingAddress: formatAddress(shippingDetails?.address),
         };
     }
     if (object.object === 'payment_intent') {
         return {
-            checkoutSessionId: null,
+            eventId: event.id,
+            eventType: event.type,
             paymentIntentId: object.id,
-            amountCents: event.type === 'payment_intent.succeeded' ? object.amount_received : null,
+            checkoutSessionId: null,
+            amountReceivedCents: event.type === 'payment_intent.succeeded' ? object.amount_received : null,
             currency: object.currency,
+            paymentStatus: null,
+            taxCents: null,
+            customerName: null,
+            customerEmail: null,
+            customerPhone: null,
+            shippingAddress: null,
         };
     }
     if (object.object === 'charge') {
-        const paymentIntentId = typeof object.payment_intent === 'string' ? object.payment_intent : (object.payment_intent?.id ?? null);
+        const paymentIntent = object.payment_intent;
         return {
+            eventId: event.id,
+            eventType: event.type,
+            paymentIntentId: typeof paymentIntent === 'string' ? paymentIntent : (paymentIntent?.id ?? null),
             checkoutSessionId: null,
-            paymentIntentId,
-            amountCents: event.type === 'charge.refunded' ? object.amount_refunded : object.amount,
+            amountReceivedCents: event.type === 'charge.refunded' ? object.amount_refunded : object.amount,
             currency: object.currency,
+            paymentStatus: null,
+            taxCents: null,
+            customerName: null,
+            customerEmail: null,
+            customerPhone: null,
+            shippingAddress: null,
         };
     }
     if (object.object === 'dispute') {
         const paymentIntent = object.payment_intent;
         return {
-            checkoutSessionId: null,
+            eventId: event.id,
+            eventType: event.type,
             paymentIntentId: typeof paymentIntent === 'string' ? paymentIntent : (paymentIntent?.id ?? null),
-            amountCents: object.amount,
+            checkoutSessionId: null,
+            amountReceivedCents: object.amount,
             currency: object.currency,
+            paymentStatus: null,
+            taxCents: null,
+            customerName: null,
+            customerEmail: null,
+            customerPhone: null,
+            shippingAddress: null,
         };
     }
-    return { checkoutSessionId: null, paymentIntentId: null, amountCents: null, currency: null };
+    return {
+        eventId: event.id,
+        eventType: event.type,
+        paymentIntentId: null,
+        checkoutSessionId: null,
+        amountReceivedCents: null,
+        currency: null,
+        paymentStatus: null,
+        taxCents: null,
+        customerName: null,
+        customerEmail: null,
+        customerPhone: null,
+        shippingAddress: null,
+    };
 }
 
 export async function POST(request: Request) {
-    let stripe: Stripe;
+    let environment: ReturnType<typeof assertStripeEnvironment>;
     try {
-        stripe = stripeClient();
+        environment = assertStripeEnvironment();
     } catch (error) {
         console.error('Stripe environment validation failed.', error);
         return Response.json({ error: 'Webhook configuration is invalid.' }, { status: 503 });
     }
-    const payload = await request.text();
+
     const signature = request.headers.get('stripe-signature');
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!signature || !webhookSecret) return Response.json({ error: 'Webhook configuration is incomplete.' }, { status: 400 });
+    if (!signature || !webhookSecret) {
+        return Response.json({ error: 'Webhook configuration is incomplete.' }, { status: 503 });
+    }
 
     let event: Stripe.Event;
     try {
-        event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+        const stripe = new Stripe(environment.secretKey, { apiVersion: '2026-06-24.dahlia' });
+        event = stripe.webhooks.constructEvent(await request.text(), signature, webhookSecret);
     } catch (error) {
         console.error('Stripe webhook signature verification failed.', error);
         return Response.json({ error: 'Invalid webhook signature.' }, { status: 400 });
     }
 
+    if (event.livemode !== (environment.mode === 'live')) {
+        console.error('Stripe webhook mode did not match the configured credentials.', {
+            eventId: event.id,
+            eventLivemode: event.livemode,
+            configuredMode: environment.mode,
+        });
+        return Response.json({ error: 'Webhook mode mismatch.' }, { status: 400 });
+    }
+
     try {
-        const details = stripeEventDetails(event);
-        const paymentIntentId = details.paymentIntentId;
-        const sessionId = details.checkoutSessionId ?? (paymentIntentId ? await checkoutSessionId(stripe, paymentIntentId) : null);
         const { client, serverSecret } = getServerConvexClient();
-        const result = await client.mutation(api.commerce.processStripeEvent, {
+        const result = await client.mutation(api.commerceWorkers.enqueueStripeEvent, {
             serverSecret,
             eventId: event.id,
             eventType: event.type,
-            paymentIntentId,
-            checkoutSessionId: sessionId,
-            amountReceivedCents: details.amountCents,
-            currency: details.currency,
+            livemode: event.livemode,
+            payloadJson: JSON.stringify(stripeEventPayload(event)),
         });
-
-        if (result.outcome === 'processed' && 'notification' in result && result.notification && paymentIntentId) {
-            const notification = result.notification;
-            try {
-                const emailHtml = await render(
-                    React.createElement(CheckoutSuccessEmail, {
-                        full_name: notification.buyerName,
-                        piece_title: notification.artworkTitle,
-                        address: notification.shippingAddress,
-                        price_paid: notification.amountPaidCents / 100,
-                    }),
-                );
-                await sendEmail({
-                    from: 'contact@jwsfineart.com',
-                    to: [notification.buyerEmail, 'jwsfineart@gmail.com'],
-                    subject: 'Purchase Confirmation - JWS Fine Art Gallery',
-                    html: emailHtml,
-                });
-                await client.mutation(api.commerce.recordNotificationOutcome, {
-                    serverSecret,
-                    paymentIntentId,
-                    outcome: 'sent',
-                    details: 'Purchase confirmation accepted by the email provider.',
-                });
-            } catch (error) {
-                console.error('Purchase was recorded, but confirmation email failed.', error);
-                await client.mutation(api.commerce.recordNotificationOutcome, {
-                    serverSecret,
-                    paymentIntentId,
-                    outcome: 'failed',
-                    details: 'Purchase confirmation delivery failed and needs owner attention.',
-                });
-            }
-            revalidatePath('/');
-            revalidatePath('/gallery');
-            revalidatePath('/admin/orders');
-        }
         return Response.json({ received: true, outcome: result.outcome });
     } catch (error) {
-        console.error('Stripe webhook processing failed.', error);
-        return Response.json({ error: 'Webhook processing failed.' }, { status: 500 });
+        console.error('Stripe webhook could not be durably queued.', error);
+        return Response.json({ error: 'Webhook intake failed.' }, { status: 503 });
     }
 }

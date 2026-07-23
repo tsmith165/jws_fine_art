@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, CreditCard, Globe2, LoaderCircle, LockKeyhole, MapPin, PackageCheck, ShieldCheck } from 'lucide-react';
+import { Check, CreditCard, Globe2, LoaderCircle, LockKeyhole, MapPin, PackageCheck, ShieldCheck, Store } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
@@ -42,49 +42,13 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
         calculationTimer.current = setTimeout(() => {
             setShipping(checkoutShipping(current_piece, nextDestination));
             setIsCalculating(false);
-        }, 450);
+        }, 220);
     }
 
     const shippingDollars = (shipping.checkoutChargeCents ?? 0) / 100;
     const total = current_piece.price + shippingDollars;
     const canCheckout = shipping.checkoutChargeCents !== null && !shipping.requiresQuote;
-    const checkoutBreakdown = new Map(shipping.checkoutBreakdown.map((item) => [item.label, item]));
-    const sizeItem = shipping.checkoutBreakdown[0];
-    const framedItem = checkoutBreakdown.get('Framed-work protection');
-    const delicateItem = checkoutBreakdown.get('Delicate-surface handling');
-    const internationalItem = checkoutBreakdown.get('International route');
-    const factorRows = [
-        {
-            label: 'Size and delivery class',
-            amount: sizeItem ? money(sizeItem.amountCents / 100) : 'Studio quote',
-            detail: sizeItem?.detail ?? 'Packing and delivery will be reviewed by the studio',
-            active: Boolean(sizeItem),
-        },
-        framedItem
-            ? { ...framedItem, amount: money(framedItem.amountCents / 100), active: true }
-            : {
-                  label: 'Framed-work protection',
-                  amount: 'Not added',
-                  detail: shipping.requiresQuote ? 'Reviewed with the custom packing quote' : 'Unframed artwork',
-                  active: false,
-              },
-        delicateItem
-            ? { ...delicateItem, label: 'Delicate or glazed handling', amount: money(delicateItem.amountCents / 100), active: true }
-            : {
-                  label: 'Delicate or glazed handling',
-                  amount: 'Not added',
-                  detail: shipping.requiresQuote ? 'Reviewed with the custom packing quote' : 'Standard surface handling',
-                  active: false,
-              },
-        internationalItem
-            ? { ...internationalItem, amount: money(internationalItem.amountCents / 100), active: true }
-            : {
-                  label: 'International route',
-                  amount: 'Not added',
-                  detail: shipping.requiresQuote ? 'Reviewed with the custom delivery quote' : 'United States delivery',
-                  active: false,
-              },
-    ];
+    const pickup = destination === 'pickup';
 
     async function submit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -100,6 +64,7 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
         setError('');
         try {
             const result = await runStripePurchase(new FormData(event.currentTarget));
+            if (!result.success) throw new Error(result.error);
             if (!result.redirectUrl) throw new Error('Checkout URL is missing.');
             window.location.assign(result.redirectUrl);
         } catch (reason) {
@@ -140,7 +105,7 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                     <span>02</span> Delivery
                 </legend>
                 <input type="hidden" name="shipping_destination" value={destination} />
-                <div className="lw-checkout-route" role="group" aria-label="Shipping destination">
+                <div className="lw-checkout-route lw-checkout-route-three" role="group" aria-label="Delivery method">
                     <button
                         type="button"
                         aria-pressed={destination === 'domestic'}
@@ -156,6 +121,19 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                     </button>
                     <button
                         type="button"
+                        aria-pressed={destination === 'pickup'}
+                        onClick={() => chooseDestination('pickup')}
+                        disabled={pending}
+                    >
+                        <Store size={18} />
+                        <span>
+                            <strong>Local pickup</strong>
+                            <small>San Diego County · Free</small>
+                        </span>
+                        <Check size={15} />
+                    </button>
+                    <button
+                        type="button"
                         aria-pressed={destination === 'international'}
                         onClick={() => chooseDestination('international')}
                         disabled={pending}
@@ -163,26 +141,18 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                         <Globe2 size={18} />
                         <span>
                             <strong>International</strong>
-                            <small>Outside the U.S.</small>
+                            <small>Studio-arranged quote</small>
                         </span>
                         <Check size={15} />
                     </button>
                 </div>
-                <label>
-                    Complete shipping address
-                    <textarea
-                        name="address"
-                        required
-                        autoComplete="street-address"
-                        rows={4}
-                        disabled={pending}
-                        placeholder={
-                            destination === 'international'
-                                ? 'Street, city, region, postal code, and country'
-                                : 'Street, city, state, and ZIP code'
-                        }
-                    />
-                </label>
+                <p className="lw-checkout-delivery-note">
+                    {destination === 'domestic'
+                        ? 'Stripe will collect and validate the U.S. delivery address before payment.'
+                        : destination === 'pickup'
+                          ? 'Jill will contact you after purchase to arrange a pickup time. Exact studio details stay private.'
+                          : 'International delivery is quoted directly so insurance, carrier, and destination requirements can be confirmed.'}
+                </p>
             </fieldset>
 
             <section
@@ -191,7 +161,8 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
             >
                 <header>
                     <span>
-                        <PackageCheck size={17} /> Insured packing & shipping
+                        {pickup ? <Store size={17} /> : <PackageCheck size={17} />}
+                        {pickup ? ' Local studio pickup' : ' Insured packing & shipping'}
                     </span>
                     <div>
                         <span className="lw-checkout-shipping-status" role="status" aria-live="polite">
@@ -209,31 +180,55 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                     </div>
                 </header>
                 <p className="lw-checkout-shipping-basis">{shipping.basis}</p>
-                {shipping.checkoutBreakdown.length > 0 ? (
+                {!shipping.requiresQuote ? (
                     <dl aria-label="Checkout shipping breakdown">
-                        {factorRows.map((item) => (
-                            <div className={item.active ? undefined : 'is-inactive'} key={item.label}>
-                                <dt>
-                                    {item.label}
-                                    <small>{item.detail}</small>
-                                </dt>
-                                <dd>{item.amount}</dd>
-                            </div>
-                        ))}
+                        <div>
+                            <dt>
+                                Delivery tier
+                                <small>
+                                    {pickup
+                                        ? 'Pickup coordinated directly with the studio'
+                                        : `${shipping.classification} · based on the artwork’s exact dimensions`}
+                                </small>
+                            </dt>
+                            <dd>{pickup ? 'Pickup' : shipping.classification}</dd>
+                        </div>
+                        <div>
+                            <dt>
+                                Artwork protection
+                                <small>
+                                    {pickup
+                                        ? 'No carrier packing charge'
+                                        : current_piece.framed
+                                          ? 'Tier price includes framed-work protection'
+                                          : 'Insured tier price for unframed artwork'}
+                                </small>
+                            </dt>
+                            <dd>{pickup ? 'Not shipped' : current_piece.framed ? 'Framed' : 'Unframed'}</dd>
+                        </div>
+                        <div>
+                            <dt>
+                                Delivery charge
+                                <small>{pickup ? 'No pickup fee' : 'Fixed amount charged at checkout'}</small>
+                            </dt>
+                            <dd>{pickup ? 'Free' : money(shippingDollars)}</dd>
+                        </div>
                     </dl>
                 ) : (
-                    <p className="lw-checkout-quote-note">This artwork needs a custom packing or delivery review before payment.</p>
+                    <p className="lw-checkout-quote-note">
+                        Jill will confirm an insured international delivery option and price before payment.
+                    </p>
                 )}
-                <small className={destination === 'international' ? undefined : 'is-reserved'}>
-                    Import duties, destination taxes, and brokerage are paid separately by the collector.
-                </small>
+                <small>Sales tax is included where applicable. International duties and brokerage are quoted or paid separately.</small>
             </section>
 
             <div className="lw-checkout-total" aria-label="Order total">
                 <span>Artwork</span>
                 <strong>{money(current_piece.price)}</strong>
-                <span>Insured packing & shipping</span>
+                <span>{pickup ? 'Local studio pickup' : 'Insured packing & shipping'}</span>
                 <strong>{shipping.checkoutChargeCents === null ? 'Quoted separately' : money(shippingDollars)}</strong>
+                <span>Sales tax</span>
+                <strong>Included where applicable</strong>
                 <b>Total due</b>
                 <b>{canCheckout ? money(total) : money(current_piece.price)}</b>
             </div>
@@ -267,7 +262,8 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
 
             <div className="lw-checkout-assurances">
                 <span>
-                    <ShieldCheck size={15} /> Tracked and insured
+                    {pickup ? <Store size={15} /> : <ShieldCheck size={15} />}
+                    {pickup ? 'Pickup coordinated by Jill' : 'Tracked and insured'}
                 </span>
                 <span>
                     <PackageCheck size={15} /> Packed by Jill’s studio

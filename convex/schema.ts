@@ -189,6 +189,13 @@ export default defineSchema({
         buyerPhone: v.string(),
         shippingAddressJson: v.string(),
         international: v.boolean(),
+        deliveryMethod: v.optional(v.union(v.literal('domestic_shipping'), v.literal('local_pickup'), v.literal('international_quote'))),
+        shippingTier: v.optional(
+            v.union(v.literal('Small'), v.literal('Medium'), v.literal('Large'), v.literal('Studio quote'), v.literal('Local pickup')),
+        ),
+        shippingPolicyVersion: v.optional(v.string()),
+        taxIncluded: v.optional(v.boolean()),
+        cancelToken: v.optional(v.string()),
         stripeCheckoutSessionId: nullableString,
         stripePaymentIntentId: nullableString,
         status: v.union(v.literal('created'), v.literal('checkout_open'), v.literal('paid'), v.literal('expired'), v.literal('canceled')),
@@ -212,12 +219,20 @@ export default defineSchema({
         legacyRecordedPriceCents: nullableNumber,
         amountPaidCents: nullableNumber,
         shippingPaidCents: nullableNumber,
+        taxPaidCents: v.optional(nullableNumber),
         currency: v.string(),
         buyerName: v.string(),
         buyerPhone: v.string(),
         buyerEmail: v.string(),
         shippingAddress: v.string(),
         international: v.boolean(),
+        deliveryMethod: v.optional(v.union(v.literal('domestic_shipping'), v.literal('local_pickup'), v.literal('international_quote'))),
+        shippingTier: v.optional(
+            v.union(v.literal('Small'), v.literal('Medium'), v.literal('Large'), v.literal('Studio quote'), v.literal('Local pickup')),
+        ),
+        shippingPolicyVersion: v.optional(v.string()),
+        taxIncluded: v.optional(v.boolean()),
+        stripeCheckoutSessionId: v.optional(nullableString),
         purchasedOn: nullableString,
         status: v.union(v.literal('legacy_verified'), v.literal('paid'), v.literal('refunded'), v.literal('canceled')),
         fulfillmentStatus: v.union(
@@ -226,6 +241,8 @@ export default defineSchema({
             v.literal('packed'),
             v.literal('shipped'),
             v.literal('delivered'),
+            v.literal('ready_for_pickup'),
+            v.literal('picked_up'),
         ),
         createdAt: v.number(),
         updatedAt: v.number(),
@@ -267,6 +284,39 @@ export default defineSchema({
     })
         .index('by_event_id', ['eventId'])
         .index('by_payment_intent_id', ['paymentIntentId']),
+
+    stripeWebhookInbox: defineTable({
+        eventId: v.string(),
+        eventType: v.string(),
+        livemode: v.boolean(),
+        payloadJson: v.string(),
+        status: v.union(v.literal('pending'), v.literal('processing'), v.literal('processed'), v.literal('failed')),
+        attempts: v.number(),
+        lastError: nullableString,
+        nextAttemptAt: nullableNumber,
+        processedAt: nullableNumber,
+        createdAt: v.number(),
+        updatedAt: v.number(),
+    })
+        .index('by_event_id', ['eventId'])
+        .index('by_status', ['status']),
+
+    notificationOutbox: defineTable({
+        orderId: v.id('orders'),
+        kind: v.literal('purchase_confirmation'),
+        recipientJson: v.string(),
+        subject: v.string(),
+        status: v.union(v.literal('pending'), v.literal('sending'), v.literal('sent'), v.literal('failed')),
+        attempts: v.number(),
+        providerMessageId: nullableString,
+        lastError: nullableString,
+        nextAttemptAt: nullableNumber,
+        sentAt: nullableNumber,
+        createdAt: v.number(),
+        updatedAt: v.number(),
+    })
+        .index('by_order_and_kind', ['orderId', 'kind'])
+        .index('by_status', ['status']),
 
     ownerAuditEvents: defineTable({
         actorId: v.string(),

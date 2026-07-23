@@ -10,6 +10,7 @@ import { AnalyticsEventOnMount } from '@/components/lit-wall/AnalyticsEvent';
 import { readPublicArtwork } from '@/data/artworkReads';
 import { getServerConvexClient } from '@/data/serverConvex';
 import { assertStripeEnvironment } from '@/lib/providerSafety';
+import { ProcessingRefresh } from './ProcessingRefresh';
 
 export const metadata: Metadata = { title: 'Purchase received', robots: { index: false, follow: false } };
 
@@ -23,8 +24,8 @@ async function verifyCheckout(sessionId: string, artworkLegacyId: number) {
         if (!status || session.client_reference_id !== status.intentId) return { state: 'invalid' as const };
         if (session.payment_status !== 'paid') return { state: 'unpaid' as const };
         return status.intentStatus === 'paid' && status.orderRecorded && status.orderStatus === 'paid'
-            ? { state: 'confirmed' as const }
-            : { state: 'processing' as const };
+            ? { state: 'confirmed' as const, deliveryMethod: status.deliveryMethod }
+            : { state: 'processing' as const, deliveryMethod: status.deliveryMethod };
     } catch (error) {
         console.error('Unable to verify checkout completion.', error);
         return { state: 'unavailable' as const };
@@ -44,8 +45,10 @@ export default async function SuccessPage({
     const verification = await verifyCheckout((await searchParams).session_id || '', id);
     const confirmed = verification.state === 'confirmed';
     const processing = verification.state === 'processing';
+    const pickup = 'deliveryMethod' in verification && verification.deliveryMethod === 'local_pickup';
     return (
         <SiteShell>
+            {processing ? <ProcessingRefresh /> : null}
             {confirmed ? (
                 <AnalyticsEventOnMount
                     event="checkout_succeeded"
@@ -75,7 +78,9 @@ export default async function SuccessPage({
                     </h1>
                     <p>
                         {confirmed
-                            ? 'A receipt is on its way to your email. Jill will follow up with packing and insured shipping details.'
+                            ? pickup
+                                ? 'A confirmation is on its way to your email. Jill will contact you to arrange a local pickup time.'
+                                : 'A confirmation is on its way to your email. Jill will follow up with packing, tracking, and insured shipping details.'
                             : processing
                               ? 'Stripe has accepted the payment. This page will show a confirmation once the secure order record is complete.'
                               : 'No confirmed order was found for this link. Your Stripe receipt is the source of truth; contact Jill if a charge appears.'}

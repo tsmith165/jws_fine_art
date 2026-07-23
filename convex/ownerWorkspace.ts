@@ -26,7 +26,11 @@ export const dashboard = query({
                 ).length,
             },
             newInquiries: inquiries.filter((item) => item.status === 'new').length,
-            ordersToFulfill: orders.filter((item) => item.status === 'paid' && item.fulfillmentStatus === 'needs_attention').length,
+            ordersToFulfill: orders.filter(
+                (item) =>
+                    item.status === 'paid' &&
+                    (item.fulfillmentStatus === 'needs_attention' || item.fulfillmentStatus === 'ready_for_pickup'),
+            ).length,
             subscribers: subscribers.filter((item) => item.status === 'subscribed').length,
             draftCampaigns: campaigns.filter((item) => item.status === 'draft').length,
             recentInquiries: inquiries.sort((a, b) => b.createdAt - a.createdAt).slice(0, 5),
@@ -95,6 +99,8 @@ export const updateFulfillment = mutation({
             v.literal('packed'),
             v.literal('shipped'),
             v.literal('delivered'),
+            v.literal('ready_for_pickup'),
+            v.literal('picked_up'),
         ),
     },
     handler: async (ctx, args) => {
@@ -267,7 +273,10 @@ export const updateSiteContent = mutation({
     handler: async (ctx, args) => {
         const identity = await requireOwnerIdentity(ctx);
         JSON.parse(args.valueJson);
-        const existing = await ctx.db.query('siteContent').withIndex('by_key', (q) => q.eq('key', args.key)).unique();
+        const existing = await ctx.db
+            .query('siteContent')
+            .withIndex('by_key', (q) => q.eq('key', args.key))
+            .unique();
         const now = Date.now();
         if (existing) {
             await ctx.db.patch(existing._id, {

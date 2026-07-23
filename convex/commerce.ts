@@ -2,7 +2,7 @@ import { v } from 'convex/values';
 import { mutation, query, type MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
 import { assertWritesEnabled } from './lib/writeFreeze';
-import { estimateArtworkShipping, shippingCareForMedium } from '../shared/shipping';
+import { estimateArtworkShipping, SHIPPING_POLICY_VERSION, shippingCareForMedium } from '../shared/shipping';
 
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
@@ -11,12 +11,10 @@ function normalizeEmail(value: string) {
     return value.trim().toLowerCase();
 }
 
-function validateBuyer(args: { buyerName: string; buyerEmail: string; buyerPhone: string; shippingAddress: string }) {
+function validateBuyer(args: { buyerName: string; buyerEmail: string; buyerPhone: string }) {
     if (args.buyerName.trim().length < 2 || args.buyerName.length > 120) throw new Error('A valid name is required.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(args.buyerEmail))) throw new Error('A valid email is required.');
     if (args.buyerPhone.trim().length < 7 || args.buyerPhone.length > 40) throw new Error('A valid phone number is required.');
-    if (args.shippingAddress.trim().length < 8 || args.shippingAddress.length > 1000)
-        throw new Error('A valid shipping address is required.');
 }
 
 async function settleQuarantine(ctx: MutationCtx, eventId: string, status: 'resolved' | 'ignored') {
@@ -74,8 +72,9 @@ export const createCheckoutIntent = mutation({
         buyerName: v.string(),
         buyerEmail: v.string(),
         buyerPhone: v.string(),
-        shippingAddress: v.string(),
-        destination: v.union(v.literal('domestic'), v.literal('international')),
+        shippingAddress: v.optional(v.string()),
+        destination: v.union(v.literal('domestic'), v.literal('pickup'), v.literal('international')),
+        cancelToken: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
@@ -120,6 +119,12 @@ export const createCheckoutIntent = mutation({
         }
         const shippingCents = shipping.checkoutChargeCents;
         const international = args.destination === 'international';
+        const deliveryMethod =
+            args.destination === 'pickup'
+                ? ('local_pickup' as const)
+                : args.destination === 'international'
+                  ? ('international_quote' as const)
+                  : ('domestic_shipping' as const);
         const shippingDescription = shipping.checkoutBreakdown.map((item) => item.label).join(' · ');
         const intentId = await ctx.db.insert('checkoutIntents', {
             artworkId: artwork._id,
@@ -133,8 +138,13 @@ export const createCheckoutIntent = mutation({
             buyerEmail: normalizeEmail(args.buyerEmail),
             buyerName: args.buyerName.trim(),
             buyerPhone: args.buyerPhone.trim(),
-            shippingAddressJson: JSON.stringify({ formatted: args.shippingAddress.trim() }),
+            shippingAddressJson: JSON.stringify({ formatted: args.shippingAddress?.trim() ?? '' }),
             international,
+            deliveryMethod,
+            shippingTier: shipping.classification,
+            shippingPolicyVersion: SHIPPING_POLICY_VERSION,
+            taxIncluded: true,
+            cancelToken: args.cancelToken,
             stripeCheckoutSessionId: null,
             stripePaymentIntentId: null,
             status: 'created',
@@ -151,6 +161,9 @@ export const createCheckoutIntent = mutation({
             totalCents: artwork.priceCents + shippingCents,
             currency: 'usd',
             international,
+            deliveryMethod,
+            shippingTier: shipping.classification,
+            shippingPolicyVersion: SHIPPING_POLICY_VERSION,
             shippingDescription,
         };
     },
@@ -183,14 +196,29 @@ export const attachCheckoutSession = mutation({
 });
 
 export const abandonCheckoutIntent = mutation({
-    args: { serverSecret: v.string(), checkoutIntentId: v.id('checkoutIntents') },
+    args: { serverSecret: v.string(), checkoutIntentId: v.id('checkoutIntents'), cancelToken: v.optional(v.string()) },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
         const intent = await ctx.db.get(args.checkoutIntentId);
+        if (args.cancelToken && intent?.cancelToken !== args.cancelToken) throw new Error('Checkout cancellation token is invalid.');
         if (intent && (intent.status === 'created' || intent.status === 'checkout_open')) {
             await ctx.db.patch(intent._id, { status: 'canceled', updatedAt: Date.now() });
         }
         return { success: true };
+    },
+});
+
+export const checkoutCancellation = query({
+    args: { serverSecret: v.string(), checkoutIntentId: v.id('checkoutIntents'), cancelToken: v.string() },
+    handler: async (ctx, args) => {
+        requireServerSecret(args.serverSecret);
+        const intent = await ctx.db.get(args.checkoutIntentId);
+        if (!intent || intent.cancelToken !== args.cancelToken) return null;
+        return {
+            artworkLegacyId: intent.artworkLegacyId,
+            sessionId: intent.stripeCheckoutSessionId,
+            status: intent.status,
+        };
     },
 });
 
@@ -214,6 +242,7 @@ export const checkoutStatus = query({
             intentStatus: intent.status,
             orderRecorded: Boolean(order),
             orderStatus: order?.status ?? null,
+            deliveryMethod: intent.deliveryMethod ?? (intent.international ? 'international_quote' : 'domestic_shipping'),
         };
     },
 });
@@ -227,6 +256,12 @@ export const processStripeEvent = mutation({
         checkoutSessionId: nullableString,
         amountReceivedCents: nullableNumber,
         currency: nullableString,
+        paymentStatus: v.optional(nullableString),
+        taxCents: v.optional(nullableNumber),
+        customerName: v.optional(nullableString),
+        customerEmail: v.optional(nullableString),
+        customerPhone: v.optional(nullableString),
+        shippingAddress: v.optional(nullableString),
     },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
@@ -239,6 +274,9 @@ export const processStripeEvent = mutation({
 
         const handledEventTypes = new Set([
             'checkout.session.expired',
+            'checkout.session.completed',
+            'checkout.session.async_payment_succeeded',
+            'checkout.session.async_payment_failed',
             'payment_intent.succeeded',
             'payment_intent.payment_failed',
             'payment_intent.canceled',
@@ -312,6 +350,10 @@ export const processStripeEvent = mutation({
         }
 
         if (args.eventType === 'payment_intent.payment_failed') {
+            if (intent.status === 'paid') {
+                await recordStripeEvent(ctx, eventIdentity, 'ignored');
+                return { outcome: 'ignored' as const, notification: null };
+            }
             await ctx.db.patch(intent._id, {
                 status: 'checkout_open',
                 stripePaymentIntentId: args.paymentIntentId ?? intent.stripePaymentIntentId,
@@ -320,12 +362,27 @@ export const processStripeEvent = mutation({
             await recordStripeEvent(ctx, eventIdentity, 'processed');
             return { outcome: 'processed' as const, notification: null };
         }
-        if (args.eventType === 'checkout.session.expired' || args.eventType === 'payment_intent.canceled') {
+        if (
+            args.eventType === 'checkout.session.expired' ||
+            args.eventType === 'payment_intent.canceled' ||
+            args.eventType === 'checkout.session.async_payment_failed'
+        ) {
+            if (intent.status === 'paid') {
+                await recordStripeEvent(ctx, eventIdentity, 'ignored');
+                return { outcome: 'ignored' as const, notification: null };
+            }
             await ctx.db.patch(intent._id, {
-                status: args.eventType === 'payment_intent.canceled' ? 'canceled' : 'expired',
+                status:
+                    args.eventType === 'payment_intent.canceled' || args.eventType === 'checkout.session.async_payment_failed'
+                        ? 'canceled'
+                        : 'expired',
                 stripePaymentIntentId: args.paymentIntentId ?? intent.stripePaymentIntentId,
                 updatedAt: Date.now(),
             });
+            await recordStripeEvent(ctx, eventIdentity, 'processed');
+            return { outcome: 'processed' as const, notification: null };
+        }
+        if (args.eventType === 'checkout.session.completed' && args.paymentStatus !== 'paid') {
             await recordStripeEvent(ctx, eventIdentity, 'processed');
             return { outcome: 'processed' as const, notification: null };
         }
@@ -344,6 +401,20 @@ export const processStripeEvent = mutation({
         }
         const artwork = await ctx.db.get(intent.artworkId);
         if (!artwork) return quarantine(ctx, eventIdentity, 'Checkout artwork no longer exists.');
+        const artworkOrders = await ctx.db
+            .query('orders')
+            .withIndex('by_artwork_legacy_id', (q) => q.eq('artworkLegacyId', intent.artworkLegacyId))
+            .collect();
+        if (artwork.sold || artworkOrders.some((order) => order.status === 'paid' || order.status === 'legacy_verified')) {
+            return quarantine(ctx, eventIdentity, 'Payment arrived after this one-of-one artwork was already purchased.');
+        }
+        if (intent.status === 'expired' || intent.status === 'canceled' || intent.status === 'paid') {
+            return quarantine(
+                ctx,
+                eventIdentity,
+                `Payment arrived after checkout intent became ${intent.status}. Refund review is required.`,
+            );
+        }
         const media = await ctx.db
             .query('artworkMedia')
             .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', artwork.legacyId))
@@ -351,6 +422,8 @@ export const processStripeEvent = mutation({
         const primaryImage = media.find((item) => item.role === 'primary' && !item.absentFromSource)?.sourceUrl ?? null;
         const now = Date.now();
         const address = JSON.parse(intent.shippingAddressJson) as { formatted?: string };
+        const deliveryMethod = intent.deliveryMethod ?? (intent.international ? 'international_quote' : 'domestic_shipping');
+        const shippingAddress = deliveryMethod === 'local_pickup' ? '' : (args.shippingAddress ?? address.formatted ?? '');
         const orderId = await ctx.db.insert('orders', {
             source: 'stripe',
             legacySourceIds: [],
@@ -364,15 +437,21 @@ export const processStripeEvent = mutation({
             legacyRecordedPriceCents: null,
             amountPaidCents: amountReceivedCents,
             shippingPaidCents: intent.shippingCents,
+            taxPaidCents: args.taxCents ?? null,
             currency: intent.currency,
             buyerName: intent.buyerName,
             buyerPhone: intent.buyerPhone,
             buyerEmail: intent.buyerEmail,
-            shippingAddress: address.formatted ?? '',
+            shippingAddress,
             international: intent.international,
+            deliveryMethod,
+            shippingTier: intent.shippingTier,
+            shippingPolicyVersion: intent.shippingPolicyVersion ?? SHIPPING_POLICY_VERSION,
+            taxIncluded: intent.taxIncluded ?? true,
+            stripeCheckoutSessionId: args.checkoutSessionId,
             purchasedOn: new Date(now).toISOString(),
             status: 'paid',
-            fulfillmentStatus: 'needs_attention',
+            fulfillmentStatus: deliveryMethod === 'local_pickup' ? 'ready_for_pickup' : 'needs_attention',
             createdAt: now,
             updatedAt: now,
         });
@@ -402,8 +481,9 @@ export const processStripeEvent = mutation({
                 buyerEmail: intent.buyerEmail,
                 buyerName: intent.buyerName,
                 artworkTitle: intent.artworkTitle,
-                shippingAddress: address.formatted ?? '',
+                shippingAddress,
                 amountPaidCents: amountReceivedCents,
+                deliveryMethod,
             },
         };
     },

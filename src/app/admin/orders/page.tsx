@@ -13,7 +13,7 @@ function fulfillmentLabel(value: string) {
 }
 
 function fulfillmentTone(value: string): 'neutral' | 'good' | 'warning' {
-    if (value === 'needs_attention') return 'warning';
+    if (value === 'needs_attention' || value === 'ready_for_pickup') return 'warning';
     if (value === 'untracked') return 'neutral';
     return 'good';
 }
@@ -40,7 +40,7 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                             <div className="owner-order-rows">
                                 {orders.map((order, index) => (
                                     <a
-                                        className={`owner-select-row${selected._id === order._id ? ' is-selected' : ''}`}
+                                        className={`owner-select-row${selected._id === order._id ? 'is-selected' : ''}`}
                                         href={`/admin/orders?id=${order._id}`}
                                         key={order._id}
                                         aria-current={selected._id === order._id ? 'page' : undefined}
@@ -107,8 +107,12 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                 </div>
                             </dl>
                             <section className="owner-shipping-address">
-                                <span>Shipping address</span>
-                                <address>{selected.shippingAddress || 'No shipping address was recorded.'}</address>
+                                <span>{selected.deliveryMethod === 'local_pickup' ? 'Delivery method' : 'Shipping address'}</span>
+                                <address>
+                                    {selected.deliveryMethod === 'local_pickup'
+                                        ? 'Local studio pickup · coordinate a time with the collector'
+                                        : selected.shippingAddress || 'No shipping address was recorded.'}
+                                </address>
                             </section>
                             <form action={updateFulfillment} className="owner-fulfillment-form">
                                 <input type="hidden" name="orderId" value={selected._id} />
@@ -119,6 +123,8 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                         <option value="packed">Packed</option>
                                         <option value="shipped">Shipped</option>
                                         <option value="delivered">Delivered</option>
+                                        <option value="ready_for_pickup">Ready for pickup</option>
+                                        <option value="picked_up">Picked up</option>
                                         <option value="untracked">Untracked</option>
                                     </select>
                                 </label>

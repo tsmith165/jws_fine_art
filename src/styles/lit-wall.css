@@ -1999,6 +1999,56 @@
 .lw-shipping-route button[aria-pressed='true'] .lw-shipping-choice-check {
     opacity: 1;
 }
+.lw-shipping-route-three,
+.lw-shipping-tier-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+.lw-shipping-tier-options button {
+    display: grid;
+    min-width: 0;
+    min-height: 68px;
+    grid-template-columns: minmax(0, 1fr) 18px;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--lw-line);
+    padding: 12px 14px;
+    background: var(--lw-paper);
+    color: var(--lw-muted);
+    text-align: left;
+    cursor: pointer;
+}
+.lw-shipping-tier-options button:hover {
+    border-color: var(--lw-green);
+    color: var(--lw-ink);
+}
+.lw-shipping-tier-options button[aria-pressed='true'] {
+    border-color: var(--lw-brass);
+    background: rgba(198, 164, 102, 0.08);
+    color: var(--lw-ink);
+}
+.lw-shipping-tier-options button > span {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+}
+.lw-shipping-tier-options strong {
+    color: inherit;
+    font-size: 13px;
+}
+.lw-shipping-tier-options small {
+    color: var(--lw-muted);
+    font-size: 9px;
+    line-height: 1.35;
+}
+.lw-shipping-tier-options button > svg {
+    opacity: 0;
+    color: var(--lw-brass);
+}
+.lw-shipping-tier-options button[aria-pressed='true'] > svg {
+    opacity: 1;
+}
 .lw-shipping-check input {
     position: absolute;
     opacity: 0;
@@ -2023,6 +2073,9 @@
     border-color: var(--lw-brass);
     background: rgba(198, 164, 102, 0.12);
     color: var(--lw-ink);
+}
+.lw-shipping-fields .lw-shipping-check-full {
+    width: 100%;
 }
 .lw-shipping-check-box {
     display: grid;
@@ -2452,6 +2505,9 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 11px;
 }
+.lw-checkout-route-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .lw-checkout-route button {
     display: grid;
     min-width: 0;
@@ -2502,6 +2558,13 @@
     font-size: 9px;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+.lw-checkout-delivery-note {
+    min-height: 42px;
+    margin: 0;
+    color: var(--lw-muted);
+    font-size: 10px;
+    line-height: 1.55;
 }
 .lw-checkout-shipping {
     position: relative;
@@ -2595,6 +2658,7 @@
 }
 .lw-checkout-shipping dl {
     display: grid;
+    min-height: 157px;
     gap: 14px;
     margin: 0;
     padding: 0;
@@ -2642,7 +2706,7 @@
     opacity: 0.48;
 }
 .lw-checkout-shipping .lw-checkout-quote-note {
-    min-height: 214px;
+    min-height: 157px;
     color: var(--lw-ink);
     font-size: 11px;
     font-weight: 500;
@@ -3310,6 +3374,8 @@
     }
     .lw-shipping-dimensions,
     .lw-shipping-route,
+    .lw-shipping-route-three,
+    .lw-shipping-tier-options,
     .lw-shipping-protection {
         grid-template-columns: 1fr;
     }

@@ -21,8 +21,9 @@ export async function updateInquiryStatus(formData: FormData) {
 
 export async function updateFulfillment(formData: FormData) {
     const orderId = String(formData.get('orderId')) as Id<'orders'>;
-    const status = String(formData.get('status')) as 'untracked' | 'needs_attention' | 'packed' | 'shipped' | 'delivered';
-    if (!['untracked', 'needs_attention', 'packed', 'shipped', 'delivered'].includes(status)) {
+    const status = String(formData.get('status')) as
+        'untracked' | 'needs_attention' | 'packed' | 'shipped' | 'delivered' | 'ready_for_pickup' | 'picked_up';
+    if (!['untracked', 'needs_attention', 'packed', 'shipped', 'delivered', 'ready_for_pickup', 'picked_up'].includes(status)) {
         throw new Error('Invalid fulfillment status.');
     }
     const client = await getAuthenticatedOwnerConvexClient('update fulfillment');

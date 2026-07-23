@@ -1,8 +1,17 @@
 export type ShippingCare = 'standard' | 'delicate';
-export type ShippingDestination = 'domestic' | 'international';
+export type ShippingDestination = 'domestic' | 'pickup' | 'international';
+export type ShippingTier = 'Small' | 'Medium' | 'Large' | 'Studio quote' | 'Local pickup';
+
+export const SHIPPING_POLICY_VERSION = '2026-07-23';
+
+export const SHIPPING_TIER_PRICES = {
+    Small: { unframed: 2500, framed: 4500, example: 'Up to 10 × 10 in' },
+    Medium: { unframed: 5000, framed: 7500, example: 'Up to 16 × 20 in' },
+    Large: { unframed: 10000, framed: 13000, example: 'Up to 24 × 30 in' },
+} as const;
 
 export type ShippingEstimate = {
-    classification: 'Compact' | 'Standard' | 'Oversize' | 'Studio quote';
+    classification: ShippingTier;
     estimatedCarrierRange: string;
     explanation: string;
     requiresQuote: boolean;
@@ -37,8 +46,34 @@ export function estimateArtworkShipping({
     care: ShippingCare;
     destination?: ShippingDestination;
 }): ShippingEstimate {
+    void care;
     const longestSide = Math.max(width, height);
     const shortestSide = Math.min(width, height);
+
+    if (destination === 'pickup') {
+        return {
+            classification: 'Local pickup',
+            estimatedCarrierRange: 'Free',
+            explanation: 'Pick up the artwork from Jill’s studio in San Diego County. Exact pickup details are shared after purchase.',
+            requiresQuote: false,
+            checkoutChargeCents: 0,
+            basis: 'Local studio pickup',
+            breakdown: [
+                {
+                    label: 'Local studio pickup',
+                    amount: 'Free',
+                    detail: 'The studio will coordinate a pickup time after payment',
+                },
+            ],
+            checkoutBreakdown: [
+                {
+                    label: 'Local studio pickup',
+                    amountCents: 0,
+                    detail: 'The studio will coordinate a pickup time after payment',
+                },
+            ],
+        };
+    }
 
     if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
         return {
@@ -47,52 +82,31 @@ export function estimateArtworkShipping({
             explanation: 'Enter both artwork dimensions to receive a planning estimate.',
             requiresQuote: true,
             checkoutChargeCents: null,
-            basis: destination === 'international' ? 'International delivery' : 'U.S. delivery',
+            basis: destination === 'international' ? 'International quote' : 'U.S. delivery',
             breakdown: [],
             checkoutBreakdown: [],
         };
     }
 
-    const tier =
-        longestSide <= 18 && shortestSide <= 14
-            ? {
-                  classification: 'Compact' as const,
-                  low: 35,
-                  high: 75,
-                  checkoutCharge: 55,
-                  explanation: 'Suitable for a compact, insured art package with protective clearance around the work.',
-                  detail: 'Compact packing and insured carrier baseline',
-                  requiresQuote: false,
-              }
-            : longestSide <= 34 && shortestSide <= 26
-              ? {
-                    classification: 'Standard' as const,
-                    low: 75,
-                    high: 150,
-                    checkoutCharge: 115,
-                    explanation: 'A double-boxed shipment with corner protection and room around the artwork.',
-                    detail: 'Standard double-boxing and insured carrier baseline',
-                    requiresQuote: false,
-                }
-              : longestSide <= 48 && shortestSide <= 36
-                ? {
-                      classification: 'Oversize' as const,
-                      low: 150,
-                      high: 300,
-                      checkoutCharge: null,
-                      explanation: 'An oversize package with added packing material and likely carrier handling.',
-                      detail: 'Oversize packing and insured carrier baseline',
-                      requiresQuote: true,
-                  }
+    const classification =
+        longestSide <= 10 && shortestSide <= 10
+            ? ('Small' as const)
+            : longestSide <= 20 && shortestSide <= 16
+              ? ('Medium' as const)
+              : longestSide <= 30 && shortestSide <= 24
+                ? ('Large' as const)
                 : null;
 
-    const basis = `${width} × ${height} in · ${destination === 'international' ? 'International delivery' : 'U.S. delivery'}`;
+    const basis = `${width} × ${height} in · ${destination === 'international' ? 'International quote' : 'U.S. delivery'}`;
 
-    if (!tier) {
+    if (!classification || destination === 'international') {
         return {
             classification: 'Studio quote',
-            estimatedCarrierRange: 'Custom quote required',
-            explanation: 'This size may require a custom crate, art handler, freight service, or local delivery arrangement.',
+            estimatedCarrierRange: 'Contact the studio',
+            explanation:
+                destination === 'international'
+                    ? 'International delivery is arranged directly so Jill can confirm the carrier, insurance, and destination requirements.'
+                    : 'This size requires a custom packing and insured delivery quote from the studio.',
             requiresQuote: true,
             checkoutChargeCents: null,
             basis,
@@ -100,104 +114,42 @@ export function estimateArtworkShipping({
                 {
                     label: 'Custom packing and delivery',
                     amount: 'Quoted',
-                    detail: 'The packed depth, weight, value, and destination must be reviewed by the studio',
+                    detail:
+                        destination === 'international'
+                            ? 'International carrier, insurance, duties, and destination requirements need review'
+                            : 'The packed depth, weight, value, and destination need studio review',
                 },
             ],
             checkoutBreakdown: [],
         };
     }
 
-    let low = tier.low;
-    let high = tier.high;
-    let checkoutCharge = tier.checkoutCharge;
+    const tier = SHIPPING_TIER_PRICES[classification];
+    const checkoutCharge = framed ? tier.framed : tier.unframed;
+    const checkoutDollars = checkoutCharge / 100;
     const breakdown: ShippingEstimate['breakdown'] = [
         {
             label: 'Size and delivery class',
-            amount: `$${tier.low}–$${tier.high}`,
-            detail: tier.detail,
+            amount: `$${checkoutDollars}`,
+            detail: `${classification} · ${tier.example}`,
         },
     ];
-    const checkoutBreakdown: ShippingEstimate['checkoutBreakdown'] =
-        checkoutCharge === null
-            ? []
-            : [
-                  {
-                      label: `${tier.classification} insured delivery`,
-                      amountCents: checkoutCharge * 100,
-                      detail: tier.detail,
-                  },
-              ];
-
-    if (framed) {
-        low += 20;
-        high += 45;
-        if (checkoutCharge !== null) checkoutCharge += 35;
-        breakdown.push({
-            label: 'Framed-work protection',
-            amount: '+$20–$45',
-            detail: 'Additional edge, corner, and face clearance',
-        });
-        if (checkoutCharge !== null) {
-            checkoutBreakdown.push({
-                label: 'Framed-work protection',
-                amountCents: 3500,
-                detail: 'Additional edge, corner, and face clearance',
-            });
-        }
-    }
-
-    if (care === 'delicate') {
-        low += 35;
-        high += 70;
-        if (checkoutCharge !== null) checkoutCharge += 55;
-        breakdown.push({
-            label: 'Delicate or glazed handling',
-            amount: '+$35–$70',
-            detail: 'Extra surface isolation and impact protection',
-        });
-        if (checkoutCharge !== null) {
-            checkoutBreakdown.push({
-                label: 'Delicate-surface handling',
-                amountCents: 5500,
-                detail: 'Extra surface isolation and impact protection',
-            });
-        }
-    }
-
-    if (destination === 'international') {
-        const internationalAdjustment =
-            tier.classification === 'Compact'
-                ? { low: 95, high: 190 }
-                : tier.classification === 'Standard'
-                  ? { low: 160, high: 320 }
-                  : { low: 300, high: 600 };
-        low += internationalAdjustment.low;
-        high += internationalAdjustment.high;
-        const internationalCharge = tier.classification === 'Compact' ? 145 : tier.classification === 'Standard' ? 240 : null;
-        if (checkoutCharge !== null && internationalCharge !== null) checkoutCharge += internationalCharge;
-        breakdown.push({
-            label: 'International route',
-            amount: `+$${internationalAdjustment.low}–$${internationalAdjustment.high}`,
-            detail: 'Cross-border carrier range and export handling; duties and taxes are separate',
-        });
-        if (internationalCharge !== null) {
-            checkoutBreakdown.push({
-                label: 'International route',
-                amountCents: internationalCharge * 100,
-                detail: 'Cross-border carrier and export handling; duties and taxes are separate',
-            });
-        }
-    }
+    const checkoutBreakdown: ShippingEstimate['checkoutBreakdown'] = [
+        {
+            label: `${classification} insured delivery`,
+            amountCents: checkoutCharge,
+            detail: framed ? 'Tier price includes framed-work protection' : 'Tier price for unframed artwork',
+        },
+    ];
 
     return {
-        classification: tier.classification,
-        estimatedCarrierRange: `$${low}–$${high}`,
-        explanation:
-            destination === 'international'
-                ? `${tier.explanation} The route range includes added international handling but not destination duties or taxes.`
-                : tier.explanation,
-        requiresQuote: tier.requiresQuote,
-        checkoutChargeCents: checkoutCharge === null ? null : checkoutCharge * 100,
+        classification,
+        estimatedCarrierRange: `$${checkoutDollars}`,
+        explanation: framed
+            ? 'Fixed insured U.S. shipping with the added edge and corner protection required for a framed work.'
+            : 'Fixed insured U.S. shipping for this artwork’s size tier.',
+        requiresQuote: false,
+        checkoutChargeCents: checkoutCharge,
         basis,
         breakdown,
         checkoutBreakdown,

@@ -175,4 +175,4 @@ export default async function ArtworkPage({ params }: Props) {
     );
 }
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';

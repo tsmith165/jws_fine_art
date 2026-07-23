@@ -94,8 +94,8 @@ const buyer = {
     buyerName: 'Test Buyer',
     buyerEmail: 'BUYER@example.com',
     buyerPhone: '555-555-0100',
-    shippingAddress: '100 Test Street, London, UK',
-    destination: 'international' as const,
+    shippingAddress: '100 Test Street, San Diego, CA 92101',
+    destination: 'domestic' as const,
 };
 
 beforeEach(() => {
@@ -127,7 +127,7 @@ describe('Convex commerce', () => {
             ...buyer,
         });
 
-        expect(first).toMatchObject({ artworkPriceCents: 95000, shippingCents: 39000, totalCents: 134000, currency: 'usd' });
+        expect(first).toMatchObject({ artworkPriceCents: 95000, shippingCents: 7500, totalCents: 102500, currency: 'usd' });
         await expect(
             t.mutation(api.commerce.createCheckoutIntent, {
                 serverSecret,
@@ -150,12 +150,65 @@ describe('Convex commerce', () => {
 
         expect(intent).toMatchObject({
             artworkPriceCents: 95000,
-            shippingCents: 15000,
-            totalCents: 110000,
+            shippingCents: 7500,
+            totalCents: 102500,
             international: false,
         });
-        expect(intent.shippingDescription).toContain('Standard insured delivery');
-        expect(intent.shippingDescription).toContain('Framed-work protection');
+        expect(intent.shippingDescription).toContain('Medium insured delivery');
+    });
+
+    it('charges nothing for local pickup and records a pickup fulfillment', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+            destination: 'pickup',
+        });
+        expect(intent).toMatchObject({
+            shippingCents: 0,
+            totalCents: 95000,
+            deliveryMethod: 'local_pickup',
+            shippingTier: 'Local pickup',
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_pickup',
+            paymentIntentId: 'pi_pickup',
+        });
+        const result = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_pickup',
+            eventType: 'checkout.session.completed',
+            paymentIntentId: 'pi_pickup',
+            checkoutSessionId: 'cs_pickup',
+            amountReceivedCents: 95000,
+            currency: 'usd',
+            paymentStatus: 'paid',
+        });
+        expect(result.outcome).toBe('processed');
+        const order = await t.run(async (ctx) => ctx.db.query('orders').first());
+        expect(order).toMatchObject({
+            deliveryMethod: 'local_pickup',
+            shippingPaidCents: 0,
+            shippingAddress: '',
+            fulfillmentStatus: 'ready_for_pickup',
+        });
+    });
+
+    it('requires a studio quote for international delivery', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        await expect(
+            t.mutation(api.commerce.createCheckoutIntent, {
+                serverSecret,
+                artworkLegacyId: 101,
+                ...buyer,
+                destination: 'international',
+            }),
+        ).rejects.toThrow('studio shipping quote');
     });
 
     it('requires a studio quote instead of charging an unreliable oversize amount', async () => {
@@ -193,7 +246,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_test_1',
             checkoutSessionId: 'cs_test_1',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         expect(processed.outcome).toBe('processed');
@@ -205,7 +258,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_test_1',
             checkoutSessionId: 'cs_test_1',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         const secondEvent = await t.mutation(api.commerce.processStripeEvent, {
@@ -214,7 +267,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_test_1',
             checkoutSessionId: 'cs_test_1',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         expect(replay.outcome).toBe('duplicate');
@@ -227,8 +280,64 @@ describe('Convex commerce', () => {
         }));
         expect(state.artwork).toMatchObject({ sold: true, available: false });
         expect(state.orders).toHaveLength(1);
-        expect(state.orders[0]).toMatchObject({ paymentIntentId: 'pi_test_1', amountPaidCents: 134000, shippingPaidCents: 39000 });
+        expect(state.orders[0]).toMatchObject({ paymentIntentId: 'pi_test_1', amountPaidCents: 102500, shippingPaidCents: 7500 });
         expect(state.events).toHaveLength(2);
+    });
+
+    it('refuses a late second payment after the one-of-one artwork has already sold', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const first = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: first.intentId,
+            sessionId: 'cs_first',
+            paymentIntentId: 'pi_first',
+        });
+        await t.run(async (ctx) => {
+            await ctx.db.patch(first.intentId, { updatedAt: Date.now() - 32 * 60 * 1000 });
+        });
+        const second = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: second.intentId,
+            sessionId: 'cs_second',
+            paymentIntentId: 'pi_second',
+        });
+        const paid = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_second_paid',
+            eventType: 'checkout.session.completed',
+            paymentIntentId: 'pi_second',
+            checkoutSessionId: 'cs_second',
+            amountReceivedCents: 102500,
+            currency: 'usd',
+            paymentStatus: 'paid',
+        });
+        expect(paid.outcome).toBe('processed');
+        const late = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_first_late',
+            eventType: 'payment_intent.succeeded',
+            paymentIntentId: 'pi_first',
+            checkoutSessionId: 'cs_first',
+            amountReceivedCents: 102500,
+            currency: 'usd',
+        });
+        expect(late).toMatchObject({
+            outcome: 'quarantined',
+            reason: expect.stringContaining('already purchased'),
+        });
+        const orders = await t.run(async (ctx) => ctx.db.query('orders').collect());
+        expect(orders).toHaveLength(1);
     });
 
     it('records partial and full refunds without automatically relisting the artwork', async () => {
@@ -251,7 +360,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_refund',
             checkoutSessionId: 'cs_refund',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         await t.mutation(api.commerce.processStripeEvent, {
@@ -269,7 +378,7 @@ describe('Convex commerce', () => {
             eventType: 'charge.refunded',
             paymentIntentId: 'pi_refund',
             checkoutSessionId: 'cs_refund',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
 
@@ -299,7 +408,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_dispute',
             checkoutSessionId: 'cs_dispute',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         const result = await t.mutation(api.commerce.processStripeEvent, {
@@ -308,7 +417,7 @@ describe('Convex commerce', () => {
             eventType: 'charge.dispute.created',
             paymentIntentId: 'pi_dispute',
             checkoutSessionId: 'cs_dispute',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         expect(result.outcome).toBe('processed');
@@ -351,7 +460,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_freeze',
             checkoutSessionId: 'cs_freeze',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         expect(drained.outcome).toBe('processed');
@@ -532,7 +641,7 @@ describe('Convex commerce', () => {
             eventType: 'checkout.session.expired',
             paymentIntentId: null,
             checkoutSessionId: 'cs_expired',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
 
@@ -557,7 +666,7 @@ describe('Convex commerce', () => {
             eventType: 'checkout.session.expired',
             paymentIntentId: null,
             checkoutSessionId: 'cs_recoverable',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         expect(firstAttempt.outcome).toBe('quarantined');
@@ -579,7 +688,7 @@ describe('Convex commerce', () => {
             eventType: 'checkout.session.expired',
             paymentIntentId: null,
             checkoutSessionId: 'cs_recoverable',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
 
@@ -980,7 +1089,7 @@ describe('public and owner workspace writes', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_owner_workflow',
             checkoutSessionId: 'cs_owner_workflow',
-            amountReceivedCents: 134000,
+            amountReceivedCents: 102500,
             currency: 'usd',
         });
         await t.mutation(api.commerce.recordNotificationOutcome, {

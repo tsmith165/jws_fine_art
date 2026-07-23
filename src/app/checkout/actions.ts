@@ -27,28 +27,51 @@ function requiredFormValue(data: FormData, key: string) {
     return value;
 }
 
-export async function runStripePurchase(data: FormData) {
-    const stripe = stripeClient();
-    const artworkLegacyId = Number(requiredFormValue(data, 'piece_id'));
-    if (!Number.isSafeInteger(artworkLegacyId) || artworkLegacyId <= 0) throw new Error('Artwork ID is invalid.');
-    const buyerName = requiredFormValue(data, 'full_name');
-    const buyerPhone = requiredFormValue(data, 'phone');
-    const buyerEmail = requiredFormValue(data, 'email');
-    const shippingAddress = requiredFormValue(data, 'address');
-    const destination = requiredFormValue(data, 'shipping_destination');
-    if (destination !== 'domestic' && destination !== 'international') throw new Error('Shipping destination is invalid.');
-    const { client, serverSecret } = getServerConvexClient();
-    const intent = await client.mutation(api.commerce.createCheckoutIntent, {
-        serverSecret,
-        artworkLegacyId,
-        buyerName,
-        buyerEmail,
-        buyerPhone,
-        shippingAddress,
-        destination: destination as ShippingDestination,
-    });
+function checkoutErrorMessage(error: unknown) {
+    const message = error instanceof Error ? error.message : '';
+    if (message.includes('not currently available')) return 'This artwork is no longer available for purchase.';
+    if (message.includes('already in progress'))
+        return 'This artwork is temporarily reserved in another checkout. Please try again shortly.';
+    if (message.includes('studio shipping quote')) return 'Please contact the studio for a delivery quote for this artwork.';
+    return 'Checkout could not be started. Please try again or contact the studio.';
+}
 
+export async function runStripePurchase(data: FormData) {
+    let intent: {
+        intentId: Id<'checkoutIntents'>;
+        artworkTitle: string;
+        imageUrl: string | null;
+        artworkPriceCents: number;
+        shippingCents: number;
+        currency: string;
+        deliveryMethod: 'domestic_shipping' | 'local_pickup' | 'international_quote';
+        shippingTier: 'Small' | 'Medium' | 'Large' | 'Studio quote' | 'Local pickup';
+        shippingPolicyVersion: string;
+        shippingDescription: string;
+    } | null = null;
+    let session: Stripe.Checkout.Session | null = null;
+    const { client, serverSecret } = getServerConvexClient();
     try {
+        const stripe = stripeClient();
+        const artworkLegacyId = Number(requiredFormValue(data, 'piece_id'));
+        if (!Number.isSafeInteger(artworkLegacyId) || artworkLegacyId <= 0) throw new Error('Artwork ID is invalid.');
+        const buyerName = requiredFormValue(data, 'full_name');
+        const buyerPhone = requiredFormValue(data, 'phone');
+        const buyerEmail = requiredFormValue(data, 'email');
+        const destination = requiredFormValue(data, 'shipping_destination');
+        if (destination !== 'domestic' && destination !== 'pickup' && destination !== 'international') {
+            throw new Error('Shipping destination is invalid.');
+        }
+        const cancelToken = crypto.randomUUID();
+        intent = await client.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId,
+            buyerName,
+            buyerEmail,
+            buyerPhone,
+            destination: destination as ShippingDestination,
+            cancelToken,
+        });
         const origin = siteOrigin(await headers());
         const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
             {
@@ -69,31 +92,41 @@ export async function runStripePurchase(data: FormData) {
                     currency: intent.currency,
                     unit_amount: intent.shippingCents,
                     product_data: {
-                        name: intent.international ? 'Insured packing & international shipping' : 'Insured packing & U.S. shipping',
+                        name: 'Insured packing & U.S. shipping',
                         description: intent.shippingDescription,
                     },
                 },
                 quantity: 1,
             });
         }
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: lineItems,
-            mode: 'payment',
-            customer_email: buyerEmail,
-            client_reference_id: String(intent.intentId),
-            expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
-            success_url: `${origin}/checkout/success/${artworkLegacyId}?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${origin}/checkout/cancel/${artworkLegacyId}`,
-            payment_intent_data: {
-                metadata: {
-                    checkout_intent_id: String(intent.intentId),
-                    artwork_id: String(artworkLegacyId),
-                    shipping_destination: destination,
-                    shipping_cents: String(intent.shippingCents),
+        const metadata = {
+            checkout_intent_id: String(intent.intentId),
+            artwork_id: String(artworkLegacyId),
+            delivery_method: intent.deliveryMethod,
+            shipping_tier: intent.shippingTier,
+            shipping_policy_version: intent.shippingPolicyVersion,
+            shipping_cents: String(intent.shippingCents),
+        };
+        session = await stripe.checkout.sessions.create(
+            {
+                payment_method_types: ['card'],
+                line_items: lineItems,
+                mode: 'payment',
+                customer_email: buyerEmail,
+                client_reference_id: String(intent.intentId),
+                expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+                success_url: `${origin}/checkout/success/${artworkLegacyId}?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${origin}/checkout/cancel/${artworkLegacyId}?intent_id=${intent.intentId}&cancel_token=${encodeURIComponent(cancelToken)}`,
+                ...(destination === 'domestic' ? { shipping_address_collection: { allowed_countries: ['US' as const] } } : {}),
+                metadata,
+                payment_intent_data: {
+                    metadata,
                 },
             },
-        });
+            {
+                idempotencyKey: `checkout-intent:${intent.intentId}`,
+            },
+        );
         const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id ?? null);
         await client.mutation(api.commerce.attachCheckoutSession, {
             serverSecret,
@@ -102,13 +135,26 @@ export async function runStripePurchase(data: FormData) {
             paymentIntentId,
         });
         if (!session.url) throw new Error('Stripe did not return a checkout URL.');
-        return { success: true, redirectUrl: session.url };
+        return { success: true as const, redirectUrl: session.url };
     } catch (error) {
-        await client.mutation(api.commerce.abandonCheckoutIntent, {
-            serverSecret,
-            checkoutIntentId: intent.intentId as Id<'checkoutIntents'>,
-        });
+        if (session?.id) {
+            try {
+                await stripeClient().checkout.sessions.expire(session.id);
+            } catch (expirationError) {
+                console.error('Unable to expire the unattached Stripe checkout session.', expirationError);
+            }
+        }
+        if (intent && 'intentId' in intent) {
+            try {
+                await client.mutation(api.commerce.abandonCheckoutIntent, {
+                    serverSecret,
+                    checkoutIntentId: intent.intentId as Id<'checkoutIntents'>,
+                });
+            } catch (abandonError) {
+                console.error('Unable to release the failed checkout reservation.', abandonError);
+            }
+        }
         console.error('Unable to create checkout session.', error);
-        throw new Error('Checkout could not be started. Please try again or contact the studio.');
+        return { success: false as const, error: checkoutErrorMessage(error) };
     }
 }

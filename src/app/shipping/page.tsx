@@ -17,8 +17,8 @@ export default function ShippingPage() {
                 <span className="lw-eyebrow">Shipping & artwork care</span>
                 <h1>Careful packing for the journey home.</h1>
                 <p>
-                    Every work is packed for its size, surface, frame, and destination, then shipped with tracking and insurance. Use the
-                    estimator to see how each choice shapes the likely planning range.
+                    Every shipped work is packed for its size and frame, then sent with tracking and insurance. Local pickup is also
+                    available in San Diego County. Use the estimator to see the fixed tier price.
                 </p>
             </header>
             <section className="lw-shipping-guide lw-band">
@@ -30,8 +30,8 @@ export default function ShippingPage() {
                     </article>
                     <article>
                         <Truck size={22} />
-                        <h2>Built from the details</h2>
-                        <p>See how dimensions, framing, destination, and handling needs shape the estimate.</p>
+                        <h2>Fixed by size</h2>
+                        <p>Small, medium, and large works use clear prices with frame protection included when needed.</p>
                     </article>
                     <article>
                         <ShieldCheck size={22} />
@@ -58,9 +58,10 @@ export default function ShippingPage() {
                         claim and refund can be handled.
                     </p>
                     <p>
-                        Checkout adds a fixed contribution toward insured packing and delivery based on the artwork’s size, frame, surface,
-                        and destination. Oversize work or custom delivery still requires a studio quote before payment.
+                        Checkout adds the fixed insured-delivery price for the artwork’s size and framing. Local pickup is free. Work larger
+                        than 24 × 30 inches and all international deliveries require a studio quote before payment.
                     </p>
+                    <p>Sales tax is included in the displayed price where applicable.</p>
                     <Link className="lw-button lw-button-brass" href="/contact?kind=general">
                         Ask about shipping <ArrowRight size={16} />
                     </Link>

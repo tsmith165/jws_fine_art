@@ -56,10 +56,10 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
                         </li>
                     </ol>
                     <span className="lw-eyebrow">Secure checkout</span>
-                    <h2>Delivery, clearly calculated.</h2>
+                    <h2>Choose how the artwork gets to you.</h2>
                     <p>
-                        Choose the destination and enter the delivery details. Insured packing and shipping are calculated from this
-                        artwork’s size, frame, surface, and route before you continue.
+                        Select fixed insured U.S. shipping or free local pickup. Stripe collects any delivery address securely, and sales
+                        tax is included where applicable.
                     </p>
                     <CheckoutForm current_piece={piece} />
                 </div>
