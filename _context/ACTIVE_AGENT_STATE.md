@@ -352,3 +352,41 @@
 - Production Clerk emits a development-key warning. Fixing that requires the
   intended Clerk production instance/keys plus coordinated Convex issuer and
   Vercel configuration. Never record key values.
+
+## July 23 Artwork Release Date And Manual Sale Follow-up
+
+- Objective: let the artist mark an artwork sold outside Stripe, record its
+  original public release date, and use that date for newest-first ordering.
+- Workspace: `/Users/tsmith/dev/_codex/jws-fine-art`
+- Branch: `feat/full-site-overhaul`
+- Source commits: `4c2e017`, `a2a29f7`
+- Added optional Convex `artworks.releasedAt` storage and owner/public
+  projections. Existing undated records are preserved without fabricated
+  release dates.
+- The editor now exposes `Sold — manual or external sale` and a themed
+  Radix/DayPicker release-date control with month/year navigation, future-date
+  prevention, local `Use today`, validation, and mobile viewport containment.
+- Public `Newest` sorting and the homepage available-work selection use
+  `releasedAt`; explicit releases sort first and undated legacy records remain
+  last with ID as the deterministic fallback.
+- Verification passed: full ESLint, TypeScript, 16 test files / 94 tests,
+  `git diff --check`, and two final webpack production builds.
+- Convex production `hushed-crane-268` was deployed successfully.
+- Final Vercel production deployment:
+  `dpl_CCwPud1SdGiSabvC7P8f7iS4N7MM`, ready and aliased to
+  `https://www.jwsfineart.com`.
+- Authenticated production QA passed at `1440 × 1000` and `390 × 844` without
+  saving artwork changes. All three editor controls are 48 px tall, the
+  calendar stays inside both viewports, future days are disabled, manual-sale
+  selection works, and page-level overflow is zero.
+- The public collection hydrated with 71 works and `Newest` selected. Existing
+  production records are currently undated and therefore retain their legacy
+  fallback order until the artist assigns release dates.
+- Detailed evidence: `_context/ARTWORK_RELEASE_SOLD_QA.md`.
+- Artifact aliases:
+  `artwork-release-sold-production-desktop` and
+  `artwork-release-sold-production-mobile`.
+- Artifact validation passed with 60 design artifacts, 109 preview QA
+  artifacts, and 48 analysis records.
+- The local development server was stopped, the temporary browser viewport was
+  reset, and the production browser session was finalized.
