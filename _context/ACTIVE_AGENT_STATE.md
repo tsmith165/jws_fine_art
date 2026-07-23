@@ -6,12 +6,12 @@
   and email processing durable, release canceled reservations, add Stripe
   idempotency, finish endpoint configuration, and replace shipping with the
   artist-approved tier and pickup policy.
-- Source commit `8134a73` plus the responsive shipping-label follow-up are on
+- Source commits `8134a73` and `4fee600` are on
   `origin/feat/full-site-overhaul`.
 - Production Convex `hushed-crane-268` is deployed with the webhook inbox,
   notification outbox, retry/watchdog workers, delivery policy snapshots,
   pickup fulfillment states, and atomic second-sale prevention.
-- Vercel deployment `dpl_EywmXd9p3hfHqRCWngbshHMEyD6X` is ready and aliased
+- Vercel deployment `dpl_72qwLkeVXvy3XrBMmR2chR6MPKje` is ready and aliased
   to `https://www.jwsfineart.com`.
 - Checkout Session creation uses the stable key
   `checkout-intent:${intentId}`. Cancel verifies a cancellation token, expires
