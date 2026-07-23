@@ -1,5 +1,25 @@
 # Active Agent State
 
+## July 23 Checkout Total Polish
+
+- Removed the visible break in the total separator by eliminating the checkout
+  summary grid’s column gap; the two 1px cell borders now meet with a measured
+  `0px` gap.
+- Changed the label to `Total due` and updated the Stripe security note to:
+  `Checkout is secured with our payment partner Stripe. Card details are never
+  touched on this site.`
+- Source commit `dcd9602` is pushed to
+  `origin/feat/full-site-overhaul`.
+- Vercel deployment `dpl_8uQQYKyYLfEpcEkkC93Q1yckJuQw` is ready and aliased
+  to `https://www.jwsfineart.com`.
+- Production desktop and `390 × 844` mobile QA confirmed a `0px` separator gap,
+  zero horizontal overflow, no clipped checkout summary/button/security copy,
+  and the requested copy. No page-origin console errors were present.
+- Verification passed: Prettier, `git diff --check`, lint, typecheck, all 88
+  tests, webpack production build, Vercel Turbopack build, and live visual QA.
+- Preview aliases: `checkout-total-polish-production-desktop` and
+  `checkout-total-polish-production-mobile`.
+
 ## July 23 Checkout Shipping Refinement
 
 - Aligned the real checkout shipping card with the finalized `/shipping`
