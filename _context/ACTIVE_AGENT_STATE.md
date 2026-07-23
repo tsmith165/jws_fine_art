@@ -5,6 +5,7 @@
 - Workspace: `/Users/tsmith/dev/_codex/jws-fine-art`
 - Branch: `feat/full-site-overhaul`
 - Starting source commit: `4345f60`
+- Completed source commit: `cdf66c2`
 - Full handoff: `_context/PROJECT_HANDOFF.md`
 - Session reconstruction: `_context/SESSION_CONTINUATION_019F3504.md`
 - Production: `https://jwsfineart.com`
@@ -31,9 +32,28 @@
 - Production Convex and the configured development Convex deployment were
   updated successfully on July 23, 2026.
 - A production Next.js build passed under Node `v24.18.0`.
-- Remaining: review/commit/push, deploy Vercel production, and perform desktop
-  plus mobile browser visual QA. Stage the final screenshots through
-  `agent-artifacts` and validate the artifact store.
+- Commits `7b5c6a9` and `cdf66c2` were pushed to
+  `origin/feat/full-site-overhaul`.
+- Vercel production deployment `dpl_Hqv9GXok1MFmhF4ViQJWqFtfSYs7` is ready and
+  aliased to `https://www.jwsfineart.com`.
+- Desktop `1440 × 1000` and mobile `390 × 844` browser QA passed. Collection
+  wrapper gaps measured `0px` on every edge, the first hero transitioned from
+  opacity `0` to `1`, its nine-second Ken Burns transform advanced over time,
+  and neither breakpoint had horizontal page overflow.
+- Authenticated `/admin/homepage` QA added a sixth artwork in unsaved client
+  state, observed `6 selected` with Publish enabled, then reloaded without
+  publishing. Production data was not changed.
+- Detailed evidence: `_context/landing-regressions-production-qa.md`.
+- Artifact aliases:
+  `collection-card-borders-fixed-production-desktop`,
+  `collection-card-borders-fixed-production-mobile`,
+  `hero-motion-fixed-production-desktop`, and
+  `hero-motion-fixed-production-mobile`.
+- Artifact validation passed with 44 design artifacts, 62 preview QA artifacts,
+  and 17 analysis records. The temporary browser viewport was reset and the
+  browser session was finalized.
+- Completion gate: commit this final state update, push it, and confirm the
+  worktree is clean.
 
 ## Known Separate Risk
 
