@@ -4,7 +4,7 @@ import { BarChart3, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { useState, type CSSProperties } from 'react';
 import { postHogRanges, type PostHogAnalytics, type PostHogRange } from '@/data/posthogAnalytics.types';
-import { OwnerStatus } from './OwnerShell';
+import { OwnerStatus } from './OwnerStatus';
 
 const number = new Intl.NumberFormat('en-US');
 const shortDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });

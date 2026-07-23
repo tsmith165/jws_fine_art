@@ -13,6 +13,10 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { readOwnerArtworksWithMedia } from '@/data/ownerReads';
+import { ownerArtworkAttention } from '@/lib/ownerArtworkAttention';
+import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
+export { OwnerStatus } from './OwnerStatus';
 
 const navigation = [
     { href: '/admin', label: 'Today', detail: 'Tasks and studio health', icon: LayoutDashboard },
@@ -26,7 +30,11 @@ const navigation = [
     { href: '/admin/tools', label: 'Tools', detail: 'Backups and site health', icon: Wrench },
 ] as const;
 
-export function OwnerShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
+export async function OwnerShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
+    const attentionCount = filterCategorizerArtworks(await readOwnerArtworksWithMedia()).filter(
+        (artwork) => ownerArtworkAttention(artwork).length > 0,
+    ).length;
+
     return (
         <div className="owner-shell">
             <aside className="owner-rail">
@@ -46,6 +54,14 @@ export function OwnerShell({ active, title, children }: { active: string; title:
                                 <strong>{label}</strong>
                                 <small>{detail}</small>
                             </span>
+                            {href === '/admin/categories' ? (
+                                <span
+                                    className="owner-nav-count"
+                                    aria-label={`${attentionCount} ${attentionCount === 1 ? 'piece needs' : 'pieces need'} attention`}
+                                >
+                                    {attentionCount}
+                                </span>
+                            ) : null}
                         </Link>
                     ))}
                 </nav>
@@ -97,8 +113,4 @@ export function OwnerHeading({
             {action}
         </header>
     );
-}
-
-export function OwnerStatus({ tone = 'neutral', children }: { tone?: 'neutral' | 'good' | 'warning'; children: ReactNode }) {
-    return <span className={`owner-status is-${tone}`}>{children}</span>;
 }

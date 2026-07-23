@@ -5,7 +5,7 @@ import { api } from '../../../../convex/_generated/api';
 import type { Pieces } from '@/types/artwork';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { ownerArtworkToLegacy } from '@/data/ownerMapper';
-import { validateOwnerArtwork } from '@/lib/ownerArtworkValidation';
+import { normalizeInstagramShareReference, validateOwnerArtwork } from '@/lib/ownerArtworkValidation';
 import { validateUploadedImageReference } from '@/lib/uploadedImageReference';
 import type { ArtworkCategoryId } from '@shared/artworkCategories';
 import { normalizeArtworkCategories } from '@shared/artworkCategories';
@@ -17,7 +17,9 @@ function revalidateArtworkSurfaces(id?: number) {
     revalidatePath('/gallery');
     revalidatePath('/slideshow');
     revalidatePath('/admin/edit');
+    revalidatePath('/admin');
     revalidatePath('/admin/artwork');
+    revalidatePath('/admin/categories');
     revalidatePath('/admin/manage');
     revalidatePath('/work', 'layout');
     if (id) {
@@ -69,7 +71,8 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
     try {
         const legacyId = Number(data.piece_id);
         if (!Number.isSafeInteger(legacyId) || legacyId <= 0) throw new Error('Artwork ID is invalid.');
-        const validation = validateOwnerArtwork(data);
+        const instagram = normalizeInstagramShareReference(data.instagram);
+        const validation = validateOwnerArtwork({ ...data, instagram });
         if (!validation.canSave) throw new Error(validation.errors[0]?.message || 'Review the highlighted artwork fields.');
         const { client, artwork } = await findOwnerArtwork(legacyId);
         const listing = normalizeArtworkAvailability({ sold: data.sold, available: data.available });
@@ -80,7 +83,7 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
             medium: nullableText(data.piece_type),
             theme: nullableText(data.theme.replace('None, ', '')),
             categories: normalizeArtworkCategories(data.categories),
-            instagramUrl: nullableText(data.instagram),
+            instagramUrl: nullableText(instagram),
             ownerNotes: nullableText(data.comments),
             priceCents: Math.max(0, Math.round(Number(data.price || 0) * 100)),
             releasedAt: releaseDateTimestamp(data.released_at),
@@ -96,6 +99,19 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
     } catch (error) {
         console.error('Unable to update artwork.', error);
         return { success: false, error: error instanceof Error ? error.message : 'Unable to update artwork.' };
+    }
+}
+
+export async function repairStoredInstagramShareReference(legacyId: number): Promise<{ success: boolean; changed?: boolean }> {
+    try {
+        if (!Number.isSafeInteger(legacyId) || legacyId <= 0) throw new Error('Artwork ID is invalid.');
+        const client = await getAuthenticatedOwnerConvexClient('repair artwork Instagram share token');
+        const result = await client.mutation(api.ownerMutations.repairArtworkInstagramShareToken, { legacyId });
+        if (result.changed) revalidateArtworkSurfaces(legacyId);
+        return { success: true, changed: result.changed };
+    } catch (error) {
+        console.error('Unable to repair the artwork Instagram share token.', error);
+        return { success: false };
     }
 }
 

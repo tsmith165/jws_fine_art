@@ -34,6 +34,7 @@ const editorAnchors: Partial<Record<OwnerArtworkField, string>> = {
     real_width: 'artwork-width',
     real_height: 'artwork-height',
     description: 'artwork-story',
+    instagram: 'artwork-instagram',
 };
 
 function mediaAttentionIssues(piece: PiecesWithImages): OwnerArtworkAttentionIssue[] {

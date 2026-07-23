@@ -113,8 +113,9 @@
     text-transform: uppercase;
 }
 .owner-rail nav a {
+    position: relative;
     display: grid;
-    grid-template-columns: 26px 1fr;
+    grid-template-columns: 26px minmax(0, 1fr) auto;
     gap: 9px;
     align-items: center;
     min-height: 56px;
@@ -134,6 +135,19 @@
 .owner-rail nav a strong,
 .owner-view-site strong {
     font-size: 12px;
+}
+.owner-nav-count {
+    display: inline-grid;
+    min-width: 23px;
+    height: 23px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--owner-accent) 55%, var(--owner-line));
+    padding: 0 6px;
+    background: color-mix(in srgb, var(--owner-accent) 10%, var(--owner-bg));
+    color: var(--owner-accent);
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1;
 }
 .owner-view-site {
     display: grid;
@@ -1451,6 +1465,45 @@
 .owner-category-fieldset legend {
     margin-bottom: 1px;
 }
+.owner-category-surface {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--owner-line);
+    padding: 14px;
+    background: color-mix(in srgb, var(--owner-raised) 58%, var(--owner-bg));
+}
+.owner-category-surface > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--owner-line-soft);
+}
+.owner-category-surface > header strong {
+    display: block;
+    color: var(--owner-ink);
+    font-size: 11px;
+}
+.owner-category-surface > header p {
+    margin-top: 3px;
+    color: var(--owner-muted);
+    font-size: 9px;
+}
+.owner-category-surface > header > span {
+    flex: 0 0 auto;
+    border: 1px solid var(--owner-green);
+    padding: 5px 7px;
+    color: var(--owner-green);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.owner-category-surface > header > span.is-empty {
+    border-color: color-mix(in srgb, var(--owner-accent) 60%, var(--owner-line));
+    color: var(--owner-accent);
+}
 .owner-category-options {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1488,10 +1541,10 @@
     outline: 2px solid var(--owner-green);
     outline-offset: 2px;
 }
-.owner-category-fieldset.has-error .owner-category-options span {
+.owner-category-fieldset.has-error .owner-category-surface {
     border-color: #e49488;
 }
-.owner-category-fieldset.has-warning .owner-category-options span {
+.owner-category-fieldset.has-warning .owner-category-surface {
     border-color: color-mix(in srgb, var(--owner-accent) 55%, var(--owner-line));
 }
 .owner-mail-workspace {
@@ -2777,10 +2830,6 @@
     max-height: 100%;
     object-fit: contain;
 }
-.owner-media-library-grid article > small {
-    color: var(--owner-green);
-    font-size: 8px;
-}
 .owner-media-card-actions {
     display: grid;
     grid-template-columns: 30px 30px minmax(0, 1fr);
@@ -2810,6 +2859,35 @@
 .owner-media-card-actions button:disabled {
     cursor: not-allowed;
     opacity: 0.32;
+}
+.owner-media-primary-actions {
+    display: grid;
+    gap: 6px;
+}
+.owner-media-primary-actions button {
+    display: inline-flex;
+    width: 100%;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--owner-accent);
+    padding: 0 9px;
+    background: color-mix(in srgb, var(--owner-accent) 10%, transparent);
+    color: var(--owner-ink);
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 700;
+}
+.owner-media-primary-actions button:hover,
+.owner-media-primary-actions button:focus-visible {
+    background: var(--owner-accent);
+    color: var(--owner-bg);
+}
+.owner-media-primary-actions small {
+    color: var(--owner-muted);
+    font-size: 8px;
+    line-height: 1.4;
 }
 .owner-media-upload-panel {
     display: grid;
@@ -3104,6 +3182,15 @@
         grid-template-columns: 1fr;
         place-items: center;
     }
+    .owner-nav-count {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        font-size: 8px;
+    }
     .owner-attention-grid,
     .owner-metrics {
         grid-template-columns: repeat(2, 1fr);
@@ -3232,6 +3319,11 @@
     }
     .owner-category-options {
         grid-template-columns: 1fr;
+    }
+    .owner-category-surface > header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
     }
     .owner-tool-form {
         grid-template-columns: 1fr;

@@ -1,5 +1,6 @@
 import { artworkListingStatus } from '../../shared/artworkListingState';
 import { isFutureReleaseDate, releaseDateTimestamp } from '../../shared/artworkRelease';
+import { isInstagramShareToken, normalizeInstagramShareToken } from '../../shared/instagramShare';
 
 export type OwnerArtworkField =
     'piece_title' | 'piece_type' | 'released_at' | 'price' | 'real_width' | 'real_height' | 'description' | 'categories' | 'instagram';
@@ -24,13 +25,7 @@ export type OwnerArtworkIssue = {
     message: string;
 };
 
-const instagramShareReference = /^\?igsh=[A-Za-z0-9._~%=-]+$/;
-
-export function normalizeInstagramShareReference(value: string) {
-    const marker = value.indexOf('?igsh=');
-    if (marker === -1) return value;
-    return value.slice(marker).split('&', 1)[0];
-}
+export const normalizeInstagramShareReference = normalizeInstagramShareToken;
 
 function positiveNumber(value: string) {
     if (!value.trim()) return null;
@@ -108,11 +103,11 @@ export function validateOwnerArtwork(input: OwnerArtworkValidationInput) {
     }
 
     const instagram = input.instagram.trim();
-    if (instagram && !instagramShareReference.test(instagram)) {
+    if (instagram && !isInstagramShareToken(instagram)) {
         issues.push({
             field: 'instagram',
             tone: 'error',
-            message: 'Paste only the Instagram share reference beginning with ?igsh=.',
+            message: 'Paste only the Instagram share token that appears after ?igsh=.',
         });
     }
 

@@ -27,6 +27,7 @@ async function seedArtwork(
         widthInches: number;
         heightInches: number;
         medium: string;
+        instagramUrl: string | null;
     }> = {},
 ) {
     return t.run(async (ctx) => {
@@ -45,7 +46,7 @@ async function seedArtwork(
             description: null,
             medium: overrides.medium ?? 'Oil on panel',
             theme: 'Coast',
-            instagramUrl: null,
+            instagramUrl: overrides.instagramUrl ?? null,
             ownerNotes: null,
             className: 'test_artwork',
             legacyGalleryOrder: galleryOrder,
@@ -641,6 +642,29 @@ describe('owner authorization', () => {
         expect(state.artwork?.ownerMutatedFields).toContain('categories');
         expect(state.auditEvents).toHaveLength(1);
         expect(state.auditEvents[0]).toMatchObject({ action: 'artwork.categories_updated', actorId: 'owner-test' });
+    });
+
+    it('repairs a legacy Instagram share reference when the editor loads it', async () => {
+        const t = createHarness();
+        await seedArtwork(t, { instagramUrl: '?igsh=Mzc3ZTVlOWMwZA%3D%3D' });
+        const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
+
+        const result = await owner.mutation(api.ownerMutations.repairArtworkInstagramShareToken, { legacyId: 101 });
+
+        expect(result).toEqual({ changed: true });
+        const state = await t.run(async (ctx) => ({
+            artwork: await ctx.db
+                .query('artworks')
+                .withIndex('by_legacy_id', (q) => q.eq('legacyId', 101))
+                .unique(),
+            auditEvents: await ctx.db.query('ownerAuditEvents').collect(),
+        }));
+        expect(state.artwork?.instagramUrl).toBe('Mzc3ZTVlOWMwZA%3D%3D');
+        expect(state.artwork?.ownerMutatedFields).toContain('instagramUrl');
+        expect(state.auditEvents[0]).toMatchObject({
+            action: 'artwork.instagram_share_token_repaired',
+            actorId: 'owner-test',
+        });
     });
 
     it('lets the owner record an external sale and the original release date', async () => {

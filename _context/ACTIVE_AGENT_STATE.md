@@ -1,5 +1,30 @@
 # Active Agent State
 
+## July 23 Primary Media, Attention Count, And Artwork Form Follow-up
+
+- Objective: make primary-image replacement explicit in the media modal, show
+  the live Needs Attention piece count in the owner navigation, normalize
+  Instagram share values to bare tokens, and improve the Categories field
+  grouping.
+- Implemented an explicit `Replace primary` action. It moves the modal to a
+  dedicated replacement state, preselects the Primary upload role, and explains
+  where the image is used before any public image changes.
+- OwnerShell now calculates its badge with the same active-artwork attention
+  rules as `/admin/categories`; the read is request-cached so pages that already
+  load artwork media reuse the same query.
+- Instagram values now store only the token after `?igsh=`. Full share links and
+  prefixed values normalize in the form and save action. Loading an editor with
+  legacy prefixed data runs an owner-authenticated Convex repair mutation and
+  records an audit event.
+- The Categories field now has a contained collection-placement surface,
+  selected-count status, grouped options, and stacked mobile treatment.
+- Verification passed so far: formatting, `git diff --check`, lint, typecheck,
+  all 103 tests, and the Node 24 Next.js production build.
+- Local authenticated admin QA remains unavailable because Clerk redirects the
+  local origin to `/not-authorized`.
+- Next action: commit/push, deploy Convex and Vercel, then perform authenticated
+  production desktop/mobile interaction QA and artifact validation.
+
 ## July 23 Catalog Artwork Image Fidelity
 
 - Objective: remove soft/grainy public catalog artwork renditions while keeping

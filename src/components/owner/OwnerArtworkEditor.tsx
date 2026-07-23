@@ -9,6 +9,7 @@ import {
     ExternalLink,
     GripVertical,
     Images,
+    Replace,
     Save,
     Search,
     Trash2,
@@ -18,7 +19,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
-import { handleImageDelete, handleMediaOrderUpdate, onSubmitEditForm } from '@/app/admin/edit/actions';
+import { handleImageDelete, handleMediaOrderUpdate, onSubmitEditForm, repairStoredInstagramShareReference } from '@/app/admin/edit/actions';
 import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 import { normalizeInstagramShareReference, validateOwnerArtwork, type OwnerArtworkField } from '@/lib/ownerArtworkValidation';
 import { reorderArtworkMedia } from '@/lib/ownerMediaOrdering';
@@ -58,7 +59,7 @@ function initialForm(piece: PiecesWithImages): EditorForm {
         released_at: releaseDateValue(piece.released_at),
         sold: Boolean(piece.sold),
         price: piece.price ? String(piece.price) : '',
-        instagram: piece.instagram || '',
+        instagram: normalizeInstagramShareReference(piece.instagram || ''),
         width: String(piece.width),
         height: String(piece.height),
         real_width: piece.real_width ? String(piece.real_width) : '',
@@ -112,6 +113,8 @@ export function OwnerArtworkEditor({
     const [dragOverMediaId, setDragOverMediaId] = useState<string | null>(null);
     const [mediaMessage, setMediaMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
     const [mediaOpen, setMediaOpen] = useState(initialMediaOpen);
+    const [mediaUploadRole, setMediaUploadRole] = useState<'main' | 'extra' | 'progress'>('extra');
+    const [mediaUploadVersion, setMediaUploadVersion] = useState(0);
     const [saving, setSaving] = useState(false);
     const [attemptedSave, setAttemptedSave] = useState(false);
     const [message, setMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
@@ -264,6 +267,13 @@ export function OwnerArtworkEditor({
     }, [mediaOpen]);
 
     useEffect(() => {
+        const stored = piece.instagram?.trim() ?? '';
+        const normalized = normalizeInstagramShareReference(stored);
+        if (!stored || stored === normalized) return;
+        void repairStoredInstagramShareReference(piece.id);
+    }, [piece.id, piece.instagram]);
+
+    useEffect(() => {
         if (!media.some((image) => image.url === selectedImage)) setSelectedImage(piece.image_path);
     }, [media, piece.image_path, selectedImage]);
 
@@ -280,7 +290,24 @@ export function OwnerArtworkEditor({
 
     function openMediaManager() {
         setMediaMessage(null);
+        setMediaUploadRole('extra');
+        setMediaUploadVersion((current) => current + 1);
         setMediaOpen(true);
+    }
+
+    function beginPrimaryReplacement() {
+        setMediaUploadRole('main');
+        setMediaUploadVersion((current) => current + 1);
+        setMediaMessage({
+            tone: 'warning',
+            text: 'Primary replacement selected. Choose a new full-resolution original below, then review it before saving.',
+        });
+        requestAnimationFrame(() => {
+            document.getElementById('owner-media-upload-panel')?.scrollIntoView({
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                block: 'start',
+            });
+        });
     }
 
     async function reorderMedia(currentImage: (typeof media)[number], targetImage: (typeof media)[number]) {
@@ -576,27 +603,37 @@ export function OwnerArtworkEditor({
                                 <span>Categories</span>
                                 <small className="is-optional">Recommended</small>
                             </legend>
-                            <div className="owner-category-options">
-                                {ARTWORK_CATEGORIES.map((category) => (
-                                    <label key={category.id}>
-                                        <input
-                                            type="checkbox"
-                                            checked={form.categories.includes(category.id)}
-                                            onChange={(event) =>
-                                                update(
-                                                    'categories',
-                                                    event.target.checked
-                                                        ? [...form.categories, category.id]
-                                                        : form.categories.filter((id) => id !== category.id),
-                                                )
-                                            }
-                                        />
-                                        <span>{category.label}</span>
-                                    </label>
-                                ))}
+                            <div className="owner-category-surface">
+                                <header>
+                                    <div>
+                                        <strong>Collection placement</strong>
+                                        <p>Choose every collection where this work naturally belongs.</p>
+                                    </div>
+                                    <span className={form.categories.length ? undefined : 'is-empty'}>
+                                        {form.categories.length ? `${form.categories.length} selected` : 'None selected'}
+                                    </span>
+                                </header>
+                                <div className="owner-category-options">
+                                    {ARTWORK_CATEGORIES.map((category) => (
+                                        <label key={category.id}>
+                                            <input
+                                                type="checkbox"
+                                                checked={form.categories.includes(category.id)}
+                                                onChange={(event) =>
+                                                    update(
+                                                        'categories',
+                                                        event.target.checked
+                                                            ? [...form.categories, category.id]
+                                                            : form.categories.filter((id) => id !== category.id),
+                                                    )
+                                                }
+                                            />
+                                            <span>{category.label}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                <FieldFeedback field="categories" issue={fieldIssue('categories')} />
                             </div>
-                            <small className="owner-field-help">Choose every collection where this work belongs.</small>
-                            <FieldFeedback field="categories" issue={fieldIssue('categories')} />
                         </fieldset>
                         <OwnerFormRow className="is-wide">
                             <label className={fieldClass('price')} data-owner-field="price">
@@ -708,20 +745,21 @@ export function OwnerArtworkEditor({
                                 <small className="is-optional">Optional</small>
                             </span>
                             <input
+                                id="artwork-instagram"
                                 type="text"
                                 value={form.instagram}
                                 onChange={(event) => update('instagram', normalizeInstagramShareReference(event.target.value))}
                                 aria-invalid={fieldIssue('instagram')?.tone === 'error'}
                                 aria-describedby={describedBy('instagram') || 'artwork-instagram-help'}
-                                placeholder="?igsh=Mzc3ZTVlOWMwZA%3D%3D"
+                                placeholder="Mzc3ZTVlOWMwZA%3D%3D"
                                 maxLength={512}
                             />
                             {fieldIssue('instagram') ? (
                                 <FieldFeedback field="instagram" issue={fieldIssue('instagram')} />
                             ) : (
                                 <OwnerFieldFooter id="artwork-instagram-help" className="owner-field-feedback is-info">
-                                    Paste only the “?igsh=…” part of the shared link. Full Instagram links are reduced to that reference
-                                    automatically.
+                                    Paste only the token after “?igsh=”. If you paste the full shared link or include “?igsh=”, it is
+                                    removed automatically.
                                 </OwnerFieldFooter>
                             )}
                         </label>
@@ -947,20 +985,44 @@ export function OwnerArtworkEditor({
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <small>Catalog image · fixed first</small>
+                                                    <div className="owner-media-primary-actions">
+                                                        <button
+                                                            type="button"
+                                                            onClick={beginPrimaryReplacement}
+                                                            aria-describedby="owner-media-primary-guidance"
+                                                            title="Upload a new full-resolution original to replace the image used across the public site"
+                                                        >
+                                                            <Replace size={14} aria-hidden="true" />
+                                                            Replace primary
+                                                        </button>
+                                                        <small id="owner-media-primary-guidance">
+                                                            Used on the homepage, catalog, and artwork page.
+                                                        </small>
+                                                    </div>
                                                 )}
                                             </article>
                                         );
                                     })}
                                 </div>
                             </section>
-                            <section className="owner-media-upload-panel">
+                            <section className="owner-media-upload-panel" id="owner-media-upload-panel">
                                 <div>
-                                    <span className="owner-panel-eyebrow">Add media</span>
-                                    <h3>Upload another original</h3>
-                                    <p>Drop an image anywhere in this window, or select a file below. Choose its role after upload.</p>
+                                    <span className="owner-panel-eyebrow">
+                                        {mediaUploadRole === 'main' ? 'Replace primary' : 'Add media'}
+                                    </span>
+                                    <h3>{mediaUploadRole === 'main' ? 'Choose the new primary original' : 'Upload another original'}</h3>
+                                    <p>
+                                        {mediaUploadRole === 'main'
+                                            ? 'Choose the highest-quality original. You will review it before the current public image changes.'
+                                            : 'Drop an image anywhere in this window, or select a file below. Choose its role after upload.'}
+                                    </p>
                                 </div>
-                                <ImageEditor pieceId={String(piece.id)} onClose={() => setMediaOpen(false)} />
+                                <ImageEditor
+                                    key={`${piece.id}-${mediaUploadVersion}`}
+                                    pieceId={String(piece.id)}
+                                    onClose={() => setMediaOpen(false)}
+                                    initialRole={mediaUploadRole}
+                                />
                             </section>
                         </div>
                     </section>

@@ -14,7 +14,7 @@ const completeArtwork: OwnerArtworkValidationInput = {
     real_height: '9',
     description: 'Morning light settles across the coast after the marine layer lifts.',
     categories: ['coastal'],
-    instagram: '?igsh=Mzc3ZTVlOWMwZA%3D%3D',
+    instagram: 'Mzc3ZTVlOWMwZA%3D%3D',
     available: true,
     sold: false,
 };
@@ -66,7 +66,7 @@ describe('validateOwnerArtwork', () => {
     it('accepts compact Instagram share references', () => {
         const result = validateOwnerArtwork({
             ...completeArtwork,
-            instagram: '?igsh=Mzc3ZTVlOWMwZA%3D%3D',
+            instagram: 'Mzc3ZTVlOWMwZA%3D%3D',
         });
         expect(result.byField.has('instagram')).toBe(false);
         expect(result.canSave).toBe(true);
@@ -75,7 +75,9 @@ describe('validateOwnerArtwork', () => {
     it('reduces a pasted Instagram URL to its share reference', () => {
         expect(
             normalizeInstagramShareReference('https://www.instagram.com/p/example/?igsh=Mzc3ZTVlOWMwZA%3D%3D&utm_source=ig_web_copy_link'),
-        ).toBe('?igsh=Mzc3ZTVlOWMwZA%3D%3D');
+        ).toBe('Mzc3ZTVlOWMwZA%3D%3D');
+        expect(normalizeInstagramShareReference('?igsh=Mzc3ZTVlOWMwZA%3D%3D')).toBe('Mzc3ZTVlOWMwZA%3D%3D');
+        expect(normalizeInstagramShareReference('Mzc3ZTVlOWMwZA%3D%3D')).toBe('Mzc3ZTVlOWMwZA%3D%3D');
     });
 
     it('rejects invalid dimensions in every status', () => {
@@ -93,7 +95,7 @@ describe('validateOwnerArtwork', () => {
             ...completeArtwork,
             instagram: 'https://www.instagram.com/p/example/',
         });
-        expect(result.byField.get('instagram')?.message).toBe('Paste only the Instagram share reference beginning with ?igsh=.');
+        expect(result.byField.get('instagram')?.message).toBe('Paste only the Instagram share token that appears after ?igsh=.');
     });
 
     it('rejects malformed and future release dates', () => {

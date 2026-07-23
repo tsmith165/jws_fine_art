@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { api } from '../../convex/_generated/api';
 import type { Pieces, VerifiedTransactions } from '@/types/artwork';
 import { requireAdmin } from '@/utils/auth/requireAdmin';
@@ -27,11 +28,11 @@ export async function readOwnerLegacyTransactions(): Promise<VerifiedTransaction
     return (await client.query(api.ownerReads.listLegacyVerifiedTransactions, {})).map(ownerTransactionToLegacy);
 }
 
-export async function readOwnerArtworksWithMedia() {
+export const readOwnerArtworksWithMedia = cache(async function readOwnerArtworksWithMedia() {
     await assertNextOwner();
     const client = await getAuthenticatedOwnerConvexClient('read owner artwork media');
     return (await client.query(api.ownerReads.listArtworks, {})).map(ownerArtworkWithMediaToLegacy);
-}
+});
 
 export async function readOwnerHomepageRotation(): Promise<{ configured: boolean; artworkLegacyIds: number[] }> {
     await assertNextOwner();

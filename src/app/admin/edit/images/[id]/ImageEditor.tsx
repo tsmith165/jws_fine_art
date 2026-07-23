@@ -7,10 +7,18 @@ import { useRouter } from 'next/navigation';
 import { storeUploadedImageDetails } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 
-export default function ImageEditor({ pieceId, onClose }: { pieceId: string; onClose?: () => void }) {
+export default function ImageEditor({
+    pieceId,
+    onClose,
+    initialRole = 'extra',
+}: {
+    pieceId: string;
+    onClose?: () => void;
+    initialRole?: 'main' | 'extra' | 'progress';
+}) {
     const router = useRouter();
     const [upload, setUpload] = useState({ url: '', title: '', width: 0, height: 0 });
-    const [role, setRole] = useState<'main' | 'extra' | 'progress'>('extra');
+    const [role, setRole] = useState<'main' | 'extra' | 'progress'>(initialRole);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ text: string; tone: 'good' | 'warning' } | null>(null);
     const reset = useCallback(() => {

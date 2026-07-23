@@ -4,6 +4,7 @@ import { legacyArtworkSlug } from './lib/legacy';
 import { requireOwnerIdentity } from './lib/ownerAuth';
 import { deriveArtworkCategories, normalizeArtworkCategories } from '../shared/artworkCategories';
 import { normalizeArtworkAvailability } from '../shared/artworkListingState';
+import { isInstagramShareToken, normalizeInstagramShareToken } from '../shared/instagramShare';
 
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
@@ -72,9 +73,11 @@ export const updateArtwork = mutation({
     handler: async (ctx, args) => {
         const actorId = await owner(ctx);
         const artwork = await artworkByLegacyId(ctx, args.legacyId);
-        const { legacyId: _legacyId, categories, releasedAt, sold, available, ...remainingFields } = args;
+        const { legacyId: _legacyId, categories, releasedAt, sold, available, instagramUrl, ...remainingFields } = args;
+        const normalizedInstagramUrl = instagramUrl ? normalizeInstagramShareToken(instagramUrl) : null;
         const fields = {
             ...remainingFields,
+            instagramUrl: normalizedInstagramUrl && isInstagramShareToken(normalizedInstagramUrl) ? normalizedInstagramUrl : instagramUrl,
             releasedAt: releasedAt ?? undefined,
             ...normalizeArtworkAvailability({ sold, available }),
             ...(categories ? { categories } : {}),
@@ -92,6 +95,28 @@ export const updateArtwork = mutation({
             updatedAt: Date.now(),
         });
         await audit(ctx, actorId, 'artwork.updated', 'artwork', String(artwork._id), { fields: changed });
+        return { changed: true };
+    },
+});
+
+export const repairArtworkInstagramShareToken = mutation({
+    args: { legacyId: v.number() },
+    handler: async (ctx, args) => {
+        const actorId = await owner(ctx);
+        const artwork = await artworkByLegacyId(ctx, args.legacyId);
+        const current = artwork.instagramUrl?.trim() ?? '';
+        const normalized = normalizeInstagramShareToken(current);
+        if (!current || normalized === current || !isInstagramShareToken(normalized)) return { changed: false };
+
+        await ctx.db.patch(artwork._id, {
+            instagramUrl: normalized,
+            ownerMutatedFields: [...new Set([...artwork.ownerMutatedFields, 'instagramUrl'])],
+            ownerRevision: artwork.ownerRevision + 1,
+            updatedAt: Date.now(),
+        });
+        await audit(ctx, actorId, 'artwork.instagram_share_token_repaired', 'artwork', String(artwork._id), {
+            legacyId: args.legacyId,
+        });
         return { changed: true };
     },
 });
