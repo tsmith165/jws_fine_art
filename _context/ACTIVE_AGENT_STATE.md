@@ -1,5 +1,23 @@
 # Active Agent State
 
+## July 23 Shipping Planning Label Icon
+
+- Moved the package icon from beside the `Compact` classification to the left
+  of the `Planning estimate` label.
+- Source commit `af7d551` is pushed to
+  `origin/feat/full-site-overhaul`.
+- Vercel deployment `dpl_28brebh5zCdTT2wQKQ2CxzKuh8yT` is ready and aliased
+  to `https://www.jwsfineart.com`. No Convex deployment was needed.
+- Production desktop (`1440 × 1000`) and mobile (`390 × 844`) QA confirmed one
+  icon in the planning label, no icon or reserved icon column beside `Compact`,
+  less than `0.01px` icon/text centerline difference, and zero horizontal
+  overflow.
+- Verification passed: Prettier, `git diff --check`, targeted lint, typecheck,
+  all 88 tests, webpack production build, Vercel Turbopack build, and live
+  visual QA.
+- Preview aliases: `shipping-planning-icon-production-desktop` and
+  `shipping-planning-icon-production-mobile`.
+
 ## July 23 Checkout Total Polish
 
 - Removed the visible break in the total separator by eliminating the checkout
