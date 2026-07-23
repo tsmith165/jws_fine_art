@@ -47,6 +47,7 @@ export function toLegacyArtwork(artwork: ConvexArtwork): PiecesWithImages {
         small_width: primary.smallWidth,
         small_height: primary.smallHeight,
         price: artwork.priceCents / 100,
+        released_at: artwork.releasedAt,
         sold: artwork.sold,
         available: artwork.available,
         description: artwork.description,

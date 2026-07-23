@@ -1,4 +1,4 @@
-export type ArtworkListingStatus = 'available' | 'private-collection' | 'not-for-sale';
+export type ArtworkListingStatus = 'available' | 'sold' | 'not-for-sale';
 
 type ArtworkAvailability = {
     available: boolean;
@@ -7,13 +7,13 @@ type ArtworkAvailability = {
 
 export function artworkListingStatus({ available, sold }: ArtworkAvailability): ArtworkListingStatus {
     if (available) return 'available';
-    if (sold) return 'private-collection';
+    if (sold) return 'sold';
     return 'not-for-sale';
 }
 
 export function artworkAvailabilityForStatus(status: ArtworkListingStatus): ArtworkAvailability {
     if (status === 'available') return { available: true, sold: false };
-    if (status === 'private-collection') return { available: false, sold: true };
+    if (status === 'sold') return { available: false, sold: true };
     return { available: false, sold: false };
 }
 

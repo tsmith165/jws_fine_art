@@ -17,6 +17,7 @@ function publicArtwork(artwork: Doc<'artworks'>, media: Doc<'artworkMedia'>[]) {
         legacyGalleryOrder: artwork.legacyGalleryOrder ?? -artwork.galleryOrder,
         legacyHomepagePriority: artwork.legacyHomepagePriority ?? -artwork.homepageOrder,
         priceCents: artwork.priceCents,
+        releasedAt: artwork.releasedAt ?? null,
         sold: artwork.sold,
         available: artwork.available,
         active: artwork.active,

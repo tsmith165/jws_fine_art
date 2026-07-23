@@ -24,12 +24,15 @@ import { validateOwnerArtwork, type OwnerArtworkField } from '@/lib/ownerArtwork
 import { reorderArtworkMedia } from '@/lib/ownerMediaOrdering';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 import { artworkAvailabilityForStatus, type ArtworkListingStatus } from '@shared/artworkListingState';
+import { releaseDateValue } from '@shared/artworkRelease';
+import { OwnerDatePicker } from './OwnerDatePicker';
 
 type EditorForm = {
     piece_id: string;
     piece_title: string;
     description: string;
     piece_type: string;
+    released_at: string;
     sold: boolean;
     price: string;
     instagram: string;
@@ -51,6 +54,7 @@ function initialForm(piece: PiecesWithImages): EditorForm {
         piece_title: piece.title,
         description: piece.description || '',
         piece_type: piece.piece_type || '',
+        released_at: releaseDateValue(piece.released_at),
         sold: Boolean(piece.sold),
         price: piece.price ? String(piece.price) : '',
         instagram: piece.instagram || '',
@@ -177,6 +181,14 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                 'Finished width and height are ready for the public listing.',
             actionLabel: 'Review dimensions',
             href: '#artwork-width',
+        },
+        {
+            key: 'release-date',
+            label: 'Release date',
+            ready: !fieldIssue('released_at'),
+            detail: fieldIssue('released_at')?.message ?? 'The public release date is ready for newest-first ordering.',
+            actionLabel: 'Review release date',
+            href: '#artwork-release-date',
         },
         {
             key: 'price-status',
@@ -484,48 +496,65 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                             />
                             <FieldFeedback field="piece_title" issue={fieldIssue('piece_title')} />
                         </label>
-                        <label className={fieldClass('piece_type')} data-owner-field="piece_type">
-                            <span className="owner-field-label">
-                                <span>Medium</span>
-                                <small className="is-publish">Publish required</small>
-                            </span>
-                            <select
-                                id="artwork-medium"
-                                value={form.piece_type}
-                                onChange={(event) => update('piece_type', event.target.value)}
-                                aria-invalid={fieldIssue('piece_type')?.tone === 'error'}
-                                aria-describedby={describedBy('piece_type')}
-                                required={listingStatus === 'available'}
-                            >
-                                <option value="">Choose a medium</option>
-                                {mediaOptions.map((medium) => (
-                                    <option key={medium}>{medium}</option>
-                                ))}
-                            </select>
-                            <FieldFeedback field="piece_type" issue={fieldIssue('piece_type')} />
-                        </label>
-                        <label className="owner-field is-complete" data-owner-field="public_status">
-                            <span className="owner-field-label">
-                                <span>Public status</span>
-                                <small className="is-required">Required</small>
-                            </span>
-                            <select
-                                id="artwork-public-status"
-                                value={listingStatus}
-                                onChange={(event) => updateListingStatus(event.target.value as ArtworkListingStatus)}
-                            >
-                                <option value="available">Available for purchase</option>
-                                <option value="private-collection">Private collection</option>
-                                <option value="not-for-sale">Not for sale</option>
-                            </select>
-                            <small className="owner-field-feedback is-info">
-                                {listingStatus === 'available'
-                                    ? 'Visible publicly and eligible for checkout.'
-                                    : listingStatus === 'private-collection'
-                                      ? 'Displayed as collected and unavailable for purchase.'
-                                      : 'Kept in the catalog without a purchase option.'}
-                            </small>
-                        </label>
+                        <div className="owner-form-row is-three is-wide">
+                            <label className={fieldClass('piece_type')} data-owner-field="piece_type">
+                                <span className="owner-field-label">
+                                    <span>Medium</span>
+                                    <small className="is-publish">Publish required</small>
+                                </span>
+                                <select
+                                    id="artwork-medium"
+                                    value={form.piece_type}
+                                    onChange={(event) => update('piece_type', event.target.value)}
+                                    aria-invalid={fieldIssue('piece_type')?.tone === 'error'}
+                                    aria-describedby={describedBy('piece_type')}
+                                    required={listingStatus === 'available'}
+                                >
+                                    <option value="">Choose a medium</option>
+                                    {mediaOptions.map((medium) => (
+                                        <option key={medium}>{medium}</option>
+                                    ))}
+                                </select>
+                                <FieldFeedback field="piece_type" issue={fieldIssue('piece_type')} />
+                            </label>
+                            <label className="owner-field is-complete" data-owner-field="public_status">
+                                <span className="owner-field-label">
+                                    <span>Public status</span>
+                                    <small className="is-required">Required</small>
+                                </span>
+                                <select
+                                    id="artwork-public-status"
+                                    value={listingStatus}
+                                    onChange={(event) => updateListingStatus(event.target.value as ArtworkListingStatus)}
+                                >
+                                    <option value="available">Available for purchase</option>
+                                    <option value="sold">Sold — manual or external sale</option>
+                                    <option value="not-for-sale">Not for sale</option>
+                                </select>
+                                <small className="owner-field-feedback is-info">
+                                    {listingStatus === 'available'
+                                        ? 'Visible publicly and eligible for checkout.'
+                                        : listingStatus === 'sold'
+                                          ? 'Marked sold without requiring a Stripe checkout.'
+                                          : 'Kept in the catalog without a purchase option.'}
+                                </small>
+                            </label>
+                            <div className={fieldClass('released_at')} data-owner-field="released_at">
+                                <span className="owner-field-label">
+                                    <span>Release date</span>
+                                    <small className="is-publish">Publish required</small>
+                                </span>
+                                <OwnerDatePicker
+                                    id="artwork-release-date"
+                                    value={form.released_at}
+                                    onChange={(value) => update('released_at', value)}
+                                    invalid={fieldIssue('released_at')?.tone === 'error'}
+                                    describedBy={describedBy('released_at')}
+                                    required={listingStatus === 'available'}
+                                />
+                                <FieldFeedback field="released_at" issue={fieldIssue('released_at')} />
+                            </div>
+                        </div>
                         <fieldset
                             className={`${fieldClass('categories')} is-wide owner-category-fieldset`}
                             data-owner-field="categories"

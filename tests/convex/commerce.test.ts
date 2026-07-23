@@ -643,6 +643,40 @@ describe('owner authorization', () => {
         expect(state.auditEvents[0]).toMatchObject({ action: 'artwork.categories_updated', actorId: 'owner-test' });
     });
 
+    it('lets the owner record an external sale and the original release date', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
+        const releasedAt = Date.UTC(2023, 8, 17, 12);
+
+        await owner.mutation(api.ownerMutations.updateArtwork, {
+            legacyId: 101,
+            title: 'Test Artwork',
+            description: null,
+            medium: 'Oil on panel',
+            theme: 'Coast',
+            instagramUrl: null,
+            ownerNotes: 'Sold directly from the studio.',
+            priceCents: 95000,
+            releasedAt,
+            sold: true,
+            available: false,
+            active: true,
+            framed: true,
+            widthInches: 16,
+            heightInches: 20,
+        });
+
+        const artwork = await t.run((ctx) =>
+            ctx.db
+                .query('artworks')
+                .withIndex('by_legacy_id', (q) => q.eq('legacyId', 101))
+                .unique(),
+        );
+        expect(artwork).toMatchObject({ sold: true, available: false, releasedAt });
+        expect(artwork?.ownerMutatedFields).toEqual(expect.arrayContaining(['sold', 'available', 'releasedAt']));
+    });
+
     it('audits artwork edits, ordering, archive, restore, and media operations', async () => {
         const t = createHarness();
         await seedArtwork(t, { legacyId: 101, galleryOrder: 1000, homepageOrder: 1000 });
@@ -658,6 +692,7 @@ describe('owner authorization', () => {
             instagramUrl: null,
             ownerNotes: 'Private note',
             priceCents: 120000,
+            releasedAt: Date.UTC(2024, 5, 1, 12),
             sold: false,
             available: true,
             active: true,
@@ -794,6 +829,7 @@ describe('owner authorization', () => {
             instagramUrl: null,
             ownerNotes: null,
             priceCents: 45000,
+            releasedAt: Date.UTC(2025, 2, 14, 12),
             sold: false,
             available: true,
             active: true,
@@ -821,7 +857,11 @@ describe('owner authorization', () => {
                 .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', 102))
                 .collect(),
         }));
-        expect(state.artwork).toMatchObject({ origin: 'owner', title: 'New Owner Work' });
+        expect(state.artwork).toMatchObject({
+            origin: 'owner',
+            title: 'New Owner Work',
+            releasedAt: Date.UTC(2025, 2, 14, 12),
+        });
         expect(state.media).toHaveLength(1);
         expect(state.media[0]).toMatchObject({ legacyTable: 'Owner', role: 'primary' });
     });

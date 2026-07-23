@@ -124,6 +124,7 @@ export default defineSchema({
         legacyGalleryOrder: v.optional(v.number()),
         legacyHomepagePriority: v.optional(v.number()),
         priceCents: v.number(),
+        releasedAt: v.optional(v.number()),
         sold: v.boolean(),
         available: v.boolean(),
         active: v.boolean(),

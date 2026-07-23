@@ -4,6 +4,7 @@ import { validateOwnerArtwork, type OwnerArtworkValidationInput } from '../../sr
 const completeArtwork: OwnerArtworkValidationInput = {
     piece_title: 'Morning Light',
     piece_type: 'Oil On Panel',
+    released_at: '2026-07-01',
     price: '495',
     real_width: '12',
     real_height: '9',
@@ -25,18 +26,20 @@ describe('validateOwnerArtwork', () => {
         const result = validateOwnerArtwork({
             ...completeArtwork,
             piece_type: '',
+            released_at: '',
             price: '',
             real_width: '',
             description: '',
         });
         expect(result.canSave).toBe(false);
-        expect(result.errors.map((issue) => issue.field)).toEqual(['piece_type', 'price', 'real_width', 'description']);
+        expect(result.errors.map((issue) => issue.field)).toEqual(['piece_type', 'released_at', 'price', 'real_width', 'description']);
     });
 
     it('allows an incomplete private record while marking publish requirements as warnings', () => {
         const result = validateOwnerArtwork({
             ...completeArtwork,
             piece_type: '',
+            released_at: '',
             price: '',
             real_width: '',
             real_height: '',
@@ -46,7 +49,14 @@ describe('validateOwnerArtwork', () => {
         });
         expect(result.canSave).toBe(true);
         expect(result.errors).toEqual([]);
-        expect(result.warnings.map((issue) => issue.field)).toEqual(['piece_type', 'price', 'real_width', 'real_height', 'description']);
+        expect(result.warnings.map((issue) => issue.field)).toEqual([
+            'piece_type',
+            'released_at',
+            'price',
+            'real_width',
+            'real_height',
+            'description',
+        ]);
     });
 
     it('rejects malformed optional URLs and invalid dimensions in every status', () => {
@@ -58,5 +68,13 @@ describe('validateOwnerArtwork', () => {
             sold: false,
         });
         expect(result.errors.map((issue) => issue.field)).toEqual(['real_height', 'instagram']);
+    });
+
+    it('rejects malformed and future release dates', () => {
+        const malformed = validateOwnerArtwork({ ...completeArtwork, released_at: 'July 1' });
+        expect(malformed.byField.get('released_at')?.message).toBe('Choose a valid release date.');
+
+        const future = validateOwnerArtwork({ ...completeArtwork, released_at: '2099-01-01' });
+        expect(future.byField.get('released_at')?.message).toBe('Release date cannot be in the future.');
     });
 });

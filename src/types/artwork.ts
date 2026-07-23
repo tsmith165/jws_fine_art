@@ -26,6 +26,7 @@ export interface Pieces {
     small_width: number | null;
     small_height: number | null;
     price: number;
+    released_at: number | null;
     sold: boolean | null;
     available: boolean | null;
     description: string | null;

@@ -4,7 +4,7 @@ import { artworkAvailabilityForStatus, artworkListingStatus, normalizeArtworkAva
 describe('artwork listing state', () => {
     it('maps each visible status to one unambiguous pair of flags', () => {
         expect(artworkAvailabilityForStatus('available')).toEqual({ available: true, sold: false });
-        expect(artworkAvailabilityForStatus('private-collection')).toEqual({ available: false, sold: true });
+        expect(artworkAvailabilityForStatus('sold')).toEqual({ available: false, sold: true });
         expect(artworkAvailabilityForStatus('not-for-sale')).toEqual({ available: false, sold: false });
     });
 

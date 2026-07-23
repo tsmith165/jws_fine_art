@@ -31,6 +31,7 @@
     "dependencies": {
         "@clerk/nextjs": "^6.39.5",
         "@clerk/themes": "^2.4.57",
+        "@radix-ui/react-popover": "^1.1.21",
         "@react-email/render": "^2.0.10",
         "@tailwindcss/typography": "^0.5.20",
         "@uploadthing/react": "^7.3.3",
@@ -44,6 +45,7 @@
         "posthog-js": "^1.176.0",
         "qrcode": "^1.5.4",
         "react": "19.2.7",
+        "react-day-picker": "^10.0.1",
         "react-dom": "19.2.7",
         "resend": "^6.17.1",
         "server-only": "^0.0.1",

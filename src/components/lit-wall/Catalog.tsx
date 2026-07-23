@@ -14,6 +14,7 @@ import {
     resolveArtworkCategory,
     type ArtworkCategoryId,
 } from '@shared/artworkCategories';
+import { compareArtworkReleasedNewest } from '@shared/artworkRelease';
 
 type Availability = 'available' | 'all' | 'sold';
 type Sort = 'newest' | 'price-asc' | 'price-desc' | 'title';
@@ -82,7 +83,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                 if (sort === 'price-asc') return a.price - b.price;
                 if (sort === 'price-desc') return b.price - a.price;
                 if (sort === 'title') return a.title.localeCompare(b.title);
-                return b.id - a.id;
+                return compareArtworkReleasedNewest(a, b);
             });
     }, [availability, category, framed, pieces, query, sort]);
     const counts = {

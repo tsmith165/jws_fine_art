@@ -1,11 +1,13 @@
 import { artworkListingStatus } from '../../shared/artworkListingState';
+import { isFutureReleaseDate, releaseDateTimestamp } from '../../shared/artworkRelease';
 
 export type OwnerArtworkField =
-    'piece_title' | 'piece_type' | 'price' | 'real_width' | 'real_height' | 'description' | 'categories' | 'instagram';
+    'piece_title' | 'piece_type' | 'released_at' | 'price' | 'real_width' | 'real_height' | 'description' | 'categories' | 'instagram';
 
 export type OwnerArtworkValidationInput = {
     piece_title: string;
     piece_type: string;
+    released_at: string;
     price: string;
     real_width: string;
     real_height: string;
@@ -52,6 +54,19 @@ export function validateOwnerArtwork(input: OwnerArtworkValidationInput) {
 
     if (!input.piece_type.trim()) {
         issues.push({ field: 'piece_type', tone: missingTone, message: publishMessage('Choose the artwork medium.') });
+    }
+
+    const releasedAt = releaseDateTimestamp(input.released_at);
+    if (!input.released_at.trim()) {
+        issues.push({
+            field: 'released_at',
+            tone: missingTone,
+            message: publishMessage('Choose when this artwork was first made available.'),
+        });
+    } else if (!releasedAt) {
+        issues.push({ field: 'released_at', tone: 'error', message: 'Choose a valid release date.' });
+    } else if (isFutureReleaseDate(releasedAt)) {
+        issues.push({ field: 'released_at', tone: 'error', message: 'Release date cannot be in the future.' });
     }
 
     const price = positiveNumber(input.price);

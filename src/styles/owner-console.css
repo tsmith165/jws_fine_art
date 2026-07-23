@@ -1145,8 +1145,269 @@
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
+.owner-form-row {
+    display: grid;
+    min-width: 0;
+    gap: 16px;
+}
+.owner-form-row.is-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.owner-form-row.is-three .owner-field > select {
+    height: 48px;
+}
 .owner-form-grid .is-wide {
     grid-column: 1 / -1;
+}
+.owner-date-picker-trigger {
+    display: grid;
+    width: 100%;
+    min-height: 48px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--owner-line);
+    border-radius: 0;
+    padding: 8px 12px;
+    background: var(--owner-bg);
+    color: var(--owner-ink);
+    cursor: pointer;
+    text-align: left;
+    transition:
+        border-color 140ms ease,
+        background-color 140ms ease,
+        box-shadow 140ms ease;
+}
+.owner-date-picker-trigger:hover {
+    border-color: color-mix(in srgb, var(--owner-green) 60%, var(--owner-line));
+}
+.owner-date-picker-trigger:focus-visible,
+.owner-date-picker-trigger[data-state='open'] {
+    border-color: var(--owner-green);
+    outline: 0;
+    box-shadow: 0 0 0 1px var(--owner-green);
+}
+.owner-date-picker-trigger > svg {
+    color: var(--owner-accent);
+}
+.owner-date-picker-trigger > span {
+    display: grid;
+    min-width: 0;
+    gap: 1px;
+    color: var(--owner-ink);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.3;
+    text-transform: none;
+}
+.owner-date-picker-trigger > span strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.owner-date-picker-trigger > span small {
+    overflow: hidden;
+    color: var(--owner-muted);
+    font-size: 8px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.owner-field.has-error .owner-date-picker-trigger {
+    border-color: #e49488;
+    background: color-mix(in srgb, #e49488 4%, var(--owner-bg));
+}
+.owner-field.has-warning .owner-date-picker-trigger {
+    border-color: color-mix(in srgb, var(--owner-accent) 72%, var(--owner-line));
+    background: color-mix(in srgb, var(--owner-accent) 4%, var(--owner-bg));
+}
+.owner-date-popover {
+    --owner-date-bg: #151a16;
+    --owner-date-raised: #1c231d;
+    --owner-date-line: #344036;
+    --owner-date-line-soft: rgba(160, 180, 166, 0.16);
+    --owner-date-ink: #f2eee5;
+    --owner-date-muted: #aab3aa;
+    --owner-date-accent: #c9a767;
+    --owner-date-green: #91b6a3;
+    z-index: 120;
+    width: 338px;
+    border: 1px solid var(--owner-date-line);
+    padding: 14px;
+    background: var(--owner-date-bg);
+    color: var(--owner-date-ink);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.48);
+    font-family: var(--font-lit-body), Arial, sans-serif;
+    transform-origin: var(--radix-popover-content-transform-origin);
+    animation: owner-date-popover-in 150ms ease-out;
+}
+.owner-date-popover > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: -2px -2px 10px;
+    padding: 3px 3px 12px;
+    border-bottom: 1px solid var(--owner-date-line-soft);
+}
+.owner-date-popover > header > div {
+    display: grid;
+    gap: 2px;
+}
+.owner-date-popover > header span {
+    color: var(--owner-date-accent);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.owner-date-popover > header strong {
+    font-family: var(--font-lit-display), Georgia, serif;
+    font-size: 18px;
+    font-weight: 400;
+}
+.owner-date-popover > header button,
+.owner-date-popover > footer button {
+    display: inline-flex;
+    min-width: 36px;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--owner-date-line);
+    border-radius: 0;
+    background: transparent;
+    color: var(--owner-date-muted);
+    cursor: pointer;
+    font: inherit;
+}
+.owner-date-popover > header button:hover,
+.owner-date-popover > footer button:hover:not(:disabled) {
+    border-color: var(--owner-date-green);
+    background: var(--owner-date-raised);
+    color: var(--owner-date-ink);
+}
+.owner-date-popover > header button:focus-visible,
+.owner-date-popover > footer button:focus-visible,
+.owner-date-popover .rdp-root :focus-visible {
+    outline: 2px solid var(--owner-date-green);
+    outline-offset: 2px;
+}
+.owner-date-popover .rdp-root {
+    --rdp-accent-color: var(--owner-date-accent);
+    --rdp-accent-background-color: rgba(201, 167, 103, 0.16);
+    --rdp-day-height: 40px;
+    --rdp-day-width: 40px;
+    --rdp-day_button-height: 36px;
+    --rdp-day_button-width: 36px;
+    --rdp-day_button-border-radius: 0;
+    --rdp-nav_button-height: 36px;
+    --rdp-nav_button-width: 36px;
+    --rdp-nav-height: 42px;
+    --rdp-selected-border: 1px solid var(--owner-date-accent);
+    width: fit-content;
+    margin: 0 auto;
+    color: var(--owner-date-ink);
+    font-size: 11px;
+}
+.owner-date-popover .rdp-month_caption {
+    align-items: center;
+    font-size: 11px;
+}
+.owner-date-popover .rdp-dropdowns {
+    gap: 6px;
+}
+.owner-date-popover .rdp-dropdown_root {
+    min-height: 32px;
+    border: 1px solid var(--owner-date-line);
+    padding: 0 8px;
+    background: var(--owner-date-raised);
+    color: var(--owner-date-ink);
+    font-weight: 700;
+}
+.owner-date-popover .rdp-dropdown_root:hover {
+    border-color: var(--owner-date-green);
+}
+.owner-date-popover .rdp-caption_label {
+    gap: 4px;
+    border: 0;
+    padding: 0;
+}
+.owner-date-popover .rdp-button_previous,
+.owner-date-popover .rdp-button_next {
+    border: 1px solid var(--owner-date-line);
+    color: var(--owner-date-muted);
+}
+.owner-date-popover .rdp-button_previous:hover,
+.owner-date-popover .rdp-button_next:hover {
+    border-color: var(--owner-date-green);
+    background: var(--owner-date-raised);
+}
+.owner-date-popover .rdp-chevron {
+    fill: currentColor;
+}
+.owner-date-popover .rdp-weekday {
+    color: var(--owner-date-muted);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.owner-date-popover .rdp-day_button {
+    border: 1px solid transparent;
+    color: var(--owner-date-ink);
+    font-size: 10px;
+}
+.owner-date-popover .rdp-day_button:hover:not(:disabled) {
+    border-color: var(--owner-date-green);
+    background: var(--owner-date-raised);
+}
+.owner-date-popover .rdp-today:not(.rdp-selected) .rdp-day_button {
+    border-color: var(--owner-date-green);
+    color: var(--owner-date-green);
+}
+.owner-date-popover .rdp-selected .rdp-day_button {
+    border-color: var(--owner-date-accent);
+    background: var(--owner-date-accent);
+    color: #17140f;
+    font-weight: 800;
+}
+.owner-date-popover .rdp-outside {
+    opacity: 0.32;
+}
+.owner-date-popover .rdp-disabled {
+    opacity: 0.22;
+}
+.owner-date-popover > footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--owner-date-line-soft);
+}
+.owner-date-popover > footer button {
+    min-height: 34px;
+    padding: 7px 11px;
+    font-size: 9px;
+    font-weight: 800;
+}
+.owner-date-popover > footer button:last-child {
+    border-color: var(--owner-date-accent);
+    color: var(--owner-date-accent);
+}
+.owner-date-popover > footer button:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+.owner-date-popover-arrow {
+    fill: var(--owner-date-line);
+}
+@keyframes owner-date-popover-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.985);
+    }
 }
 .owner-category-fieldset {
     display: grid;
@@ -2918,6 +3179,9 @@
     }
     .owner-form-grid .is-wide {
         grid-column: auto;
+    }
+    .owner-form-row.is-three {
+        grid-template-columns: 1fr;
     }
     .owner-tool-form {
         grid-template-columns: 1fr;

@@ -10,6 +10,7 @@ import { validateUploadedImageReference } from '@/lib/uploadedImageReference';
 import type { ArtworkCategoryId } from '@shared/artworkCategories';
 import { normalizeArtworkCategories } from '@shared/artworkCategories';
 import { normalizeArtworkAvailability } from '@shared/artworkListingState';
+import { releaseDateTimestamp } from '@shared/artworkRelease';
 
 function revalidateArtworkSurfaces(id?: number) {
     revalidatePath('/');
@@ -30,6 +31,7 @@ interface SubmitFormData {
     piece_title: string;
     description: string;
     piece_type: string;
+    released_at: string;
     sold: boolean;
     price: string;
     instagram: string;
@@ -81,6 +83,7 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
             instagramUrl: nullableText(data.instagram),
             ownerNotes: nullableText(data.comments),
             priceCents: Math.max(0, Math.round(Number(data.price || 0) * 100)),
+            releasedAt: releaseDateTimestamp(data.released_at),
             sold: listing.sold,
             available: listing.available,
             active: artwork.active,
@@ -244,6 +247,7 @@ export async function handleTitleUpdate(formData: FormData): Promise<{ success: 
             instagramUrl: artwork.instagramUrl,
             ownerNotes: artwork.ownerNotes,
             priceCents: artwork.priceCents,
+            releasedAt: artwork.releasedAt,
             sold: artwork.sold,
             available: artwork.available,
             active: artwork.active,
@@ -294,6 +298,7 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
             instagramUrl: null,
             ownerNotes: null,
             priceCents: 0,
+            releasedAt: null,
             sold: false,
             available: false,
             active: true,

@@ -8,6 +8,7 @@ import { HeroCarousel } from '@/components/lit-wall/HeroCarousel';
 import { SectionHeading } from '@/components/lit-wall/SectionHeading';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readHomepageArtworks, readPublicArtworks } from '@/data/artworkReads';
+import { compareArtworkReleasedNewest } from '@shared/artworkRelease';
 
 export const metadata: Metadata = {
     title: 'Original paintings by Jill Weeks Smith',
@@ -18,7 +19,10 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
     const [heroPieces, allPieces] = await Promise.all([readHomepageArtworks(), readPublicArtworks()]);
-    const available = allPieces.filter((piece) => piece.available && !piece.sold).slice(0, 6);
+    const available = allPieces
+        .filter((piece) => piece.available && !piece.sold)
+        .sort(compareArtworkReleasedNewest)
+        .slice(0, 6);
 
     return (
         <SiteShell newsletter>

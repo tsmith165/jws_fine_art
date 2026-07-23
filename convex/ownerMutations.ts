@@ -58,6 +58,7 @@ const artworkFields = {
     instagramUrl: nullableString,
     ownerNotes: nullableString,
     priceCents: v.number(),
+    releasedAt: nullableNumber,
     sold: v.boolean(),
     available: v.boolean(),
     active: v.boolean(),
@@ -71,9 +72,10 @@ export const updateArtwork = mutation({
     handler: async (ctx, args) => {
         const actorId = await owner(ctx);
         const artwork = await artworkByLegacyId(ctx, args.legacyId);
-        const { legacyId: _legacyId, categories, sold, available, ...remainingFields } = args;
+        const { legacyId: _legacyId, categories, releasedAt, sold, available, ...remainingFields } = args;
         const fields = {
             ...remainingFields,
+            releasedAt: releasedAt ?? undefined,
             ...normalizeArtworkAvailability({ sold, available }),
             ...(categories ? { categories } : {}),
         };
@@ -139,9 +141,10 @@ export const createArtwork = mutation({
         const legacyId = Math.max(0, ...artworks.map((item) => item.legacyId)) + 1;
         const galleryOrder = Math.max(0, ...artworks.map((item) => item.galleryOrder)) + 1000;
         const homepageOrder = Math.max(0, ...artworks.map((item) => item.homepageOrder)) + 1000;
-        const { primaryImage, categories, sold, available, ...remainingFields } = args;
+        const { primaryImage, categories, releasedAt, sold, available, ...remainingFields } = args;
         const fields = {
             ...remainingFields,
+            releasedAt: releasedAt ?? undefined,
             ...normalizeArtworkAvailability({ sold, available }),
             categories: categories ?? deriveArtworkCategories({ theme: remainingFields.theme, medium: remainingFields.medium }),
         };
@@ -157,7 +160,9 @@ export const createArtwork = mutation({
             legacyHomepagePriority: -homepageOrder,
             galleryOrder,
             homepageOrder,
-            ownerMutatedFields: Object.keys(fields),
+            ownerMutatedFields: Object.entries(fields)
+                .filter(([, value]) => value !== undefined)
+                .map(([field]) => field),
             ownerRevision: 1,
             importedAt: now,
             updatedAt: now,
