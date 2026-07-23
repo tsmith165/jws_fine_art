@@ -1559,44 +1559,14 @@
 .lw-commission-hero img {
     object-fit: cover;
 }
-.lw-commission-types > header,
 .lw-commission-process > header {
     max-width: 900px;
     margin-bottom: 48px;
 }
-.lw-commission-types > header {
-    max-width: 960px;
-}
-.lw-commission-types h2,
 .lw-commission-process h2,
 .lw-commission-notes h2 {
     font-size: clamp(48px, 6vw, 88px);
     line-height: 1.08;
-}
-.lw-commission-types h2 {
-    max-width: 900px;
-    font-size: clamp(40px, 4.2vw, 68px);
-    line-height: 1.1;
-    text-wrap: balance;
-}
-.lw-commission-types > div {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-.lw-commission-types article img {
-    width: 100%;
-    height: 360px;
-    object-fit: contain;
-    background: var(--lw-paper);
-}
-.lw-commission-types h3 {
-    margin-top: 20px;
-    font-size: 25px;
-}
-.lw-commission-types p {
-    margin-top: 10px;
-    color: var(--lw-muted);
 }
 .lw-commission-process ol {
     display: grid;
@@ -3098,9 +3068,6 @@
         order: -1;
         min-height: 55dvh;
     }
-    .lw-commission-types > div {
-        grid-template-columns: 1fr 1fr;
-    }
     .lw-commission-notes {
         grid-template-columns: 1fr;
     }
@@ -3330,7 +3297,6 @@
         font-size: 19px;
     }
     .lw-timeline ol,
-    .lw-commission-types > div,
     .lw-commission-process ol {
         grid-template-columns: 1fr;
     }
@@ -3389,9 +3355,6 @@
     }
     .lw-commission-hero h1 {
         font-size: clamp(42px, 12vw, 48px);
-    }
-    .lw-commission-types article img {
-        height: 300px;
     }
     .lw-commission-process li {
         padding: 28px 20px;

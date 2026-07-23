@@ -7,14 +7,13 @@ import { readPublicArtworks } from '@/data/artworkReads';
 
 export const metadata: Metadata = {
     title: 'Commissions',
-    description: 'Commission an original house, pet, or meaningful-place painting by Jill Weeks Smith.',
+    description: 'Commission an original meaningful-place painting by Jill Weeks Smith.',
     alternates: { canonical: '/commissions' },
 };
 
 export default async function CommissionsPage() {
     const pieces = await readPublicArtworks();
     const hero = pieces.find((piece) => /house|home|building/i.test(`${piece.theme} ${piece.title}`)) || pieces[0];
-    const examples = pieces.filter((piece) => piece.id !== hero?.id).slice(0, 3);
     return (
         <SiteShell newsletter>
             <section className="lw-commission-hero">
@@ -31,29 +30,6 @@ export default async function CommissionsPage() {
                         <Image src={hero.image_path} alt={hero.title} fill sizes="(max-width: 760px) 100vw, 55vw" priority quality={90} />
                     </div>
                 )}
-            </section>
-            <section className="lw-commission-types lw-band lw-band-raised">
-                <header>
-                    <span className="lw-eyebrow">What Jill paints</span>
-                    <h2>Personal work, grounded in a real story.</h2>
-                </header>
-                <div>
-                    {['Homes and meaningful places', 'Pets and companions', 'Landscapes from your photographs'].map((title, index) => (
-                        <article key={title}>
-                            {examples[index] && (
-                                <Image
-                                    src={examples[index].image_path}
-                                    alt=""
-                                    width={examples[index].width || 1}
-                                    height={examples[index].height || 1}
-                                    sizes="(max-width: 760px) 92vw, 31vw"
-                                />
-                            )}
-                            <h3>{title}</h3>
-                            <p>A collaborative painting built from the references and details that matter to you.</p>
-                        </article>
-                    ))}
-                </div>
             </section>
             <section className="lw-commission-process lw-band">
                 <header>

@@ -11,12 +11,12 @@ export default async function OwnerCategoriesPage() {
     );
 
     return (
-        <OwnerShell active="/admin/categories" title="Quick categorize">
+        <OwnerShell active="/admin/categories" title="Needs attention">
             <section className="owner-content owner-categorizer-content">
                 <OwnerHeading
-                    eyebrow="Catalog workflow"
-                    title="Quick categorize"
-                    description="Review each artwork at full size and keep the collection taxonomy consistent."
+                    eyebrow="Catalog health"
+                    title="Needs attention"
+                    description="Repair weak image sources, missing listing details, and uncategorized artwork from one focused queue."
                 />
                 <OwnerQuickCategorizer initialArtworks={artworks} />
             </section>

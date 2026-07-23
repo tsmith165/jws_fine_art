@@ -31,12 +31,14 @@ export function ProgressiveArtworkImage({
     onReady,
 }: ProgressiveArtworkImageProps) {
     const [loaded, setLoaded] = useState(false);
+    const [useDirectSource, setUseDirectSource] = useState(false);
     const settled = useRef(false);
     const showPlaceholder = Boolean(placeholderSrc && placeholderSrc !== src);
 
     useEffect(() => {
         settled.current = false;
         setLoaded(false);
+        setUseDirectSource(false);
     }, [src]);
 
     const finish = () => {
@@ -48,12 +50,18 @@ export function ProgressiveArtworkImage({
 
     const fail = () => {
         if (settled.current) return;
+
+        if (!useDirectSource) {
+            setUseDirectSource(true);
+            return;
+        }
+
         settled.current = true;
         onReady?.();
     };
 
     return (
-        <span className={`lw-progressive-image${loaded ? ' is-loaded' : ''}`}>
+        <span className={['lw-progressive-image', loaded ? 'is-loaded' : ''].filter(Boolean).join(' ')}>
             {showPlaceholder ? (
                 <Image
                     className="lw-progressive-image-placeholder"
@@ -68,12 +76,14 @@ export function ProgressiveArtworkImage({
                 />
             ) : null}
             <Image
+                key={useDirectSource ? `${src}:direct` : `${src}:optimized`}
                 className="lw-progressive-image-main"
                 src={src}
                 alt={alt}
                 fill
                 sizes={sizes}
                 quality={quality}
+                unoptimized={useDirectSource}
                 priority={priority}
                 fetchPriority={fetchPriority}
                 onLoad={(event) => {

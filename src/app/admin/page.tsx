@@ -3,8 +3,11 @@ import Link from 'next/link';
 import { OwnerArtworkThumbnail } from '@/components/owner/OwnerArtworkThumbnail';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
 import { OwnerPostHogSummary } from '@/components/owner/OwnerPostHogSummary';
+import { readOwnerArtworksWithMedia } from '@/data/ownerReads';
 import { readPostHogAnalytics } from '@/data/posthogAnalytics';
 import { readOwnerDashboard } from '@/data/ownerWorkspaceReads';
+import { ownerArtworkAttention } from '@/lib/ownerArtworkAttention';
+import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +26,15 @@ function fulfillmentLabel(value: string) {
 }
 
 export default async function OwnerDashboardPage() {
-    const [dashboard, posthog] = await Promise.all([readOwnerDashboard(), readPostHogAnalytics()]);
-    const attention =
-        Number(dashboard.ordersToFulfill > 0) + Number(dashboard.artwork.needsDetails > 0) + Number(dashboard.newInquiries > 0);
+    const [dashboard, posthog, ownerArtworks] = await Promise.all([
+        readOwnerDashboard(),
+        readPostHogAnalytics(),
+        readOwnerArtworksWithMedia(),
+    ]);
+    const catalogAttentionCount = filterCategorizerArtworks(ownerArtworks).filter(
+        (artwork) => ownerArtworkAttention(artwork).length > 0,
+    ).length;
+    const attention = Number(dashboard.ordersToFulfill > 0) + Number(catalogAttentionCount > 0) + Number(dashboard.newInquiries > 0);
     return (
         <OwnerShell active="/admin" title="Today">
             <section className="owner-content">
@@ -59,13 +68,13 @@ export default async function OwnerDashboardPage() {
                             <FileWarning size={17} /> Publishing
                         </span>
                         <h2>
-                            {dashboard.artwork.needsDetails
-                                ? `${dashboard.artwork.needsDetails} ${dashboard.artwork.needsDetails === 1 ? 'piece needs' : 'pieces need'} details`
+                            {catalogAttentionCount
+                                ? `${catalogAttentionCount} ${catalogAttentionCount === 1 ? 'piece needs' : 'pieces need'} attention`
                                 : 'Catalog is complete'}
                         </h2>
-                        <p>Missing dimensions, medium, or price can keep a piece from being ready to publish.</p>
-                        <Link href="/admin/artwork?filter=needs-details">
-                            Review artwork <ArrowRight size={14} />
+                        <p>Review image quality, missing listing details, and collection categories in one queue.</p>
+                        <Link href="/admin/categories">
+                            Open needs attention <ArrowRight size={14} />
                         </Link>
                     </article>
                     <article className="owner-card">

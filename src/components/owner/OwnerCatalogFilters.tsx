@@ -63,9 +63,11 @@ export function OwnerCatalogFilters({ initialQuery, initialFilter }: { initialQu
                     <option value="needs-details">Needs details</option>
                     <option value="archive">Archive</option>
                 </select>
-                <span className="owner-filter-state" aria-live="polite">
-                    {isPending ? 'Updating...' : 'Updates automatically'}
-                </span>
+                {isPending ? (
+                    <span className="owner-filter-state" aria-live="polite">
+                        Updating…
+                    </span>
+                ) : null}
             </div>
         </div>
     );

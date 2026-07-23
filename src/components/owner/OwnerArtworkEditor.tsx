@@ -90,7 +90,17 @@ function FieldFeedback({
     );
 }
 
-export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: PiecesWithImages; previousId: number; nextId: number }) {
+export function OwnerArtworkEditor({
+    piece,
+    previousId,
+    nextId,
+    initialMediaOpen = false,
+}: {
+    piece: PiecesWithImages;
+    previousId: number;
+    nextId: number;
+    initialMediaOpen?: boolean;
+}) {
     const [form, setForm] = useState(() => initialForm(piece));
     const [savedForm, setSavedForm] = useState(() => initialForm(piece));
     const [selectedImage, setSelectedImage] = useState(piece.image_path);
@@ -101,7 +111,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
     const [draggedMediaId, setDraggedMediaId] = useState<string | null>(null);
     const [dragOverMediaId, setDragOverMediaId] = useState<string | null>(null);
     const [mediaMessage, setMediaMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
-    const [mediaOpen, setMediaOpen] = useState(false);
+    const [mediaOpen, setMediaOpen] = useState(initialMediaOpen);
     const [saving, setSaving] = useState(false);
     const [attemptedSave, setAttemptedSave] = useState(false);
     const [message, setMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);

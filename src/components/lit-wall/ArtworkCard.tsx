@@ -2,6 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import type { PiecesWithImages } from '@/types/artwork';
 import { artworkHref, artworkStatus, dimensions, imageSource, money } from '@/lib/artwork';
+import { CATALOG_ARTWORK_IMAGE_POLICY } from '@/lib/imageLoading';
 import { ProgressiveArtworkImage } from './ProgressiveArtworkImage';
 
 export function ArtworkCard({ piece, priority = false }: { piece: PiecesWithImages; priority?: boolean }) {
@@ -13,8 +14,8 @@ export function ArtworkCard({ piece, priority = false }: { piece: PiecesWithImag
                     src={imageSource(piece)}
                     placeholderSrc={piece.small_image_path}
                     alt={piece.title}
-                    sizes="(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 31vw"
-                    quality={92}
+                    sizes={CATALOG_ARTWORK_IMAGE_POLICY.sizes}
+                    quality={CATALOG_ARTWORK_IMAGE_POLICY.quality}
                     priority={priority}
                 />
                 <span className="lw-art-card-open">

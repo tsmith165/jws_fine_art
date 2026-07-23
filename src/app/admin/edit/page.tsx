@@ -7,10 +7,11 @@ import { readOwnerArtworksWithMedia } from '@/data/ownerReads';
 export const metadata: Metadata = { title: 'Artwork editor · JWS Fine Art' };
 export const dynamic = 'force-dynamic';
 
-export default async function OwnerArtworkEditorPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
+export default async function OwnerArtworkEditorPage({ searchParams }: { searchParams: Promise<{ id?: string; media?: string }> }) {
     const artworks = (await readOwnerArtworksWithMedia()).sort((a, b) => a.o_id - b.o_id || a.id - b.id);
     if (!artworks.length) redirect('/admin/edit/new');
-    const requested = Number((await searchParams).id);
+    const requestedParams = await searchParams;
+    const requested = Number(requestedParams.id);
     const index = Math.max(
         0,
         artworks.findIndex((artwork) => artwork.id === requested),
@@ -21,7 +22,13 @@ export default async function OwnerArtworkEditorPage({ searchParams }: { searchP
     const nextId = artworks[(index + 1) % artworks.length].id;
     return (
         <OwnerShell active="/admin/artwork" title="Artwork editor">
-            <OwnerArtworkEditor piece={piece} previousId={previousId} nextId={nextId} />
+            <OwnerArtworkEditor
+                key={`${piece.id}:${requestedParams.media === '1' ? 'media' : 'editor'}`}
+                piece={piece}
+                previousId={previousId}
+                nextId={nextId}
+                initialMediaOpen={requestedParams.media === '1'}
+            />
         </OwnerShell>
     );
 }

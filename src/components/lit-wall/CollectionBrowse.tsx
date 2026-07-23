@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { deriveArtworkCategories, type ArtworkCategoryId } from '@shared/artworkCategories';
 import type { PiecesWithImages } from '@/types/artwork';
+import { CATALOG_ARTWORK_IMAGE_POLICY } from '@/lib/imageLoading';
 import { SectionHeading } from './SectionHeading';
 import { ProgressiveArtworkImage } from './ProgressiveArtworkImage';
 
@@ -67,8 +68,8 @@ export function CollectionBrowse({ pieces }: { pieces: PiecesWithImages[] }) {
                             src={piece.image_path}
                             placeholderSrc={piece.small_image_path}
                             alt=""
-                            sizes="(max-width: 760px) 92vw, 31vw"
-                            quality={90}
+                            sizes={CATALOG_ARTWORK_IMAGE_POLICY.sizes}
+                            quality={CATALOG_ARTWORK_IMAGE_POLICY.quality}
                         />
                         <span className="lw-collection-card-label">
                             {label} <ArrowRight size={17} />

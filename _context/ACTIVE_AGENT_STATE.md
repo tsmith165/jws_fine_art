@@ -1,5 +1,37 @@
 # Active Agent State
 
+## July 23 Catalog Artwork Image Fidelity
+
+- Objective: remove soft/grainy public catalog artwork renditions while keeping
+  progressive loading and bounded image transfer sizes; fold the existing
+  Categorize surface into a catalog-wide Needs Attention workflow; remove the
+  declined commission-types section.
+- Live production comparison on `Morning Burn Off` found the catalog requested
+  `w=1920` while the matching detail page requested `w=3840` at DPR 2. All
+  requests completed, so the active cause is delivery policy rather than a
+  stuck placeholder.
+- Implemented: shared catalog policy at quality 95 with a bounded 840 px
+  desktop slot; original-source retry after Next optimizer failure; project
+  image-fidelity rules in `AGENTS.md` and `CLAUDE.md`.
+- `/admin/categories` is now Needs Attention with queues for image quality,
+  listing details, uncategorized pieces, all issues, and all artwork. Image
+  repairs deep-link to the existing editor media modal; metadata repairs link
+  to the matching field; categories remain editable in place.
+- The commission section titled `Personal work, grounded in a real story.` and
+  its unused CSS are removed.
+- `Break of Dawn` has a 1024 × 768 original and is the only audited visible
+  piece that remains source-resolution limited.
+- Local public QA: `/work` serves `w=1080&q=95` at DPR 1 desktop and
+  `w=640&q=95` mobile, with final opacity 1, placeholder opacity 0, and zero
+  overflow. Homepage collection cards use the same policy. `/commissions`
+  contains only hero, process, and notes sections at mobile width.
+- Automated status: lint, typecheck, and all 102 tests pass. Webpack production
+  build is pending after the final workflow changes.
+- Local admin visual QA is auth-blocked at `/not-authorized`; verify the
+  authenticated Needs Attention desktop/mobile experience after Vercel deploy.
+- Next action: production build, commit/push, Vercel deployment, authenticated
+  production visual QA, and artifact validation.
+
 ## July 23 Shipping Planning Label Icon
 
 - Moved the package icon from beside the `Compact` classification to the left

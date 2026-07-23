@@ -1,5 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { adjacentImageIndexes } from '../../src/lib/imageLoading';
+import {
+    adjacentImageIndexes,
+    artworkSourceQuality,
+    CATALOG_ARTWORK_IMAGE_POLICY,
+    PUBLIC_ARTWORK_SOURCE_MINIMUM,
+} from '../../src/lib/imageLoading';
+
+describe('CATALOG_ARTWORK_IMAGE_POLICY', () => {
+    it('keeps public artwork cards on the high-fidelity delivery profile', () => {
+        expect(CATALOG_ARTWORK_IMAGE_POLICY.quality).toBeGreaterThanOrEqual(95);
+        expect(CATALOG_ARTWORK_IMAGE_POLICY.sizes).toContain('(max-width: 700px) 100vw');
+        expect(CATALOG_ARTWORK_IMAGE_POLICY.sizes).toContain('840px');
+    });
+});
+
+describe('artworkSourceQuality', () => {
+    it('requires both artwork source edges to meet the public target', () => {
+        expect(artworkSourceQuality(1920, 1430).ready).toBe(true);
+        expect(artworkSourceQuality(1024, 768).ready).toBe(false);
+        expect(artworkSourceQuality(0, 0).ready).toBe(false);
+        expect(PUBLIC_ARTWORK_SOURCE_MINIMUM).toEqual({ longEdge: 1200, shortEdge: 900 });
+    });
+});
 
 describe('adjacentImageIndexes', () => {
     it('returns no work for a single image', () => {
