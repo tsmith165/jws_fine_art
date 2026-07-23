@@ -1,5 +1,33 @@
 # Active Agent State
 
+## July 23 Checkout Shipping Refinement
+
+- Aligned the real checkout shipping card with the finalized `/shipping`
+  calculator: four stable cost-factor rows, whitespace instead of internal
+  separator rules, clear active/inactive factors, and a reserved international
+  duties note.
+- Destination changes now show a 450 ms Recalculating state, keep the prior
+  amount visible, disable the Stripe continuation action, and replace its label
+  with Updating delivery total until the trusted estimate is ready.
+- Source commit `d3962e2` is pushed to
+  `origin/feat/full-site-overhaul`.
+- Vercel deployment `dpl_2vtiD4cqRsajmMX13QXnet4aWTg7` is ready and aliased
+  to `https://www.jwsfineart.com`. No Convex deployment was needed.
+- Production desktop QA on artwork `#103`: shipping card stayed exactly
+  `397.796875px` before, during, and after switching to international;
+  payment was disabled during recalculation; four factor rows had `14px` gaps,
+  no row borders, and zero horizontal overflow.
+- Production mobile QA at `390 × 844`: card height changed by less than one
+  pixel (`415.3984375px` to `416.0859375px`), with four borderless factor rows,
+  `14px` gaps, and zero horizontal overflow.
+- Verification passed: Prettier, `git diff --check`, lint, typecheck, all 88
+  tests, webpack production build, Vercel Turbopack production build, and live
+  desktop/mobile visual QA.
+- Production console errors: none. The known Clerk development-key warning
+  remains.
+- Preview aliases: `checkout-shipping-refined-production-desktop` and
+  `checkout-shipping-refined-production-mobile`.
+
 ## July 23 Shipping Calculator Spacing Follow-up
 
 - Reduced the calculator form’s real row spacing to 24px and disabled Grid’s
