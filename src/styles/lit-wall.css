@@ -2183,7 +2183,7 @@
     transition: opacity 0.18s ease;
 }
 .lw-shipping-explanation {
-    min-height: 66px;
+    min-height: 90px;
     margin-top: 10px !important;
     color: var(--lw-muted);
     font-size: 13px;
