@@ -234,7 +234,7 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                 <strong>{money(current_piece.price)}</strong>
                 <span>Insured packing & shipping</span>
                 <strong>{shipping.checkoutChargeCents === null ? 'Quoted separately' : money(shippingDollars)}</strong>
-                <b>Total due on Stripe</b>
+                <b>Total due</b>
                 <b>{canCheckout ? money(total) : money(current_piece.price)}</b>
             </div>
 
@@ -249,7 +249,8 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                               : `Continue to secure payment · ${money(total)}`}
                     </button>
                     <p className="lw-secure-note">
-                        <LockKeyhole size={14} /> You will review this total before paying on Stripe. Card details never touch this site.
+                        <LockKeyhole size={14} /> Checkout is secured with our payment partner Stripe. Card details are never touched on
+                        this site.
                     </p>
                 </>
             ) : (
