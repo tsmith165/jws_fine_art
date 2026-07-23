@@ -2257,6 +2257,7 @@
 .owner-media-library-grid article {
     display: grid;
     min-width: 0;
+    overflow: hidden;
     gap: 6px;
     border: 1px solid var(--owner-line);
     padding: 7px;
@@ -2266,11 +2267,13 @@
     display: grid;
     height: 112px;
     place-items: center;
+    overflow: hidden;
     background: #090c0a;
 }
 .owner-media-library-grid img {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100%;
     object-fit: contain;
 }
 .owner-media-library-grid article > span {
