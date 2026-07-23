@@ -2083,7 +2083,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     border-left: 1px solid var(--lw-line);
     padding: clamp(28px, 5vw, 60px);
     background: var(--lw-raised);
@@ -2148,7 +2148,7 @@
     grid-template-columns: 34px minmax(0, 1fr);
     gap: 14px;
     align-items: start;
-    margin-top: 34px;
+    margin-top: 24px;
     transition:
         opacity 0.18s ease,
         transform 0.18s ease;
@@ -2178,7 +2178,7 @@
 }
 .lw-shipping-basis {
     min-height: 16px;
-    margin-top: 22px !important;
+    margin-top: 16px !important;
     color: var(--lw-ink) !important;
     font-size: 11px;
     font-weight: 800;
@@ -2187,8 +2187,8 @@
     transition: opacity 0.18s ease;
 }
 .lw-shipping-explanation {
-    min-height: 90px;
-    margin-top: 10px !important;
+    min-height: 66px;
+    margin-top: 8px !important;
     color: var(--lw-muted);
     font-size: 13px;
     line-height: 1.7;
@@ -2196,9 +2196,8 @@
 }
 .lw-shipping-breakdown {
     display: grid;
-    min-height: 276px;
     align-content: start;
-    margin: 26px 0 0;
+    margin: 18px 0 0;
     border-top: 1px solid var(--lw-line);
     transition: opacity 0.18s ease;
 }
@@ -2208,7 +2207,7 @@
     gap: 20px;
     align-items: start;
     border-bottom: 1px solid var(--lw-line);
-    padding: 14px 0;
+    padding: 11px 0;
 }
 .lw-shipping-breakdown dt {
     display: grid;
@@ -2241,17 +2240,17 @@
     font-weight: 500;
 }
 .lw-shipping-disclaimer {
-    margin-top: 22px !important;
+    margin-top: 16px !important;
     color: var(--lw-muted);
     font-size: 10px;
     line-height: 1.6;
 }
 .lw-shipping-checkout-contribution {
     display: grid;
-    min-height: 118px;
+    min-height: 100px;
     gap: 5px;
     align-content: center;
-    margin-top: 24px;
+    margin-top: 18px;
     border: 1px solid var(--lw-line);
     padding: 17px 18px;
     background: color-mix(in srgb, var(--lw-brass) 7%, var(--lw-paper));
@@ -3299,6 +3298,23 @@
     }
     .lw-shipping-result-summary {
         margin-top: 28px;
+    }
+    .lw-shipping-explanation {
+        min-height: 90px;
+    }
+    .lw-shipping-breakdown {
+        min-height: 276px;
+        margin-top: 26px;
+    }
+    .lw-shipping-breakdown > div {
+        padding: 14px 0;
+    }
+    .lw-shipping-checkout-contribution {
+        min-height: 118px;
+        margin-top: 24px;
+    }
+    .lw-shipping-disclaimer {
+        margin-top: 22px !important;
     }
     .lw-shipping-principles article {
         min-height: 210px;
