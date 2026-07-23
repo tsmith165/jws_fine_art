@@ -1,5 +1,55 @@
 # Active Agent State
 
+## July 23 Checkout Shipping And Artwork Form Release
+
+- Objective: integrate calculated shipping into Stripe checkout, eliminate
+  shipping-calculator layout movement, and make the owner Artwork Facts form
+  production-grade.
+- Workspace: `/Users/tsmith/dev/_codex/jws-fine-art`
+- Branch: `feat/full-site-overhaul`
+- Source commits: `77c6c84` and `5e15e22`, both pushed to origin.
+- Canonical shipping calculations now live in `shared/shipping.ts` and are
+  recomputed from trusted artwork data inside Convex. Checkout supports U.S.
+  and international delivery, shows the exact itemized shipping contribution,
+  adds it to the Stripe total, and routes oversize work to a studio quote.
+- `/shipping` always shows size, framing, surface, and route factors. The
+  previous result remains visible during the 450 ms recalculation. Reserved
+  status, explanation, and factor-row dimensions eliminate visible movement.
+- Artwork Facts uses shared client/server validation with required,
+  publish-required, recommended, and optional states. Public Status now sits
+  beside Medium on desktop; inline feedback, a form summary, focus-on-error,
+  character limits, and exact Publish Check guidance are included.
+- React Hook Form was not added. The editor already uses controlled state for
+  live preview, readiness, unsaved-change protection, and listing status;
+  shared validation at both trust boundaries provides the robustness without
+  a competing state layer.
+- Verification passed: Prettier, `git diff --check`, typecheck, lint, all 88
+  tests, and the optimized production build.
+- Production Convex `hushed-crane-268` and development Convex
+  `laudable-flamingo-85` were deployed before the frontend.
+- Final Vercel deployment `dpl_4q1hXSUpgfen1AoqWQZPb1uETQJP` is ready and
+  aliased to `https://www.jwsfineart.com`.
+- Production checkout QA on artwork `#103`: $495 artwork + $55 U.S. shipping =
+  $550; international shipping is $200 and total is $695. No Stripe session or
+  payment was created.
+- Shipping QA: desktop result height varied by less than one pixel; final
+  mobile result height was exactly `886.8828125px` before, during, and after
+  recalculation. Both breakpoints had zero horizontal overflow.
+- Authenticated admin QA on artwork `#89` confirmed field hierarchy, same-row
+  Medium/Public Status desktop layout, responsive mobile stacking, warning to
+  error promotion when Available is selected, and no horizontal overflow.
+  The page was reloaded without saving, so production artwork was unchanged.
+- Production browser diagnostics had no errors. The known Clerk
+  development-key warning remains a separate configuration risk.
+- QA evidence: `_context/checkout-shipping-artwork-form-production-qa.md`.
+- Production preview aliases:
+  `shipping-calculator-stable-production-desktop`,
+  `shipping-calculator-stable-production-mobile`,
+  `checkout-shipping-production-desktop`,
+  `checkout-shipping-production-mobile`,
+  `admin-artwork-facts-production-desktop`, and
+  `admin-artwork-facts-production-mobile`.
+
 ## July 23 Media Manager Drag And Reorder
 
 - Objective: extend the centered artwork media manager with modal-wide image
