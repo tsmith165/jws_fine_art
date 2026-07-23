@@ -2196,9 +2196,9 @@
 }
 .lw-shipping-breakdown {
     display: grid;
+    gap: 18px;
     align-content: start;
-    margin: 18px 0 0;
-    border-top: 1px solid var(--lw-line);
+    margin: 24px 0 0;
     transition: opacity 0.18s ease;
 }
 .lw-shipping-breakdown > div {
@@ -2206,8 +2206,7 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 20px;
     align-items: start;
-    border-bottom: 1px solid var(--lw-line);
-    padding: 11px 0;
+    padding: 2px 0;
 }
 .lw-shipping-breakdown dt {
     display: grid;
@@ -2250,7 +2249,7 @@
     min-height: 100px;
     gap: 5px;
     align-content: center;
-    margin-top: 18px;
+    margin-top: 24px;
     border: 1px solid var(--lw-line);
     padding: 17px 18px;
     background: color-mix(in srgb, var(--lw-brass) 7%, var(--lw-paper));
@@ -3303,11 +3302,12 @@
         min-height: 90px;
     }
     .lw-shipping-breakdown {
-        min-height: 276px;
-        margin-top: 26px;
+        min-height: 210px;
+        gap: 14px;
+        margin-top: 24px;
     }
     .lw-shipping-breakdown > div {
-        padding: 14px 0;
+        padding: 0;
     }
     .lw-shipping-checkout-contribution {
         min-height: 118px;
