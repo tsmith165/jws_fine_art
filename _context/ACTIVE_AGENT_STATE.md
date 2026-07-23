@@ -1,5 +1,44 @@
 # Active Agent State
 
+## July 23 Media Manager Drag And Reorder
+
+- Objective: extend the centered artwork media manager with modal-wide image
+  file drop and persistent reordering for supporting and process images.
+- Workspace: `/Users/tsmith/dev/_codex/jws-fine-art`
+- Branch: `feat/full-site-overhaul`
+- Source commit `41510b9` is pushed to
+  `origin/feat/full-site-overhaul`.
+- Primary remains fixed first. Supporting images reorder only within Supporting;
+  process images reorder only within Process.
+- Cards support pointer drag/drop and explicit earlier/later controls. Each
+  reorder is saved immediately through a new atomic Convex mutation using the
+  full ordered group ID list.
+- The existing uploader now accepts image file drops anywhere within the media
+  modal and exposes a clear modal-wide drag-over state.
+- Automated verification passed: Prettier, `git diff --check`, typecheck, lint,
+  all 81 tests, and the Node 24 production build.
+- Local authenticated visual QA is unavailable because the local Clerk
+  environment redirects to `/not-authorized`.
+- Production `hushed-crane-268` and development `laudable-flamingo-85` Convex
+  deployments were updated before the frontend.
+- Vercel deployment `dpl_BGQzUGbEai7ey13oBNcqmh7GY8sr` is ready and aliased to
+  `https://www.jwsfineart.com`.
+- Authenticated production QA passed at `1440 × 1000` and `390 × 844` using
+  artwork `#103`, which has five supporting images. Primary was non-draggable,
+  all supporting cards were draggable, boundary controls disabled correctly,
+  modal-wide upload guidance was present, internal scrolling worked, and
+  neither viewport had horizontal overflow.
+- QA did not upload, delete, reorder, or save production artwork data. Ordering
+  semantics and Convex persistence are covered by automated tests.
+- The production console reported no errors.
+- Detailed evidence:
+  `_context/admin-media-manager-reorder-production-qa.md`.
+- Preview aliases: `admin-media-manager-reorder-production-desktop` and
+  `admin-media-manager-reorder-production-mobile`.
+- Artifact validation passed with 49 design artifacts, 76 preview QA artifacts,
+  and 31 analysis records.
+- The temporary viewport was reset and the browser session was finalized.
+
 ## July 23 Shipping Calculator Redesign
 
 - Objective: improve `/shipping` calculator layout, dimension spacing,
