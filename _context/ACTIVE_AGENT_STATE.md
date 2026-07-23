@@ -1,5 +1,37 @@
 # Active Agent State
 
+## July 23 Artwork Editor Guidance And Media Modal
+
+- Listing state is now the compact first sidebar panel.
+- Publish check explicitly names and explains only the incomplete essentials,
+  links each one to the relevant editor field, and summarizes completed items
+  separately.
+- Search preview now renders a realistic search-result card using the public
+  metadata fallback and separate story-improvement guidance.
+- Manage media now opens an accessible, centered overlay on `/admin/edit`
+  containing current-media review/removal and the existing upload/review flow.
+  The legacy media route remains available.
+- Implementation commit `69f93bf` plus visual-QA fixes `a9c95b2` and
+  `c2fc12a` are pushed to `origin/feat/full-site-overhaul`.
+- Final Vercel deployment `dpl_3NrMQVcww2XTakhASvjuqxyWLH4U` is ready and
+  aliased to `https://www.jwsfineart.com`.
+- Prettier, typecheck, lint, all 76 tests, a Node 24 production build, and the
+  Vercel build passed.
+- Authenticated production QA passed at `1440 × 1000` and `390 × 844`: no
+  horizontal overflow or clipped sidebar content; correct panel order and two
+  explicit missing items; modal focus, Escape/button close, background lock,
+  internal scrolling, responsive gutters, and thumbnail containment.
+- QA did not upload, remove, edit, or save production artwork data.
+- Detailed evidence:
+  `_context/admin-artwork-editor-guidance-and-media-qa.md`.
+- Preview aliases:
+  `admin-artwork-editor-sidebar-production-desktop`,
+  `admin-artwork-editor-sidebar-production-mobile`,
+  `admin-artwork-editor-media-modal-production-desktop`, and
+  `admin-artwork-editor-media-modal-production-mobile`.
+- Temporary browser emulation was cleared and the browser session was
+  finalized.
+
 ## July 23 Select And Filter Polish
 
 - Source commit `a5e0a6c` is pushed to `origin/feat/full-site-overhaul`.
