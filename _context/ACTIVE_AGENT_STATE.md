@@ -1,5 +1,41 @@
 # Active Agent State
 
+## July 23 Commerce Hardening And Shipping Release
+
+- Objective: deny second purchases of one-of-one artwork, make Stripe webhook
+  and email processing durable, release canceled reservations, add Stripe
+  idempotency, finish endpoint configuration, and replace shipping with the
+  artist-approved tier and pickup policy.
+- Source commit `8134a73` plus the responsive shipping-label follow-up are on
+  `origin/feat/full-site-overhaul`.
+- Production Convex `hushed-crane-268` is deployed with the webhook inbox,
+  notification outbox, retry/watchdog workers, delivery policy snapshots,
+  pickup fulfillment states, and atomic second-sale prevention.
+- Vercel deployment `dpl_EywmXd9p3hfHqRCWngbshHMEyD6X` is ready and aliased
+  to `https://www.jwsfineart.com`.
+- Checkout Session creation uses the stable key
+  `checkout-intent:${intentId}`. Cancel verifies a cancellation token, expires
+  an open Session, and releases the reservation.
+- Shipping policy version `2026-07-23`: Small $25/$45, Medium $50/$75, Large
+  $100/$130, local pickup $0, international/oversize studio quote.
+- Live Stripe endpoint `we_1PLliwD8CTpNeM29eSvhmUXB` is active at
+  `https://www.jwsfineart.com/api/checkout/webhook` with 11 events. Preview
+  endpoint `we_1TuyT0D8CTpNeM29FYhaMZSD` also has 11 events. Stale test endpoint
+  `we_1PIIbaD8CTpNeM29VnrKGRwJ` was deleted.
+- Stripe endpoint API version remains `2024-04-10`; the Dashboard does not
+  expose an in-place change, so it was not rolled with the signing secret in
+  this release.
+- Automated verification: lint, typecheck, and 17 test files / 108 tests pass.
+- Production visual QA at `1440 × 1000` and `390 × 844`: no horizontal
+  overflow or clipped checkout content; domestic checkout is $495 + $50 =
+  $545, pickup is $495 + $0, and international correctly blocks payment for a
+  studio quote. Calculator result height stayed `782.59px` across Small,
+  Medium, framed, and pickup; international grew only `13.98px` for its longer
+  explanation.
+- QA artifacts: `commerce-shipping-desktop`,
+  `commerce-shipping-mobile`, `commerce-checkout-desktop`, and
+  `commerce-checkout-mobile`.
+
 ## July 23 Primary Media, Attention Count, And Artwork Form Follow-up
 
 - Objective: make primary-image replacement explicit in the media modal, show

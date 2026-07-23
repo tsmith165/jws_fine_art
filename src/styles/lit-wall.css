@@ -2005,6 +2005,11 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
 }
+.lw-shipping-route-three button {
+    grid-template-columns: 18px minmax(0, 1fr) 14px;
+    gap: 8px;
+    padding-inline: 11px;
+}
 .lw-shipping-tier-options button {
     display: grid;
     min-width: 0;
