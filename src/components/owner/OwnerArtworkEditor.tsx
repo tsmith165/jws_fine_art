@@ -20,12 +20,13 @@ import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { handleImageDelete, handleMediaOrderUpdate, onSubmitEditForm } from '@/app/admin/edit/actions';
 import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
-import { validateOwnerArtwork, type OwnerArtworkField } from '@/lib/ownerArtworkValidation';
+import { normalizeInstagramShareReference, validateOwnerArtwork, type OwnerArtworkField } from '@/lib/ownerArtworkValidation';
 import { reorderArtworkMedia } from '@/lib/ownerMediaOrdering';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 import { artworkAvailabilityForStatus, type ArtworkListingStatus } from '@shared/artworkListingState';
 import { releaseDateValue } from '@shared/artworkRelease';
 import { OwnerDatePicker } from './OwnerDatePicker';
+import { OwnerFieldFooter, OwnerFormRow } from './OwnerForm';
 
 type EditorForm = {
     piece_id: string;
@@ -82,10 +83,10 @@ function FieldFeedback({
 }) {
     if (!issue) return null;
     return (
-        <small id={`artwork-${field}-feedback`} className={`owner-field-feedback is-${issue.tone}`}>
+        <OwnerFieldFooter id={`artwork-${field}-feedback`} className={`owner-field-feedback is-${issue.tone}`} aria-live="polite">
             <CircleAlert size={12} />
             {issue.message}
-        </small>
+        </OwnerFieldFooter>
     );
 }
 
@@ -496,7 +497,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                             />
                             <FieldFeedback field="piece_title" issue={fieldIssue('piece_title')} />
                         </label>
-                        <div className="owner-form-row is-three is-wide">
+                        <OwnerFormRow columns={3} className="is-wide">
                             <label className={fieldClass('piece_type')} data-owner-field="piece_type">
                                 <span className="owner-field-label">
                                     <span>Medium</span>
@@ -526,18 +527,19 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                     id="artwork-public-status"
                                     value={listingStatus}
                                     onChange={(event) => updateListingStatus(event.target.value as ArtworkListingStatus)}
+                                    aria-describedby="artwork-public-status-help"
                                 >
                                     <option value="available">Available for purchase</option>
                                     <option value="sold">Sold — manual or external sale</option>
                                     <option value="not-for-sale">Not for sale</option>
                                 </select>
-                                <small className="owner-field-feedback is-info">
+                                <OwnerFieldFooter id="artwork-public-status-help" className="owner-field-feedback is-info">
                                     {listingStatus === 'available'
                                         ? 'Visible publicly and eligible for checkout.'
                                         : listingStatus === 'sold'
                                           ? 'Marked sold without requiring a Stripe checkout.'
                                           : 'Kept in the catalog without a purchase option.'}
-                                </small>
+                                </OwnerFieldFooter>
                             </label>
                             <div className={fieldClass('released_at')} data-owner-field="released_at">
                                 <span className="owner-field-label">
@@ -554,7 +556,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                 />
                                 <FieldFeedback field="released_at" issue={fieldIssue('released_at')} />
                             </div>
-                        </div>
+                        </OwnerFormRow>
                         <fieldset
                             className={`${fieldClass('categories')} is-wide owner-category-fieldset`}
                             data-owner-field="categories"
@@ -586,74 +588,81 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                             <small className="owner-field-help">Choose every collection where this work belongs.</small>
                             <FieldFeedback field="categories" issue={fieldIssue('categories')} />
                         </fieldset>
-                        <label className={fieldClass('price')} data-owner-field="price">
-                            <span className="owner-field-label">
-                                <span>Price (USD)</span>
-                                <small className="is-publish">Publish required</small>
-                            </span>
-                            <input
-                                id="artwork-price"
-                                type="number"
-                                min="0"
-                                step="1"
-                                value={form.price}
-                                onChange={(event) => update('price', event.target.value)}
-                                aria-invalid={fieldIssue('price')?.tone === 'error'}
-                                aria-describedby={describedBy('price')}
-                                required={listingStatus === 'available'}
-                            />
-                            <FieldFeedback field="price" issue={fieldIssue('price')} />
-                        </label>
-                        <label className="owner-field is-complete">
-                            <span className="owner-field-label">
-                                <span>Framing</span>
-                                <small className="is-required">Required</small>
-                            </span>
-                            <select
-                                value={form.framed ? 'framed' : 'unframed'}
-                                onChange={(event) => update('framed', event.target.value === 'framed')}
-                            >
-                                <option value="framed">Framed</option>
-                                <option value="unframed">Unframed</option>
-                            </select>
-                            <small className="owner-field-feedback is-info">Used for the public listing and shipping calculation.</small>
-                        </label>
-                        <label className={fieldClass('real_width')} data-owner-field="real_width">
-                            <span className="owner-field-label">
-                                <span>Width (in)</span>
-                                <small className="is-publish">Publish required</small>
-                            </span>
-                            <input
-                                id="artwork-width"
-                                type="number"
-                                min="0"
-                                step="0.25"
-                                value={form.real_width}
-                                onChange={(event) => update('real_width', event.target.value)}
-                                aria-invalid={fieldIssue('real_width')?.tone === 'error'}
-                                aria-describedby={describedBy('real_width')}
-                                required={listingStatus === 'available'}
-                            />
-                            <FieldFeedback field="real_width" issue={fieldIssue('real_width')} />
-                        </label>
-                        <label className={fieldClass('real_height')} data-owner-field="real_height">
-                            <span className="owner-field-label">
-                                <span>Height (in)</span>
-                                <small className="is-publish">Publish required</small>
-                            </span>
-                            <input
-                                id="artwork-height"
-                                type="number"
-                                min="0"
-                                step="0.25"
-                                value={form.real_height}
-                                onChange={(event) => update('real_height', event.target.value)}
-                                aria-invalid={fieldIssue('real_height')?.tone === 'error'}
-                                aria-describedby={describedBy('real_height')}
-                                required={listingStatus === 'available'}
-                            />
-                            <FieldFeedback field="real_height" issue={fieldIssue('real_height')} />
-                        </label>
+                        <OwnerFormRow className="is-wide">
+                            <label className={fieldClass('price')} data-owner-field="price">
+                                <span className="owner-field-label">
+                                    <span>Price (USD)</span>
+                                    <small className="is-publish">Publish required</small>
+                                </span>
+                                <input
+                                    id="artwork-price"
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    value={form.price}
+                                    onChange={(event) => update('price', event.target.value)}
+                                    aria-invalid={fieldIssue('price')?.tone === 'error'}
+                                    aria-describedby={describedBy('price')}
+                                    required={listingStatus === 'available'}
+                                />
+                                <FieldFeedback field="price" issue={fieldIssue('price')} />
+                            </label>
+                            <label className="owner-field is-complete">
+                                <span className="owner-field-label">
+                                    <span>Framing</span>
+                                    <small className="is-required">Required</small>
+                                </span>
+                                <select
+                                    value={form.framed ? 'framed' : 'unframed'}
+                                    onChange={(event) => update('framed', event.target.value === 'framed')}
+                                    aria-describedby="artwork-framing-help"
+                                >
+                                    <option value="framed">Framed</option>
+                                    <option value="unframed">Unframed</option>
+                                </select>
+                                <OwnerFieldFooter id="artwork-framing-help" className="owner-field-feedback is-info">
+                                    Used for the public listing and shipping calculation.
+                                </OwnerFieldFooter>
+                            </label>
+                        </OwnerFormRow>
+                        <OwnerFormRow className="is-wide">
+                            <label className={fieldClass('real_width')} data-owner-field="real_width">
+                                <span className="owner-field-label">
+                                    <span>Width (in)</span>
+                                    <small className="is-publish">Publish required</small>
+                                </span>
+                                <input
+                                    id="artwork-width"
+                                    type="number"
+                                    min="0"
+                                    step="0.25"
+                                    value={form.real_width}
+                                    onChange={(event) => update('real_width', event.target.value)}
+                                    aria-invalid={fieldIssue('real_width')?.tone === 'error'}
+                                    aria-describedby={describedBy('real_width')}
+                                    required={listingStatus === 'available'}
+                                />
+                                <FieldFeedback field="real_width" issue={fieldIssue('real_width')} />
+                            </label>
+                            <label className={fieldClass('real_height')} data-owner-field="real_height">
+                                <span className="owner-field-label">
+                                    <span>Height (in)</span>
+                                    <small className="is-publish">Publish required</small>
+                                </span>
+                                <input
+                                    id="artwork-height"
+                                    type="number"
+                                    min="0"
+                                    step="0.25"
+                                    value={form.real_height}
+                                    onChange={(event) => update('real_height', event.target.value)}
+                                    aria-invalid={fieldIssue('real_height')?.tone === 'error'}
+                                    aria-describedby={describedBy('real_height')}
+                                    required={listingStatus === 'available'}
+                                />
+                                <FieldFeedback field="real_height" issue={fieldIssue('real_height')} />
+                            </label>
+                        </OwnerFormRow>
                         <label className={`${fieldClass('description')} is-wide`} data-owner-field="description">
                             <span className="owner-field-label">
                                 <span>Artwork story</span>
@@ -679,22 +688,32 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                 <small className="is-optional">Optional · private</small>
                             </span>
                             <textarea value={form.comments} onChange={(event) => update('comments', event.target.value)} maxLength={5000} />
-                            <small className="owner-field-feedback is-info">Visible only in the studio manager.</small>
+                            <OwnerFieldFooter className="owner-field-feedback is-info">
+                                Visible only in the studio manager.
+                            </OwnerFieldFooter>
                         </label>
                         <label className={`${fieldClass('instagram')} is-wide`} data-owner-field="instagram">
                             <span className="owner-field-label">
-                                <span>Instagram post URL</span>
+                                <span>Instagram share reference</span>
                                 <small className="is-optional">Optional</small>
                             </span>
                             <input
-                                type="url"
+                                type="text"
                                 value={form.instagram}
-                                onChange={(event) => update('instagram', event.target.value)}
+                                onChange={(event) => update('instagram', normalizeInstagramShareReference(event.target.value))}
                                 aria-invalid={fieldIssue('instagram')?.tone === 'error'}
-                                aria-describedby={describedBy('instagram')}
-                                placeholder="https://www.instagram.com/p/…"
+                                aria-describedby={describedBy('instagram') || 'artwork-instagram-help'}
+                                placeholder="?igsh=Mzc3ZTVlOWMwZA%3D%3D"
+                                maxLength={512}
                             />
-                            <FieldFeedback field="instagram" issue={fieldIssue('instagram')} />
+                            {fieldIssue('instagram') ? (
+                                <FieldFeedback field="instagram" issue={fieldIssue('instagram')} />
+                            ) : (
+                                <OwnerFieldFooter id="artwork-instagram-help" className="owner-field-feedback is-info">
+                                    Paste only the “?igsh=…” part of the shared link. Full Instagram links are reduced to that reference
+                                    automatically.
+                                </OwnerFieldFooter>
+                            )}
                         </label>
                     </div>
                 </section>
@@ -767,7 +786,9 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                     </header>
                     <div className="owner-search-result">
                         <div className="owner-search-result-site">
-                            <span>J</span>
+                            <span className="owner-search-result-icon">
+                                <Image src="/logo/JWS_ICON_260.png" alt="" width={28} height={28} />
+                            </span>
                             <div>
                                 <strong>Jill Weeks Smith Fine Art</strong>
                                 <small>jwsfineart.com › work › {piece.slug || piece.id}</small>

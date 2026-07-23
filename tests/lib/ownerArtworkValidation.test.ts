@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { validateOwnerArtwork, type OwnerArtworkValidationInput } from '../../src/lib/ownerArtworkValidation';
+import {
+    normalizeInstagramShareReference,
+    validateOwnerArtwork,
+    type OwnerArtworkValidationInput,
+} from '../../src/lib/ownerArtworkValidation';
 
 const completeArtwork: OwnerArtworkValidationInput = {
     piece_title: 'Morning Light',
@@ -10,7 +14,7 @@ const completeArtwork: OwnerArtworkValidationInput = {
     real_height: '9',
     description: 'Morning light settles across the coast after the marine layer lifts.',
     categories: ['coastal'],
-    instagram: 'https://www.instagram.com/p/example/',
+    instagram: '?igsh=Mzc3ZTVlOWMwZA%3D%3D',
     available: true,
     sold: false,
 };
@@ -59,15 +63,37 @@ describe('validateOwnerArtwork', () => {
         ]);
     });
 
-    it('rejects malformed optional URLs and invalid dimensions in every status', () => {
+    it('accepts compact Instagram share references', () => {
+        const result = validateOwnerArtwork({
+            ...completeArtwork,
+            instagram: '?igsh=Mzc3ZTVlOWMwZA%3D%3D',
+        });
+        expect(result.byField.has('instagram')).toBe(false);
+        expect(result.canSave).toBe(true);
+    });
+
+    it('reduces a pasted Instagram URL to its share reference', () => {
+        expect(
+            normalizeInstagramShareReference('https://www.instagram.com/p/example/?igsh=Mzc3ZTVlOWMwZA%3D%3D&utm_source=ig_web_copy_link'),
+        ).toBe('?igsh=Mzc3ZTVlOWMwZA%3D%3D');
+    });
+
+    it('rejects invalid dimensions in every status', () => {
         const result = validateOwnerArtwork({
             ...completeArtwork,
             real_height: '-2',
-            instagram: '?igsh=broken',
             available: false,
             sold: false,
         });
-        expect(result.errors.map((issue) => issue.field)).toEqual(['real_height', 'instagram']);
+        expect(result.errors.map((issue) => issue.field)).toEqual(['real_height']);
+    });
+
+    it('rejects full Instagram links and malformed references', () => {
+        const result = validateOwnerArtwork({
+            ...completeArtwork,
+            instagram: 'https://www.instagram.com/p/example/',
+        });
+        expect(result.byField.get('instagram')?.message).toBe('Paste only the Instagram share reference beginning with ?igsh=.');
     });
 
     it('rejects malformed and future release dates', () => {

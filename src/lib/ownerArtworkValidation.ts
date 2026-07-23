@@ -24,19 +24,18 @@ export type OwnerArtworkIssue = {
     message: string;
 };
 
+const instagramShareReference = /^\?igsh=[A-Za-z0-9._~%=-]+$/;
+
+export function normalizeInstagramShareReference(value: string) {
+    const marker = value.indexOf('?igsh=');
+    if (marker === -1) return value;
+    return value.slice(marker).split('&', 1)[0];
+}
+
 function positiveNumber(value: string) {
     if (!value.trim()) return null;
     const parsed = Number(value);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : Number.NaN;
-}
-
-function validHttpUrl(value: string) {
-    try {
-        const url = new URL(value);
-        return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch {
-        return false;
-    }
 }
 
 export function validateOwnerArtwork(input: OwnerArtworkValidationInput) {
@@ -108,8 +107,13 @@ export function validateOwnerArtwork(input: OwnerArtworkValidationInput) {
         issues.push({ field: 'categories', tone: 'warning', message: 'Choose at least one collection so the artwork is easier to find.' });
     }
 
-    if (input.instagram.trim() && !validHttpUrl(input.instagram.trim())) {
-        issues.push({ field: 'instagram', tone: 'error', message: 'Enter a complete URL beginning with http:// or https://.' });
+    const instagram = input.instagram.trim();
+    if (instagram && !instagramShareReference.test(instagram)) {
+        issues.push({
+            field: 'instagram',
+            tone: 'error',
+            message: 'Paste only the Instagram share reference beginning with ?igsh=.',
+        });
     }
 
     const byField = new Map<OwnerArtworkField, OwnerArtworkIssue>();

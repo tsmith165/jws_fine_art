@@ -683,6 +683,10 @@
 .lw-collection-card img {
     object-fit: cover;
 }
+.lw-collection-card:hover .lw-progressive-image-main,
+.lw-collection-card:focus-visible .lw-progressive-image-main {
+    transform: scale(1.018);
+}
 .lw-collection-card::after {
     position: absolute;
     inset: 45% 0 0;

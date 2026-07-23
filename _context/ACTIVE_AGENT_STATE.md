@@ -390,3 +390,31 @@
   artifacts, and 48 analysis records.
 - The local development server was stopped, the temporary browser viewport was
   reset, and the production browser session was finalized.
+
+## July 23 Owner Form System And Collection Motion Follow-up
+
+- Objective: align the owner artwork form through one shared row/footer system,
+  clarify and normalize compact Instagram share references, use the real search
+  icon, stack editor fields on mobile, and match category-card image motion to
+  the public artwork cards.
+- Workspace: `/Users/tsmith/dev/_codex/jws-fine-art`
+- Branch: `feat/full-site-overhaul`
+- Implementation and local QA are complete. Shared form rows align label,
+  48 px control, and footer tracks; affected mobile fields and category choices
+  stack full width without horizontal overflow.
+- Instagram input accepts only `?igsh=...` references, documents the expected
+  value, and reduces a pasted full Instagram URL automatically.
+- Search preview now uses `/logo/JWS_ICON_260.png`.
+- Homepage collection images retain the shared 280 ms reveal and now reach the
+  shared `scale(1.018)` hover/focus transform over 500 ms.
+- Development Convex had no explicit homepage rotation and therefore returned
+  the 69-work legacy fallback while production returned five. The production
+  rotation IDs `[70, 53, 69, 39, 58]` were synchronized into development
+  through the authenticated owner mutation. Localhost now renders `01 / 05`.
+- Full TypeScript, ESLint, 16 files / 97 tests, Node 24 production build, and
+  local browser QA passed.
+- Fable review was attempted but rejected by the service usage limit before it
+  read any files.
+- Detailed evidence:
+  `_context/OWNER_FORM_COLLECTION_MOTION_QA.md`.
+- Commit, production deployment, and production smoke QA remain.
