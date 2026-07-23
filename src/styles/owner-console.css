@@ -136,10 +136,11 @@
 .owner-view-site strong {
     font-size: 12px;
 }
-.owner-nav-count {
+.owner-rail nav a .owner-nav-count {
     display: inline-grid;
     min-width: 23px;
     height: 23px;
+    flex-direction: initial;
     place-items: center;
     border: 1px solid color-mix(in srgb, var(--owner-accent) 55%, var(--owner-line));
     padding: 0 6px;
@@ -3182,7 +3183,7 @@
         grid-template-columns: 1fr;
         place-items: center;
     }
-    .owner-nav-count {
+    .owner-rail nav a .owner-nav-count {
         position: absolute;
         top: 4px;
         right: 4px;
