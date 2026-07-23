@@ -167,6 +167,26 @@ export async function handleImageReorder(
     }
 }
 
+export async function handleMediaOrderUpdate(
+    pieceId: number,
+    mediaIds: number[],
+    imageType: 'extra' | 'progress',
+): Promise<{ success: boolean; error?: string }> {
+    try {
+        const client = await getAuthenticatedOwnerConvexClient('reorder artwork media');
+        await client.mutation(api.ownerMutations.reorderArtworkMedia, {
+            artworkLegacyId: pieceId,
+            mediaIds,
+            role: imageRole(imageType),
+        });
+        revalidateArtworkSurfaces(pieceId);
+        return { success: true };
+    } catch (error) {
+        console.error('Unable to reorder artwork media.', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unable to reorder artwork media.' };
+    }
+}
+
 export async function handleImageTitleEdit(
     imageId: number,
     newTitle: string,

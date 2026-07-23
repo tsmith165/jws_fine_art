@@ -68,6 +68,7 @@ export default function ImageEditor({ pieceId, onClose }: { pieceId: string; onC
                 handleUploadComplete={completed}
                 handleResetInputs={reset}
                 backToEditLink={onClose ? undefined : `/admin/edit?id=${pieceId}`}
+                dropAnywhere={Boolean(onClose)}
             />
             {upload.url ? (
                 <div className="owner-upload-review">

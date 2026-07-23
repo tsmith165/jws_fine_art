@@ -407,6 +407,48 @@ export const swapMediaOrder = mutation({
     },
 });
 
+export const reorderArtworkMedia = mutation({
+    args: {
+        artworkLegacyId: v.number(),
+        role: v.union(v.literal('supporting'), v.literal('progress')),
+        mediaIds: v.array(v.number()),
+    },
+    handler: async (ctx, args) => {
+        const actorId = await owner(ctx);
+        const media = (await ctx.db.query('artworkMedia').collect())
+            .filter((item) => item.artworkLegacyId === args.artworkLegacyId && item.role === args.role && !item.absentFromSource)
+            .sort((a, b) => a.displayOrder - b.displayOrder);
+        const currentIds = media.map((item) => item.legacyId);
+        if (
+            args.mediaIds.length !== currentIds.length ||
+            new Set(args.mediaIds).size !== args.mediaIds.length ||
+            currentIds.some((id) => !args.mediaIds.includes(id))
+        ) {
+            throw new Error('The media list changed. Reload the artwork before reordering.');
+        }
+
+        const byLegacyId = new Map(media.map((item) => [item.legacyId, item]));
+        const base = args.role === 'progress' ? 1_000_000 : 10_000;
+        const now = Date.now();
+        for (const [index, mediaId] of args.mediaIds.entries()) {
+            const item = byLegacyId.get(mediaId);
+            if (!item) throw new Error('Artwork image not found.');
+            await ctx.db.patch(item._id, {
+                displayOrder: base + (index + 1) * 1000,
+                ownerMutatedFields: ['*'],
+                ownerRevision: item.ownerRevision + 1,
+                updatedAt: now,
+            });
+        }
+        const artwork = await artworkByLegacyId(ctx, args.artworkLegacyId);
+        await audit(ctx, actorId, 'media.reordered', 'artwork', String(artwork._id), {
+            role: args.role,
+            count: String(args.mediaIds.length),
+        });
+        return { success: true };
+    },
+});
+
 export const updateMediaTitle = mutation({
     args: {
         mediaId: v.number(),

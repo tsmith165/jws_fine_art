@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Check, FileImage, Upload } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { generateReactHelpers } from '@uploadthing/react';
 import type { OurFileRouter } from '@/app/api/uploadthing/core';
 import { readClientImageDimensions } from '@/lib/clientUploadedImage';
@@ -22,14 +22,16 @@ interface ResizeUploaderProps {
     ) => void;
     handleResetInputs: () => void;
     backToEditLink?: string;
+    dropAnywhere?: boolean;
 }
 
-export default function ResizeUploader({ handleUploadComplete, handleResetInputs, backToEditLink }: ResizeUploaderProps) {
+export default function ResizeUploader({ handleUploadComplete, handleResetInputs, backToEditLink, dropAnywhere }: ResizeUploaderProps) {
     const [phase, setPhase] = useState<'idle' | 'reading' | 'uploading' | 'finalizing' | 'ready'>('idle');
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [selectedFile, setSelectedFile] = useState<{ name: string; size: number; width: number; height: number } | null>(null);
+    const container = useRef<HTMLDivElement>(null);
     const input = useRef<HTMLInputElement>(null);
     const dimensions = useRef<{ width: number; height: number } | null>(null);
     const isBusy = phase === 'reading' || phase === 'uploading' || phase === 'finalizing';
@@ -115,19 +117,56 @@ export default function ResizeUploader({ handleUploadComplete, handleResetInputs
         [isBusy, uploadFile],
     );
 
+    useEffect(() => {
+        if (!dropAnywhere) return;
+        const dropScope = container.current?.closest<HTMLElement>('.owner-media-modal');
+        if (!dropScope) return;
+        const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files');
+        const drag = (event: DragEvent) => {
+            if (!hasFiles(event)) return;
+            event.preventDefault();
+            if (!isBusy) setIsDragging(true);
+        };
+        const leave = (event: DragEvent) => {
+            if (!hasFiles(event)) return;
+            const related = event.relatedTarget;
+            if (!(related instanceof Node) || !dropScope.contains(related)) setIsDragging(false);
+        };
+        const drop = (event: DragEvent) => {
+            if (!hasFiles(event) || container.current?.contains(event.target as Node)) return;
+            event.preventDefault();
+            setIsDragging(false);
+            const file = event.dataTransfer?.files?.[0];
+            if (file && !isBusy) void uploadFile(file);
+        };
+        dropScope.addEventListener('dragenter', drag);
+        dropScope.addEventListener('dragover', drag);
+        dropScope.addEventListener('dragleave', leave);
+        dropScope.addEventListener('drop', drop);
+        return () => {
+            dropScope.removeEventListener('dragenter', drag);
+            dropScope.removeEventListener('dragover', drag);
+            dropScope.removeEventListener('dragleave', leave);
+            dropScope.removeEventListener('drop', drop);
+        };
+    }, [dropAnywhere, isBusy, uploadFile]);
+
     const status =
-        phase === 'reading'
-            ? 'Checking the original…'
-            : phase === 'uploading'
-              ? `Uploading original · ${progress}%`
-              : phase === 'finalizing'
-                ? 'Preparing the review…'
-                : phase === 'ready'
-                  ? 'Original ready for review'
-                  : 'Choose the highest-quality original';
+        isDragging && !isBusy
+            ? 'Drop to upload this original'
+            : phase === 'reading'
+              ? 'Checking the original…'
+              : phase === 'uploading'
+                ? `Uploading original · ${progress}%`
+                : phase === 'finalizing'
+                  ? 'Preparing the review…'
+                  : phase === 'ready'
+                    ? 'Original ready for review'
+                    : 'Choose the highest-quality original';
 
     return (
         <div
+            ref={container}
             className={['owner-uploader', isDragging ? 'is-dragging' : '', phase === 'ready' ? 'is-ready' : ''].filter(Boolean).join(' ')}
             onDragEnter={(event) => {
                 event.preventDefault();
@@ -138,6 +177,7 @@ export default function ResizeUploader({ handleUploadComplete, handleResetInputs
                 if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsDragging(false);
             }}
             onDrop={dropFile}
+            aria-busy={isBusy}
         >
             <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" onChange={selectFile} disabled={isBusy} />
             <span className="owner-upload-icon" aria-hidden="true">

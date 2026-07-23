@@ -660,6 +660,18 @@ describe('owner authorization', () => {
             targetMediaId: secondAdded.mediaId,
             role: 'supporting',
         });
+        await expect(
+            owner.mutation(api.ownerMutations.reorderArtworkMedia, {
+                artworkLegacyId: 101,
+                role: 'supporting',
+                mediaIds: [added.mediaId],
+            }),
+        ).rejects.toThrow('The media list changed');
+        await owner.mutation(api.ownerMutations.reorderArtworkMedia, {
+            artworkLegacyId: 101,
+            role: 'supporting',
+            mediaIds: [added.mediaId, secondAdded.mediaId],
+        });
         await owner.mutation(api.ownerMutations.updateMediaTitle, {
             mediaId: added.mediaId,
             role: 'supporting',
@@ -703,12 +715,12 @@ describe('owner authorization', () => {
         expect(state.media.find((item) => item.legacyId === added.mediaId)).toMatchObject({
             title: 'Detail view',
             absentFromSource: true,
-            displayOrder: 12000,
+            displayOrder: 11000,
         });
         expect(state.media.find((item) => item.legacyId === secondAdded.mediaId)).toMatchObject({
             sourceWidth: 1800,
             sourceHeight: 2400,
-            displayOrder: 11000,
+            displayOrder: 12000,
         });
         expect(state.media.find((item) => item.legacyId === 101 && item.role === 'primary')).toMatchObject({
             sourceUrl: 'https://example.com/replacement-primary.jpg',

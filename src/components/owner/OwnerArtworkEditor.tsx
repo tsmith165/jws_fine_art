@@ -1,12 +1,26 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Check, CircleAlert, CircleCheck, ExternalLink, Images, Save, Search, Trash2, X } from 'lucide-react';
+import {
+    ArrowLeft,
+    ArrowRight,
+    Check,
+    CircleAlert,
+    CircleCheck,
+    ExternalLink,
+    GripVertical,
+    Images,
+    Save,
+    Search,
+    Trash2,
+    X,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
-import { handleImageDelete, onSubmitEditForm } from '@/app/admin/edit/actions';
+import { handleImageDelete, handleMediaOrderUpdate, onSubmitEditForm } from '@/app/admin/edit/actions';
 import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
+import { reorderArtworkMedia } from '@/lib/ownerMediaOrdering';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 import { artworkAvailabilityForStatus, artworkListingStatus, type ArtworkListingStatus } from '@shared/artworkListingState';
 
@@ -60,35 +74,57 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
     const [selectedImage, setSelectedImage] = useState(piece.image_path);
     const [removedImageUrls, setRemovedImageUrls] = useState(() => new Set<string>());
     const [removingImage, setRemovingImage] = useState(false);
+    const [reorderingImage, setReorderingImage] = useState<number | null>(null);
+    const [mediaOrderIds, setMediaOrderIds] = useState<{ extra: number[]; progress: number[] }>({ extra: [], progress: [] });
+    const [draggedMediaId, setDraggedMediaId] = useState<string | null>(null);
+    const [dragOverMediaId, setDragOverMediaId] = useState<string | null>(null);
+    const [mediaMessage, setMediaMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
     const [mediaOpen, setMediaOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
-    const media = useMemo(
-        () =>
-            [
-                {
-                    id: `primary-${piece.id}`,
-                    url: piece.image_path,
-                    width: piece.width,
-                    height: piece.height,
-                    role: 'Primary',
-                    kind: 'primary' as const,
-                },
-                ...piece.extraImages.map((image, index) => ({
-                    ...image,
-                    url: image.image_path,
-                    role: `Supporting ${index + 1}`,
-                    kind: 'extra' as const,
-                })),
-                ...piece.progressImages.map((image, index) => ({
-                    ...image,
-                    url: image.image_path,
-                    role: `Process ${index + 1}`,
-                    kind: 'progress' as const,
-                })),
-            ].filter((image) => !removedImageUrls.has(image.url)),
-        [piece, removedImageUrls],
-    );
+    const media = useMemo(() => {
+        const orderByIds = <T extends { id: number }>(items: T[], ids: number[]) => {
+            const positions = new Map(ids.map((id, index) => [id, index]));
+            return [...items].sort((a, b) => {
+                const aPosition = positions.get(a.id);
+                const bPosition = positions.get(b.id);
+                if (aPosition === undefined && bPosition === undefined) return 0;
+                if (aPosition === undefined) return 1;
+                if (bPosition === undefined) return -1;
+                return aPosition - bPosition;
+            });
+        };
+        const supporting = orderByIds(
+            piece.extraImages.filter((image) => !removedImageUrls.has(image.image_path)),
+            mediaOrderIds.extra,
+        );
+        const progress = orderByIds(
+            piece.progressImages.filter((image) => !removedImageUrls.has(image.image_path)),
+            mediaOrderIds.progress,
+        );
+        return [
+            {
+                id: `primary-${piece.id}`,
+                url: piece.image_path,
+                width: piece.width,
+                height: piece.height,
+                role: 'Primary',
+                kind: 'primary' as const,
+            },
+            ...supporting.map((image, index) => ({
+                ...image,
+                url: image.image_path,
+                role: `Supporting ${index + 1}`,
+                kind: 'extra' as const,
+            })),
+            ...progress.map((image, index) => ({
+                ...image,
+                url: image.image_path,
+                role: `Process ${index + 1}`,
+                kind: 'progress' as const,
+            })),
+        ];
+    }, [mediaOrderIds, piece, removedImageUrls]);
     const selected = media.find((image) => image.url === selectedImage) || media[0];
     const listingStatus = artworkListingStatus({ available: form.available, sold: form.sold });
     const checks = [
@@ -190,22 +226,69 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
         setMessage(null);
     }
 
+    function openMediaManager() {
+        setMediaMessage(null);
+        setMediaOpen(true);
+    }
+
+    async function reorderMedia(currentImage: (typeof media)[number], targetImage: (typeof media)[number]) {
+        if (
+            currentImage.kind === 'primary' ||
+            targetImage.kind === 'primary' ||
+            currentImage.kind !== targetImage.kind ||
+            typeof currentImage.id !== 'number'
+        ) {
+            return;
+        }
+        const group = media.filter((image) => image.kind === currentImage.kind);
+        const reordered = reorderArtworkMedia(group, currentImage.id, targetImage.id);
+        if (reordered === group) return;
+        const nextIds = reordered.map((image) => Number(image.id));
+        const previousIds = mediaOrderIds[currentImage.kind];
+        setMediaOrderIds((current) => ({ ...current, [currentImage.kind]: nextIds }));
+        setReorderingImage(currentImage.id);
+        setMediaMessage(null);
+        try {
+            const result = await handleMediaOrderUpdate(piece.id, nextIds, currentImage.kind);
+            if (!result.success) {
+                setMediaOrderIds((current) => ({ ...current, [currentImage.kind]: previousIds }));
+                setMediaMessage({ tone: 'warning', text: result.error || 'The image order could not be saved.' });
+                return;
+            }
+            setMediaMessage({
+                tone: 'good',
+                text: `${currentImage.kind === 'extra' ? 'Supporting' : 'Process'} image order updated.`,
+            });
+        } catch {
+            setMediaOrderIds((current) => ({ ...current, [currentImage.kind]: previousIds }));
+            setMediaMessage({ tone: 'warning', text: 'The image order could not be saved. Check your connection and try again.' });
+        } finally {
+            setReorderingImage(null);
+            setDraggedMediaId(null);
+            setDragOverMediaId(null);
+        }
+    }
+
     async function removeMedia(image: (typeof media)[number]) {
         if (image.kind === 'primary') return;
         if (!window.confirm(`Remove ${image.role.toLowerCase()} from this artwork?`)) return;
         setRemovingImage(true);
         setMessage(null);
+        setMediaMessage(null);
         try {
             const result = await handleImageDelete(piece.id, image.url, image.kind);
             if (!result.success) {
                 setMessage({ tone: 'warning', text: result.error || 'The image could not be removed.' });
+                setMediaMessage({ tone: 'warning', text: result.error || 'The image could not be removed.' });
                 return;
             }
             setRemovedImageUrls((current) => new Set(current).add(image.url));
             if (selectedImage === image.url) setSelectedImage(piece.image_path);
             setMessage({ tone: 'good', text: 'Image removed from this artwork.' });
+            setMediaMessage({ tone: 'good', text: 'Image removed from this artwork.' });
         } catch {
             setMessage({ tone: 'warning', text: 'The image could not be removed. Check your connection and try again.' });
+            setMediaMessage({ tone: 'warning', text: 'The image could not be removed. Check your connection and try again.' });
         } finally {
             setRemovingImage(false);
         }
@@ -296,7 +379,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                 <span>{image.role}</span>
                             </button>
                         ))}
-                        <button className="owner-editor-add-media" type="button" onClick={() => setMediaOpen(true)}>
+                        <button className="owner-editor-add-media" type="button" onClick={openMediaManager}>
                             <Images size={20} /> Manage media
                         </button>
                     </div>
@@ -465,7 +548,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                                 {check.actionLabel} <ArrowRight size={13} />
                                             </a>
                                         ) : (
-                                            <button type="button" onClick={() => setMediaOpen(true)}>
+                                            <button type="button" onClick={openMediaManager}>
                                                 {check.actionLabel} <ArrowRight size={13} />
                                             </button>
                                         )}
@@ -534,7 +617,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                             <div>
                                 <span className="owner-panel-eyebrow">Artwork media</span>
                                 <h2 id="owner-media-modal-title">Manage {form.piece_title || 'artwork'} media</h2>
-                                <p>Review current images or upload another original without leaving this editor.</p>
+                                <p>Reorder current images or drag a new original anywhere onto this window.</p>
                             </div>
                             <button type="button" onClick={() => setMediaOpen(false)} aria-label="Close media manager" autoFocus>
                                 <X size={20} />
@@ -549,36 +632,116 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                             {media.length} {media.length === 1 ? 'image' : 'images'}
                                         </strong>
                                     </div>
-                                    <p>The primary image appears first. Supporting and process images can be removed here.</p>
+                                    <p>
+                                        Primary stays first. Drag supporting or process images within their group, or use the arrow buttons.
+                                    </p>
                                 </header>
+                                {mediaMessage ? (
+                                    <p className={`owner-editor-message is-${mediaMessage.tone}`} role="status">
+                                        {mediaMessage.text}
+                                    </p>
+                                ) : null}
                                 <div className="owner-media-library-grid">
-                                    {media.map((image) => (
-                                        <article key={image.id}>
-                                            <div>
-                                                <Image src={image.url} alt="" width={image.width} height={image.height} />
-                                            </div>
-                                            <span>{image.role}</span>
-                                            {image.kind !== 'primary' ? (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeMedia(image)}
-                                                    disabled={removingImage}
-                                                    aria-label={`Remove ${image.role.toLowerCase()}`}
-                                                >
-                                                    <Trash2 size={14} /> Remove
-                                                </button>
-                                            ) : (
-                                                <small>Catalog image</small>
-                                            )}
-                                        </article>
-                                    ))}
+                                    {media.map((image) => {
+                                        const group = media.filter((candidate) => candidate.kind === image.kind);
+                                        const groupIndex = group.findIndex((candidate) => candidate.id === image.id);
+                                        const reorderable = image.kind !== 'primary' && group.length > 1;
+                                        const imageId = String(image.id);
+                                        return (
+                                            <article
+                                                key={image.id}
+                                                className={[
+                                                    reorderable ? 'is-reorderable' : '',
+                                                    draggedMediaId === imageId ? 'is-dragging' : '',
+                                                    dragOverMediaId === imageId ? 'is-drop-target' : '',
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' ')}
+                                                draggable={reorderable && reorderingImage === null}
+                                                title={reorderable ? `Drag to reorder ${image.role.toLowerCase()}` : undefined}
+                                                onDragStart={(event) => {
+                                                    if (!reorderable) return;
+                                                    event.dataTransfer.effectAllowed = 'move';
+                                                    event.dataTransfer.setData('text/plain', imageId);
+                                                    setDraggedMediaId(imageId);
+                                                }}
+                                                onDragOver={(event) => {
+                                                    if (!reorderable || event.dataTransfer.types.includes('Files')) return;
+                                                    const currentId = event.dataTransfer.getData('text/plain') || draggedMediaId;
+                                                    const current = media.find((candidate) => String(candidate.id) === currentId);
+                                                    if (!current || current.kind !== image.kind || current.id === image.id) return;
+                                                    event.preventDefault();
+                                                    event.dataTransfer.dropEffect = 'move';
+                                                    setDragOverMediaId(imageId);
+                                                }}
+                                                onDrop={(event) => {
+                                                    if (event.dataTransfer.types.includes('Files')) return;
+                                                    event.preventDefault();
+                                                    const currentId = event.dataTransfer.getData('text/plain') || draggedMediaId;
+                                                    const current = media.find((candidate) => String(candidate.id) === currentId);
+                                                    if (current) void reorderMedia(current, image);
+                                                }}
+                                                onDragEnd={() => {
+                                                    setDraggedMediaId(null);
+                                                    setDragOverMediaId(null);
+                                                }}
+                                            >
+                                                <div className="owner-media-card-heading">
+                                                    <span>{image.role}</span>
+                                                    {reorderable ? <GripVertical size={14} aria-hidden="true" /> : null}
+                                                </div>
+                                                <div className="owner-media-card-image">
+                                                    <Image src={image.url} alt="" width={image.width} height={image.height} />
+                                                </div>
+                                                {image.kind !== 'primary' ? (
+                                                    <div className="owner-media-card-actions">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const target = group[groupIndex - 1];
+                                                                if (target) void reorderMedia(image, target);
+                                                            }}
+                                                            disabled={groupIndex === 0 || reorderingImage !== null}
+                                                            aria-label={`Move ${image.role.toLowerCase()} earlier`}
+                                                            title="Move earlier"
+                                                        >
+                                                            <ArrowLeft size={14} />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const target = group[groupIndex + 1];
+                                                                if (target) void reorderMedia(image, target);
+                                                            }}
+                                                            disabled={groupIndex === group.length - 1 || reorderingImage !== null}
+                                                            aria-label={`Move ${image.role.toLowerCase()} later`}
+                                                            title="Move later"
+                                                        >
+                                                            <ArrowRight size={14} />
+                                                        </button>
+                                                        <button
+                                                            className="is-remove"
+                                                            type="button"
+                                                            onClick={() => removeMedia(image)}
+                                                            disabled={removingImage || reorderingImage !== null}
+                                                            aria-label={`Remove ${image.role.toLowerCase()}`}
+                                                        >
+                                                            <Trash2 size={14} /> Remove
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <small>Catalog image · fixed first</small>
+                                                )}
+                                            </article>
+                                        );
+                                    })}
                                 </div>
                             </section>
                             <section className="owner-media-upload-panel">
                                 <div>
                                     <span className="owner-panel-eyebrow">Add media</span>
                                     <h3>Upload another original</h3>
-                                    <p>Choose a supporting, process, or replacement primary image after upload.</p>
+                                    <p>Drop an image anywhere in this window, or select a file below. Choose its role after upload.</p>
                                 </div>
                                 <ImageEditor pieceId={String(piece.id)} onClose={() => setMediaOpen(false)} />
                             </section>
