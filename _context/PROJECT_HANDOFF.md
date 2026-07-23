@@ -1,6 +1,6 @@
 # JWS Fine Art Project Handoff
 
-Last updated: 2026-07-22 19:41 PDT
+Last updated: 2026-07-23
 
 This is the primary starting point for the next agent working on JWS Fine Art. It summarizes the current repository, production architecture, completed overhaul, migration history, deployment procedures, known risks, and immediate follow-up work.
 
@@ -14,7 +14,11 @@ The current application uses Next.js 16, React 19, Tailwind CSS 4, Zustand, Conv
 
 The public site and owner console are live at [jwsfineart.com](https://jwsfineart.com). The latest source branch is `feat/full-site-overhaul`, tracking `origin/feat/full-site-overhaul`.
 
-The one immediate follow-up is a signed-in production verification of `/admin/homepage`. Its initial server error was traced to a Vercel/Convex deployment-order mismatch. The missing production Convex schema and functions have already been deployed successfully, but the browser session failed before the repaired page could be visually verified.
+The signed-in production verification of `/admin/homepage` is complete. Its
+initial server error was traced to a Vercel/Convex deployment-order mismatch.
+The missing production Convex schema and functions were deployed, and the
+repaired page now passes add, remove, reorder, publish, restore, responsive
+layout, console, and production-log checks.
 
 ## Repository And Deployment Coordinates
 
@@ -36,28 +40,36 @@ The private design-review application is a separate project:
 - Deployment: `https://jwsfineart-wireframes.vercel.app`
 - Jill selected design `d2 v1`, "The Lit Wall," as the basis of the production overhaul.
 
-## Immediate Next Action
+## Completed Homepage-Rotation Verification
 
-Verify the repaired homepage-rotation owner page in a signed-in production browser session.
+The repaired homepage-rotation owner page was verified in a signed-in production
+browser session on 2026-07-23.
 
-1. Open `https://jwsfineart.com/admin/homepage` while signed in as an authorized owner.
-2. Confirm the page renders instead of showing error digest `2794093951`.
-3. Confirm the current rotation and eligible artwork load.
-4. Test add, remove, reorder, and save behavior. Record the original state first and restore it after testing so production content is unchanged.
-5. Check browser console and failed network requests.
-6. Check recent production errors:
-
-   ```sh
-   vercel logs --environment production --level error --since 30m --expand --limit 100 --no-branch --scope tsmith-hobby
-   ```
-
-7. Capture a passing production screenshot with `agent-artifacts`, link it to the incident artifact, and run `agent-artifacts validate`.
+1. The page rendered instead of showing error digest `2794093951`.
+2. The current rotation and eligible artwork loaded.
+3. Remove, add, reorder, and publish behavior succeeded.
+4. The exact original rotation was restored and republished.
+5. Reloaded desktop and mobile layouts retained the restored state without
+   page-level horizontal overflow.
+6. The browser console contained no route/runtime error. It did reveal the
+   separate Clerk development-key warning documented under Known Open Decisions
+   And Risks.
+7. A Vercel production error-log query returned no errors.
+8. Passing desktop/mobile screenshots were linked to the incident artifact and
+   `agent-artifacts validate` passed.
 
 The incident screenshot is stored as:
 
 - Alias: `admin-homepage-production-server-error`
 - Artifact ID: `sha256:ae95cdb9fa8f4e139893d3d987e06e86abbb910a89192c051a74f148d6b7275f`
 - Metadata: `_context/design-artifacts/sha256-ae95cdb9fa8f4e139893d3d987e06e86abbb910a89192c051a74f148d6b7275f/metadata.json`
+
+Passing evidence:
+
+- Desktop alias: `admin-homepage-production-fixed-desktop`
+- Desktop artifact ID: `sha256:c0ed757a1bfdb6fd6110b4f29f7a5467e2c4ab406617ce8bd04b9055168b59ef`
+- Mobile alias: `admin-homepage-production-fixed-mobile`
+- Mobile artifact ID: `sha256:ee034581961f66c7f5fa18fe48b2f879d8074570e40773fda6a476bb5aa38884`
 
 ### Incident Root Cause And Repair
 
@@ -386,7 +398,9 @@ Inspect the full branch history and diff before assuming an old intermediate imp
 
 ## Known Open Decisions And Risks
 
-1. `/admin/homepage` needs final signed-in production verification after the Convex repair.
+1. Production Clerk currently emits a warning that development keys are in use.
+   Migrate deliberately to the intended Clerk production instance and coordinate
+   its JWT issuer with production Convex before changing Vercel.
 2. Jill must approve final shipping contribution, carrier/insurance language, damage reporting window, and final damage-only refund wording.
 3. The commissions heading "Personal work, grounded in a real story." needs a copy decision if the user wants it changed.
 4. Legacy data contains incomplete or test-looking records and old $1 orders. Do not delete or normalize them without explicit review.
@@ -469,7 +483,8 @@ Use `rg` and `rg --files` to locate domain code. Do not assume path names from o
    ```
 
 3. Preserve unrelated user changes. Do not reset, revert, or clean files you did not create.
-4. Perform the pending `/admin/homepage` signed-in production verification before starting unrelated feature work.
+4. Read `_context/SESSION_CONTINUATION_019F3504.md` for the completed
+   `/admin/homepage` verification and the Clerk production-key follow-up.
 5. If a Convex contract changes, deploy Convex before Vercel.
 6. Run focused checks during development and the full verification set before release.
 7. Commit and push code changes by default unless the user explicitly says not to.
@@ -492,4 +507,9 @@ Use `rg` and `rg --files` to locate domain code. Do not assume path names from o
 
 ## Handoff Status
 
-At the handoff baseline, the Git worktree was clean and the branch tracked its origin. The latest code was already in production. The homepage-rotation Convex backend repair was deployed directly to production after the latest source commit. Only its final authenticated browser verification remained outstanding.
+At the continuation baseline, the application source was already in production.
+The homepage-rotation Convex backend repair and authenticated browser
+verification are complete. The exact original rotation was restored after
+testing. The next operational risk is the production Clerk development-key
+warning; changing it requires coordinated Clerk, Convex, and Vercel
+configuration.
