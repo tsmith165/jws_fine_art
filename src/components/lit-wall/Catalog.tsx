@@ -43,6 +43,13 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
         router.replace(`${pathname}?${next.toString()}`, { scroll: false });
     };
     const clear = () => router.replace(pathname, { scroll: false });
+    const clearFilters = () => {
+        const next = new URLSearchParams(params.toString());
+        next.delete('category');
+        next.delete('theme');
+        next.delete('framed');
+        router.replace(next.size ? `${pathname}?${next.toString()}` : pathname, { scroll: false });
+    };
     const setCategory = (value?: ArtworkCategoryId) => {
         const next = new URLSearchParams(params.toString());
         next.delete('theme');
@@ -142,53 +149,75 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                             <Filter size={16} /> Filter {filterCount > 0 && <span>{filterCount}</span>}
                         </button>
                         {filterOpen && (
-                            <div className="lw-popover lw-filter-popover">
-                                <strong>Refine the collection</strong>
-                                <label>
-                                    Subject
-                                    <select
-                                        value={category}
-                                        onChange={(event) => {
-                                            const value = event.target.value;
-                                            captureAnalytics('catalog_filter_changed', {
-                                                filter: 'category',
-                                                value: value || 'all',
-                                            });
-                                            setCategory(isArtworkCategoryId(value) ? value : undefined);
+                            <div className="lw-popover lw-filter-popover" role="dialog" aria-label="Filter artwork">
+                                <header className="lw-filter-popover-header">
+                                    <div>
+                                        <span>Collection filters</span>
+                                        <strong>Refine the collection</strong>
+                                        <small>
+                                            {list.length} {list.length === 1 ? 'work matches' : 'works match'}
+                                        </small>
+                                    </div>
+                                    <button type="button" aria-label="Close filters" onClick={() => setFilterOpen(false)}>
+                                        <X size={16} />
+                                    </button>
+                                </header>
+                                <div className="lw-filter-fields">
+                                    <label className="lw-filter-field">
+                                        <span>Subject</span>
+                                        <select
+                                            value={category}
+                                            onChange={(event) => {
+                                                const value = event.target.value;
+                                                captureAnalytics('catalog_filter_changed', {
+                                                    filter: 'category',
+                                                    value: value || 'all',
+                                                });
+                                                setCategory(isArtworkCategoryId(value) ? value : undefined);
+                                            }}
+                                        >
+                                            <option value="">All categories</option>
+                                            {ARTWORK_CATEGORIES.map((option) => (
+                                                <option key={option.id} value={option.id}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <label className="lw-filter-check">
+                                        <input
+                                            type="checkbox"
+                                            checked={framed}
+                                            onChange={(event) => {
+                                                captureAnalytics('catalog_filter_changed', {
+                                                    filter: 'framed',
+                                                    value: event.target.checked,
+                                                });
+                                                setParam('framed', event.target.checked ? '1' : undefined);
+                                            }}
+                                        />
+                                        <span className="lw-filter-check-control" aria-hidden="true">
+                                            <Check size={13} />
+                                        </span>
+                                        <span className="lw-filter-check-copy">
+                                            <strong>Framed work</strong>
+                                            <small>Only show artwork presented with a frame</small>
+                                        </span>
+                                    </label>
+                                </div>
+                                <footer className="lw-filter-footer">
+                                    <span>{filterCount > 0 ? `${filterCount} active` : 'No filters applied'}</span>
+                                    <button
+                                        type="button"
+                                        disabled={filterCount === 0}
+                                        onClick={() => {
+                                            captureAnalytics('catalog_filters_cleared');
+                                            clearFilters();
                                         }}
                                     >
-                                        <option value="">All categories</option>
-                                        {ARTWORK_CATEGORIES.map((option) => (
-                                            <option key={option.id} value={option.id}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </label>
-                                <label className="lw-check">
-                                    <input
-                                        type="checkbox"
-                                        checked={framed}
-                                        onChange={(event) => {
-                                            captureAnalytics('catalog_filter_changed', {
-                                                filter: 'framed',
-                                                value: event.target.checked,
-                                            });
-                                            setParam('framed', event.target.checked ? '1' : undefined);
-                                        }}
-                                    />
-                                    <span>
-                                        <Check size={13} /> Framed work
-                                    </span>
-                                </label>
-                                <button
-                                    onClick={() => {
-                                        captureAnalytics('catalog_filters_cleared');
-                                        clear();
-                                    }}
-                                >
-                                    Clear all
-                                </button>
+                                        Reset filters
+                                    </button>
+                                </footer>
                             </div>
                         )}
                     </div>

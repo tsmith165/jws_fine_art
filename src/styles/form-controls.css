@@ -1,0 +1,37 @@
+.lw-site select:not([multiple]),
+.owner-shell select:not([multiple]) {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 48px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23aeb5ac' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 16px center !important;
+    background-size: 16px !important;
+    color-scheme: dark;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.lw-site select:not([multiple]):hover:not(:disabled) {
+    border-color: rgba(145, 182, 163, 0.72);
+    background-color: #121713;
+}
+
+.owner-shell select:not([multiple]):hover:not(:disabled) {
+    border-color: var(--owner-green) !important;
+    background-color: #111612 !important;
+}
+
+.lw-site select:not([multiple]):focus-visible,
+.owner-shell select:not([multiple]):focus-visible {
+    outline-offset: 2px;
+}
+
+.lw-site select:not([multiple]):disabled,
+.owner-shell select:not([multiple]):disabled {
+    cursor: not-allowed;
+    opacity: 0.52;
+}

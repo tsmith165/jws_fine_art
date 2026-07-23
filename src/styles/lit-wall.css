@@ -829,52 +829,184 @@
     background: var(--lw-raised);
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
 }
-.lw-popover strong {
+.lw-popover > strong {
     display: block;
     margin-bottom: 15px;
     font-family: var(--lw-display);
     font-size: 19px;
     font-weight: 400;
 }
-.lw-filter-popover label {
+.lw-filter-popover {
+    width: 330px;
+    overflow: hidden;
+    padding: 0;
+    border-color: #465148;
+    background: #171d18;
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.48),
+        0 0 0 1px rgba(198, 164, 102, 0.06);
+}
+.lw-filter-popover::before {
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, var(--lw-brass), rgba(198, 164, 102, 0.12));
+    content: '';
+}
+.lw-filter-popover-header {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin: 12px 0;
-    color: var(--lw-muted);
-    font-size: 11px;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 20px 22px 18px;
+    border-bottom: 1px solid var(--lw-line-soft);
+}
+.lw-filter-popover-header > div {
+    display: grid;
+    gap: 4px;
+}
+.lw-filter-popover-header > div > span,
+.lw-filter-field > span {
+    color: var(--lw-brass);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
-.lw-filter-popover select {
+.lw-filter-popover-header strong {
+    font-family: var(--lw-display);
+    font-size: 23px;
+    font-weight: 400;
+    line-height: 1.25;
+}
+.lw-filter-popover-header small {
+    color: var(--lw-muted);
+    font-size: 11px;
+}
+.lw-filter-popover-header > button {
+    display: inline-grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid var(--lw-line);
+    background: transparent;
+    color: var(--lw-muted);
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        color 160ms ease,
+        background-color 160ms ease;
+}
+.lw-filter-popover-header > button:hover {
+    border-color: var(--lw-green);
+    background: rgba(145, 182, 163, 0.06);
+    color: var(--lw-ink);
+}
+.lw-filter-fields {
+    display: grid;
+    gap: 14px;
+    padding: 20px 22px;
+}
+.lw-filter-field {
+    display: grid;
+    gap: 8px;
+}
+.lw-filter-field select {
     width: 100%;
+    min-height: 48px;
     border: 1px solid var(--lw-line);
     border-radius: 0;
-    padding: 10px;
+    padding: 10px 48px 10px 14px;
     background: var(--lw-paper);
     color: var(--lw-ink);
 }
-.lw-filter-popover > button {
-    border: 0;
-    padding: 0;
-    background: none;
-    color: var(--lw-brass);
-    font-size: 11px;
+.lw-filter-check {
+    position: relative;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 64px;
+    border: 1px solid var(--lw-line);
+    padding: 11px 13px;
+    background: rgba(13, 17, 14, 0.42);
     cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease;
 }
-.lw-check input {
+.lw-filter-check:hover,
+.lw-filter-check:has(input:checked) {
+    border-color: rgba(198, 164, 102, 0.72);
+    background: rgba(198, 164, 102, 0.05);
+}
+.lw-filter-check input {
     position: absolute;
     opacity: 0;
 }
-.lw-check span {
+.lw-filter-check-control {
+    display: inline-grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border: 1px solid #59635b;
+    color: transparent;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        color 160ms ease;
+}
+.lw-filter-check input:checked + .lw-filter-check-control {
+    border-color: var(--lw-brass);
+    background: var(--lw-brass);
+    color: var(--lw-brass-ink);
+}
+.lw-filter-check input:focus-visible + .lw-filter-check-control {
+    outline: 2px solid var(--lw-green);
+    outline-offset: 3px;
+}
+.lw-filter-check-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+.lw-filter-check-copy strong {
+    font-size: 12px;
+    font-weight: 700;
+}
+.lw-filter-check-copy small {
+    color: var(--lw-muted);
+    font-size: 10px;
+    line-height: 1.45;
+}
+.lw-filter-footer {
     display: flex;
     align-items: center;
-    gap: 8px;
-    border: 1px solid var(--lw-line);
-    padding: 9px;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--lw-line-soft);
+    background: rgba(10, 13, 11, 0.35);
+}
+.lw-filter-footer > span {
+    color: var(--lw-muted);
+    font-size: 10px;
+}
+.lw-filter-footer > button {
+    border: 0;
+    padding: 4px 0;
+    background: transparent;
+    color: var(--lw-brass);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.lw-filter-footer > button:hover:not(:disabled) {
     color: var(--lw-ink);
 }
-.lw-check input:checked + span {
-    border-color: var(--lw-brass);
+.lw-filter-footer > button:disabled {
+    cursor: default;
+    opacity: 0.38;
 }
 .lw-sort-popover {
     width: 230px;
@@ -2464,11 +2596,21 @@
         padding-inline: 13px;
     }
     .lw-catalog-actions {
+        position: relative;
         justify-content: flex-end;
         overflow: visible;
     }
+    .lw-menu-wrap {
+        position: static;
+    }
     .lw-popover {
+        top: calc(100% + 8px);
         right: 8px;
+    }
+    .lw-filter-popover {
+        right: 12px;
+        left: 12px;
+        width: auto;
     }
     .lw-search {
         padding-inline: 20px;
