@@ -1,6 +1,6 @@
 import nextEnv from '@next/env';
 import process from 'node:process';
-import { assertStripeEnvironment, stripeMode } from '../../src/lib/providerSafety';
+import { assertStripeEnvironment, stripeMode, stripeTaxConfiguration } from '../../src/lib/providerSafety';
 
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
@@ -28,6 +28,7 @@ const missing = required.filter((name) => !process.env[name]);
 const failures: string[] = [];
 try {
     assertStripeEnvironment(process.env);
+    stripeTaxConfiguration(process.env);
 } catch (error) {
     failures.push(error instanceof Error ? error.message : 'Stripe environment validation failed.');
 }
@@ -37,6 +38,7 @@ console.log(
     JSON.stringify({
         environment: process.env.VERCEL_ENV || 'local',
         stripeMode: process.env.STRIPE_SECRET_KEY ? stripeMode(process.env.STRIPE_SECRET_KEY) : null,
+        stripeAutomaticTax: process.env.STRIPE_AUTOMATIC_TAX_ENABLED === 'true',
         writeFreeze: (process.env.JWS_WRITE_FREEZE || '').split(',').filter(Boolean),
         requiredVariablesPresent: Object.fromEntries(required.map((name) => [name, Boolean(process.env[name])])),
         ready: failures.length === 0,

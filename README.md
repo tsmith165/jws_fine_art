@@ -33,6 +33,7 @@ Required application variables are checked by `pnpm release:check-env` without p
 - `CONVEX_SERVER_WRITE_SECRET`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`
 - `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_AUTOMATIC_TAX_ENABLED=true` and `STRIPE_ARTWORK_TAX_CODE` when Stripe Tax is activated
 - `UPLOADTHING_TOKEN`
 - `RESEND_API_KEY`
 - `UNSUBSCRIBE_SIGNING_SECRET`
@@ -49,6 +50,12 @@ These variables are intentionally separate from the public browser capture key. 
 Browser capture runs only on `jwsfineart.com` and `www.jwsfineart.com`, excludes owner/auth routes, strips query strings, disables autocapture and session recording, and records only explicit privacy-safe events. Preview capture remains off unless `NEXT_PUBLIC_POSTHOG_CAPTURE_PREVIEWS=true` is deliberately configured.
 
 The Convex deployment also requires Clerk's JWT issuer configuration. Never share live Stripe credentials with Development or Preview scopes.
+
+Stripe Tax is intentionally fail-closed behind `STRIPE_AUTOMATIC_TAX_ENABLED`. Before enabling it, add the applicable tax registration in
+Stripe, configure the account origin address, and set `STRIPE_ARTWORK_TAX_CODE` to the reviewed Stripe tax code for original physical artwork.
+Checkout uses tax-inclusive pricing so the displayed artwork and delivery total does not increase; Stripe records the jurisdiction-specific
+tax portion within that total. Local pickup collects a billing address for the tax calculation, while shipped orders use Stripe's collected
+shipping address.
 
 ## Verification
 

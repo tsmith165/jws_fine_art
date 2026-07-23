@@ -20,3 +20,15 @@ export function assertStripeEnvironment(environment: Record<string, string | und
     }
     return { secretKey, mode };
 }
+
+export function stripeTaxConfiguration(environment: Record<string, string | undefined> = process.env): {
+    enabled: boolean;
+    artworkTaxCode: string | null;
+} {
+    const enabled = environment.STRIPE_AUTOMATIC_TAX_ENABLED === 'true';
+    const artworkTaxCode = environment.STRIPE_ARTWORK_TAX_CODE?.trim() || null;
+    if (enabled && !artworkTaxCode) {
+        throw new Error('Stripe Tax is enabled without an artwork tax code.');
+    }
+    return { enabled, artworkTaxCode };
+}

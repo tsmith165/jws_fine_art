@@ -185,6 +185,7 @@ export const createArtwork = mutation({
             legacyHomepagePriority: -homepageOrder,
             galleryOrder,
             homepageOrder,
+            completedAt: now,
             ownerMutatedFields: Object.entries(fields)
                 .filter(([, value]) => value !== undefined)
                 .map(([field]) => field),

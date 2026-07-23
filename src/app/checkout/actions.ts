@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { getServerConvexClient } from '@/data/serverConvex';
-import { assertStripeEnvironment } from '@/lib/providerSafety';
+import { assertStripeEnvironment, stripeTaxConfiguration } from '@/lib/providerSafety';
 import type { ShippingDestination } from '@/lib/shipping';
 
 function stripeClient() {
@@ -53,6 +53,7 @@ export async function runStripePurchase(data: FormData) {
     const { client, serverSecret } = getServerConvexClient();
     try {
         const stripe = stripeClient();
+        const tax = stripeTaxConfiguration();
         const artworkLegacyId = Number(requiredFormValue(data, 'piece_id'));
         if (!Number.isSafeInteger(artworkLegacyId) || artworkLegacyId <= 0) throw new Error('Artwork ID is invalid.');
         const buyerName = requiredFormValue(data, 'full_name');
@@ -70,6 +71,7 @@ export async function runStripePurchase(data: FormData) {
             buyerEmail,
             buyerPhone,
             destination: destination as ShippingDestination,
+            automaticTaxEnabled: tax.enabled,
             cancelToken,
         });
         const origin = siteOrigin(await headers());
@@ -81,7 +83,9 @@ export async function runStripePurchase(data: FormData) {
                     product_data: {
                         name: intent.artworkTitle,
                         ...(intent.imageUrl ? { images: [intent.imageUrl] } : {}),
+                        ...(tax.artworkTaxCode ? { tax_code: tax.artworkTaxCode } : {}),
                     },
+                    ...(tax.enabled ? { tax_behavior: 'inclusive' as const } : {}),
                 },
                 quantity: 1,
             },
@@ -94,7 +98,9 @@ export async function runStripePurchase(data: FormData) {
                     product_data: {
                         name: 'Insured packing & U.S. shipping',
                         description: intent.shippingDescription,
+                        ...(tax.enabled ? { tax_code: 'txcd_92010001' } : {}),
                     },
+                    ...(tax.enabled ? { tax_behavior: 'inclusive' as const } : {}),
                 },
                 quantity: 1,
             });
@@ -118,6 +124,12 @@ export async function runStripePurchase(data: FormData) {
                 success_url: `${origin}/checkout/success/${artworkLegacyId}?session_id={CHECKOUT_SESSION_ID}`,
                 cancel_url: `${origin}/checkout/cancel/${artworkLegacyId}?intent_id=${intent.intentId}&cancel_token=${encodeURIComponent(cancelToken)}`,
                 ...(destination === 'domestic' ? { shipping_address_collection: { allowed_countries: ['US' as const] } } : {}),
+                ...(tax.enabled
+                    ? {
+                          automatic_tax: { enabled: true },
+                          ...(destination === 'pickup' ? { billing_address_collection: 'required' as const } : {}),
+                      }
+                    : {}),
                 metadata,
                 payment_intent_data: {
                     metadata,

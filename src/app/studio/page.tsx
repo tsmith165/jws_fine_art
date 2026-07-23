@@ -22,7 +22,7 @@ export default async function StudioPage() {
                         src="/bio/jill-weeks-smith-portrait.jpg"
                         alt="Jill Weeks Smith"
                         fill
-                        sizes="(max-width: 760px) 92vw, 40vw"
+                        sizes="(max-width: 760px) 86vw, 420px"
                         priority
                     />
                 </div>

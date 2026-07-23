@@ -87,4 +87,21 @@ describe('ownerArtworkAttention', () => {
         expect(issues).toHaveLength(1);
         expect(issues[0].label).toBe('Frame detail needs a larger original');
     });
+
+    it('keeps a seeded release date in the queue until it differs from completion', () => {
+        const completedAt = Date.UTC(2026, 5, 10, 12);
+        const issues = ownerArtworkAttention({
+            ...completeArtwork,
+            completed_at: completedAt,
+            released_at: completedAt,
+        });
+
+        expect(issues).toEqual([
+            expect.objectContaining({
+                id: 'metadata-released_at-unreviewed',
+                label: 'Release date needs review',
+                editorAnchor: 'artwork-release-date',
+            }),
+        ]);
+    });
 });

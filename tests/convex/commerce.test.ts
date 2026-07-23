@@ -198,6 +198,68 @@ describe('Convex commerce', () => {
         });
     });
 
+    it('waits for the authoritative Checkout Session when automatic tax is enabled and requires its shipping address', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+            shippingAddress: undefined,
+            automaticTaxEnabled: true,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_tax',
+            paymentIntentId: 'pi_tax',
+        });
+
+        const paymentIntent = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_tax_pi',
+            eventType: 'payment_intent.succeeded',
+            paymentIntentId: 'pi_tax',
+            checkoutSessionId: 'cs_tax',
+            amountReceivedCents: 102500,
+            currency: 'usd',
+        });
+        expect(paymentIntent.outcome).toBe('ignored');
+
+        const missingAddress = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_tax_session_missing_address',
+            eventType: 'checkout.session.completed',
+            paymentIntentId: 'pi_tax',
+            checkoutSessionId: 'cs_tax',
+            amountReceivedCents: 102500,
+            currency: 'usd',
+            paymentStatus: 'paid',
+            taxCents: 7500,
+        });
+        expect(missingAddress).toMatchObject({ outcome: 'quarantined', reason: expect.stringContaining('shipping address') });
+
+        const completed = await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_tax_session',
+            eventType: 'checkout.session.completed',
+            paymentIntentId: 'pi_tax',
+            checkoutSessionId: 'cs_tax',
+            amountReceivedCents: 102500,
+            currency: 'usd',
+            paymentStatus: 'paid',
+            taxCents: 7500,
+            shippingAddress: '123 Coast Highway\nSan Diego, CA, 92101\nUS',
+        });
+        expect(completed.outcome).toBe('processed');
+        const order = await t.run(async (ctx) => ctx.db.query('orders').first());
+        expect(order).toMatchObject({
+            taxPaidCents: 7500,
+            taxIncluded: true,
+            shippingAddress: '123 Coast Highway\nSan Diego, CA, 92101\nUS',
+        });
+    });
+
     it('requires a studio quote for international delivery', async () => {
         const t = createHarness();
         await seedArtwork(t);

@@ -74,6 +74,7 @@ export const createCheckoutIntent = mutation({
         buyerPhone: v.string(),
         shippingAddress: v.optional(v.string()),
         destination: v.union(v.literal('domestic'), v.literal('pickup'), v.literal('international')),
+        automaticTaxEnabled: v.optional(v.boolean()),
         cancelToken: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
@@ -144,6 +145,7 @@ export const createCheckoutIntent = mutation({
             shippingTier: shipping.classification,
             shippingPolicyVersion: SHIPPING_POLICY_VERSION,
             taxIncluded: true,
+            automaticTaxEnabled: args.automaticTaxEnabled ?? false,
             cancelToken: args.cancelToken,
             stripeCheckoutSessionId: null,
             stripePaymentIntentId: null,
@@ -386,6 +388,14 @@ export const processStripeEvent = mutation({
             await recordStripeEvent(ctx, eventIdentity, 'processed');
             return { outcome: 'processed' as const, notification: null };
         }
+        if (args.eventType === 'payment_intent.succeeded' && intent.automaticTaxEnabled) {
+            await ctx.db.patch(intent._id, {
+                stripePaymentIntentId: args.paymentIntentId ?? intent.stripePaymentIntentId,
+                updatedAt: Date.now(),
+            });
+            await recordStripeEvent(ctx, eventIdentity, 'ignored');
+            return { outcome: 'ignored' as const, notification: null };
+        }
         if (!args.paymentIntentId) return quarantine(ctx, eventIdentity, 'A successful payment did not include a payment intent ID.');
         const amountReceivedCents = args.amountReceivedCents;
         if (!Number.isSafeInteger(amountReceivedCents) || amountReceivedCents !== intent.totalCents || args.currency !== intent.currency) {
@@ -424,6 +434,9 @@ export const processStripeEvent = mutation({
         const address = JSON.parse(intent.shippingAddressJson) as { formatted?: string };
         const deliveryMethod = intent.deliveryMethod ?? (intent.international ? 'international_quote' : 'domestic_shipping');
         const shippingAddress = deliveryMethod === 'local_pickup' ? '' : (args.shippingAddress ?? address.formatted ?? '');
+        if (deliveryMethod === 'domestic_shipping' && !shippingAddress.trim()) {
+            return quarantine(ctx, eventIdentity, 'Paid shipped order is missing the Stripe-collected shipping address.');
+        }
         const orderId = await ctx.db.insert('orders', {
             source: 'stripe',
             legacySourceIds: [],

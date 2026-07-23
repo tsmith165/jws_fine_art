@@ -31,6 +31,7 @@ function stripeEventPayload(event: Stripe.Event) {
         };
     }
     if (object.object === 'payment_intent') {
+        const shippingDetails = object.shipping;
         return {
             eventId: event.id,
             eventType: event.type,
@@ -40,10 +41,10 @@ function stripeEventPayload(event: Stripe.Event) {
             currency: object.currency,
             paymentStatus: null,
             taxCents: null,
-            customerName: null,
+            customerName: shippingDetails?.name ?? null,
             customerEmail: null,
             customerPhone: null,
-            shippingAddress: null,
+            shippingAddress: formatAddress(shippingDetails?.address),
         };
     }
     if (object.object === 'charge') {

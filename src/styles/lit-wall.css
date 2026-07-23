@@ -1370,15 +1370,17 @@
 
 .lw-studio-hero {
     display: grid;
-    grid-template-columns: minmax(320px, 0.9fr) minmax(380px, 1.1fr);
+    grid-template-columns: minmax(280px, 0.72fr) minmax(420px, 1.28fr);
     gap: clamp(50px, 8vw, 120px);
     align-items: center;
     min-height: calc(100dvh - 76px);
 }
 .lw-studio-portrait {
     position: relative;
+    width: min(100%, 440px);
     aspect-ratio: 3 / 4;
     min-height: 0;
+    justify-self: center;
 }
 .lw-studio-portrait img {
     object-fit: cover;
@@ -1464,21 +1466,21 @@
 .lw-timeline-media {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
     align-self: center;
 }
 .lw-timeline-media figure {
     position: relative;
-    min-height: 250px;
+    aspect-ratio: 1;
     margin: 0;
     overflow: hidden;
-    background: var(--lw-panel);
 }
 .lw-timeline-media figure.is-featured {
-    min-height: 440px;
+    aspect-ratio: 5 / 4;
     grid-column: 1 / -1;
 }
 .lw-timeline-media img {
+    display: block;
     object-fit: cover;
 }
 .lw-studio-shows {

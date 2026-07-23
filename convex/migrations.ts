@@ -103,6 +103,40 @@ export const backfillArtworkCategories = internalMutation({
     },
 });
 
+/**
+ * The legacy Pieces table did not contain historical completion or release
+ * timestamps. Seed both fields from the most reliable existing artwork
+ * timestamp, then let the owner review the public release date in the editor.
+ * Equality between the two dates is intentionally used as the review signal.
+ */
+export const backfillArtworkCompletionDates = internalMutation({
+    args: { dryRun: v.boolean() },
+    handler: async (ctx, args) => {
+        const artworks = (await ctx.db.query('artworks').collect()).filter((artwork) => !artwork.absentFromSource);
+        const changes = artworks.flatMap((artwork) => {
+            const baseline = artwork.completedAt ?? artwork.releasedAt ?? artwork.importedAt;
+            const completedAt = artwork.completedAt ?? baseline;
+            const releasedAt = artwork.releasedAt ?? baseline;
+            if (artwork.completedAt === completedAt && artwork.releasedAt === releasedAt) return [];
+            return [{ artwork, completedAt, releasedAt }];
+        });
+
+        if (!args.dryRun) {
+            for (const { artwork, completedAt, releasedAt } of changes) {
+                await ctx.db.patch(artwork._id, { completedAt, releasedAt });
+            }
+        }
+
+        return {
+            dryRun: args.dryRun,
+            scanned: artworks.length,
+            changed: changes.length,
+            seededFromExistingRelease: changes.filter(({ artwork }) => !artwork.completedAt && Boolean(artwork.releasedAt)).length,
+            seededFromImportTimestamp: changes.filter(({ artwork }) => !artwork.completedAt && !artwork.releasedAt).length,
+        };
+    },
+});
+
 export const deriveCanonical = internalMutation({
     args: {
         runId: v.string(),
@@ -203,6 +237,8 @@ export const deriveCanonical = internalMutation({
                     ...imported,
                     galleryOrder: initialArtworkImport ? (galleryPositions.get(piece.legacyId) ?? nextGalleryOrder) : nextGalleryOrder,
                     homepageOrder: initialArtworkImport ? (homepagePositions.get(piece.legacyId) ?? nextHomepageOrder) : nextHomepageOrder,
+                    completedAt: args.importedAt,
+                    releasedAt: args.importedAt,
                     ownerMutatedFields: [],
                     ownerRevision: 0,
                     importedAt: args.importedAt,
@@ -568,6 +604,7 @@ export const auditSummary = internalQuery({
                         legacyGalleryOrder,
                         legacyHomepagePriority,
                         priceCents,
+                        completedAt,
                         releasedAt,
                         sold,
                         available,
@@ -592,6 +629,7 @@ export const auditSummary = internalQuery({
                         legacyGalleryOrder,
                         legacyHomepagePriority,
                         priceCents,
+                        completedAt,
                         releasedAt,
                         sold,
                         available,

@@ -4,7 +4,15 @@ import { Search } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 
-export function OwnerCatalogFilters({ initialQuery, initialFilter }: { initialQuery: string; initialFilter: string }) {
+export function OwnerCatalogFilters({
+    initialQuery,
+    initialFilter,
+    attentionCount,
+}: {
+    initialQuery: string;
+    initialFilter: string;
+    attentionCount: number;
+}) {
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -60,7 +68,7 @@ export function OwnerCatalogFilters({ initialQuery, initialFilter }: { initialQu
                 >
                     <option value="active">Active artwork</option>
                     <option value="all">All artwork</option>
-                    <option value="needs-details">Needs details</option>
+                    <option value="needs-details">Needs details ({attentionCount})</option>
                     <option value="archive">Archive</option>
                 </select>
                 {isPending ? (

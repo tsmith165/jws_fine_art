@@ -69,6 +69,11 @@ function mediaAttentionIssues(piece: PiecesWithImages): OwnerArtworkAttentionIss
     });
 }
 
+export function artworkReleaseDateNeedsReview(piece: Pick<PiecesWithImages, 'completed_at' | 'released_at'>): boolean {
+    const completedDate = releaseDateValue(piece.completed_at);
+    return Boolean(completedDate && completedDate === releaseDateValue(piece.released_at));
+}
+
 export function ownerArtworkAttention(piece: PiecesWithImages): OwnerArtworkAttentionIssue[] {
     const validation = validateOwnerArtwork({
         piece_title: piece.title,
@@ -94,6 +99,16 @@ export function ownerArtworkAttention(piece: PiecesWithImages): OwnerArtworkAtte
             detail: issue.message,
             editorAnchor: editorAnchors[issue.field],
         }));
+    if (artworkReleaseDateNeedsReview(piece) && !validation.byField.has('released_at')) {
+        metadataIssues.push({
+            id: 'metadata-released_at-unreviewed',
+            kind: 'metadata',
+            tone: 'warning',
+            label: 'Release date needs review',
+            detail: 'This date still matches the provisional completion-date baseline. Confirm when collectors first saw the work.',
+            editorAnchor: 'artwork-release-date',
+        });
+    }
 
     const categoryIssues: OwnerArtworkAttentionIssue[] = piece.categories.length
         ? []

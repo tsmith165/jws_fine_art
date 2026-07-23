@@ -34,6 +34,7 @@ async function ownerArtworks(ctx: QueryCtx) {
             legacyGalleryOrder: artwork.legacyGalleryOrder ?? -artwork.galleryOrder,
             legacyHomepagePriority: artwork.legacyHomepagePriority ?? -artwork.homepageOrder,
             priceCents: artwork.priceCents,
+            completedAt: artwork.completedAt ?? null,
             releasedAt: artwork.releasedAt ?? null,
             sold: artwork.sold,
             available: artwork.available,

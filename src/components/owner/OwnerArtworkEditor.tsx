@@ -22,6 +22,7 @@ import type { PiecesWithImages } from '@/types/artwork';
 import { handleImageDelete, handleMediaOrderUpdate, onSubmitEditForm, repairStoredInstagramShareReference } from '@/app/admin/edit/actions';
 import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 import { normalizeInstagramShareReference, validateOwnerArtwork, type OwnerArtworkField } from '@/lib/ownerArtworkValidation';
+import { artworkReleaseDateNeedsReview } from '@/lib/ownerArtworkAttention';
 import { reorderArtworkMedia } from '@/lib/ownerMediaOrdering';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 import { artworkAvailabilityForStatus, type ArtworkListingStatus } from '@shared/artworkListingState';
@@ -165,6 +166,12 @@ export function OwnerArtworkEditor({
     const validation = useMemo(() => validateOwnerArtwork(form), [form]);
     const listingStatus = validation.listingStatus;
     const fieldIssue = (field: OwnerArtworkField) => validation.byField.get(field);
+    const releaseDateNeedsReview =
+        Boolean(form.released_at) &&
+        artworkReleaseDateNeedsReview({
+            completed_at: piece.completed_at,
+            released_at: form.released_at ? Date.parse(`${form.released_at}T12:00:00.000Z`) : null,
+        });
     const checks = [
         {
             key: 'primary-image',
@@ -199,8 +206,12 @@ export function OwnerArtworkEditor({
         {
             key: 'release-date',
             label: 'Release date',
-            ready: !fieldIssue('released_at'),
-            detail: fieldIssue('released_at')?.message ?? 'The public release date is ready for newest-first ordering.',
+            ready: !fieldIssue('released_at') && !releaseDateNeedsReview,
+            detail:
+                fieldIssue('released_at')?.message ??
+                (releaseDateNeedsReview
+                    ? 'This still matches the provisional completion-date baseline. Confirm the public release date.'
+                    : 'The public release date is ready for newest-first ordering.'),
             actionLabel: 'Review release date',
             href: '#artwork-release-date',
         },
@@ -578,7 +589,14 @@ export function OwnerArtworkEditor({
                                           : 'Kept in the catalog without a purchase option.'}
                                 </OwnerFieldFooter>
                             </label>
-                            <div className={fieldClass('released_at')} data-owner-field="released_at">
+                            <div
+                                className={
+                                    releaseDateNeedsReview && !fieldIssue('released_at')
+                                        ? 'owner-field has-warning'
+                                        : fieldClass('released_at')
+                                }
+                                data-owner-field="released_at"
+                            >
                                 <span className="owner-field-label">
                                     <span>Release date</span>
                                     <small className="is-publish">Publish required</small>
@@ -588,10 +606,22 @@ export function OwnerArtworkEditor({
                                     value={form.released_at}
                                     onChange={(value) => update('released_at', value)}
                                     invalid={fieldIssue('released_at')?.tone === 'error'}
-                                    describedBy={describedBy('released_at')}
+                                    describedBy={
+                                        describedBy('released_at') ?? (releaseDateNeedsReview ? 'artwork-release-date-review' : undefined)
+                                    }
                                     required={listingStatus === 'available'}
                                 />
                                 <FieldFeedback field="released_at" issue={fieldIssue('released_at')} />
+                                {releaseDateNeedsReview && !fieldIssue('released_at') ? (
+                                    <OwnerFieldFooter
+                                        id="artwork-release-date-review"
+                                        className="owner-field-feedback is-warning"
+                                        aria-live="polite"
+                                    >
+                                        <CircleAlert size={12} />
+                                        This still matches the provisional completion date. Confirm when collectors first saw this work.
+                                    </OwnerFieldFooter>
+                                ) : null}
                             </div>
                         </OwnerFormRow>
                         <fieldset

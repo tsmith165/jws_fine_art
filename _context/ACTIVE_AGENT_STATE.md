@@ -1,5 +1,52 @@
 # Active Agent State
 
+## July 23 Release-Date Baseline, Studio, And Tax-Ready Checkout
+
+- Current objective: finish the release-date baseline/editor warning,
+  studio imagery, exact owner attention counts, and tax-ready checkout release.
+- Production Convex `hushed-crane-268` and development
+  `laudable-flamingo-85` are deployed.
+- Artwork migration results:
+  - Production: 92 scanned, 92 seeded, verification rerun changed 0.
+  - Development: 86 scanned, 86 seeded.
+- Historical source data had no artwork-level `completedAt`. The provisional
+  baseline is `completedAt ?? releasedAt ?? importedAt`, copied into both
+  completion and release dates when missing. Equality is a visible
+  `Release date needs review` attention issue.
+- `/admin/artwork` now derives Needs details from the exact shared Needs
+  Attention rules/count and right-aligns Catalog View.
+- Checkout has a fail-closed, tax-inclusive Stripe Tax path behind
+  `STRIPE_AUTOMATIC_TAX_ENABLED` plus a reviewed
+  `STRIPE_ARTWORK_TAX_CODE`. The flag must remain off until Stripe account
+  registration/origin/tax-code review is complete.
+- Shipped PaymentIntent events now carry Stripe addresses. Automatic-tax
+  fulfillment waits for `checkout.session.completed`; missing domestic
+  addresses quarantine.
+- The Studio portrait is narrower. The timeline collage now uses a 5:4 lead
+  crop plus two square crops, edge-to-edge with `object-fit: cover` and no
+  backing panel.
+- Automated verification already passed before the final collage adjustment:
+  ESLint, TypeScript, 17 test files / 111 tests, and production build.
+- Remaining: rerun the final automated gate, commit and push all tracked
+  changes, deploy Vercel production, inspect Studio/admin production UI,
+  validate artifacts, and stop the local server.
+
+## July 23 Catalog Dates, Studio, Commerce, And Mailing Follow-up
+
+- Objective: seed artwork release dates from a completion-date baseline, expose
+  unreviewed seeded dates, align owner attention counts and catalog filtering,
+  correct studio imagery, and audit tax, address collection, business metrics,
+  and mailing production readiness.
+- OMP read-only audits in progress:
+  - Stripe/tax/address: `7740ae39-409b-4909-817e-e94f95decd22`
+  - Business dashboard: `10c9f886-cdac-44aa-9c0e-44f14b06d787`
+  - Mailing: `80cd7da9-edc7-4c14-ae17-0af40e74322f`
+- Current production records do not contain an artwork-level `completedAt`;
+  the only existing `completedAt` is migration-run bookkeeping. Production
+  record shape was verified before choosing a backfill strategy.
+- Next action: implement the catalog/studio changes, settle the completion-date
+  baseline explicitly, then verify and deploy before synthesizing the audits.
+
 ## July 23 Commerce Hardening And Shipping Release
 
 - Objective: deny second purchases of one-of-one artwork, make Stripe webhook

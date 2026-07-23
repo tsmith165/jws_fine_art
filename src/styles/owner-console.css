@@ -766,6 +766,7 @@
     grid-template-columns: auto minmax(170px, auto);
     gap: 5px 10px;
     align-items: center;
+    margin-left: auto;
 }
 .owner-filter-control label,
 .owner-filter-state {
@@ -3350,6 +3351,7 @@
     .owner-search,
     .owner-filter-control {
         width: 100%;
+        margin-left: 0;
     }
     .owner-filter-control {
         grid-template-columns: 1fr;
