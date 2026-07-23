@@ -18,12 +18,29 @@
   records an audit event.
 - The Categories field now has a contained collection-placement surface,
   selected-count status, grouped options, and stacked mobile treatment.
-- Verification passed so far: formatting, `git diff --check`, lint, typecheck,
-  all 103 tests, and the Node 24 Next.js production build.
-- Local authenticated admin QA remains unavailable because Clerk redirects the
-  local origin to `/not-authorized`.
-- Next action: commit/push, deploy Convex and Vercel, then perform authenticated
-  production desktop/mobile interaction QA and artifact validation.
+- Verification passed: formatting, `git diff --check`, lint, typecheck, all 103
+  tests, and the Node 24 Next.js production build.
+- Source commits `42df371` and `fcb2719` are pushed to
+  `origin/feat/full-site-overhaul`.
+- Convex production `hushed-crane-268` and development
+  `laudable-flamingo-85` are deployed.
+- Final Vercel deployment `dpl_FdCm2SntZijgcZGASod5NiEVPBkn` is ready and
+  aliased to `https://www.jwsfineart.com`.
+- Authenticated production QA passed at `1440 × 1000` and `390 × 844`. The
+  primary action entered the dedicated replacement state without uploading,
+  saving, or changing artwork data; the modal and page had zero horizontal
+  overflow.
+- The navigation badge and Needs Attention queue both report 71 pieces. The
+  badge is centered at desktop and visible inside the collapsed mobile rail.
+  Categories render as four grouped desktop choices and one-column mobile
+  choices. The Instagram field contains the bare `CmuPRcgBwQr` token on artwork
+  41 and exposes the new guidance.
+- Production browser logs contained no application errors. The known Clerk
+  development-key warning remains.
+- Artifact aliases: `admin-form-final-production-desktop`,
+  `admin-form-final-production-mobile`, and
+  `admin-media-primary-final-production-desktop`. Artifact validation passed
+  with 72 design artifacts, 118 preview QA artifacts, and 54 analysis records.
 
 ## July 23 Catalog Artwork Image Fidelity
 
