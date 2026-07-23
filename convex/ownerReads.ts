@@ -107,7 +107,6 @@ export const getHomepageRotation = query({
         const artworkLegacyIds = artworks
             .filter((artwork) => artwork.active && artwork.media.some((item) => item.role === 'primary'))
             .sort((a, b) => b.legacyHomepagePriority - a.legacyHomepagePriority || b.legacyId - a.legacyId)
-            .slice(0, 5)
             .map((artwork) => artwork.legacyId);
         return { configured: false, artworkLegacyIds };
     },

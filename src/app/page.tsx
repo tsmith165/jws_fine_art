@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-    const [heroPieces, allPieces] = await Promise.all([readHomepageArtworks(5), readPublicArtworks()]);
+    const [heroPieces, allPieces] = await Promise.all([readHomepageArtworks(), readPublicArtworks()]);
     const available = allPieces.filter((piece) => piece.available && !piece.sold).slice(0, 6);
 
     return (

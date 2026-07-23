@@ -19,8 +19,8 @@ export async function readPublicArtworkBySlug(slug: string): Promise<PiecesWithI
     return artwork ? toLegacyArtwork(artwork) : null;
 }
 
-export async function readHomepageArtworks(limit: number): Promise<PiecesWithImages[]> {
-    const artworks = await getConvexClient().query(api.artworks.listHomepage, { limit });
+export async function readHomepageArtworks(): Promise<PiecesWithImages[]> {
+    const artworks = await getConvexClient().query(api.artworks.listHomepage, {});
     return artworks.map(toLegacyArtwork);
 }
 

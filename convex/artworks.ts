@@ -73,10 +73,9 @@ export const listPublic = query({
 });
 
 export const listHomepage = query({
-    args: { limit: v.number() },
-    handler: async (ctx, args) => {
+    args: {},
+    handler: async (ctx) => {
         const artworks = await activeArtworks(ctx);
-        const limit = Math.min(5, Math.max(0, Math.floor(args.limit)));
         const rotation = await ctx.db
             .query('homepageRotations')
             .withIndex('by_key', (q) => q.eq('key', 'primary'))
@@ -87,14 +86,12 @@ export const listHomepage = query({
             const artworkByLegacyId = new Map(artworks.map((artwork) => [artwork.legacyId, artwork]));
             return rotation.artworkLegacyIds
                 .map((legacyId) => artworkByLegacyId.get(legacyId))
-                .filter((artwork): artwork is NonNullable<typeof artwork> => Boolean(artwork && hasPrimaryImage(artwork)))
-                .slice(0, limit);
+                .filter((artwork): artwork is NonNullable<typeof artwork> => Boolean(artwork && hasPrimaryImage(artwork)));
         }
 
         return artworks
             .filter(hasPrimaryImage)
-            .sort((a, b) => b.legacyHomepagePriority - a.legacyHomepagePriority || b.legacyId - a.legacyId)
-            .slice(0, limit);
+            .sort((a, b) => b.legacyHomepagePriority - a.legacyHomepagePriority || b.legacyId - a.legacyId);
     },
 });
 

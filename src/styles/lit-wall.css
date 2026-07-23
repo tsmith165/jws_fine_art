@@ -394,10 +394,15 @@
 .lw-hero-slide img {
     object-fit: cover;
 }
-.lw-hero-slide.is-current,
+.lw-hero-slide.is-current.is-revealed,
 .lw-hero-slide.is-incoming.is-active {
     opacity: 1;
     transform: scale(1);
+}
+.lw-hero-slide.is-current.is-revealed .lw-progressive-image-main,
+.lw-hero-slide.is-incoming.is-active .lw-progressive-image-main {
+    transform-origin: center;
+    animation: lw-hero-ken-burns 9s cubic-bezier(0.2, 0.55, 0.25, 1) both;
 }
 .lw-hero-slide.is-current.is-exiting {
     opacity: 0;
@@ -444,10 +449,15 @@
 .lw-hero-dots {
     display: flex;
     gap: 9px;
+    max-width: min(100%, 620px);
     margin-top: 38px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
 }
 .lw-hero-dots button {
     position: relative;
+    flex: 0 0 44px;
     width: 44px;
     height: 44px;
     border: 0;
@@ -679,7 +689,7 @@
     background: linear-gradient(transparent, rgba(5, 7, 5, 0.8));
     content: '';
 }
-.lw-collection-card span {
+.lw-collection-card-label {
     position: absolute;
     z-index: 2;
     right: 24px;
@@ -690,6 +700,15 @@
     justify-content: space-between;
     font-family: var(--lw-display);
     font-size: 29px;
+}
+
+@keyframes lw-hero-ken-burns {
+    from {
+        transform: scale(1.025) translate3d(-0.35%, 0.2%, 0);
+    }
+    to {
+        transform: scale(1.085) translate3d(0.45%, -0.3%, 0);
+    }
 }
 .lw-artist-intro {
     display: grid;

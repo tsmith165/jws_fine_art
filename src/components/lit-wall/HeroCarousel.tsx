@@ -13,8 +13,9 @@ import { ImageWarmup, ProgressiveArtworkImage } from './ProgressiveArtworkImage'
 const HERO_TRANSITION_MS = 1150;
 
 export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
-    const slides = pieces.slice(0, 5);
+    const slides = pieces;
     const [paused, setPaused] = useState(false);
+    const [hasRevealedInitialSlide, setHasRevealedInitialSlide] = useState(false);
     const { activeIndex, incomingIndex, phase, displayIndex, targetIndex, select, ready, transitionEnd } = useImageTransition(
         slides.length,
         HERO_TRANSITION_MS,
@@ -39,7 +40,10 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
     return (
         <section className="lw-hero" aria-label="Featured artwork">
             <div className="lw-hero-slides" aria-hidden="true">
-                <div className={`lw-hero-slide is-current${phase === 'transitioning' ? 'is-exiting' : ''}`} key={current.id}>
+                <div
+                    className={`lw-hero-slide is-current${hasRevealedInitialSlide ? 'is-revealed' : ''}${phase === 'transitioning' ? 'is-exiting' : ''}`}
+                    key={current.id}
+                >
                     <ProgressiveArtworkImage
                         src={current.image_path}
                         placeholderSrc={current.small_image_path}
@@ -48,6 +52,7 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                         quality={88}
                         priority={activeIndex === 0}
                         fetchPriority={activeIndex === 0 ? 'high' : 'auto'}
+                        onReady={() => setHasRevealedInitialSlide(true)}
                     />
                 </div>
                 {incoming && incomingIndex !== null ? (

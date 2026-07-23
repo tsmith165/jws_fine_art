@@ -237,8 +237,8 @@ export const setHomepageRotation = mutation({
     args: { artworkLegacyIds: v.array(v.number()) },
     handler: async (ctx, args) => {
         const actorId = await owner(ctx);
-        if (args.artworkLegacyIds.length < 1 || args.artworkLegacyIds.length > 5) {
-            throw new Error('Choose between one and five artworks for the homepage.');
+        if (args.artworkLegacyIds.length < 1) {
+            throw new Error('Choose at least one artwork for the homepage.');
         }
         if (args.artworkLegacyIds.some((legacyId) => !Number.isSafeInteger(legacyId) || legacyId <= 0)) {
             throw new Error('Homepage artwork IDs must be positive integers.');

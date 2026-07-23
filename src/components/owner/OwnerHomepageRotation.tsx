@@ -6,8 +6,6 @@ import { useMemo, useState, useTransition } from 'react';
 import type { Pieces } from '@/types/artwork';
 import { saveHomepageRotation } from '@/app/admin/homepage/actions';
 
-const MAX_HOMEPAGE_ARTWORKS = 5;
-
 function ArtworkImage({ artwork }: { artwork: Pieces }) {
     return (
         <Image
@@ -22,7 +20,7 @@ function ArtworkImage({ artwork }: { artwork: Pieces }) {
 
 export function OwnerHomepageRotation({ artworks, initialSelectedIds }: { artworks: Pieces[]; initialSelectedIds: number[] }) {
     const artworkById = useMemo(() => new Map(artworks.map((artwork) => [artwork.id, artwork])), [artworks]);
-    const initialIds = initialSelectedIds.filter((id) => artworkById.has(id)).slice(0, MAX_HOMEPAGE_ARTWORKS);
+    const initialIds = initialSelectedIds.filter((id) => artworkById.has(id));
     const [selectedIds, setSelectedIds] = useState(initialIds);
     const [savedIds, setSavedIds] = useState(initialIds);
     const [search, setSearch] = useState('');
@@ -75,7 +73,7 @@ export function OwnerHomepageRotation({ artworks, initialSelectedIds }: { artwor
                         <h2 id="homepage-selected-title">Selected artwork</h2>
                         <p>The first artwork loads first. Use the arrows to set the sequence.</p>
                     </div>
-                    <strong>{selected.length} / {MAX_HOMEPAGE_ARTWORKS}</strong>
+                    <strong>{selected.length} selected</strong>
                 </div>
                 <div className="owner-homepage-selected-list">
                     {selected.map((artwork, index) => (
@@ -87,23 +85,49 @@ export function OwnerHomepageRotation({ artworks, initialSelectedIds }: { artwor
                                 <small>{artwork.piece_type || 'Medium not set'}</small>
                             </div>
                             <div className="owner-homepage-row-actions">
-                                <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`Move ${artwork.title} earlier`} title="Move earlier">
+                                <button
+                                    type="button"
+                                    onClick={() => move(index, -1)}
+                                    disabled={index === 0}
+                                    aria-label={`Move ${artwork.title} earlier`}
+                                    title="Move earlier"
+                                >
                                     <ArrowUp size={17} />
                                 </button>
-                                <button type="button" onClick={() => move(index, 1)} disabled={index === selected.length - 1} aria-label={`Move ${artwork.title} later`} title="Move later">
+                                <button
+                                    type="button"
+                                    onClick={() => move(index, 1)}
+                                    disabled={index === selected.length - 1}
+                                    aria-label={`Move ${artwork.title} later`}
+                                    title="Move later"
+                                >
                                     <ArrowDown size={17} />
                                 </button>
-                                <button type="button" onClick={() => setSelectedIds((current) => current.filter((id) => id !== artwork.id))} aria-label={`Remove ${artwork.title} from homepage`} title="Remove from homepage">
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedIds((current) => current.filter((id) => id !== artwork.id))}
+                                    aria-label={`Remove ${artwork.title} from homepage`}
+                                    title="Remove from homepage"
+                                >
                                     <Trash2 size={17} />
                                 </button>
                             </div>
                         </article>
                     ))}
-                    {selected.length === 0 ? <p className="owner-homepage-empty">Choose at least one artwork from the library below.</p> : null}
+                    {selected.length === 0 ? (
+                        <p className="owner-homepage-empty">Choose at least one artwork from the library below.</p>
+                    ) : null}
                 </div>
                 <div className="owner-homepage-save-row">
-                    <p role="status" aria-live="polite">{message}</p>
-                    <button className="owner-button" type="button" onClick={save} disabled={!hasChanges || isPending || selected.length === 0}>
+                    <p role="status" aria-live="polite">
+                        {message}
+                    </p>
+                    <button
+                        className="owner-button"
+                        type="button"
+                        onClick={save}
+                        disabled={!hasChanges || isPending || selected.length === 0}
+                    >
                         <Check size={17} aria-hidden="true" /> {isPending ? 'Publishing...' : 'Publish rotation'}
                     </button>
                 </div>
@@ -119,7 +143,11 @@ export function OwnerHomepageRotation({ artworks, initialSelectedIds }: { artwor
                     <label className="owner-homepage-search">
                         <Search size={17} aria-hidden="true" />
                         <span className="sr-only">Search artwork</span>
-                        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search title, medium, or category" />
+                        <input
+                            value={search}
+                            onChange={(event) => setSearch(event.target.value)}
+                            placeholder="Search title, medium, or category"
+                        />
                     </label>
                 </div>
                 <div className="owner-homepage-library-grid">
@@ -133,7 +161,6 @@ export function OwnerHomepageRotation({ artworks, initialSelectedIds }: { artwor
                             <button
                                 type="button"
                                 onClick={() => setSelectedIds((current) => [...current, artwork.id])}
-                                disabled={selectedIds.length >= MAX_HOMEPAGE_ARTWORKS}
                                 aria-label={`Add ${artwork.title} to homepage`}
                             >
                                 <Plus size={17} aria-hidden="true" /> Add

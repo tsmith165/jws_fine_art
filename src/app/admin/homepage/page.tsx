@@ -13,7 +13,7 @@ export default async function OwnerHomepagePage() {
                 <OwnerHeading
                     eyebrow="Public site"
                     title="Homepage rotation"
-                    description="Choose and order up to five artworks for the opening slideshow. Changes publish without a redeploy."
+                    description="Choose and order the artworks for the opening slideshow. Changes publish without a redeploy."
                 />
                 <OwnerHomepageRotation artworks={artworks} initialSelectedIds={rotation.artworkLegacyIds} />
             </section>

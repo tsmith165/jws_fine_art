@@ -70,7 +70,7 @@ export function CollectionBrowse({ pieces }: { pieces: PiecesWithImages[] }) {
                             sizes="(max-width: 760px) 92vw, 31vw"
                             quality={90}
                         />
-                        <span>
+                        <span className="lw-collection-card-label">
                             {label} <ArrowRight size={17} />
                         </span>
                     </Link>

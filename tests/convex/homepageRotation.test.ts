@@ -102,7 +102,7 @@ describe('homepage artwork rotation', () => {
         await seedArtwork(t, { legacyId: 102, homepageOrder: 300 });
         await seedArtwork(t, { legacyId: 103, homepageOrder: 200 });
 
-        const publicArtworks = await t.query(api.artworks.listHomepage, { limit: 5 });
+        const publicArtworks = await t.query(api.artworks.listHomepage, {});
         const ownerRotation = await owner(t).query(api.ownerReads.getHomepageRotation, {});
 
         expect(publicArtworks.map((artwork) => artwork.legacyId)).toEqual([102, 103, 101]);
@@ -117,7 +117,7 @@ describe('homepage artwork rotation', () => {
 
         await owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [101, 103] });
 
-        const publicArtworks = await t.query(api.artworks.listHomepage, { limit: 5 });
+        const publicArtworks = await t.query(api.artworks.listHomepage, {});
         const ownerRotation = await owner(t).query(api.ownerReads.getHomepageRotation, {});
         const auditEvents = await t.run(async (ctx) => ctx.db.query('ownerAuditEvents').collect());
 
@@ -141,15 +141,11 @@ describe('homepage artwork rotation', () => {
         await expect(t.mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [101] })).rejects.toThrow(
             'Owner access is required',
         );
-        await expect(owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [] })).rejects.toThrow(
-            'between one and five',
+        await expect(owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [] })).rejects.toThrow('at least one');
+        await expect(owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [101, 101] })).rejects.toThrow(
+            'only appear once',
         );
-        await expect(
-            owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [101, 101] }),
-        ).rejects.toThrow('only appear once');
-        await expect(owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [102] })).rejects.toThrow(
-            'archived',
-        );
+        await expect(owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [102] })).rejects.toThrow('archived');
         await expect(owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds: [103] })).rejects.toThrow(
             'active primary image',
         );
@@ -163,7 +159,23 @@ describe('homepage artwork rotation', () => {
 
         await t.run(async (ctx) => ctx.db.patch(firstId, { active: false, updatedAt: Date.now() }));
 
-        const publicArtworks = await t.query(api.artworks.listHomepage, { limit: 5 });
+        const publicArtworks = await t.query(api.artworks.listHomepage, {});
         expect(publicArtworks.map((artwork) => artwork.legacyId)).toEqual([102]);
+    });
+
+    it('publishes and returns rotations larger than five artworks', async () => {
+        const t = createHarness();
+        const artworkLegacyIds = [101, 102, 103, 104, 105, 106];
+        for (const legacyId of artworkLegacyIds) {
+            await seedArtwork(t, { legacyId, homepageOrder: legacyId });
+        }
+
+        await owner(t).mutation(api.ownerMutations.setHomepageRotation, { artworkLegacyIds });
+
+        const publicArtworks = await t.query(api.artworks.listHomepage, {});
+        const ownerRotation = await owner(t).query(api.ownerReads.getHomepageRotation, {});
+
+        expect(publicArtworks.map((artwork) => artwork.legacyId)).toEqual(artworkLegacyIds);
+        expect(ownerRotation).toEqual({ configured: true, artworkLegacyIds });
     });
 });
