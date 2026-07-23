@@ -154,11 +154,12 @@ export function OwnerHomepageRotation({ artworks, initialSelectedIds }: { artwor
                     {available.map((artwork) => (
                         <article key={artwork.id}>
                             <ArtworkImage artwork={artwork} />
-                            <div>
-                                <strong>{artwork.title}</strong>
-                                <small>{artwork.piece_type || 'Medium not set'}</small>
+                            <div className="owner-homepage-library-copy">
+                                <strong title={artwork.title}>{artwork.title}</strong>
+                                <small title={artwork.piece_type || 'Medium not set'}>{artwork.piece_type || 'Medium not set'}</small>
                             </div>
                             <button
+                                className="owner-homepage-library-add"
                                 type="button"
                                 onClick={() => setSelectedIds((current) => [...current, artwork.id])}
                                 aria-label={`Add ${artwork.title} to homepage`}
