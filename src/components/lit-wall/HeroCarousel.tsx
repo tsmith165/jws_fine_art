@@ -41,7 +41,14 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
         <section className="lw-hero" aria-label="Featured artwork">
             <div className="lw-hero-slides" aria-hidden="true">
                 <div
-                    className={`lw-hero-slide is-current${hasRevealedInitialSlide ? 'is-revealed' : ''}${phase === 'transitioning' ? 'is-exiting' : ''}`}
+                    className={[
+                        'lw-hero-slide',
+                        'is-current',
+                        hasRevealedInitialSlide ? 'is-revealed' : '',
+                        phase === 'transitioning' ? 'is-exiting' : '',
+                    ]
+                        .filter(Boolean)
+                        .join(' ')}
                     key={current.id}
                 >
                     <ProgressiveArtworkImage
@@ -57,7 +64,7 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                 </div>
                 {incoming && incomingIndex !== null ? (
                     <div
-                        className={`lw-hero-slide is-incoming${phase === 'transitioning' ? 'is-active' : ''}`}
+                        className={['lw-hero-slide', 'is-incoming', phase === 'transitioning' ? 'is-active' : ''].filter(Boolean).join(' ')}
                         key={incoming.id}
                         onTransitionEnd={(event) => transitionEnd(incomingIndex, event.propertyName)}
                     >
