@@ -1409,6 +1409,23 @@
         transform: translateY(-4px) scale(0.985);
     }
 }
+@media (max-width: 520px) {
+    .owner-date-popover {
+        padding: 10px;
+    }
+    .owner-date-popover > header {
+        margin-bottom: 6px;
+        padding-bottom: 8px;
+    }
+    .owner-date-popover .rdp-root {
+        --rdp-day-height: 36px;
+        --rdp-nav-height: 36px;
+    }
+    .owner-date-popover > footer {
+        margin-top: 6px;
+        padding-top: 8px;
+    }
+}
 .owner-category-fieldset {
     display: grid;
     gap: 9px;
