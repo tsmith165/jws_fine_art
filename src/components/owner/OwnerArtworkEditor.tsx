@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Check, ExternalLink, Images, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CircleAlert, CircleCheck, ExternalLink, Images, Save, Search, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { handleImageDelete, onSubmitEditForm } from '@/app/admin/edit/actions';
+import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 import { artworkAvailabilityForStatus, artworkListingStatus, type ArtworkListingStatus } from '@shared/artworkListingState';
 
@@ -59,6 +60,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
     const [selectedImage, setSelectedImage] = useState(piece.image_path);
     const [removedImageUrls, setRemovedImageUrls] = useState(() => new Set<string>());
     const [removingImage, setRemovingImage] = useState(false);
+    const [mediaOpen, setMediaOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
     const media = useMemo(
@@ -88,14 +90,62 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
         [piece, removedImageUrls],
     );
     const selected = media.find((image) => image.url === selectedImage) || media[0];
+    const listingStatus = artworkListingStatus({ available: form.available, sold: form.sold });
     const checks = [
-        ['Primary image', Boolean(piece.image_path)],
-        ['Title and medium', Boolean(form.piece_title && form.piece_type)],
-        ['Physical dimensions', Boolean(form.real_width && form.real_height)],
-        ['Price or sold status', Boolean(form.price || form.sold)],
-        ['Artwork story', Boolean(form.description)],
+        {
+            key: 'primary-image',
+            label: 'Primary image',
+            ready: Boolean(piece.image_path),
+            detail: 'Add the main image collectors will see first.',
+            actionLabel: 'Manage media',
+            href: null,
+        },
+        {
+            key: 'title-medium',
+            label: 'Title and medium',
+            ready: Boolean(form.piece_title && form.piece_type),
+            detail: !form.piece_title ? 'Add an artwork title.' : 'Choose the material used for this artwork.',
+            actionLabel: !form.piece_title ? 'Add title' : 'Choose medium',
+            href: !form.piece_title ? '#artwork-title' : '#artwork-medium',
+        },
+        {
+            key: 'dimensions',
+            label: 'Physical dimensions',
+            ready: Boolean(form.real_width && form.real_height),
+            detail: 'Add both the finished width and height.',
+            actionLabel: 'Add dimensions',
+            href: '#artwork-width',
+        },
+        {
+            key: 'price-status',
+            label: 'Price or listing status',
+            ready: Boolean(form.price || listingStatus !== 'available'),
+            detail: 'Add a price before making this artwork available for purchase.',
+            actionLabel: 'Add price',
+            href: '#artwork-price',
+        },
+        {
+            key: 'story',
+            label: 'Artwork story',
+            ready: Boolean(form.description),
+            detail: 'Add a short story so collectors and search engines understand the piece.',
+            actionLabel: 'Add story',
+            href: '#artwork-story',
+        },
     ] as const;
-    const completeness = Math.round((checks.filter(([, ready]) => ready).length / checks.length) * 100);
+    const completedCount = checks.filter(({ ready }) => ready).length;
+    const missingChecks = checks.filter(({ ready }) => !ready);
+    const completeness = Math.round((completedCount / checks.length) * 100);
+    const listingStatusLabel: Record<ArtworkListingStatus, string> = {
+        available: 'Available',
+        'private-collection': 'Private collection',
+        'not-for-sale': 'Not for sale',
+    };
+    const searchDescription =
+        form.description.trim() ||
+        `${form.piece_type || 'Original artwork'} by Jill Weeks Smith.${
+            form.real_width && form.real_height ? ` ${form.real_width} × ${form.real_height} in.` : ''
+        }`;
     const hasUnsavedChanges = JSON.stringify(form) !== JSON.stringify(savedForm);
 
     useEffect(() => {
@@ -106,6 +156,28 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
         window.addEventListener('beforeunload', warnBeforeLeaving);
         return () => window.removeEventListener('beforeunload', warnBeforeLeaving);
     }, [hasUnsavedChanges]);
+
+    useEffect(() => {
+        if (!mediaOpen) return;
+        const previousOverflow = document.body.style.overflow;
+        const ownerScroll = document.querySelector<HTMLElement>('.owner-scroll');
+        const previousOwnerOverflow = ownerScroll?.style.overflow;
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setMediaOpen(false);
+        };
+        document.body.style.overflow = 'hidden';
+        if (ownerScroll) ownerScroll.style.overflow = 'hidden';
+        document.addEventListener('keydown', closeOnEscape);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            if (ownerScroll) ownerScroll.style.overflow = previousOwnerOverflow || '';
+            document.removeEventListener('keydown', closeOnEscape);
+        };
+    }, [mediaOpen]);
+
+    useEffect(() => {
+        if (!media.some((image) => image.url === selectedImage)) setSelectedImage(piece.image_path);
+    }, [media, piece.image_path, selectedImage]);
 
     function update<K extends keyof EditorForm>(key: K, value: EditorForm[K]) {
         setForm((current) => ({ ...current, [key]: value }));
@@ -118,19 +190,19 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
         setMessage(null);
     }
 
-    async function removeSelectedImage() {
-        if (!selected || selected.kind === 'primary') return;
-        if (!window.confirm(`Remove ${selected.role.toLowerCase()} from this artwork?`)) return;
+    async function removeMedia(image: (typeof media)[number]) {
+        if (image.kind === 'primary') return;
+        if (!window.confirm(`Remove ${image.role.toLowerCase()} from this artwork?`)) return;
         setRemovingImage(true);
         setMessage(null);
         try {
-            const result = await handleImageDelete(piece.id, selected.url, selected.kind);
+            const result = await handleImageDelete(piece.id, image.url, image.kind);
             if (!result.success) {
                 setMessage({ tone: 'warning', text: result.error || 'The image could not be removed.' });
                 return;
             }
-            setRemovedImageUrls((current) => new Set(current).add(selected.url));
-            setSelectedImage(piece.image_path);
+            setRemovedImageUrls((current) => new Set(current).add(image.url));
+            if (selectedImage === image.url) setSelectedImage(piece.image_path);
             setMessage({ tone: 'good', text: 'Image removed from this artwork.' });
         } catch {
             setMessage({ tone: 'warning', text: 'The image could not be removed. Check your connection and try again.' });
@@ -203,7 +275,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                 <button
                                     className="owner-button is-danger owner-editor-remove-media"
                                     type="button"
-                                    onClick={removeSelectedImage}
+                                    onClick={() => removeMedia(selected)}
                                     disabled={removingImage}
                                 >
                                     <Trash2 size={16} /> {removingImage ? 'Removing…' : 'Remove image'}
@@ -224,9 +296,9 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                                 <span>{image.role}</span>
                             </button>
                         ))}
-                        <Link className="owner-editor-add-media" href={`/admin/edit/images/${piece.id}`}>
+                        <button className="owner-editor-add-media" type="button" onClick={() => setMediaOpen(true)}>
                             <Images size={20} /> Manage media
-                        </Link>
+                        </button>
                     </div>
                 </div>
                 <section className="owner-editor-form owner-panel">
@@ -239,11 +311,20 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                     <div className="owner-form-grid">
                         <label className="owner-field is-wide">
                             <span>Title</span>
-                            <input value={form.piece_title} onChange={(event) => update('piece_title', event.target.value)} required />
+                            <input
+                                id="artwork-title"
+                                value={form.piece_title}
+                                onChange={(event) => update('piece_title', event.target.value)}
+                                required
+                            />
                         </label>
                         <label className="owner-field">
                             <span>Medium</span>
-                            <select value={form.piece_type} onChange={(event) => update('piece_type', event.target.value)}>
+                            <select
+                                id="artwork-medium"
+                                value={form.piece_type}
+                                onChange={(event) => update('piece_type', event.target.value)}
+                            >
                                 <option value="">Choose a medium</option>
                                 {mediaOptions.map((medium) => (
                                     <option key={medium}>{medium}</option>
@@ -276,6 +357,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                         <label className="owner-field">
                             <span>Price (USD)</span>
                             <input
+                                id="artwork-price"
                                 type="number"
                                 min="0"
                                 step="1"
@@ -296,6 +378,7 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                         <label className="owner-field">
                             <span>Width (in)</span>
                             <input
+                                id="artwork-width"
                                 type="number"
                                 min="0"
                                 step="0.25"
@@ -315,7 +398,11 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                         </label>
                         <label className="owner-field is-wide">
                             <span>Artwork story</span>
-                            <textarea value={form.description} onChange={(event) => update('description', event.target.value)} />
+                            <textarea
+                                id="artwork-story"
+                                value={form.description}
+                                onChange={(event) => update('description', event.target.value)}
+                            />
                         </label>
                         <label className="owner-field is-wide">
                             <span>Private studio notes</span>
@@ -329,43 +416,176 @@ export function OwnerArtworkEditor({ piece, previousId, nextId }: { piece: Piece
                 </section>
             </section>
             <aside className="owner-editor-aside">
-                <section className="owner-panel">
-                    <span className="owner-panel-eyebrow">Publish check</span>
-                    <h2>{completeness === 100 ? 'Ready' : 'Needs attention'}</h2>
-                    <div className="owner-completion" aria-label={`${completeness}% complete`}>
-                        <strong>{completeness}%</strong>
-                        <span style={{ width: `${completeness}%` }} />
+                <section className="owner-panel owner-listing-panel">
+                    <div className="owner-listing-panel-header">
+                        <span className="owner-panel-eyebrow">Listing state</span>
+                        <strong>{listingStatusLabel[listingStatus]}</strong>
                     </div>
-                    <ul className="owner-checklist">
-                        {checks.map(([label, ready]) => (
-                            <li className={ready ? 'is-ready' : undefined} key={label}>
-                                <Check size={14} /> {label}
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-                <section className="owner-panel">
-                    <span className="owner-panel-eyebrow">Listing state</span>
                     <label className="owner-field owner-listing-state-field">
                         <span>Public status</span>
-                        <select
-                            value={artworkListingStatus({ available: form.available, sold: form.sold })}
-                            onChange={(event) => updateListingStatus(event.target.value as ArtworkListingStatus)}
-                        >
+                        <select value={listingStatus} onChange={(event) => updateListingStatus(event.target.value as ArtworkListingStatus)}>
                             <option value="available">Available for purchase</option>
                             <option value="private-collection">Private collection</option>
                             <option value="not-for-sale">Not for sale</option>
                         </select>
-                        <small>Choose one status. Saving updates the public gallery immediately.</small>
                     </label>
+                    <p className="owner-listing-note">Save changes to update the public gallery.</p>
+                </section>
+                <section className={`owner-panel owner-readiness-panel ${missingChecks.length ? 'has-missing' : 'is-ready'}`}>
+                    <header className="owner-readiness-header">
+                        <div>
+                            <span className="owner-panel-eyebrow">Publish check</span>
+                            <h2>{missingChecks.length ? `${missingChecks.length} details need attention` : 'Ready to publish'}</h2>
+                        </div>
+                        <span className="owner-readiness-status">
+                            {missingChecks.length ? `${missingChecks.length} remaining` : 'Complete'}
+                        </span>
+                    </header>
+                    <div className="owner-readiness-progress">
+                        <div>
+                            <span>
+                                {completedCount} of {checks.length} essentials complete
+                            </span>
+                            <strong>{completeness}%</strong>
+                        </div>
+                        <div className="owner-completion" aria-label={`${completeness}% complete`}>
+                            <span style={{ width: `${completeness}%` }} />
+                        </div>
+                    </div>
+                    {missingChecks.length ? (
+                        <ul className="owner-attention-list">
+                            {missingChecks.map((check) => (
+                                <li key={check.key}>
+                                    <CircleAlert size={17} aria-hidden="true" />
+                                    <div>
+                                        <strong>{check.label}</strong>
+                                        <p>{check.detail}</p>
+                                        {check.href ? (
+                                            <a href={check.href}>
+                                                {check.actionLabel} <ArrowRight size={13} />
+                                            </a>
+                                        ) : (
+                                            <button type="button" onClick={() => setMediaOpen(true)}>
+                                                {check.actionLabel} <ArrowRight size={13} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <div className="owner-ready-message">
+                            <CircleCheck size={20} />
+                            <div>
+                                <strong>All essentials are covered</strong>
+                                <p>This artwork has the core information collectors need.</p>
+                            </div>
+                        </div>
+                    )}
+                    {completedCount > 0 && missingChecks.length ? (
+                        <p className="owner-complete-summary">
+                            <Check size={14} /> {completedCount} {completedCount === 1 ? 'essential is' : 'essentials are'} already complete
+                        </p>
+                    ) : null}
                 </section>
                 <section className="owner-panel owner-search-preview">
-                    <span className="owner-panel-eyebrow">Search preview</span>
-                    <strong>{form.piece_title || 'Untitled artwork'} · Jill Weeks Smith</strong>
-                    <small>jwsfineart.com/work/{piece.slug || piece.id}</small>
-                    <p>{form.description || 'Add an artwork story to improve this search preview.'}</p>
+                    <header className="owner-search-preview-header">
+                        <div>
+                            <span className="owner-panel-eyebrow">Search preview</span>
+                            <h2>How collectors find it</h2>
+                        </div>
+                        <Search size={17} aria-hidden="true" />
+                    </header>
+                    <div className="owner-search-result">
+                        <div className="owner-search-result-site">
+                            <span>J</span>
+                            <div>
+                                <strong>Jill Weeks Smith Fine Art</strong>
+                                <small>jwsfineart.com › work › {piece.slug || piece.id}</small>
+                            </div>
+                        </div>
+                        <h3>{form.piece_title || 'Untitled artwork'} · Jill Weeks Smith</h3>
+                        <p>{searchDescription}</p>
+                    </div>
+                    {!form.description.trim() ? (
+                        <div className="owner-search-guidance">
+                            <CircleAlert size={16} />
+                            <div>
+                                <strong>Artwork story missing</strong>
+                                <p>The fallback works, but a short story creates a stronger search result.</p>
+                                <a href="#artwork-story">
+                                    Add artwork story <ArrowRight size={13} />
+                                </a>
+                            </div>
+                        </div>
+                    ) : null}
                 </section>
             </aside>
+            {mediaOpen ? (
+                <div
+                    className="owner-media-modal-backdrop"
+                    role="presentation"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) setMediaOpen(false);
+                    }}
+                >
+                    <section className="owner-media-modal" role="dialog" aria-modal="true" aria-labelledby="owner-media-modal-title">
+                        <header className="owner-media-modal-header">
+                            <div>
+                                <span className="owner-panel-eyebrow">Artwork media</span>
+                                <h2 id="owner-media-modal-title">Manage {form.piece_title || 'artwork'} media</h2>
+                                <p>Review current images or upload another original without leaving this editor.</p>
+                            </div>
+                            <button type="button" onClick={() => setMediaOpen(false)} aria-label="Close media manager" autoFocus>
+                                <X size={20} />
+                            </button>
+                        </header>
+                        <div className="owner-media-modal-body">
+                            <section className="owner-media-library">
+                                <header>
+                                    <div>
+                                        <span className="owner-panel-eyebrow">Current media</span>
+                                        <strong>
+                                            {media.length} {media.length === 1 ? 'image' : 'images'}
+                                        </strong>
+                                    </div>
+                                    <p>The primary image appears first. Supporting and process images can be removed here.</p>
+                                </header>
+                                <div className="owner-media-library-grid">
+                                    {media.map((image) => (
+                                        <article key={image.id}>
+                                            <div>
+                                                <Image src={image.url} alt="" width={image.width} height={image.height} />
+                                            </div>
+                                            <span>{image.role}</span>
+                                            {image.kind !== 'primary' ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeMedia(image)}
+                                                    disabled={removingImage}
+                                                    aria-label={`Remove ${image.role.toLowerCase()}`}
+                                                >
+                                                    <Trash2 size={14} /> Remove
+                                                </button>
+                                            ) : (
+                                                <small>Catalog image</small>
+                                            )}
+                                        </article>
+                                    ))}
+                                </div>
+                            </section>
+                            <section className="owner-media-upload-panel">
+                                <div>
+                                    <span className="owner-panel-eyebrow">Add media</span>
+                                    <h3>Upload another original</h3>
+                                    <p>Choose a supporting, process, or replacement primary image after upload.</p>
+                                </div>
+                                <ImageEditor pieceId={String(piece.id)} onClose={() => setMediaOpen(false)} />
+                            </section>
+                        </div>
+                    </section>
+                </div>
+            ) : null}
         </div>
     );
 }

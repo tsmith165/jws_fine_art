@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { storeUploadedImageDetails } from '@/app/admin/edit/actions';
 import ResizeUploader from '@/app/admin/edit/ResizeUploader';
 
-export default function ImageEditor({ pieceId }: { pieceId: string }) {
+export default function ImageEditor({ pieceId, onClose }: { pieceId: string; onClose?: () => void }) {
     const router = useRouter();
     const [upload, setUpload] = useState({ url: '', title: '', width: 0, height: 0 });
     const [role, setRole] = useState<'main' | 'extra' | 'progress'>('extra');
@@ -48,6 +48,10 @@ export default function ImageEditor({ pieceId }: { pieceId: string }) {
             if (addAnother) {
                 reset();
                 setMessage({ text: 'Image saved. Choose another original when ready.', tone: 'good' });
+                router.refresh();
+            } else if (onClose) {
+                router.refresh();
+                onClose();
             } else {
                 router.push(`/admin/edit?id=${pieceId}`);
             }
@@ -60,7 +64,11 @@ export default function ImageEditor({ pieceId }: { pieceId: string }) {
 
     return (
         <div className="owner-upload-workspace">
-            <ResizeUploader handleUploadComplete={completed} handleResetInputs={reset} backToEditLink={`/admin/edit?id=${pieceId}`} />
+            <ResizeUploader
+                handleUploadComplete={completed}
+                handleResetInputs={reset}
+                backToEditLink={onClose ? undefined : `/admin/edit?id=${pieceId}`}
+            />
             {upload.url ? (
                 <div className="owner-upload-review">
                     <div className="owner-upload-preview">

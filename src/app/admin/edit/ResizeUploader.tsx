@@ -21,7 +21,7 @@ interface ResizeUploaderProps {
         smallHeight: number,
     ) => void;
     handleResetInputs: () => void;
-    backToEditLink: string;
+    backToEditLink?: string;
 }
 
 export default function ResizeUploader({ handleUploadComplete, handleResetInputs, backToEditLink }: ResizeUploaderProps) {
@@ -128,7 +128,7 @@ export default function ResizeUploader({ handleUploadComplete, handleResetInputs
 
     return (
         <div
-            className={`owner-uploader${isDragging ? 'is-dragging' : ''}${phase === 'ready' ? 'is-ready' : ''}`}
+            className={['owner-uploader', isDragging ? 'is-dragging' : '', phase === 'ready' ? 'is-ready' : ''].filter(Boolean).join(' ')}
             onDragEnter={(event) => {
                 event.preventDefault();
                 if (!isBusy) setIsDragging(true);
@@ -158,12 +158,14 @@ export default function ResizeUploader({ handleUploadComplete, handleResetInputs
             <button className="owner-button is-primary" type="button" onClick={() => input.current?.click()} disabled={isBusy}>
                 <Upload size={16} /> {isBusy ? 'Working…' : phase === 'ready' ? 'Choose another' : 'Select image'}
             </button>
-            <Link className="owner-button" href={backToEditLink}>
-                <ArrowLeft size={16} /> Back
-            </Link>
+            {backToEditLink ? (
+                <Link className="owner-button" href={backToEditLink}>
+                    <ArrowLeft size={16} /> Back
+                </Link>
+            ) : null}
             {phase === 'uploading' || phase === 'finalizing' ? (
                 <span
-                    className={`owner-upload-progress${phase === 'finalizing' ? 'is-indeterminate' : ''}`}
+                    className={['owner-upload-progress', phase === 'finalizing' ? 'is-indeterminate' : ''].filter(Boolean).join(' ')}
                     style={phase === 'uploading' ? { width: `${progress}%` } : undefined}
                     role="progressbar"
                     aria-label={phase === 'uploading' ? 'Image upload progress' : 'Preparing uploaded image'}
