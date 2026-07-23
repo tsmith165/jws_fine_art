@@ -1,5 +1,30 @@
 # Active Agent State
 
+## July 23 Select And Filter Polish
+
+- Source commit `a5e0a6c` is pushed to `origin/feat/full-site-overhaul`.
+- Vercel deployment `dpl_Ce8iUU7ecp48tym6HHfXppse5NhY` is ready and aliased
+  to `https://www.jwsfineart.com`.
+- All single-select controls in the public and owner shells now use a shared
+  inset chevron with `48px` of reserved right padding.
+- The Work filter popover now has clearer hierarchy, live match feedback, a
+  descriptive framed-work control, active-filter status, and a reset action
+  that preserves unrelated query parameters.
+- Prettier, typecheck, lint, all 76 tests, and a Node 24 production build
+  passed.
+- Production browser QA passed at desktop and a real `390 × 844` mobile
+  viewport. The mobile page had no horizontal overflow; the panel stayed
+  within the viewport; filter apply/reset behavior passed; and authenticated
+  owner selects had the same computed chevron and padding contract.
+- QA evidence:
+  `_context/select-and-filter-polish-production-qa.md`.
+- Preview aliases:
+  `work-filters-panel-production-desktop`,
+  `work-filters-panel-production-mobile`, and
+  `app-select-caret-spacing-production-mobile`.
+- The temporary browser emulation was cleared and the browser session was
+  finalized.
+
 - Objective: continue the July 23 production polish after session
   `019f3504-d23b-7733-8e30-681f2c981fae`, including the landing regressions and
   the follow-up `/admin/homepage` artwork-library card layout.
