@@ -417,4 +417,18 @@
   read any files.
 - Detailed evidence:
   `_context/OWNER_FORM_COLLECTION_MOTION_QA.md`.
-- Commit, production deployment, and production smoke QA remain.
+- Source commit `a9e527e` is pushed to `feat/full-site-overhaul`.
+- Vercel deployment `dpl_8ZXk5CEPE5evrzrm3aieg5pMW4aK` is ready and
+  aliased to `https://www.jwsfineart.com`.
+- Production homepage QA confirmed the five-work `01 / 05` hero, three
+  collection cards, no horizontal overflow, the shared 280 ms reveal / 500 ms
+  transform timing, and `scale(1.018)` on hover.
+- Authenticated production editor QA confirmed equal label, control, footer,
+  and field geometry across the shared form rows. Search preview uses the real
+  28 px production icon.
+- Production artifact aliases:
+  `home-collection-animation-production-desktop`,
+  `owner-form-system-production-desktop`, and
+  `owner-search-preview-logo-production-desktop`.
+- Final artifact validation passed with 65 design artifacts, 115 preview QA
+  artifacts, and 54 analysis records.
