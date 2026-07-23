@@ -1,5 +1,27 @@
 # Active Agent State
 
+## July 23 Shipping Calculator Spacing Follow-up
+
+- Reduced the calculator form’s real row spacing to 24px and disabled Grid’s
+  default track stretching, which had visually inflated the gaps to fill the
+  taller result panel.
+- Bottom-aligned the Protection Needs controls so the Framed artwork checkbox
+  container exactly matches the Surface and glazing select.
+- Commit `43e81de` is pushed to `origin/feat/full-site-overhaul`.
+- Vercel deployment `dpl_86Jt4Ef1EHrKhLVtALa9Jk2KcPqN` is ready and aliased
+  to `https://www.jwsfineart.com`.
+- Production desktop geometry: all section gaps 24px; select
+  `250.992 × 56px`; checkbox `251 × 56px`; bottoms aligned within one pixel.
+- Production mobile geometry: all section gaps 24px; both controls
+  `308 × 56px`; zero horizontal overflow.
+- Prettier, `git diff --check`, lint, typecheck, all 88 tests, and the
+  production build passed.
+- Production console errors: none. The known Clerk development-key warning
+  remains.
+- Artifact aliases: `shipping-calculator-spacing-before`,
+  `shipping-calculator-spacing-production-desktop`, and
+  `shipping-calculator-spacing-production-mobile`.
+
 ## July 23 Checkout Shipping And Artwork Form Release
 
 - Objective: integrate calculated shipping into Stripe checkout, eliminate
