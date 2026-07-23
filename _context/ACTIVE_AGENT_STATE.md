@@ -1,5 +1,41 @@
 # Active Agent State
 
+## July 23 Shipping Calculator Redesign
+
+- Objective: improve `/shipping` calculator layout, dimension spacing,
+  calculation feedback, fee transparency, and international planning.
+- Source commit `9a6a07c` is pushed to
+  `origin/feat/full-site-overhaul`.
+- Calculator now groups artwork dimensions, U.S./international destination, and
+  protection choices; uses properly inset `in` suffixes; and itemizes the base
+  size range plus framed, delicate/glazed, and international adjustments.
+- International estimates add a size-tiered route range and disclose that
+  destination duties, taxes, and brokerage are separate.
+- Every input change shows an accessible `Recalculating` state, dims the prior
+  result, and animates a two-pixel progress rule before publishing the updated
+  estimate after 450 ms.
+- Local QA passed at `1440 × 1000` and `390 × 844`: the full four-factor range
+  updated to `$185–$380`, transition state exposed `aria-busy="true"`, input
+  suffix inset measured `18px` with `62px` reserved input padding, and page
+  horizontal overflow was `0px`.
+- Prettier, `git diff --check`, typecheck, lint, all 78 tests, and the Node 24
+  production build passed.
+- Vercel deployment `dpl_H2YMah9Z9A5rQsSzDxc4nizZUXKv` is ready and aliased to
+  `https://www.jwsfineart.com`.
+- Production desktop/mobile visual and DOM QA passed. The complete example
+  remained `$185–$380`, mobile touch targets measured `56–76px`, and neither
+  breakpoint had horizontal overflow. The production console reported no
+  errors.
+- QA evidence: `_context/shipping-calculator-production-qa.md`.
+- Preview aliases: `shipping-calculator-production-desktop`,
+  `shipping-calculator-production-desktop-international`, and
+  `shipping-calculator-production-mobile`.
+- Artifact validation passed with 49 design artifacts, 74 preview QA artifacts,
+  and 29 analysis records.
+- Remaining cleanup: commit/push this context update, reset the temporary
+  browser viewport, and finalize the browser session.
+- User screenshot alias: `shipping-calculator-before`.
+
 ## July 23 Artwork Editor Guidance And Media Modal
 
 - Listing state is now the compact first sidebar panel.
