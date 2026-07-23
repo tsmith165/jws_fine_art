@@ -1878,7 +1878,8 @@
 }
 .lw-shipping-fields {
     display: grid;
-    gap: 34px;
+    align-content: start;
+    gap: 24px;
     padding: clamp(28px, 5vw, 60px);
 }
 .lw-shipping-fields > header {
@@ -1925,6 +1926,9 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+}
+.lw-shipping-protection {
+    align-items: end;
 }
 .lw-shipping-fields label {
     display: grid;
