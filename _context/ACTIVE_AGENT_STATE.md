@@ -1,11 +1,12 @@
 # Active Agent State
 
-- Objective: finish the July 23 landing-page regression fixes requested after
-  continuing session `019f3504-d23b-7733-8e30-681f2c981fae`.
+- Objective: continue the July 23 production polish after session
+  `019f3504-d23b-7733-8e30-681f2c981fae`, including the landing regressions and
+  the follow-up `/admin/homepage` artwork-library card layout.
 - Workspace: `/Users/tsmith/dev/_codex/jws-fine-art`
 - Branch: `feat/full-site-overhaul`
 - Starting source commit: `4345f60`
-- Completed source commit: `cdf66c2`
+- Completed source commit: `e7b727c`
 - Full handoff: `_context/PROJECT_HANDOFF.md`
 - Session reconstruction: `_context/SESSION_CONTINUATION_019F3504.md`
 - Production: `https://jwsfineart.com`
@@ -14,6 +15,9 @@
 
 ## Current Change
 
+- Follow-up: moved each artwork-library Add action below the title and medium so
+  both text rows use the complete content column. Both rows now truncate with
+  ellipses and expose their full values through native hover tooltips.
 - Fixed the collection-card black gutters by limiting the absolute label rule to
   `.lw-collection-card-label`; it had also matched the progressive-image wrapper
   and inset the artwork by `24px 24px 22px`.
@@ -52,8 +56,26 @@
 - Artifact validation passed with 44 design artifacts, 62 preview QA artifacts,
   and 17 analysis records. The temporary browser viewport was reset and the
   browser session was finalized.
-- Completion gate: commit this final state update, push it, and confirm the
-  worktree is clean.
+- Commit `e7b727c` passed formatting, typecheck, lint, and a Node 24 production
+  build before push.
+- Vercel deployment `dpl_Dv8vUA6Eox3Vis6njKApstfsAnGk` is ready and aliased to
+  production.
+- Authenticated production QA passed at `1440 × 1000` and `390 × 844`.
+  Metadata and Add widths match, the action sits below both text rows, title and
+  medium share the ellipsis contract and full-value tooltips, and neither
+  breakpoint has page-level horizontal overflow.
+- Follow-up evidence:
+  `_context/admin-homepage-library-card-layout-qa.md`.
+- Follow-up artifact aliases:
+  `admin-homepage-library-add-row-before`,
+  `admin-homepage-library-add-row-production-desktop`, and
+  `admin-homepage-library-add-row-production-mobile`.
+- QA analyses were saved into both follow-up previews. Artifact validation
+  passed with 45 design artifacts, 64 preview QA artifacts, and 19 analysis
+  records.
+- The temporary viewport was reset and the authenticated browser session was
+  finalized.
+- Follow-up implementation, deployment, and production QA are complete.
 
 ## Known Separate Risk
 
