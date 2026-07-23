@@ -999,25 +999,132 @@
 }
 .owner-field {
     display: grid;
-    gap: 6px;
+    min-width: 0;
+    gap: 7px;
 }
-.owner-field > span {
+.owner-field > span,
+.owner-field-label {
     color: var(--owner-muted);
     font-size: 9px;
     font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
+.owner-field-label {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.owner-field-label > span {
+    min-width: 0;
+}
+.owner-field-label > small,
+.owner-form-key span {
+    flex: 0 0 auto;
+    padding: 3px 6px;
+    border: 1px solid var(--owner-line);
+    color: var(--owner-muted);
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+.owner-field-label > small.is-required,
+.owner-form-key .is-required {
+    border-color: color-mix(in srgb, var(--owner-green) 55%, var(--owner-line));
+    color: var(--owner-green);
+}
+.owner-field-label > small.is-publish,
+.owner-form-key .is-publish {
+    border-color: color-mix(in srgb, var(--owner-accent) 60%, var(--owner-line));
+    color: var(--owner-accent);
+}
+.owner-field-label > small.is-optional,
+.owner-form-key .is-optional {
+    color: var(--owner-muted);
+}
 .owner-field input,
 .owner-field textarea,
 .owner-field select {
     width: 100%;
-    min-height: 44px;
-    padding: 10px 12px;
+    min-height: 48px;
+    padding: 11px 13px;
+    outline: 0;
+    transition:
+        border-color 140ms ease,
+        background-color 140ms ease,
+        box-shadow 140ms ease;
+}
+.owner-field input:hover,
+.owner-field textarea:hover,
+.owner-field select:hover {
+    border-color: color-mix(in srgb, var(--owner-green) 60%, var(--owner-line));
+}
+.owner-field input:focus,
+.owner-field textarea:focus,
+.owner-field select:focus {
+    border-color: var(--owner-green);
+    box-shadow: 0 0 0 1px var(--owner-green);
+}
+.owner-field.has-error input,
+.owner-field.has-error textarea,
+.owner-field.has-error select {
+    border-color: #e49488;
+    background: color-mix(in srgb, #e49488 4%, var(--owner-bg));
+}
+.owner-field.has-warning input,
+.owner-field.has-warning textarea,
+.owner-field.has-warning select {
+    border-color: color-mix(in srgb, var(--owner-accent) 72%, var(--owner-line));
+    background: color-mix(in srgb, var(--owner-accent) 4%, var(--owner-bg));
 }
 .owner-field textarea {
     min-height: 140px;
     resize: vertical;
+}
+.owner-field-feedback {
+    display: flex;
+    min-width: 0;
+    gap: 6px;
+    align-items: flex-start;
+    color: var(--owner-muted);
+    font-size: 9px;
+    line-height: 1.45;
+}
+.owner-field-feedback svg {
+    flex: 0 0 auto;
+    margin-top: 1px;
+}
+.owner-field-feedback.is-error {
+    color: #ecaaa1;
+}
+.owner-field-feedback.is-warning {
+    color: var(--owner-accent);
+}
+.owner-field-feedback.is-info {
+    color: var(--owner-muted);
+}
+.owner-field-help {
+    color: var(--owner-muted);
+    font-size: 10px;
+}
+.owner-field-meta {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+.owner-field-meta > .owner-field-feedback {
+    flex: 1;
+}
+.owner-field-meta > small:last-child {
+    flex: 0 0 auto;
+    color: var(--owner-muted);
+    font-size: 8px;
 }
 .owner-fulfillment-form {
     display: grid;
@@ -1050,11 +1157,6 @@
 }
 .owner-category-fieldset legend {
     margin-bottom: 1px;
-    color: var(--owner-muted);
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
 }
 .owner-category-options {
     display: grid;
@@ -1093,9 +1195,11 @@
     outline: 2px solid var(--owner-green);
     outline-offset: 2px;
 }
-.owner-category-fieldset > small {
-    color: var(--owner-muted);
-    font-size: 10px;
+.owner-category-fieldset.has-error .owner-category-options span {
+    border-color: #e49488;
+}
+.owner-category-fieldset.has-warning .owner-category-options span {
+    border-color: color-mix(in srgb, var(--owner-accent) 55%, var(--owner-line));
 }
 .owner-mail-workspace {
     align-items: stretch;
@@ -1870,6 +1974,67 @@
 }
 .owner-editor-form {
     margin-top: 14px;
+}
+.owner-editor-form .owner-panel-header {
+    align-items: flex-end;
+}
+.owner-editor-form .owner-panel-header p {
+    max-width: 660px;
+    margin-top: 9px;
+    color: var(--owner-muted);
+    font-size: 10px;
+    line-height: 1.55;
+}
+.owner-form-key {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+.owner-form-validation-summary {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 11px;
+    align-items: start;
+    margin-bottom: 18px;
+    border: 1px solid var(--owner-line);
+    padding: 13px 14px;
+    background: var(--owner-raised);
+}
+.owner-form-validation-summary > svg {
+    margin-top: 1px;
+}
+.owner-form-validation-summary > div {
+    display: grid;
+    gap: 3px;
+}
+.owner-form-validation-summary strong {
+    color: var(--owner-ink);
+    font-size: 11px;
+}
+.owner-form-validation-summary span {
+    color: var(--owner-muted);
+    font-size: 9px;
+    line-height: 1.5;
+}
+.owner-form-validation-summary.has-errors {
+    border-left: 2px solid #e49488;
+}
+.owner-form-validation-summary.has-errors > svg {
+    color: #ecaaa1;
+}
+.owner-form-validation-summary.has-warnings {
+    border-left: 2px solid var(--owner-accent);
+}
+.owner-form-validation-summary.has-warnings > svg {
+    color: var(--owner-accent);
+}
+.owner-form-validation-summary.is-complete {
+    border-left: 2px solid var(--owner-green);
+}
+.owner-form-validation-summary.is-complete > svg {
+    color: var(--owner-green);
 }
 .owner-editor-aside {
     display: grid;
@@ -2667,7 +2832,7 @@
         grid-template-columns: 1fr;
     }
     .owner-editor-aside {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         align-items: start;
         border-top: 1px solid var(--owner-line);
         border-left: 0;
@@ -2840,6 +3005,19 @@
     .owner-editor-titlebar {
         align-items: flex-start;
         flex-direction: column;
+    }
+    .owner-editor-form .owner-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .owner-form-key {
+        justify-content: flex-start;
+    }
+    .owner-field-label {
+        align-items: flex-start;
+    }
+    .owner-field-label > small {
+        white-space: nowrap;
     }
     .owner-editor-actions {
         justify-content: flex-start;

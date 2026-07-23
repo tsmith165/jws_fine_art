@@ -23,6 +23,10 @@ async function seedArtwork(
         priceCents: number;
         galleryOrder: number;
         homepageOrder: number;
+        framed: boolean;
+        widthInches: number;
+        heightInches: number;
+        medium: string;
     }> = {},
 ) {
     return t.run(async (ctx) => {
@@ -39,7 +43,7 @@ async function seedArtwork(
             slug: `test-artwork-${legacyId}`,
             title,
             description: null,
-            medium: 'Oil on panel',
+            medium: overrides.medium ?? 'Oil on panel',
             theme: 'Coast',
             instagramUrl: null,
             ownerNotes: null,
@@ -50,9 +54,9 @@ async function seedArtwork(
             sold: overrides.sold ?? false,
             available: overrides.available ?? true,
             active: overrides.active ?? true,
-            framed: true,
-            widthInches: 16,
-            heightInches: 20,
+            framed: overrides.framed ?? true,
+            widthInches: overrides.widthInches ?? 16,
+            heightInches: overrides.heightInches ?? 20,
             galleryOrder,
             homepageOrder,
             ownerMutatedFields: [],
@@ -90,7 +94,7 @@ const buyer = {
     buyerEmail: 'BUYER@example.com',
     buyerPhone: '555-555-0100',
     shippingAddress: '100 Test Street, London, UK',
-    international: true,
+    destination: 'international' as const,
 };
 
 beforeEach(() => {
@@ -122,7 +126,7 @@ describe('Convex commerce', () => {
             ...buyer,
         });
 
-        expect(first).toMatchObject({ artworkPriceCents: 95000, shippingCents: 2500, totalCents: 97500, currency: 'usd' });
+        expect(first).toMatchObject({ artworkPriceCents: 95000, shippingCents: 39000, totalCents: 134000, currency: 'usd' });
         await expect(
             t.mutation(api.commerce.createCheckoutIntent, {
                 serverSecret,
@@ -130,6 +134,41 @@ describe('Convex commerce', () => {
                 ...buyer,
             }),
         ).rejects.toThrow('already in progress');
+    });
+
+    it('calculates domestic shipping from canonical size and framing', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+            destination: 'domestic',
+        });
+
+        expect(intent).toMatchObject({
+            artworkPriceCents: 95000,
+            shippingCents: 15000,
+            totalCents: 110000,
+            international: false,
+        });
+        expect(intent.shippingDescription).toContain('Standard insured delivery');
+        expect(intent.shippingDescription).toContain('Framed-work protection');
+    });
+
+    it('requires a studio quote instead of charging an unreliable oversize amount', async () => {
+        const t = createHarness();
+        await seedArtwork(t, { widthInches: 60, heightInches: 40 });
+
+        await expect(
+            t.mutation(api.commerce.createCheckoutIntent, {
+                serverSecret,
+                artworkLegacyId: 101,
+                ...buyer,
+                destination: 'domestic',
+            }),
+        ).rejects.toThrow('studio shipping quote');
     });
 
     it('creates one canonical order, marks the artwork sold, and deduplicates Stripe replay', async () => {
@@ -153,7 +192,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_test_1',
             checkoutSessionId: 'cs_test_1',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         expect(processed.outcome).toBe('processed');
@@ -165,7 +204,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_test_1',
             checkoutSessionId: 'cs_test_1',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         const secondEvent = await t.mutation(api.commerce.processStripeEvent, {
@@ -174,7 +213,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_test_1',
             checkoutSessionId: 'cs_test_1',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         expect(replay.outcome).toBe('duplicate');
@@ -187,7 +226,7 @@ describe('Convex commerce', () => {
         }));
         expect(state.artwork).toMatchObject({ sold: true, available: false });
         expect(state.orders).toHaveLength(1);
-        expect(state.orders[0]).toMatchObject({ paymentIntentId: 'pi_test_1', amountPaidCents: 97500, shippingPaidCents: 2500 });
+        expect(state.orders[0]).toMatchObject({ paymentIntentId: 'pi_test_1', amountPaidCents: 134000, shippingPaidCents: 39000 });
         expect(state.events).toHaveLength(2);
     });
 
@@ -211,7 +250,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_refund',
             checkoutSessionId: 'cs_refund',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         await t.mutation(api.commerce.processStripeEvent, {
@@ -229,7 +268,7 @@ describe('Convex commerce', () => {
             eventType: 'charge.refunded',
             paymentIntentId: 'pi_refund',
             checkoutSessionId: 'cs_refund',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
 
@@ -259,7 +298,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_dispute',
             checkoutSessionId: 'cs_dispute',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         const result = await t.mutation(api.commerce.processStripeEvent, {
@@ -268,7 +307,7 @@ describe('Convex commerce', () => {
             eventType: 'charge.dispute.created',
             paymentIntentId: 'pi_dispute',
             checkoutSessionId: 'cs_dispute',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         expect(result.outcome).toBe('processed');
@@ -311,7 +350,7 @@ describe('Convex commerce', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_freeze',
             checkoutSessionId: 'cs_freeze',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         expect(drained.outcome).toBe('processed');
@@ -492,7 +531,7 @@ describe('Convex commerce', () => {
             eventType: 'checkout.session.expired',
             paymentIntentId: null,
             checkoutSessionId: 'cs_expired',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
 
@@ -517,7 +556,7 @@ describe('Convex commerce', () => {
             eventType: 'checkout.session.expired',
             paymentIntentId: null,
             checkoutSessionId: 'cs_recoverable',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         expect(firstAttempt.outcome).toBe('quarantined');
@@ -539,7 +578,7 @@ describe('Convex commerce', () => {
             eventType: 'checkout.session.expired',
             paymentIntentId: null,
             checkoutSessionId: 'cs_recoverable',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
 
@@ -877,7 +916,7 @@ describe('public and owner workspace writes', () => {
             eventType: 'payment_intent.succeeded',
             paymentIntentId: 'pi_owner_workflow',
             checkoutSessionId: 'cs_owner_workflow',
-            amountReceivedCents: 97500,
+            amountReceivedCents: 134000,
             currency: 'usd',
         });
         await t.mutation(api.commerce.recordNotificationOutcome, {

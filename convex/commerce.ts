@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 import { mutation, query, type MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
 import { assertWritesEnabled } from './lib/writeFreeze';
+import { estimateArtworkShipping, shippingCareForMedium } from '../shared/shipping';
 
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
@@ -74,7 +75,7 @@ export const createCheckoutIntent = mutation({
         buyerEmail: v.string(),
         buyerPhone: v.string(),
         shippingAddress: v.string(),
-        international: v.boolean(),
+        destination: v.union(v.literal('domestic'), v.literal('international')),
     },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
@@ -107,7 +108,19 @@ export const createCheckoutIntent = mutation({
             .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', artwork.legacyId))
             .collect();
         const primaryImage = media.find((item) => item.role === 'primary' && !item.absentFromSource)?.sourceUrl ?? null;
-        const shippingCents = args.international ? 2500 : 0;
+        const shipping = estimateArtworkShipping({
+            width: artwork.widthInches ?? 0,
+            height: artwork.heightInches ?? 0,
+            framed: artwork.framed,
+            care: shippingCareForMedium(artwork.medium),
+            destination: args.destination,
+        });
+        if (shipping.requiresQuote || shipping.checkoutChargeCents === null) {
+            throw new Error('This artwork needs a studio shipping quote before checkout.');
+        }
+        const shippingCents = shipping.checkoutChargeCents;
+        const international = args.destination === 'international';
+        const shippingDescription = shipping.checkoutBreakdown.map((item) => item.label).join(' · ');
         const intentId = await ctx.db.insert('checkoutIntents', {
             artworkId: artwork._id,
             artworkLegacyId: artwork.legacyId,
@@ -121,7 +134,7 @@ export const createCheckoutIntent = mutation({
             buyerName: args.buyerName.trim(),
             buyerPhone: args.buyerPhone.trim(),
             shippingAddressJson: JSON.stringify({ formatted: args.shippingAddress.trim() }),
-            international: args.international,
+            international,
             stripeCheckoutSessionId: null,
             stripePaymentIntentId: null,
             status: 'created',
@@ -137,6 +150,8 @@ export const createCheckoutIntent = mutation({
             shippingCents,
             totalCents: artwork.priceCents + shippingCents,
             currency: 'usd',
+            international,
+            shippingDescription,
         };
     },
 });

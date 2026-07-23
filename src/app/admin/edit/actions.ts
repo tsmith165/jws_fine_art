@@ -5,6 +5,7 @@ import { api } from '../../../../convex/_generated/api';
 import type { Pieces } from '@/types/artwork';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
 import { ownerArtworkToLegacy } from '@/data/ownerMapper';
+import { validateOwnerArtwork } from '@/lib/ownerArtworkValidation';
 import { validateUploadedImageReference } from '@/lib/uploadedImageReference';
 import type { ArtworkCategoryId } from '@shared/artworkCategories';
 import { normalizeArtworkCategories } from '@shared/artworkCategories';
@@ -66,7 +67,8 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
     try {
         const legacyId = Number(data.piece_id);
         if (!Number.isSafeInteger(legacyId) || legacyId <= 0) throw new Error('Artwork ID is invalid.');
-        if (!data.piece_title.trim()) throw new Error('Title is required.');
+        const validation = validateOwnerArtwork(data);
+        if (!validation.canSave) throw new Error(validation.errors[0]?.message || 'Review the highlighted artwork fields.');
         const { client, artwork } = await findOwnerArtwork(legacyId);
         const listing = normalizeArtworkAvailability({ sold: data.sold, available: data.available });
         await client.mutation(api.ownerMutations.updateArtwork, {

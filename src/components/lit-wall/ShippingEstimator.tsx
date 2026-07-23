@@ -3,6 +3,7 @@
 import { Check, Globe2, LoaderCircle, MapPin, PackageCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { estimateArtworkShipping, type ShippingCare, type ShippingDestination, type ShippingEstimate } from '@/lib/shipping';
+import { money } from '@/lib/artwork';
 
 type ShippingFormState = {
     width: string;
@@ -55,6 +56,41 @@ export function ShippingEstimator() {
             setIsCalculating(false);
         }, 450);
     }
+
+    const breakdownByLabel = new Map(estimate.breakdown.map((item) => [item.label, item]));
+    const customOrSizeItem = breakdownByLabel.get('Size and delivery class') ??
+        breakdownByLabel.get('Custom packing and delivery') ?? {
+            label: 'Size and delivery class',
+            amount: 'Pending',
+            detail: 'Enter both dimensions to select a packing class',
+        };
+    const factorRows = [
+        { ...customOrSizeItem, active: true },
+        breakdownByLabel.get('Framed-work protection')
+            ? { ...breakdownByLabel.get('Framed-work protection')!, active: true }
+            : {
+                  label: 'Framed-work protection',
+                  amount: 'Not added',
+                  detail: estimate.requiresQuote ? 'Reviewed with the custom packing quote' : 'Unframed artwork selected',
+                  active: false,
+              },
+        breakdownByLabel.get('Delicate or glazed handling')
+            ? { ...breakdownByLabel.get('Delicate or glazed handling')!, active: true }
+            : {
+                  label: 'Delicate or glazed handling',
+                  amount: 'Not added',
+                  detail: estimate.requiresQuote ? 'Reviewed with the custom packing quote' : 'Standard surface handling selected',
+                  active: false,
+              },
+        breakdownByLabel.get('International route')
+            ? { ...breakdownByLabel.get('International route')!, active: true }
+            : {
+                  label: 'International route',
+                  amount: 'Not added',
+                  detail: estimate.requiresQuote ? 'Reviewed with the custom delivery quote' : 'United States delivery selected',
+                  active: false,
+              },
+    ];
 
     return (
         <div className="lw-shipping-estimator">
@@ -169,7 +205,7 @@ export function ShippingEstimator() {
                 </fieldset>
             </div>
 
-            <div className={`lw-shipping-result${isCalculating ? 'is-calculating' : ''}`} aria-busy={isCalculating}>
+            <div className={isCalculating ? 'lw-shipping-result is-calculating' : 'lw-shipping-result'} aria-busy={isCalculating}>
                 <header>
                     <span className="lw-eyebrow">Planning estimate</span>
                     <span className="lw-shipping-status" role="status" aria-live="polite">
@@ -193,22 +229,31 @@ export function ShippingEstimator() {
                 </div>
                 <p className="lw-shipping-basis">{estimate.basis}</p>
                 <p className="lw-shipping-explanation">{estimate.explanation}</p>
-                {estimate.breakdown.length > 0 && (
-                    <dl className="lw-shipping-breakdown">
-                        {estimate.breakdown.map((item) => (
-                            <div key={item.label}>
-                                <dt>
-                                    {item.label}
-                                    <small>{item.detail}</small>
-                                </dt>
-                                <dd>{item.amount}</dd>
-                            </div>
-                        ))}
-                    </dl>
-                )}
+                <dl className="lw-shipping-breakdown" aria-label="Shipping estimate breakdown">
+                    {factorRows.map((item) => (
+                        <div className={item.active ? undefined : 'is-inactive'} key={item.label}>
+                            <dt>
+                                {item.label}
+                                <small>{item.detail}</small>
+                            </dt>
+                            <dd>{item.amount}</dd>
+                        </div>
+                    ))}
+                </dl>
+                <div className="lw-shipping-checkout-contribution">
+                    <span>{estimate.checkoutChargeCents === null ? 'Checkout availability' : 'Checkout shipping contribution'}</span>
+                    <strong>
+                        {estimate.checkoutChargeCents === null ? 'Studio quote required' : money(estimate.checkoutChargeCents / 100)}
+                    </strong>
+                    <small>
+                        {estimate.checkoutChargeCents === null
+                            ? 'The studio confirms custom packing or delivery before payment.'
+                            : 'This fixed amount is added to the artwork price during checkout.'}
+                    </small>
+                </div>
                 <p className="lw-shipping-disclaimer">
-                    Planning range only. Final packing, insured carrier cost, and checkout contribution are confirmed separately. Import
-                    duties, taxes, and brokerage are not included.
+                    The range helps with planning; checkout uses the fixed contribution shown above. Import duties, destination taxes, and
+                    brokerage are not included.
                 </p>
             </div>
         </div>

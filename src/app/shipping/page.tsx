@@ -58,8 +58,8 @@ export default function ShippingPage() {
                         claim and refund can be handled.
                     </p>
                     <p>
-                        The checkout shipping amount is a contribution toward insured packing and delivery. Oversize, especially delicate,
-                        or international work may require a separate quote agreed with the studio.
+                        Checkout adds a fixed contribution toward insured packing and delivery based on the artwork’s size, frame, surface,
+                        and destination. Oversize work or custom delivery still requires a studio quote before payment.
                     </p>
                     <Link className="lw-button lw-button-brass" href="/contact?kind=general">
                         Ask about shipping <ArrowRight size={16} />

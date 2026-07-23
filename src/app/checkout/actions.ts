@@ -6,6 +6,7 @@ import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { getServerConvexClient } from '@/data/serverConvex';
 import { assertStripeEnvironment } from '@/lib/providerSafety';
+import type { ShippingDestination } from '@/lib/shipping';
 
 function stripeClient() {
     return new Stripe(assertStripeEnvironment().secretKey, { apiVersion: '2026-06-24.dahlia' });
@@ -34,7 +35,8 @@ export async function runStripePurchase(data: FormData) {
     const buyerPhone = requiredFormValue(data, 'phone');
     const buyerEmail = requiredFormValue(data, 'email');
     const shippingAddress = requiredFormValue(data, 'address');
-    const international = !/(^|\b)(usa|united states|united states of america)(\b|$)/i.test(shippingAddress);
+    const destination = requiredFormValue(data, 'shipping_destination');
+    if (destination !== 'domestic' && destination !== 'international') throw new Error('Shipping destination is invalid.');
     const { client, serverSecret } = getServerConvexClient();
     const intent = await client.mutation(api.commerce.createCheckoutIntent, {
         serverSecret,
@@ -43,7 +45,7 @@ export async function runStripePurchase(data: FormData) {
         buyerEmail,
         buyerPhone,
         shippingAddress,
-        international,
+        destination: destination as ShippingDestination,
     });
 
     try {
@@ -66,7 +68,10 @@ export async function runStripePurchase(data: FormData) {
                 price_data: {
                     currency: intent.currency,
                     unit_amount: intent.shippingCents,
-                    product_data: { name: 'International shipping' },
+                    product_data: {
+                        name: intent.international ? 'Insured packing & international shipping' : 'Insured packing & U.S. shipping',
+                        description: intent.shippingDescription,
+                    },
                 },
                 quantity: 1,
             });
@@ -80,7 +85,14 @@ export async function runStripePurchase(data: FormData) {
             expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
             success_url: `${origin}/checkout/success/${artworkLegacyId}?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${origin}/checkout/cancel/${artworkLegacyId}`,
-            payment_intent_data: { metadata: { checkout_intent_id: String(intent.intentId) } },
+            payment_intent_data: {
+                metadata: {
+                    checkout_intent_id: String(intent.intentId),
+                    artwork_id: String(artworkLegacyId),
+                    shipping_destination: destination,
+                    shipping_cents: String(intent.shippingCents),
+                },
+            },
         });
         const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id ?? null);
         await client.mutation(api.commerce.attachCheckoutSession, {

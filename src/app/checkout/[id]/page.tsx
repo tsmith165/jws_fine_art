@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, PackageCheck, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { notFound, redirect } from 'next/navigation';
 import CheckoutForm from './CheckoutForm';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
@@ -24,7 +24,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
             </nav>
             <section className="lw-checkout-layout">
                 <aside className="lw-checkout-piece">
-                    <div>
+                    <div className="lw-checkout-artwork-image">
                         <Image
                             src={piece.image_path}
                             alt={piece.title}
@@ -41,20 +41,27 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
                         {piece.piece_type || 'Original artwork'} · {dimensions(piece)}
                     </p>
                     <strong>{money(piece.price)}</strong>
+                    <p className="lw-checkout-piece-note">The artwork is reserved for 30 minutes after secure checkout opens.</p>
                 </aside>
                 <div className="lw-checkout-panel">
+                    <ol className="lw-checkout-progress" aria-label="Checkout progress">
+                        <li className="is-complete">
+                            <Check size={13} /> Artwork
+                        </li>
+                        <li aria-current="step">
+                            <span>2</span> Delivery
+                        </li>
+                        <li>
+                            <span>3</span> Payment
+                        </li>
+                    </ol>
                     <span className="lw-eyebrow">Secure checkout</span>
-                    <h2>Where should the artwork go?</h2>
-                    <p>Enter your contact and shipping details. You will review the final amount before paying on Stripe.</p>
+                    <h2>Delivery, clearly calculated.</h2>
+                    <p>
+                        Choose the destination and enter the delivery details. Insured packing and shipping are calculated from this
+                        artwork’s size, frame, surface, and route before you continue.
+                    </p>
                     <CheckoutForm current_piece={piece} />
-                    <ul>
-                        <li>
-                            <ShieldCheck size={16} /> Insured shipping
-                        </li>
-                        <li>
-                            <PackageCheck size={16} /> Packed by Jill’s studio
-                        </li>
-                    </ul>
                 </div>
             </section>
         </SiteShell>
