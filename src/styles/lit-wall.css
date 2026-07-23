@@ -2126,6 +2126,15 @@
 .lw-shipping-result > header .lw-eyebrow {
     margin-bottom: 0;
 }
+.lw-shipping-result-label {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+.lw-shipping-result-label > svg {
+    flex: 0 0 auto;
+    color: var(--lw-brass);
+}
 .lw-shipping-status {
     display: inline-flex;
     min-width: 126px;
@@ -2143,11 +2152,8 @@
     color: var(--lw-brass);
 }
 .lw-shipping-result-summary {
-    display: grid;
+    display: block;
     min-height: 94px;
-    grid-template-columns: 34px minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
     margin-top: 24px;
     transition:
         opacity 0.18s ease,
@@ -2158,10 +2164,6 @@
 .lw-shipping-result.is-calculating .lw-shipping-explanation,
 .lw-shipping-result.is-calculating .lw-shipping-breakdown {
     opacity: 0.48;
-}
-.lw-shipping-result-summary > svg {
-    margin-top: 8px;
-    color: var(--lw-brass);
 }
 .lw-shipping-result h3 {
     min-height: 1.08em;

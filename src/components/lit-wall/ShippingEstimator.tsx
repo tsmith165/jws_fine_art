@@ -207,7 +207,10 @@ export function ShippingEstimator() {
 
             <div className={isCalculating ? 'lw-shipping-result is-calculating' : 'lw-shipping-result'} aria-busy={isCalculating}>
                 <header>
-                    <span className="lw-eyebrow">Planning estimate</span>
+                    <span className="lw-shipping-result-label">
+                        <PackageCheck size={16} />
+                        <span className="lw-eyebrow">Planning estimate</span>
+                    </span>
                     <span className="lw-shipping-status" role="status" aria-live="polite">
                         {isCalculating ? (
                             <>
@@ -221,7 +224,6 @@ export function ShippingEstimator() {
                     </span>
                 </header>
                 <div className="lw-shipping-result-summary">
-                    <PackageCheck size={22} />
                     <div>
                         <h3>{estimate.classification}</h3>
                         <strong>{estimate.estimatedCarrierRange}</strong>
