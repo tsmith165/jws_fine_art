@@ -17,8 +17,8 @@ export default function ShippingPage() {
                 <span className="lw-eyebrow">Shipping & artwork care</span>
                 <h1>Careful packing for the journey home.</h1>
                 <p>
-                    Every work is packed for its size, surface, and frame, then shipped with tracking and insurance. Use the estimator to
-                    understand the likely packing class before contacting the studio.
+                    Every work is packed for its size, surface, frame, and destination, then shipped with tracking and insurance. Use the
+                    estimator to see how each choice shapes the likely planning range.
                 </p>
             </header>
             <section className="lw-shipping-guide lw-band">
@@ -30,8 +30,8 @@ export default function ShippingPage() {
                     </article>
                     <article>
                         <Truck size={22} />
-                        <h2>Quoted by size</h2>
-                        <p>Dimensions, framing, destination, and handling needs determine the final delivery method.</p>
+                        <h2>Built from the details</h2>
+                        <p>See how dimensions, framing, destination, and handling needs shape the estimate.</p>
                     </article>
                     <article>
                         <ShieldCheck size={22} />

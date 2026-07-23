@@ -1872,14 +1872,59 @@
 }
 .lw-shipping-estimator {
     display: grid;
-    grid-template-columns: 1fr minmax(320px, 0.72fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.95fr);
     border: 1px solid var(--lw-line);
+    background: var(--lw-paper);
 }
 .lw-shipping-fields {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
+    gap: 34px;
     padding: clamp(28px, 5vw, 60px);
+}
+.lw-shipping-fields > header {
+    max-width: 580px;
+}
+.lw-shipping-fields > header .lw-eyebrow {
+    margin-bottom: 12px;
+}
+.lw-shipping-fields > header h2 {
+    font-size: clamp(34px, 3.5vw, 48px);
+    line-height: 1.08;
+}
+.lw-shipping-fields > header p {
+    margin-top: 14px;
+    color: var(--lw-muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+.lw-shipping-fields fieldset {
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+.lw-shipping-fields legend {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 12px;
+    color: var(--lw-muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+.lw-shipping-fields legend span {
+    color: var(--lw-brass);
+}
+.lw-shipping-dimensions,
+.lw-shipping-route,
+.lw-shipping-protection {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
 }
 .lw-shipping-fields label {
     display: grid;
@@ -1889,76 +1934,293 @@
     font-weight: 700;
     text-transform: uppercase;
 }
-.lw-shipping-fields label > span:not(.lw-eyebrow) {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--lw-line);
-    background: var(--lw-paper);
+.lw-shipping-number {
+    position: relative;
+    display: block;
+}
+.lw-shipping-number small {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    color: var(--lw-muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    pointer-events: none;
+    text-transform: uppercase;
+    transform: translateY(-50%);
 }
 .lw-shipping-fields input[type='number'],
 .lw-shipping-fields select {
     width: 100%;
-    min-height: 48px;
+    min-height: 56px;
     border: 1px solid var(--lw-line);
     border-radius: 0;
-    padding: 11px 13px;
-    background: var(--lw-paper);
+    padding: 14px 16px;
+    background-color: var(--lw-paper);
     color: var(--lw-ink);
     outline: 0;
 }
-.lw-shipping-fields label > span input {
-    border: 0;
+.lw-shipping-number input[type='number'] {
+    padding-right: 62px;
 }
-.lw-shipping-fields label > span small {
-    padding-right: 13px;
+.lw-shipping-fields input[type='number']:hover,
+.lw-shipping-fields select:hover {
+    border-color: var(--lw-green);
+}
+.lw-shipping-route button {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    min-height: 76px;
+    grid-template-columns: 20px minmax(0, 1fr) 20px;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--lw-line);
+    padding: 14px 15px;
+    background: var(--lw-paper);
     color: var(--lw-muted);
-    font-size: 10px;
+    text-align: left;
+    cursor: pointer;
+}
+.lw-shipping-route button:hover {
+    border-color: var(--lw-green);
+    color: var(--lw-ink);
+}
+.lw-shipping-route button[aria-pressed='true'] {
+    border-color: var(--lw-brass);
+    background: rgba(198, 164, 102, 0.08);
+    color: var(--lw-ink);
+}
+.lw-shipping-route button > svg:first-child {
+    color: var(--lw-brass);
+}
+.lw-shipping-route button > span {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+}
+.lw-shipping-route button strong {
+    overflow: hidden;
+    color: inherit;
+    font-size: 13px;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
-.lw-shipping-fields .lw-shipping-check {
-    align-content: end;
+.lw-shipping-route button small {
+    color: var(--lw-muted);
+    font-size: 10px;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+.lw-shipping-choice-check {
+    opacity: 0;
+    color: var(--lw-brass);
+}
+.lw-shipping-route button[aria-pressed='true'] .lw-shipping-choice-check {
+    opacity: 1;
 }
 .lw-shipping-check input {
     position: absolute;
     opacity: 0;
 }
-.lw-shipping-fields .lw-shipping-check span {
-    min-height: 48px;
-    justify-content: center;
+.lw-shipping-fields .lw-shipping-check {
+    display: grid;
+    min-height: 56px;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 11px;
+    align-content: center;
+    align-items: center;
     border: 1px solid var(--lw-line);
-    color: var(--lw-ink);
+    padding: 10px 14px;
+    color: var(--lw-muted);
     cursor: pointer;
+    text-transform: none;
 }
-.lw-shipping-check input:checked + span {
+.lw-shipping-fields .lw-shipping-check:hover {
+    border-color: var(--lw-green);
+}
+.lw-shipping-fields .lw-shipping-check:has(input:checked) {
     border-color: var(--lw-brass);
     background: rgba(198, 164, 102, 0.12);
+    color: var(--lw-ink);
+}
+.lw-shipping-check-box {
+    display: grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border: 1px solid var(--lw-line);
+    color: transparent;
+}
+.lw-shipping-check input:checked + .lw-shipping-check-box {
+    border-color: var(--lw-brass);
+    background: var(--lw-brass);
+    color: var(--lw-brass-ink);
+}
+.lw-shipping-check > span:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 1px;
+}
+.lw-shipping-check strong {
+    color: inherit;
+    font-size: 12px;
+    line-height: 1.35;
+}
+.lw-shipping-check small {
+    color: var(--lw-muted);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.35;
 }
 .lw-shipping-result {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     border-left: 1px solid var(--lw-line);
     padding: clamp(28px, 5vw, 60px);
     background: var(--lw-raised);
+    transition:
+        background-color 0.2s ease,
+        opacity 0.2s ease;
+}
+.lw-shipping-result::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--lw-brass), transparent);
+    content: '';
+    opacity: 0;
+    transform: scaleX(0.2);
+}
+.lw-shipping-result.is-calculating::after {
+    animation: lw-shipping-progress 0.9s ease-in-out infinite;
+    opacity: 1;
+}
+@keyframes lw-shipping-progress {
+    0% {
+        transform: translateX(-42%) scaleX(0.35);
+    }
+    50% {
+        transform: translateX(0) scaleX(0.75);
+    }
+    100% {
+        transform: translateX(42%) scaleX(0.35);
+    }
+}
+.lw-shipping-result > header {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+.lw-shipping-result > header .lw-eyebrow {
+    margin-bottom: 0;
+}
+.lw-shipping-status {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    color: var(--lw-green);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.lw-shipping-result.is-calculating .lw-shipping-status {
+    color: var(--lw-brass);
+}
+.lw-shipping-result-summary {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    margin-top: 34px;
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+}
+.lw-shipping-result.is-calculating .lw-shipping-result-summary,
+.lw-shipping-result.is-calculating .lw-shipping-basis,
+.lw-shipping-result.is-calculating .lw-shipping-explanation,
+.lw-shipping-result.is-calculating .lw-shipping-breakdown {
+    opacity: 0.48;
+}
+.lw-shipping-result-summary > svg {
+    margin-top: 8px;
+    color: var(--lw-brass);
 }
 .lw-shipping-result h3 {
-    font-size: clamp(36px, 4vw, 58px);
+    font-size: clamp(40px, 4vw, 58px);
     line-height: 1.08;
 }
-.lw-shipping-result > strong {
-    margin-top: 16px;
+.lw-shipping-result-summary strong {
+    display: block;
+    margin-top: 10px;
     color: var(--lw-brass);
-    font-size: 20px;
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.2;
 }
-.lw-shipping-result p {
-    margin-top: 20px;
-    color: var(--lw-muted);
-    line-height: 1.7;
-}
-.lw-shipping-result > small {
-    margin-top: 24px;
-    color: var(--lw-muted);
+.lw-shipping-basis {
+    margin-top: 22px !important;
+    color: var(--lw-ink) !important;
     font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    transition: opacity 0.18s ease;
+}
+.lw-shipping-explanation {
+    margin-top: 10px !important;
+    color: var(--lw-muted);
+    font-size: 13px;
+    line-height: 1.7;
+    transition: opacity 0.18s ease;
+}
+.lw-shipping-breakdown {
+    display: grid;
+    margin: 26px 0 0;
+    border-top: 1px solid var(--lw-line);
+    transition: opacity 0.18s ease;
+}
+.lw-shipping-breakdown > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+    align-items: start;
+    border-bottom: 1px solid var(--lw-line);
+    padding: 14px 0;
+}
+.lw-shipping-breakdown dt {
+    display: grid;
+    gap: 3px;
+    color: var(--lw-ink);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+.lw-shipping-breakdown dt small {
+    color: var(--lw-muted);
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.45;
+}
+.lw-shipping-breakdown dd {
+    margin: 0;
+    color: var(--lw-brass);
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.lw-shipping-disclaimer {
+    margin-top: 22px !important;
+    color: var(--lw-muted);
+    font-size: 10px;
     line-height: 1.6;
 }
 .lw-shipping-policy {
@@ -2687,6 +2949,23 @@
     .lw-shipping-principles,
     .lw-shipping-fields {
         grid-template-columns: 1fr;
+    }
+    .lw-shipping-dimensions,
+    .lw-shipping-route,
+    .lw-shipping-protection {
+        grid-template-columns: 1fr;
+    }
+    .lw-shipping-fields,
+    .lw-shipping-result {
+        padding: 28px 20px;
+    }
+    .lw-shipping-result > header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .lw-shipping-result-summary {
+        margin-top: 28px;
     }
     .lw-shipping-principles article {
         min-height: 210px;
