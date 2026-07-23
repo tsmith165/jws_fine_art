@@ -32,8 +32,8 @@
   `shipping-calculator-production-mobile`.
 - Artifact validation passed with 49 design artifacts, 74 preview QA artifacts,
   and 29 analysis records.
-- Remaining cleanup: commit/push this context update, reset the temporary
-  browser viewport, and finalize the browser session.
+- Final context commit `2cc3066` is pushed. The temporary browser viewport was
+  reset and the browser session was finalized.
 - User screenshot alias: `shipping-calculator-before`.
 
 ## July 23 Artwork Editor Guidance And Media Modal
