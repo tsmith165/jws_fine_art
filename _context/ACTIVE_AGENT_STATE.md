@@ -13,8 +13,21 @@
 - Verification: lint, typecheck, 18 test files / 120 tests, production build.
 - Development Convex deployed and backfilled: 10 orders → 7 CA, 1 interstate,
   2 international, 0 address-unknown.
-- Pending: production Convex deploy + backfill and Vercel production deploy
-  (blocked on permission approval in the session that implemented this).
+- Production Convex deployed; production backfill applied (10 orders → 7 CA,
+  1 interstate, 2 international). Vercel deployment
+  `dpl_...8uwy5szu7` (commit `7b4e57d`) is ready and aliased.
+- Follow-up (commit `ea2ae20`): `orders.isTest` flag; owner mark/unmark on
+  `/admin/orders` with default-hidden test orders and a show toggle;
+  Business/exports/fulfillment exclude test orders and report the excluded
+  count. `migrations:backfillTestOrders` marked the eight $1 owner test
+  purchases in production and development.
+- Tax classification fix: a parseable U.S. address now outranks the legacy
+  `international` flag. Production re-backfill corrected 2 orders — the real
+  $495 Indio CA sale now carries a $35.60 set-aside. After exclusions, the
+  real book is 2 orders: one CA ($35.60 set aside), one interstate (exempt).
+- Verification: lint, typecheck, 18 files / 121 tests, production build.
+- Pending: final Vercel production deploy of commit `ea2ae20` (permission
+  blocked in-session; command handed to Torrey).
 
 ## July 23 Tax-Inclusive Pricing And Clerk Decision
 
