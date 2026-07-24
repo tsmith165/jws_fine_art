@@ -44,6 +44,15 @@ describe('sales tax policy', () => {
         );
     });
 
+    it('lets a parseable U.S. address outrank the legacy international flag', () => {
+        expect(
+            classifyTaxJurisdiction({ deliveryMethod: null, international: true, shippingAddress: '49329 Escalante indio CA 92201' }),
+        ).toBe('CA');
+        expect(classifyTaxJurisdiction({ deliveryMethod: null, international: true, shippingAddress: 'Austin, TX 78701' })).toBe(
+            'interstate',
+        );
+    });
+
     it('reserves tax when the destination state cannot be determined', () => {
         expect(classifyTaxJurisdiction({ deliveryMethod: 'domestic_shipping', international: false, shippingAddress: 'unknown' })).toBe(
             'CA',

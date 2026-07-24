@@ -31,6 +31,14 @@ export async function updateFulfillment(formData: FormData) {
     revalidateOwner('/admin/orders');
 }
 
+export async function setOrderTestFlag(formData: FormData) {
+    const orderId = String(formData.get('orderId')) as Id<'orders'>;
+    const isTest = String(formData.get('isTest')) === 'true';
+    const client = await getAuthenticatedOwnerConvexClient('mark a test order');
+    await client.mutation(api.ownerWorkspace.setOrderTestFlag, { orderId, isTest });
+    revalidateOwner('/admin/orders', '/admin/business');
+}
+
 function escapeHtml(value: string) {
     return value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]!);
 }

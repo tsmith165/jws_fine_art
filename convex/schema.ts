@@ -233,6 +233,7 @@ export default defineSchema({
         taxJurisdiction: v.optional(v.union(v.literal('CA'), v.literal('interstate'), v.literal('international'))),
         taxRateBps: v.optional(nullableNumber),
         taxSetAsideCents: v.optional(nullableNumber),
+        isTest: v.optional(v.boolean()),
         refundedCents: v.optional(nullableNumber),
         disputeStatus: v.optional(
             v.union(v.literal('none'), v.literal('open'), v.literal('under_review'), v.literal('won'), v.literal('lost')),

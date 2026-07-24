@@ -33,7 +33,9 @@ export const overview = query({
             ctx.db.query('commerceReconciliationRuns').collect(),
             ctx.db.query('commerceReconciliationFindings').collect(),
         ]);
-        const orders = allOrders.filter((item) => item.createdAt >= since);
+        const realOrders = allOrders.filter((item) => !item.isTest);
+        const orders = realOrders.filter((item) => item.createdAt >= since);
+        const testOrderCount = allOrders.filter((item) => item.isTest && item.createdAt >= since).length;
         const intents = allIntents.filter((item) => item.createdAt >= since);
         const paidOrders = orders.filter((item) => item.status === 'paid' || item.status === 'legacy_verified');
         const stripeOrders = paidOrders.filter((item) => item.source === 'stripe');
@@ -100,6 +102,7 @@ export const overview = query({
                     sum(orders.map((item) => item.refundedCents)),
                 orderCount: paidOrders.length,
                 stripeOrderCount: stripeOrders.length,
+                testOrderCount,
                 averageOrderCents: paidOrders.length
                     ? Math.round(sum(paidOrders.map((item) => item.amountPaidCents ?? item.legacyRecordedPriceCents)) / paidOrders.length)
                     : 0,
@@ -114,15 +117,15 @@ export const overview = query({
                     international: stripeOrders.filter((item) => item.deliveryMethod === 'international_quote').length,
                 },
                 fulfillment: {
-                    needsAttention: allOrders.filter(
+                    needsAttention: realOrders.filter(
                         (item) =>
                             item.status === 'paid' &&
                             (item.fulfillmentStatus === 'needs_attention' || item.fulfillmentStatus === 'ready_for_pickup'),
                     ).length,
-                    inProgress: allOrders.filter(
+                    inProgress: realOrders.filter(
                         (item) => item.status === 'paid' && ['packed', 'shipped', 'ready_for_pickup'].includes(item.fulfillmentStatus),
                     ).length,
-                    completed: allOrders.filter(
+                    completed: realOrders.filter(
                         (item) => item.status === 'paid' && ['delivered', 'picked_up'].includes(item.fulfillmentStatus),
                     ).length,
                 },

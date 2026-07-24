@@ -161,6 +161,10 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                         <p className="owner-business-note">
                             This is an operational view, not an accounting ledger. Stripe remains the source of truth for payouts. Tax to
                             set aside is backed out of tax-inclusive listed prices for CA-taxable orders — see docs/PAYMENTS_AND_TAXES.md.
+                            {business.commerce.testOrderCount > 0 &&
+                                ` ${number.format(business.commerce.testOrderCount)} test ${
+                                    business.commerce.testOrderCount === 1 ? 'order is' : 'orders are'
+                                } excluded.`}
                         </p>
                     </section>
 

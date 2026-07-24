@@ -94,8 +94,10 @@ disabled), `taxIncluded`, `international`, `deliveryMethod`, and the full
 Tax set-aside tracking (implemented July 24, 2026):
 
 - `taxJurisdiction`: `'CA' | 'interstate' | 'international'`, derived from
-  delivery method and shipping address state at payment time. An address
-  whose state cannot be determined is conservatively treated as CA.
+  delivery method and shipping address state at payment time. A parseable
+  U.S. address outranks the legacy `international` flag (imported records
+  carried it on real CA sales), and an address whose state cannot be
+  determined is conservatively treated as CA.
 - `taxRateBps`: the rate applied (775 today), so historical orders stay
   correct when the rate changes.
 - `taxSetAsideCents`: the backed-out tax portion for CA-taxable orders; 0 for
@@ -109,6 +111,16 @@ Tax set-aside tracking (implemented July 24, 2026):
   and the range picker includes "This year" for filing. The CSV export
   includes the set-aside summary, a sales-by-destination table for the annual
   nexus check, and per-order rows with jurisdiction, rate, and set-aside.
+
+## Test orders
+
+Orders carry an optional `isTest` flag. Flagged orders are hidden from the
+`/admin/orders` list (a toggle shows them), excluded from Business reporting,
+tax set-aside totals, fulfillment queues, and the CSV export. The owner can
+mark or unmark any order from its detail panel;
+`migrations:backfillTestOrders` marked the historical $1 owner test
+purchases. Real sales must never be flagged — the flag removes them from tax
+reporting.
 
 ## Filing checklist for the studio
 

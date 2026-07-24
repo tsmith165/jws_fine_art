@@ -182,6 +182,25 @@ export const updateFulfillment = mutation({
     },
 });
 
+export const setOrderTestFlag = mutation({
+    args: { orderId: v.id('orders'), isTest: v.boolean() },
+    handler: async (ctx, args) => {
+        const identity = await requireOwnerIdentity(ctx);
+        const order = await ctx.db.get(args.orderId);
+        if (!order) throw new Error('Order not found.');
+        const now = Date.now();
+        await ctx.db.patch(order._id, { isTest: args.isTest, updatedAt: now });
+        await ctx.db.insert('orderEvents', {
+            orderId: order._id,
+            type: args.isTest ? 'order.marked_test' : 'order.unmarked_test',
+            stripeEventId: null,
+            detailsJson: JSON.stringify({ actorId: identity.subject }),
+            createdAt: now,
+        });
+        return { success: true };
+    },
+});
+
 export const saveCampaign = mutation({
     args: {
         campaignId: v.union(v.id('campaigns'), v.null()),

@@ -38,6 +38,7 @@ export async function GET(request: Request) {
         ['Refunded (cents)', data.commerce.refundedCents],
         ['Net collected before fees (cents)', data.commerce.netCollectedCents],
         ['Orders', data.commerce.orderCount],
+        ['Test orders excluded', data.commerce.testOrderCount],
         ['Average order (cents)', data.commerce.averageOrderCents],
         ['Checkout starts', data.commerce.checkoutCreated],
         ['Checkout payments', data.commerce.checkoutPaid],

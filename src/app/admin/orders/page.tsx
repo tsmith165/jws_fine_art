@@ -1,7 +1,8 @@
-import { ChevronRight, PackageCheck, ReceiptText } from 'lucide-react';
+import { ChevronRight, FlaskConical, PackageCheck, ReceiptText } from 'lucide-react';
+import Link from 'next/link';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
 import { readOwnerOrders } from '@/data/ownerWorkspaceReads';
-import { updateFulfillment } from '@/app/admin/actions';
+import { setOrderTestFlag, updateFulfillment } from '@/app/admin/actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,9 +19,12 @@ function fulfillmentTone(value: string): 'neutral' | 'good' | 'warning' {
     return 'good';
 }
 
-export default async function OwnerOrdersPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
+export default async function OwnerOrdersPage({ searchParams }: { searchParams: Promise<{ id?: string; test?: string }> }) {
     const params = await searchParams;
-    const orders = await readOwnerOrders();
+    const showTest = params.test === '1';
+    const allOrders = await readOwnerOrders();
+    const testCount = allOrders.filter((order) => order.isTest).length;
+    const orders = showTest ? allOrders : allOrders.filter((order) => !order.isTest);
     const selected = orders.find((order) => order._id === params.id) || orders[0];
     return (
         <OwnerShell active="/admin/orders" title="Orders">
@@ -37,11 +41,24 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                 <h2>All orders</h2>
                                 <OwnerStatus>{orders.length}</OwnerStatus>
                             </header>
+                            {testCount > 0 && (
+                                <p className="owner-order-test-toggle">
+                                    {showTest ? (
+                                        <Link href="/admin/orders">
+                                            Hide the {testCount} test {testCount === 1 ? 'order' : 'orders'}
+                                        </Link>
+                                    ) : (
+                                        <Link href="/admin/orders?test=1">
+                                            Show {testCount} hidden test {testCount === 1 ? 'order' : 'orders'}
+                                        </Link>
+                                    )}
+                                </p>
+                            )}
                             <div className="owner-order-rows">
                                 {orders.map((order, index) => (
                                     <a
                                         className={`owner-select-row${selected._id === order._id ? 'is-selected' : ''}`}
-                                        href={`/admin/orders?id=${order._id}`}
+                                        href={`/admin/orders?id=${order._id}${showTest ? '&test=1' : ''}`}
                                         key={order._id}
                                         aria-current={selected._id === order._id ? 'page' : undefined}
                                     >
@@ -60,9 +77,13 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                             <strong>
                                                 {money.format((order.amountPaidCents ?? order.legacyRecordedPriceCents ?? 0) / 100)}
                                             </strong>
-                                            <OwnerStatus tone={fulfillmentTone(order.fulfillmentStatus)}>
-                                                {fulfillmentLabel(order.fulfillmentStatus)}
-                                            </OwnerStatus>
+                                            {order.isTest ? (
+                                                <OwnerStatus>Test</OwnerStatus>
+                                            ) : (
+                                                <OwnerStatus tone={fulfillmentTone(order.fulfillmentStatus)}>
+                                                    {fulfillmentLabel(order.fulfillmentStatus)}
+                                                </OwnerStatus>
+                                            )}
                                         </span>
                                         <ChevronRight className="owner-order-row-arrow" size={15} aria-hidden="true" />
                                     </a>
@@ -76,9 +97,13 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                     <h2>{selected.artworkTitle}</h2>
                                     <p>Placed {date.format(new Date(selected.createdAt))}</p>
                                 </div>
-                                <OwnerStatus tone={fulfillmentTone(selected.fulfillmentStatus)}>
-                                    {fulfillmentLabel(selected.fulfillmentStatus)}
-                                </OwnerStatus>
+                                {selected.isTest ? (
+                                    <OwnerStatus>Test order</OwnerStatus>
+                                ) : (
+                                    <OwnerStatus tone={fulfillmentTone(selected.fulfillmentStatus)}>
+                                        {fulfillmentLabel(selected.fulfillmentStatus)}
+                                    </OwnerStatus>
+                                )}
                             </header>
                             <dl>
                                 <div>
@@ -132,6 +157,14 @@ export default async function OwnerOrdersPage({ searchParams }: { searchParams: 
                                     <PackageCheck size={16} /> Save status
                                 </button>
                                 <p>Update this after packing, shipment, or delivery is confirmed.</p>
+                            </form>
+                            <form action={setOrderTestFlag} className="owner-order-test-form">
+                                <input type="hidden" name="orderId" value={selected._id} />
+                                <input type="hidden" name="isTest" value={selected.isTest ? 'false' : 'true'} />
+                                <button className="owner-button" type="submit">
+                                    <FlaskConical size={15} /> {selected.isTest ? 'Unmark test order' : 'Mark as test order'}
+                                </button>
+                                <p>Test orders stay out of the order list, Business reporting, tax set-aside totals, and exports.</p>
                             </form>
                         </article>
                     </div>

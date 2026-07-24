@@ -1159,6 +1159,27 @@
     color: var(--owner-muted);
     font-size: 10px;
 }
+.owner-order-test-toggle {
+    margin: 0 0 10px;
+    font-size: 12px;
+}
+.owner-order-test-toggle a {
+    color: var(--owner-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.owner-order-test-form {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--owner-line);
+}
+.owner-order-test-form > p {
+    color: var(--owner-muted);
+    font-size: 10px;
+}
 .owner-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

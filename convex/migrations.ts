@@ -188,6 +188,37 @@ export const backfillOrderTaxSetAside = internalMutation({
     },
 });
 
+export const backfillTestOrders = internalMutation({
+    args: { dryRun: v.boolean() },
+    handler: async (ctx, args) => {
+        const orders = await ctx.db.query('orders').collect();
+        // One-dollar checkouts were owner test purchases during Stripe setup;
+        // real artwork sales are orders of magnitude larger.
+        const changes = orders.filter((order) => {
+            const totalCents = order.amountPaidCents ?? order.legacyRecordedPriceCents ?? 0;
+            return totalCents > 0 && totalCents <= 100 && order.isTest !== true;
+        });
+
+        if (!args.dryRun) {
+            for (const order of changes) {
+                await ctx.db.patch(order._id, { isTest: true, updatedAt: Date.now() });
+            }
+        }
+
+        return {
+            dryRun: args.dryRun,
+            scanned: orders.length,
+            marked: changes.length,
+            markedOrders: changes.map((order) => ({
+                artworkTitle: order.artworkTitle,
+                buyerEmail: order.buyerEmail,
+                totalCents: order.amountPaidCents ?? order.legacyRecordedPriceCents ?? 0,
+                purchasedOn: order.purchasedOn,
+            })),
+        };
+    },
+});
+
 export const deriveCanonical = internalMutation({
     args: {
         runId: v.string(),

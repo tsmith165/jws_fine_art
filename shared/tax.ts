@@ -144,11 +144,14 @@ export function classifyTaxJurisdiction(order: {
     international: boolean;
     shippingAddress: string | null | undefined;
 }): TaxJurisdiction {
-    if (order.deliveryMethod === 'international_quote' || order.international) return 'international';
+    if (order.deliveryMethod === 'international_quote') return 'international';
     if (order.deliveryMethod === 'local_pickup') return 'CA';
+    // A parseable U.S. address outranks the legacy `international` flag,
+    // which is unreliable on imported orders (real CA sales carried it).
     const state = extractUsStateFromAddress(order.shippingAddress);
     if (state === 'CA') return 'CA';
     if (state) return 'interstate';
+    if (order.international) return 'international';
     // Unknown destination: reserve tax rather than under-report it.
     return 'CA';
 }
