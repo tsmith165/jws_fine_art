@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, CheckCircle2, Download, Landmark, MailCheck, RefreshCw, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, Download, Landmark, ReceiptText, RefreshCw, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import type { Id } from '../../../../convex/_generated/dataModel';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
@@ -14,6 +14,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+const moneyExact = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 const number = new Intl.NumberFormat('en-US');
 const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -93,20 +94,21 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                 </nav>
 
                 <section className="owner-business-hero-grid" aria-label={`Business summary for ${activeRange}`}>
-                    <article className="owner-business-hero">
+                    <article className="owner-business-hero is-primary">
                         <span>
-                            <Landmark size={17} aria-hidden="true" /> Collected
+                            <Landmark size={17} aria-hidden="true" /> Net collected
                         </span>
                         <strong>{dollars(business.commerce.netCollectedCents)}</strong>
                         <p>
-                            {number.format(business.commerce.orderCount)} orders · {dollars(business.commerce.refundedCents)} refunded
+                            {activeRange} · before Stripe fees ·{' '}
+                            {business.commerce.refundedCents ? `${dollars(business.commerce.refundedCents)} refunded` : 'no refunds'}
                         </p>
                     </article>
                     <article className="owner-business-hero">
                         <span>
                             <ShieldCheck size={17} aria-hidden="true" /> Tax to set aside
                         </span>
-                        <strong>{dollars(business.commerce.taxSetAsideCents)}</strong>
+                        <strong>{moneyExact.format((business.commerce.taxSetAsideCents ?? 0) / 100)}</strong>
                         <p>
                             Included in listed prices · {number.format(business.commerce.taxJurisdictions.ca)} CA-taxable{' '}
                             {business.commerce.taxJurisdictions.ca === 1 ? 'order' : 'orders'}
@@ -114,11 +116,13 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                     </article>
                     <article className="owner-business-hero">
                         <span>
-                            <MailCheck size={17} aria-hidden="true" /> Audience health
+                            <ReceiptText size={17} aria-hidden="true" /> Orders
                         </span>
-                        <strong>{number.format(business.mailing.activeSubscribers)}</strong>
+                        <strong>{number.format(business.commerce.orderCount)}</strong>
                         <p>
-                            {business.mailing.deliveryPercent}% delivered · {business.mailing.complaintPercent}% complaints
+                            {business.commerce.orderCount
+                                ? `${dollars(business.commerce.averageOrderCents)} average`
+                                : 'No completed sales in this period'}
                         </p>
                     </article>
                 </section>
@@ -137,25 +141,36 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                                 <dt>Gross collected</dt>
                                 <dd>{dollars(business.commerce.grossCents)}</dd>
                             </div>
-                            <div>
-                                <dt>Insured shipping</dt>
+                            <div className="is-subtract">
+                                <dt>Refunds</dt>
+                                <dd>− {dollars(business.commerce.refundedCents)}</dd>
+                            </div>
+                            <div className="is-total">
+                                <dt>Net before fees</dt>
+                                <dd>{dollars(business.commerce.netCollectedCents)}</dd>
+                            </div>
+                            <div className="is-context">
+                                <dt>
+                                    Insured shipping <small>portion of gross</small>
+                                </dt>
                                 <dd>{dollars(business.commerce.shippingCents)}</dd>
                             </div>
-                            <div>
-                                <dt>Tax to set aside</dt>
-                                <dd>{dollars(business.commerce.taxSetAsideCents)}</dd>
+                            <div className="is-context">
+                                <dt>
+                                    Tax to set aside <small>portion of gross, owed to CDTFA</small>
+                                </dt>
+                                <dd>{moneyExact.format((business.commerce.taxSetAsideCents ?? 0) / 100)}</dd>
                             </div>
-                            <div>
-                                <dt>Refunds</dt>
-                                <dd>{dollars(business.commerce.refundedCents)}</dd>
-                            </div>
-                            <div>
-                                <dt>Average order</dt>
-                                <dd>{dollars(business.commerce.averageOrderCents)}</dd>
-                            </div>
-                            <div>
-                                <dt>Stripe fees (last reconciliation)</dt>
-                                <dd>{dollars(business.operations.latestRun?.feeCents)}</dd>
+                            <div className="is-context">
+                                <dt>
+                                    Stripe fees{' '}
+                                    <small>
+                                        {business.operations.latestRun
+                                            ? `last reconciliation, ${date.format(new Date(business.operations.latestRun.createdAt))} — its window may differ from this period`
+                                            : 'run a reconciliation to record fees'}
+                                    </small>
+                                </dt>
+                                <dd>{business.operations.latestRun ? dollars(business.operations.latestRun.feeCents) : '—'}</dd>
                             </div>
                         </dl>
                         <p className="owner-business-note">
@@ -178,7 +193,7 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                         </header>
                         <div className="owner-business-funnel">
                             <div>
-                                <span>Started</span>
+                                <span>Started checkout</span>
                                 <strong>{business.commerce.checkoutCreated}</strong>
                             </div>
                             <ArrowRight size={16} aria-hidden="true" />
@@ -186,14 +201,12 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                                 <span>Paid</span>
                                 <strong>{business.commerce.checkoutPaid}</strong>
                             </div>
-                            <div>
-                                <span>Canceled</span>
-                                <strong>{business.commerce.checkoutCanceled}</strong>
-                            </div>
-                            <div>
-                                <span>Expired</span>
-                                <strong>{business.commerce.checkoutExpired}</strong>
-                            </div>
+                        </div>
+                        <div className="owner-business-funnel-drop">
+                            <span>Did not complete</span>
+                            <p>
+                                {business.commerce.checkoutCanceled} canceled · {business.commerce.checkoutExpired} expired
+                            </p>
                         </div>
                         <div className="owner-business-delivery">
                             <span>Delivery mix</span>
@@ -202,6 +215,89 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                                 {business.commerce.delivery.international} international quote
                             </p>
                         </div>
+                    </section>
+                </div>
+
+                <div className="owner-business-grid">
+                    <section className="owner-panel">
+                        <header className="owner-panel-header">
+                            <div>
+                                <span className="owner-panel-eyebrow">Trend</span>
+                                <h2>Revenue by month</h2>
+                            </div>
+                            <OwnerStatus>Last 12 months</OwnerStatus>
+                        </header>
+                        {business.commerce.monthlyRevenue.some((month) => month.grossCents > 0) ? (
+                            <div className="owner-business-trend" role="img" aria-label="Monthly revenue for the last twelve months">
+                                {business.commerce.monthlyRevenue.map((month) => {
+                                    const max = Math.max(...business.commerce.monthlyRevenue.map((entry) => entry.grossCents), 1);
+                                    const height = month.grossCents ? Math.max(8, Math.round((month.grossCents / max) * 100)) : 2;
+                                    const label = new Date(`${month.month}-15T00:00:00`).toLocaleDateString('en-US', { month: 'short' });
+                                    return (
+                                        <div className="owner-business-trend-column" key={month.month}>
+                                            <strong>{month.grossCents ? money.format(month.grossCents / 100) : ''}</strong>
+                                            <span
+                                                className={`owner-business-trend-bar${month.grossCents ? '' : 'is-empty'}`}
+                                                style={{ height: `${height}%` }}
+                                                title={`${label}: ${money.format(month.grossCents / 100)} across ${month.orderCount} ${
+                                                    month.orderCount === 1 ? 'order' : 'orders'
+                                                }`}
+                                            />
+                                            <small>{label}</small>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <p className="owner-business-note">No completed sales in the last twelve months yet.</p>
+                        )}
+                    </section>
+                    <section className="owner-panel">
+                        <header className="owner-panel-header">
+                            <div>
+                                <span className="owner-panel-eyebrow">Recent sales</span>
+                                <h2>Latest completed orders</h2>
+                            </div>
+                            <Link href="/admin/orders">Open orders</Link>
+                        </header>
+                        {business.commerce.orderRows.length ? (
+                            <table className="owner-business-orders-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Artwork</th>
+                                        <th scope="col">Destination</th>
+                                        <th scope="col" className="is-amount">
+                                            Amount
+                                        </th>
+                                        <th scope="col" className="is-amount">
+                                            Tax set aside
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {business.commerce.orderRows.slice(0, 8).map((order, index) => (
+                                        <tr key={`${order.purchasedOn}-${order.artworkTitle}-${index}`}>
+                                            <td>{order.purchasedOn ?? '—'}</td>
+                                            <td>{order.artworkTitle}</td>
+                                            <td>
+                                                {order.taxJurisdiction === 'international'
+                                                    ? 'International'
+                                                    : order.destinationState || '—'}
+                                            </td>
+                                            <td className="is-amount">{money.format(order.amountPaidCents / 100)}</td>
+                                            <td className="is-amount">
+                                                {order.taxJurisdiction === 'CA'
+                                                    ? moneyExact.format(order.taxSetAsideCents / 100)
+                                                    : 'Exempt'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="owner-business-note">No completed sales in this period.</p>
+                        )}
                     </section>
                 </div>
 

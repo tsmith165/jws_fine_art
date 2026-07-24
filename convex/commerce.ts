@@ -1,4 +1,5 @@
 import { v } from 'convex/values';
+import { internal } from './_generated/api';
 import { mutation, query, type MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
 import { assertWritesEnabled } from './lib/writeFreeze';
@@ -62,6 +63,12 @@ async function quarantine(ctx: MutationCtx, args: { eventId: string; eventType: 
             resolvedAt: null,
         });
     }
+    await ctx.scheduler.runAfter(0, internal.opsAlerts.sendOperationsAlert, {
+        kind: 'quarantine_opened',
+        sourceId: args.eventId,
+        summary: 'A Stripe payment needs manual review',
+        detail: `A ${args.eventType} event was quarantined: ${reason}`,
+    });
     await recordStripeEvent(ctx, args, 'quarantined');
     return { outcome: 'quarantined' as const, reason };
 }
@@ -352,6 +359,14 @@ export const processStripeEvent = mutation({
                           ? ('under_review' as const)
                           : ('open' as const);
                 await ctx.db.patch(order._id, { disputeStatus, fulfillmentStatus: 'needs_attention', updatedAt: now });
+                if (disputeStatus === 'open') {
+                    await ctx.scheduler.runAfter(0, internal.opsAlerts.sendOperationsAlert, {
+                        kind: 'dispute_opened',
+                        sourceId: args.eventId,
+                        summary: `Payment dispute opened for “${order.artworkTitle}”`,
+                        detail: `Stripe reported a new dispute on the order for “${order.artworkTitle}”. Respond in the Stripe dashboard before the evidence deadline.`,
+                    });
+                }
                 await ctx.db.insert('orderEvents', {
                     orderId: order._id,
                     type: args.eventType.replace('charge.', 'payment.'),

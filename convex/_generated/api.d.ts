@@ -19,6 +19,7 @@ import type * as lib_writeFreeze from "../lib/writeFreeze.js";
 import type * as mailing from "../mailing.js";
 import type * as mailingWorkers from "../mailingWorkers.js";
 import type * as migrations from "../migrations.js";
+import type * as opsAlerts from "../opsAlerts.js";
 import type * as ownerBusiness from "../ownerBusiness.js";
 import type * as ownerMutations from "../ownerMutations.js";
 import type * as ownerReads from "../ownerReads.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   mailing: typeof mailing;
   mailingWorkers: typeof mailingWorkers;
   migrations: typeof migrations;
+  opsAlerts: typeof opsAlerts;
   ownerBusiness: typeof ownerBusiness;
   ownerMutations: typeof ownerMutations;
   ownerReads: typeof ownerReads;

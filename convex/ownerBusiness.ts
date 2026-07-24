@@ -103,6 +103,33 @@ export const overview = query({
                 orderCount: paidOrders.length,
                 stripeOrderCount: stripeOrders.length,
                 testOrderCount,
+                monthlyRevenue: (() => {
+                    const now = new Date();
+                    const buckets: Array<{ month: string; grossCents: number; orderCount: number }> = [];
+                    for (let i = 11; i >= 0; i -= 1) {
+                        const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                        buckets.push({
+                            month: `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}`,
+                            grossCents: 0,
+                            orderCount: 0,
+                        });
+                    }
+                    const windowStart = new Date(now.getFullYear(), now.getMonth() - 11, 1).getTime();
+                    for (const item of realOrders) {
+                        if (item.status !== 'paid' && item.status !== 'legacy_verified') continue;
+                        // purchasedOn carries the real sale date; createdAt on
+                        // legacy orders is only the migration import time.
+                        const when = item.purchasedOn ? Date.parse(item.purchasedOn) : item.createdAt;
+                        if (!Number.isFinite(when) || when < windowStart) continue;
+                        const at = new Date(when);
+                        const key = `${at.getFullYear()}-${String(at.getMonth() + 1).padStart(2, '0')}`;
+                        const bucket = buckets.find((entry) => entry.month === key);
+                        if (!bucket) continue;
+                        bucket.grossCents += item.amountPaidCents ?? item.legacyRecordedPriceCents ?? 0;
+                        bucket.orderCount += 1;
+                    }
+                    return buckets;
+                })(),
                 averageOrderCents: paidOrders.length
                     ? Math.round(sum(paidOrders.map((item) => item.amountPaidCents ?? item.legacyRecordedPriceCents)) / paidOrders.length)
                     : 0,

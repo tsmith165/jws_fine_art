@@ -1936,7 +1936,7 @@
 }
 .owner-business-ledger {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     margin-top: 12px;
     border-top: 1px solid var(--owner-line-soft);
 }
@@ -1945,23 +1945,44 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding: 14px 0;
+    padding: 12px 0;
     border-bottom: 1px solid var(--owner-line-soft);
-}
-.owner-business-ledger > div:nth-child(odd) {
-    padding-right: 20px;
-}
-.owner-business-ledger > div:nth-child(even) {
-    padding-left: 20px;
-    border-left: 1px solid var(--owner-line-soft);
 }
 .owner-business-ledger dt {
     color: var(--owner-muted);
     font-size: 10px;
 }
+.owner-business-ledger dt small {
+    display: block;
+    margin-top: 3px;
+    font-size: 9px;
+    color: var(--owner-muted);
+    opacity: 0.75;
+}
 .owner-business-ledger dd {
     margin: 0;
     font-weight: 700;
+    white-space: nowrap;
+}
+.owner-business-ledger > .is-subtract dd {
+    color: var(--owner-muted);
+}
+.owner-business-ledger > .is-total {
+    border-bottom: 1px solid var(--owner-line);
+}
+.owner-business-ledger > .is-total dt {
+    color: var(--owner-ink);
+    font-weight: 700;
+}
+.owner-business-ledger > .is-total dd {
+    font-size: 15px;
+}
+.owner-business-ledger > .is-context dt {
+    padding-left: 14px;
+}
+.owner-business-ledger > .is-context dd {
+    font-weight: 500;
+    color: var(--owner-muted);
 }
 .owner-business-note {
     margin-top: 16px;
@@ -2081,6 +2102,88 @@
     color: var(--owner-muted);
     font-size: 10px;
     line-height: 1.55;
+}
+.owner-business-hero.is-primary {
+    border-color: var(--owner-accent);
+    box-shadow: inset 3px 0 0 var(--owner-accent);
+}
+.owner-business-funnel-drop {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--owner-line-soft);
+}
+.owner-business-funnel-drop > span {
+    color: var(--owner-muted);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.owner-business-funnel-drop p {
+    margin-top: 6px;
+    font-size: 11px;
+}
+.owner-business-trend {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    height: 170px;
+    margin-top: 16px;
+}
+.owner-business-trend-column {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+.owner-business-trend-column > strong {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--owner-muted);
+    white-space: nowrap;
+}
+.owner-business-trend-bar {
+    width: 100%;
+    max-width: 26px;
+    min-height: 2px;
+    background: var(--owner-accent);
+}
+.owner-business-trend-bar.is-empty {
+    background: var(--owner-line-soft);
+}
+.owner-business-trend-column > small {
+    color: var(--owner-muted);
+    font-size: 8px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.owner-business-orders-table {
+    width: 100%;
+    margin-top: 14px;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+.owner-business-orders-table th {
+    padding: 8px 10px 8px 0;
+    border-bottom: 1px solid var(--owner-line);
+    color: var(--owner-muted);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+}
+.owner-business-orders-table td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--owner-line-soft);
+}
+.owner-business-orders-table .is-amount {
+    text-align: right;
+    padding-right: 0;
+    white-space: nowrap;
 }
 .owner-analytics-grid {
     display: grid;
@@ -3779,6 +3882,16 @@
     .owner-business-ledger > div:nth-child(even) {
         padding-inline: 0;
         border-left: 0;
+    }
+    .owner-business-trend {
+        height: 130px;
+    }
+    .owner-business-trend-column > strong {
+        display: none;
+    }
+    .owner-business-orders-table th:nth-child(3),
+    .owner-business-orders-table td:nth-child(3) {
+        display: none;
     }
     .owner-business-alert {
         grid-template-columns: auto minmax(0, 1fr);

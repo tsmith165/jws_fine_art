@@ -224,7 +224,16 @@ export const failStripeWebhook = internalMutation({
             nextAttemptAt: retry ? now + delay : null,
             updatedAt: now,
         });
-        if (retry) await ctx.scheduler.runAfter(delay, internal.commerceWorkers.processStripeWebhookInbox, { inboxId: inbox._id });
+        if (retry) {
+            await ctx.scheduler.runAfter(delay, internal.commerceWorkers.processStripeWebhookInbox, { inboxId: inbox._id });
+        } else {
+            await ctx.scheduler.runAfter(0, internal.opsAlerts.sendOperationsAlert, {
+                kind: 'webhook_failed',
+                sourceId: inbox.eventId,
+                summary: 'A Stripe event could not be processed',
+                detail: `A ${inbox.eventType} event exhausted its retries and needs a manual retry from the Business dashboard. Last error: ${args.error}`,
+            });
+        }
     },
 });
 
@@ -328,6 +337,12 @@ export const finishNotificationAttempt = internalMutation({
                 stripeEventId: null,
                 detailsJson: JSON.stringify({ error: args.error, attempts: outbox.attempts }),
                 createdAt: now,
+            });
+            await ctx.scheduler.runAfter(0, internal.opsAlerts.sendOperationsAlert, {
+                kind: 'email_failed',
+                sourceId: String(outbox._id),
+                summary: 'A purchase confirmation email could not be delivered',
+                detail: `The confirmation email "${outbox.subject}" exhausted its retries. Retry it from the Business dashboard and contact the collector if needed.`,
             });
         }
     },
