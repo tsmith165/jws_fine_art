@@ -1,5 +1,6 @@
 import {
     BarChart3,
+    BriefcaseBusiness,
     CircleAlert,
     ExternalLink,
     Images,
@@ -26,6 +27,7 @@ const navigation = [
     { href: '/admin/orders', label: 'Orders', detail: 'Sales and fulfillment', icon: PackageCheck },
     { href: '/admin/inbox', label: 'Inbox', detail: 'Collector inquiries', icon: Inbox },
     { href: '/admin/mailing', label: 'Mailing', detail: 'Audience and campaigns', icon: Mail },
+    { href: '/admin/business', label: 'Business', detail: 'Payments and operations', icon: BriefcaseBusiness },
     { href: '/admin/analytics', label: 'Analytics', detail: 'Traffic and artwork interest', icon: BarChart3 },
     { href: '/admin/tools', label: 'Tools', detail: 'Backups and site health', icon: Wrench },
 ] as const;

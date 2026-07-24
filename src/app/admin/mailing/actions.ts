@@ -1,60 +1,49 @@
 'use server';
 
+import { randomUUID } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 import { api } from '../../../../convex/_generated/api';
 import type { Id } from '../../../../convex/_generated/dataModel';
 import { getAuthenticatedOwnerConvexClient } from '@/data/ownerConvex';
-import { sendBatchEmails } from '@/utils/emails/resend_utils';
-import { appendUnsubscribeFooter, unsubscribeUrls } from '@/lib/unsubscribe';
-
-function chunks<T>(items: T[], size: number): T[][] {
-    return Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
-}
+import { sendEmail } from '@/utils/emails/resend_utils';
 
 export async function sendCampaign(campaignId: Id<'campaigns'>): Promise<void> {
     const client = await getAuthenticatedOwnerConvexClient('send a campaign');
-    const campaign = await client.mutation(api.ownerWorkspace.beginCampaignSend, { campaignId });
-
-    for (const recipients of chunks(campaign.recipients, 100)) {
-        try {
-            const messages = await sendBatchEmails(
-                recipients.map((recipient) => {
-                    const urls = unsubscribeUrls(recipient.email);
-                    return {
-                        from: 'JWS Fine Art <contact@jwsfineart.com>',
-                        to: recipient.email,
-                        subject: campaign.subject,
-                        html: appendUnsubscribeFooter(campaign.renderedHtml, urls.page),
-                        headers: {
-                            'List-Unsubscribe': `<${urls.oneClick}>, <${urls.page}>`,
-                            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-                        },
-                    };
-                }),
-            );
-            await Promise.all(
-                recipients.map((recipient, index) =>
-                    client.mutation(api.ownerWorkspace.recordCampaignRecipientOutcome, {
-                        recipientId: recipient.recipientId,
-                        outcome: 'sent',
-                        providerMessageId: messages[index]?.id ?? null,
-                    }),
-                ),
-            );
-        } catch {
-            await Promise.all(
-                recipients.map((recipient) =>
-                    client.mutation(api.ownerWorkspace.recordCampaignRecipientOutcome, {
-                        recipientId: recipient.recipientId,
-                        outcome: 'failed',
-                        providerMessageId: null,
-                    }),
-                ),
-            );
-        }
-    }
-
-    const result = await client.mutation(api.ownerWorkspace.completeCampaignSend, { campaignId });
+    await client.mutation(api.ownerWorkspace.beginCampaignSend, { campaignId });
     revalidatePath('/admin/mailing');
-    if (result.status === 'failed') throw new Error('One or more campaign messages could not be sent.');
+}
+
+export async function sendCampaignTest(campaignId: Id<'campaigns'>, formData: FormData): Promise<void> {
+    const email = String(formData.get('testEmail') || '')
+        .trim()
+        .toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid test recipient email.');
+    const client = await getAuthenticatedOwnerConvexClient('send a campaign test');
+    const campaigns = await client.query(api.ownerWorkspace.listCampaigns, {});
+    const campaign = campaigns.find((item) => item._id === campaignId);
+    if (!campaign) throw new Error('Campaign not found.');
+    await sendEmail(
+        {
+            from: 'JWS Fine Art <contact@jwsfineart.com>',
+            to: email,
+            subject: `[TEST] ${campaign.subject}`,
+            html: campaign.renderedHtml,
+            text: campaign.renderedText || campaign.subject,
+            headers: { 'X-JWS-Campaign-Test': String(campaign._id) },
+        },
+        { idempotencyKey: `campaign-test-${campaign._id}-${randomUUID()}` },
+    );
+    revalidatePath('/admin/mailing');
+}
+
+export async function updateSubscriberStatus(formData: FormData): Promise<void> {
+    const status = String(formData.get('status')) as 'subscribed' | 'unsubscribed' | 'suppressed';
+    if (!['subscribed', 'unsubscribed', 'suppressed'].includes(status)) throw new Error('Invalid subscriber status.');
+    const client = await getAuthenticatedOwnerConvexClient('update a mailing subscriber');
+    await client.mutation(api.ownerWorkspace.updateSubscriberStatus, {
+        subscriberId: String(formData.get('subscriberId')) as Id<'subscribers'>,
+        status,
+        reason: String(formData.get('reason') || ''),
+    });
+    revalidatePath('/admin/mailing');
 }

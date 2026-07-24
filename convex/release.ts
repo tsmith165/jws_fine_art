@@ -21,6 +21,10 @@ export const audit = internalQuery({
             subscribers,
             siteContent,
             ownerAuditEvents,
+            stripeWebhookInbox,
+            notificationOutbox,
+            resendWebhookEvents,
+            reconciliationFindings,
         ] = await Promise.all([
             ctx.db.query('legacyPieces').collect(),
             ctx.db.query('legacyExtraImages').collect(),
@@ -39,6 +43,10 @@ export const audit = internalQuery({
             ctx.db.query('subscribers').collect(),
             ctx.db.query('siteContent').collect(),
             ctx.db.query('ownerAuditEvents').collect(),
+            ctx.db.query('stripeWebhookInbox').collect(),
+            ctx.db.query('notificationOutbox').collect(),
+            ctx.db.query('resendWebhookEvents').collect(),
+            ctx.db.query('commerceReconciliationFindings').collect(),
         ]);
         return {
             rawCounts: {
@@ -64,6 +72,10 @@ export const audit = internalQuery({
             migrationConflicts: migrationConflicts.length,
             campaignsSending: campaigns.filter((item) => item.status === 'sending').length,
             failedCampaignRecipients: campaignRecipients.filter((item) => item.status === 'failed').length,
+            failedStripeWebhookInbox: stripeWebhookInbox.filter((item) => item.status === 'failed').length,
+            failedNotificationOutbox: notificationOutbox.filter((item) => item.status === 'failed').length,
+            failedResendWebhookEvents: resendWebhookEvents.filter((item) => item.status === 'failed').length,
+            openReconciliationFindings: reconciliationFindings.filter((item) => item.status === 'open').length,
         };
     },
 });

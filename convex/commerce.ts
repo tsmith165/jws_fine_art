@@ -204,7 +204,7 @@ export const abandonCheckoutIntent = mutation({
         const intent = await ctx.db.get(args.checkoutIntentId);
         if (args.cancelToken && intent?.cancelToken !== args.cancelToken) throw new Error('Checkout cancellation token is invalid.');
         if (intent && (intent.status === 'created' || intent.status === 'checkout_open')) {
-            await ctx.db.patch(intent._id, { status: 'canceled', updatedAt: Date.now() });
+            await ctx.db.patch(intent._id, { status: 'canceled', cancelReason: 'buyer_cancel', updatedAt: Date.now() });
         }
         return { success: true };
     },
@@ -264,6 +264,7 @@ export const processStripeEvent = mutation({
         customerEmail: v.optional(nullableString),
         customerPhone: v.optional(nullableString),
         shippingAddress: v.optional(nullableString),
+        disputeStatus: v.optional(nullableString),
     },
     handler: async (ctx, args) => {
         requireServerSecret(args.serverSecret);
@@ -327,6 +328,7 @@ export const processStripeEvent = mutation({
                 const fullyRefunded = refundedCents === order.amountPaidCents;
                 await ctx.db.patch(order._id, {
                     ...(fullyRefunded ? { status: 'refunded' as const } : {}),
+                    refundedCents,
                     fulfillmentStatus: 'needs_attention',
                     updatedAt: now,
                 });
@@ -338,12 +340,26 @@ export const processStripeEvent = mutation({
                     createdAt: now,
                 });
             } else {
-                await ctx.db.patch(order._id, { fulfillmentStatus: 'needs_attention', updatedAt: now });
+                const disputeStatus =
+                    args.eventType === 'charge.dispute.closed'
+                        ? args.disputeStatus === 'won'
+                            ? ('won' as const)
+                            : args.disputeStatus === 'lost'
+                              ? ('lost' as const)
+                              : ('under_review' as const)
+                        : args.eventType === 'charge.dispute.updated'
+                          ? ('under_review' as const)
+                          : ('open' as const);
+                await ctx.db.patch(order._id, { disputeStatus, fulfillmentStatus: 'needs_attention', updatedAt: now });
                 await ctx.db.insert('orderEvents', {
                     orderId: order._id,
                     type: args.eventType.replace('charge.', 'payment.'),
                     stripeEventId: args.eventId,
-                    detailsJson: JSON.stringify({ amountCents: args.amountReceivedCents, currency: args.currency }),
+                    detailsJson: JSON.stringify({
+                        amountCents: args.amountReceivedCents,
+                        currency: args.currency,
+                        disputeStatus,
+                    }),
                     createdAt: now,
                 });
             }
@@ -378,6 +394,12 @@ export const processStripeEvent = mutation({
                     args.eventType === 'payment_intent.canceled' || args.eventType === 'checkout.session.async_payment_failed'
                         ? 'canceled'
                         : 'expired',
+                cancelReason:
+                    args.eventType === 'checkout.session.expired'
+                        ? 'session_expired'
+                        : args.eventType === 'checkout.session.async_payment_failed'
+                          ? 'payment_failed'
+                          : 'buyer_cancel',
                 stripePaymentIntentId: args.paymentIntentId ?? intent.stripePaymentIntentId,
                 updatedAt: Date.now(),
             });
@@ -451,6 +473,8 @@ export const processStripeEvent = mutation({
             amountPaidCents: amountReceivedCents,
             shippingPaidCents: intent.shippingCents,
             taxPaidCents: args.taxCents ?? null,
+            refundedCents: 0,
+            disputeStatus: 'none',
             currency: intent.currency,
             buyerName: intent.buyerName,
             buyerPhone: intent.buyerPhone,

@@ -26,6 +26,7 @@
         "release:audit-convex": "tsx scripts/release/audit-convex.ts",
         "release:audit-uploadthing": "tsx scripts/release/audit-uploadthing.ts",
         "release:audit-stripe": "tsx scripts/release/audit-stripe.ts",
+        "release:audit-resend": "tsx scripts/release/audit-resend.ts",
         "setup:clerk-convex": "tsx scripts/setup/configure-clerk-convex.ts"
     },
     "dependencies": {

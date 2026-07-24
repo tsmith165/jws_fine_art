@@ -30,5 +30,8 @@ export function stripeTaxConfiguration(environment: Record<string, string | unde
     if (enabled && !artworkTaxCode) {
         throw new Error('Stripe Tax is enabled without an artwork tax code.');
     }
+    if (artworkTaxCode && !/^txcd_\d{8}$/.test(artworkTaxCode)) {
+        throw new Error('Stripe artwork tax code is not a valid Stripe tax code.');
+    }
     return { enabled, artworkTaxCode };
 }

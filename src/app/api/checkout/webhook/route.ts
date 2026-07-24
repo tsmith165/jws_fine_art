@@ -28,6 +28,7 @@ function stripeEventPayload(event: Stripe.Event) {
             customerEmail: object.customer_details?.email ?? object.customer_email ?? null,
             customerPhone: object.customer_details?.phone ?? null,
             shippingAddress: formatAddress(shippingDetails?.address),
+            disputeStatus: null,
         };
     }
     if (object.object === 'payment_intent') {
@@ -45,6 +46,7 @@ function stripeEventPayload(event: Stripe.Event) {
             customerEmail: null,
             customerPhone: null,
             shippingAddress: formatAddress(shippingDetails?.address),
+            disputeStatus: null,
         };
     }
     if (object.object === 'charge') {
@@ -62,6 +64,7 @@ function stripeEventPayload(event: Stripe.Event) {
             customerEmail: null,
             customerPhone: null,
             shippingAddress: null,
+            disputeStatus: null,
         };
     }
     if (object.object === 'dispute') {
@@ -79,6 +82,7 @@ function stripeEventPayload(event: Stripe.Event) {
             customerEmail: null,
             customerPhone: null,
             shippingAddress: null,
+            disputeStatus: object.status,
         };
     }
     return {
@@ -94,6 +98,7 @@ function stripeEventPayload(event: Stripe.Event) {
         customerEmail: null,
         customerPhone: null,
         shippingAddress: null,
+        disputeStatus: null,
     };
 }
 

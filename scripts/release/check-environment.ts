@@ -14,9 +14,12 @@ const required = [
     'CLERK_SECRET_KEY',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
+    'STRIPE_AUTOMATIC_TAX_ENABLED',
+    'STRIPE_ARTWORK_TAX_CODE',
     'UPLOADTHING_TOKEN',
     'RESEND_API_KEY',
-    'UNSUBSCRIBE_SIGNING_SECRET',
+    'RESEND_WEBHOOK_SECRET',
+    'CRON_SECRET',
     'NEXT_PUBLIC_POSTHOG_KEY',
     'NEXT_PUBLIC_POSTHOG_HOST',
     'POSTHOG_PROJECT_ID',
@@ -28,7 +31,8 @@ const missing = required.filter((name) => !process.env[name]);
 const failures: string[] = [];
 try {
     assertStripeEnvironment(process.env);
-    stripeTaxConfiguration(process.env);
+    const tax = stripeTaxConfiguration(process.env);
+    if (!tax.enabled) failures.push('Stripe Tax must be enabled for production checkout.');
 } catch (error) {
     failures.push(error instanceof Error ? error.message : 'Stripe environment validation failed.');
 }

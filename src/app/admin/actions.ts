@@ -44,6 +44,7 @@ export async function saveCampaign(formData: FormData) {
     const body = String(formData.get('body') || '').trim();
     if (!name || !subject || !headline || !body) throw new Error('Campaign name, subject, headline, and message are required.');
     const renderedHtml = `<!doctype html><html><body style="margin:0;background:#101310;color:#f3efe6;font-family:Arial,sans-serif"><div style="display:none">${escapeHtml(previewText)}</div><main style="max-width:640px;margin:auto;padding:48px 28px"><p style="color:#c6a466;font-size:12px;letter-spacing:2px;text-transform:uppercase">Jill Weeks Smith Fine Art</p><h1 style="font-family:Georgia,serif;font-size:42px;font-weight:400;line-height:1.1">${escapeHtml(headline)}</h1><p style="font-size:17px;line-height:1.7;color:#d7dbd4">${escapeHtml(body).replace(/\n/g, '<br>')}</p><p style="margin-top:40px"><a href="https://www.jwsfineart.com/work" style="display:inline-block;background:#c6a466;color:#17140f;padding:14px 20px;text-decoration:none;font-weight:700">View the collection</a></p></main></body></html>`;
+    const renderedText = `${headline}\n\n${body}\n\nView the collection: https://www.jwsfineart.com/work`;
     const client = await getAuthenticatedOwnerConvexClient('save a campaign');
     await client.mutation(api.ownerWorkspace.saveCampaign, {
         campaignId,
@@ -52,6 +53,7 @@ export async function saveCampaign(formData: FormData) {
         previewText,
         contentJson: JSON.stringify({ headline, body }),
         renderedHtml,
+        renderedText,
     });
     revalidateOwner('/admin/mailing');
 }

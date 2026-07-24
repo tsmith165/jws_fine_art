@@ -21,8 +21,8 @@ describe('provider safety', () => {
         expect(
             stripeTaxConfiguration({
                 STRIPE_AUTOMATIC_TAX_ENABLED: 'true',
-                STRIPE_ARTWORK_TAX_CODE: 'txcd_artwork',
+                STRIPE_ARTWORK_TAX_CODE: 'txcd_99999999',
             }),
-        ).toEqual({ enabled: true, artworkTaxCode: 'txcd_artwork' });
+        ).toEqual({ enabled: true, artworkTaxCode: 'txcd_99999999' });
     });
 });

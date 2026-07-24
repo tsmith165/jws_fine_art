@@ -1,5 +1,39 @@
 # Active Agent State
 
+## July 23 Business, Stripe Tax, And Mailing Production Release
+
+- Objective: enable fail-closed Stripe Tax, add a production operations
+  dashboard, and make studio campaigns durable and provider-aware.
+- Implemented:
+  - `/admin/business` reporting, reconciliation, CSV export, operational
+    alerts, owner retry/resolution actions, and daily reconciliation cron.
+  - Per-recipient Convex campaign workers with leases, bounded retries, stable
+    provider idempotency, plain-text alternatives, signed unsubscribe links,
+    provider tags, and automatic bounce/complaint suppression.
+  - Verified Resend webhook intake with replay protection and out-of-order
+    event handling.
+  - Durable purchase-confirmation outcome tracking and retry controls.
+  - Stripe refund/dispute state, reconciliation fee/net snapshots, and
+    release audits for Stripe, Resend, Convex, and environment configuration.
+- Production and development Convex deployments received the additive schema
+  and functions. One final production redeploy is still needed after the
+  reconciliation supersession refinement.
+- Production Vercel now contains encrypted
+  `STRIPE_AUTOMATIC_TAX_ENABLED=true`, reviewed tax code
+  `txcd_99999999`, and a generated `CRON_SECRET`.
+- Live Stripe Tax settings are active with the general tangible-goods default
+  code, but there are zero active tax registrations. Do not create a legal tax
+  registration without Jill confirming the registered jurisdiction.
+- The existing Resend application key is send-only by design. Resend dashboard
+  login is waiting in Chrome so the production webhook can be created after
+  the new route is deployed; then store its signing secret in Vercel.
+- Verification: lint, TypeScript, 17 test files / 113 tests, and the Node 24
+  production build pass. A new reconciliation supersession test brings the
+  expected total to 114 on the final run.
+- Next action: commit/push, redeploy Convex, deploy Vercel production, finish
+  Resend webhook setup after dashboard login, run production provider audits
+  and desktop/mobile visual QA, validate artifacts, and update this state.
+
 ## July 23 Release-Date Baseline, Studio, And Tax-Ready Checkout
 
 - Current objective: finish the release-date baseline/editor warning,

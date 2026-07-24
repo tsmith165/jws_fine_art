@@ -22,6 +22,7 @@ type StripeWebhookPayload = {
     customerEmail: string | null;
     customerPhone: string | null;
     shippingAddress: string | null;
+    disputeStatus: string | null;
 };
 
 function safeError(error: unknown) {
@@ -64,6 +65,37 @@ function purchaseEmailHtml(order: {
     </main>
   </body>
 </html>`;
+}
+
+function purchaseEmailText(order: {
+    buyerName: string;
+    artworkTitle: string;
+    amountPaidCents: number | null;
+    shippingAddress: string;
+    deliveryMethod?: 'domestic_shipping' | 'local_pickup' | 'international_quote';
+}) {
+    const fulfillment =
+        order.deliveryMethod === 'local_pickup'
+            ? 'Jill will contact you to arrange a pickup time in San Diego County. Exact studio details are shared privately after purchase.'
+            : `Jill will follow up with packing, tracking, and insured shipping details.\n\nShipping to:\n${
+                  order.shippingAddress || 'Address collected by Stripe'
+              }`;
+    return `JWS Fine Art
+
+Your artwork is yours.
+
+Dear ${order.buyerName},
+
+Thank you for collecting ${order.artworkTitle}. Stripe securely processed ${money(order.amountPaidCents)}.
+
+${fulfillment}
+
+Sales tax is included where applicable.
+
+Questions? Reply to this email or contact jwsfineart@gmail.com.
+
+Warmly,
+Jill Weeks Smith`;
 }
 
 export const enqueueStripeEvent = mutation({
@@ -313,6 +345,8 @@ export const sendPurchaseConfirmation = internalAction({
             const apiKey = process.env.RESEND_API_KEY;
             if (!apiKey) throw new Error('RESEND_API_KEY is not configured for durable confirmation delivery.');
             const recipients = JSON.parse(record.outbox.recipientJson) as string[];
+            const [buyerEmail, ...studioCopies] = recipients;
+            if (!buyerEmail) throw new Error('Purchase confirmation has no buyer recipient.');
             const response = await fetch('https://api.resend.com/emails', {
                 method: 'POST',
                 headers: {
@@ -322,9 +356,15 @@ export const sendPurchaseConfirmation = internalAction({
                 },
                 body: JSON.stringify({
                     from: 'JWS Fine Art <contact@jwsfineart.com>',
-                    to: recipients,
+                    to: buyerEmail,
+                    ...(studioCopies.length ? { bcc: studioCopies } : {}),
                     subject: record.outbox.subject,
                     html: purchaseEmailHtml(record.order),
+                    text: purchaseEmailText(record.order),
+                    tags: [
+                        { name: 'order_id', value: String(record.order._id) },
+                        { name: 'outbox_id', value: String(record.outbox._id) },
+                    ],
                 }),
             });
             const body = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;

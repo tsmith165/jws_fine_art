@@ -2,7 +2,7 @@ import nextEnv from '@next/env';
 import { spawnSync } from 'node:child_process';
 import process from 'node:process';
 import Stripe from 'stripe';
-import { assertStripeEnvironment } from '../../src/lib/providerSafety';
+import { assertStripeEnvironment, stripeTaxConfiguration } from '../../src/lib/providerSafety';
 import { convexArgs, parseConvexTarget, requireDestructiveTargetConfirmation } from './convex-target';
 
 const { loadEnvConfig } = nextEnv;
@@ -28,6 +28,7 @@ try {
     process.exit(1);
 }
 const stripe = new Stripe(stripeSecretKey, { apiVersion: '2026-06-24.dahlia' });
+const taxConfiguration = stripeTaxConfiguration(providerEnvironment);
 
 const convexResult = spawnSync('corepack', ['pnpm', 'exec', 'convex', ...convexArgs(['run', 'release:audit'], target)], {
     cwd: process.cwd(),
@@ -37,12 +38,21 @@ const convexResult = spawnSync('corepack', ['pnpm', 'exec', 'convex', ...convexA
 if (convexResult.status !== 0) throw new Error(`Unable to run Convex release audit: ${convexResult.stderr || convexResult.stdout}`);
 const convexAudit = JSON.parse(convexResult.stdout) as { openCheckoutIntents: number; openWebhookQuarantines: number };
 
-const [openSessions, recentEvents] = await Promise.all([
+const [openSessions, recentEvents, taxSettings, taxRegistrations] = await Promise.all([
     stripe.checkout.sessions.list({ status: 'open', limit: 100 }),
     stripe.events.list({ created: { gte: Math.floor(Date.now() / 1000) - 24 * 60 * 60 }, limit: 100 }),
+    stripe.tax.settings.retrieve(),
+    stripe.tax.registrations.list({ status: 'active', limit: 100 }),
 ]);
 const pendingWebhookEvents = recentEvents.data.filter((event) => event.pending_webhooks > 0).length;
 const failures = [
+    !taxConfiguration.enabled ? 'Stripe Tax is disabled in the application environment.' : null,
+    taxSettings.status !== 'active'
+        ? `Stripe Tax settings are ${taxSettings.status}; missing fields: ${
+              taxSettings.status_details.pending?.missing_fields?.join(', ') || 'unknown'
+          }.`
+        : null,
+    taxRegistrations.data.length === 0 ? 'Stripe Tax has no active registrations.' : null,
     openSessions.data.length > 0 ? `${openSessions.data.length} Stripe Checkout session(s) remain open.` : null,
     openSessions.has_more ? 'More than 100 Stripe Checkout sessions remain open.' : null,
     pendingWebhookEvents > 0 ? `${pendingWebhookEvents} recent Stripe event(s) still have pending webhook deliveries.` : null,
@@ -56,6 +66,12 @@ console.log(
         stripeOpenSessions: openSessions.data.length,
         stripeOpenSessionsTruncated: openSessions.has_more,
         pendingWebhookEvents,
+        stripeTaxEnabled: taxConfiguration.enabled,
+        stripeTaxSettingsStatus: taxSettings.status,
+        stripeTaxActiveRegistrations: taxRegistrations.data.map((registration) => ({
+            country: registration.country,
+            status: registration.status,
+        })),
         convexOpenCheckoutIntents: convexAudit.openCheckoutIntents,
         convexOpenWebhookQuarantines: convexAudit.openWebhookQuarantines,
         ready: failures.length === 0,

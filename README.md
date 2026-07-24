@@ -36,7 +36,8 @@ Required application variables are checked by `pnpm release:check-env` without p
 - `STRIPE_AUTOMATIC_TAX_ENABLED=true` and `STRIPE_ARTWORK_TAX_CODE` when Stripe Tax is activated
 - `UPLOADTHING_TOKEN`
 - `RESEND_API_KEY`
-- `UNSUBSCRIBE_SIGNING_SECRET`
+- `RESEND_WEBHOOK_SECRET`
+- `CRON_SECRET`
 - `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST`
 - `POSTHOG_PROJECT_ID`, `POSTHOG_PERSONAL_API_KEY`, and `POSTHOG_API_HOST`
 
@@ -51,11 +52,17 @@ Browser capture runs only on `jwsfineart.com` and `www.jwsfineart.com`, excludes
 
 The Convex deployment also requires Clerk's JWT issuer configuration. Never share live Stripe credentials with Development or Preview scopes.
 
-Stripe Tax is intentionally fail-closed behind `STRIPE_AUTOMATIC_TAX_ENABLED`. Before enabling it, add the applicable tax registration in
-Stripe, configure the account origin address, and set `STRIPE_ARTWORK_TAX_CODE` to the reviewed Stripe tax code for original physical artwork.
+Stripe Tax is fail-closed behind `STRIPE_AUTOMATIC_TAX_ENABLED`. Production requires it to be enabled, requires active Stripe Tax settings
+and at least one active registration, and uses `txcd_99999999` (General - Tangible Goods) for original physical artwork unless tax counsel
+selects a more specific code. Configure the Stripe account origin and registrations in the Stripe Dashboard before production checkout.
 Checkout uses tax-inclusive pricing so the displayed artwork and delivery total does not increase; Stripe records the jurisdiction-specific
 tax portion within that total. Local pickup collects a billing address for the tax calculation, while shipped orders use Stripe's collected
 shipping address.
+
+Mailing delivery runs in Convex with per-recipient idempotency, leases, retries, plain-text alternatives, and signed unsubscribe links.
+Configure a Resend webhook at `https://www.jwsfineart.com/api/resend/webhook` for sent, delivered, delayed, bounced, complained, suppressed,
+and failed email events, then store its signing secret as `RESEND_WEBHOOK_SECRET` in Vercel. The webhook suppresses bounced and complaining
+addresses and feeds the owner Mailing and Business health views. `CRON_SECRET` protects the daily Stripe reconciliation route.
 
 ## Verification
 

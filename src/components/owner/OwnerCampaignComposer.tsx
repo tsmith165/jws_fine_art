@@ -39,7 +39,11 @@ export function OwnerCampaignComposer({ campaign }: { campaign?: CampaignDraft }
                 <div>
                     <span className="owner-panel-eyebrow">Campaign composer</span>
                     <h2>{campaign ? campaign.name : 'New studio letter'}</h2>
-                    <p>{locked ? 'Sent campaigns are preserved as a read-only record.' : 'Draft the message and review the email as you write.'}</p>
+                    <p>
+                        {locked
+                            ? 'Sent campaigns are preserved as a read-only record.'
+                            : 'Draft the message and review the email as you write.'}
+                    </p>
                 </div>
                 <span className="owner-live-preview-indicator">Live preview</span>
             </header>

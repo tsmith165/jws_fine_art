@@ -198,6 +198,14 @@ export default defineSchema({
         taxIncluded: v.optional(v.boolean()),
         automaticTaxEnabled: v.optional(v.boolean()),
         cancelToken: v.optional(v.string()),
+        cancelReason: v.optional(
+            v.union(
+                v.literal('buyer_cancel'),
+                v.literal('session_expired'),
+                v.literal('payment_failed'),
+                v.literal('reservation_replaced'),
+            ),
+        ),
         stripeCheckoutSessionId: nullableString,
         stripePaymentIntentId: nullableString,
         status: v.union(v.literal('created'), v.literal('checkout_open'), v.literal('paid'), v.literal('expired'), v.literal('canceled')),
@@ -222,6 +230,10 @@ export default defineSchema({
         amountPaidCents: nullableNumber,
         shippingPaidCents: nullableNumber,
         taxPaidCents: v.optional(nullableNumber),
+        refundedCents: v.optional(nullableNumber),
+        disputeStatus: v.optional(
+            v.union(v.literal('none'), v.literal('open'), v.literal('under_review'), v.literal('won'), v.literal('lost')),
+        ),
         currency: v.string(),
         buyerName: v.string(),
         buyerPhone: v.string(),
@@ -273,6 +285,7 @@ export default defineSchema({
         status: v.union(v.literal('open'), v.literal('resolved'), v.literal('ignored')),
         createdAt: v.number(),
         resolvedAt: nullableNumber,
+        resolutionNote: v.optional(nullableString),
     })
         .index('by_event_id', ['eventId'])
         .index('by_status', ['status']),
@@ -318,7 +331,8 @@ export default defineSchema({
         updatedAt: v.number(),
     })
         .index('by_order_and_kind', ['orderId', 'kind'])
-        .index('by_status', ['status']),
+        .index('by_status', ['status'])
+        .index('by_provider_message_id', ['providerMessageId']),
 
     ownerAuditEvents: defineTable({
         actorId: v.string(),
@@ -355,6 +369,8 @@ export default defineSchema({
         consentSource: v.string(),
         consentedAt: nullableNumber,
         unsubscribedAt: nullableNumber,
+        suppressionReason: v.optional(nullableString),
+        lastProviderEventAt: v.optional(nullableNumber),
         providerContactId: nullableString,
         createdAt: v.number(),
         updatedAt: v.number(),
@@ -383,7 +399,9 @@ export default defineSchema({
         previewText: v.string(),
         contentJson: v.string(),
         renderedHtml: v.string(),
+        renderedText: v.optional(v.string()),
         status: v.union(v.literal('draft'), v.literal('sending'), v.literal('sent'), v.literal('failed')),
+        audienceSnapshotCount: v.optional(v.number()),
         createdBy: v.string(),
         createdAt: v.number(),
         updatedAt: v.number(),
@@ -394,11 +412,84 @@ export default defineSchema({
         campaignId: v.id('campaigns'),
         subscriberId: v.id('subscribers'),
         providerMessageId: nullableString,
-        status: v.union(v.literal('queued'), v.literal('sent'), v.literal('delivered'), v.literal('bounced'), v.literal('failed')),
+        status: v.union(
+            v.literal('queued'),
+            v.literal('sending'),
+            v.literal('sent'),
+            v.literal('delivered'),
+            v.literal('delayed'),
+            v.literal('bounced'),
+            v.literal('complained'),
+            v.literal('suppressed'),
+            v.literal('skipped'),
+            v.literal('failed'),
+        ),
+        attempts: v.optional(v.number()),
+        lastError: v.optional(nullableString),
+        nextAttemptAt: v.optional(nullableNumber),
+        lastProviderEventAt: v.optional(nullableNumber),
+        sentAt: v.optional(nullableNumber),
         updatedAt: v.number(),
     })
         .index('by_campaign_id', ['campaignId'])
-        .index('by_subscriber_id', ['subscriberId']),
+        .index('by_subscriber_id', ['subscriberId'])
+        .index('by_provider_message_id', ['providerMessageId'])
+        .index('by_status', ['status']),
+
+    resendWebhookEvents: defineTable({
+        svixId: v.string(),
+        eventType: v.string(),
+        providerMessageId: nullableString,
+        status: v.union(v.literal('processed'), v.literal('ignored'), v.literal('failed')),
+        eventAt: nullableNumber,
+        summaryJson: v.string(),
+        createdAt: v.number(),
+        processedAt: nullableNumber,
+    })
+        .index('by_svix_id', ['svixId'])
+        .index('by_provider_message_id', ['providerMessageId'])
+        .index('by_status', ['status']),
+
+    commerceReconciliationRuns: defineTable({
+        status: v.union(v.literal('running'), v.literal('completed'), v.literal('failed')),
+        livemode: v.boolean(),
+        initiatedBy: v.string(),
+        stripeWindowStart: v.number(),
+        stripeWindowEnd: v.number(),
+        stripePaymentCount: v.number(),
+        canonicalOrderCount: v.number(),
+        findingCount: v.number(),
+        feeCents: nullableNumber,
+        netCents: nullableNumber,
+        lastError: nullableString,
+        createdAt: v.number(),
+        completedAt: nullableNumber,
+    })
+        .index('by_created_at', ['createdAt'])
+        .index('by_status', ['status']),
+
+    commerceReconciliationFindings: defineTable({
+        runId: v.id('commerceReconciliationRuns'),
+        kind: v.union(
+            v.literal('missing_order'),
+            v.literal('missing_stripe_payment'),
+            v.literal('amount_mismatch'),
+            v.literal('currency_mismatch'),
+            v.literal('status_mismatch'),
+            v.literal('informational'),
+        ),
+        severity: v.union(v.literal('info'), v.literal('warning'), v.literal('critical')),
+        paymentIntentId: nullableString,
+        orderId: v.union(v.id('orders'), v.null()),
+        summary: v.string(),
+        detailsJson: v.string(),
+        status: v.union(v.literal('open'), v.literal('resolved'), v.literal('ignored')),
+        createdAt: v.number(),
+        resolvedAt: nullableNumber,
+    })
+        .index('by_run_id', ['runId'])
+        .index('by_status', ['status'])
+        .index('by_payment_intent_id', ['paymentIntentId']),
 
     siteContent: defineTable({
         key: v.string(),

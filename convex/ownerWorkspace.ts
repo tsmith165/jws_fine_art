@@ -1,4 +1,5 @@
 import { v } from 'convex/values';
+import { internal } from './_generated/api';
 import { mutation, query } from './_generated/server';
 import { requireOwnerIdentity } from './lib/ownerAuth';
 
@@ -59,7 +60,68 @@ export const listCampaigns = query({
     args: {},
     handler: async (ctx) => {
         await requireOwnerIdentity(ctx);
-        return (await ctx.db.query('campaigns').collect()).sort((a, b) => b.updatedAt - a.updatedAt);
+        const campaigns = (await ctx.db.query('campaigns').collect()).sort((a, b) => b.updatedAt - a.updatedAt);
+        return Promise.all(
+            campaigns.map(async (campaign) => {
+                const recipients = await ctx.db
+                    .query('campaignRecipients')
+                    .withIndex('by_campaign_id', (q) => q.eq('campaignId', campaign._id))
+                    .collect();
+                return {
+                    ...campaign,
+                    outcomes: {
+                        total: recipients.length,
+                        queued: recipients.filter((item) => item.status === 'queued' || item.status === 'sending').length,
+                        accepted: recipients.filter((item) => ['sent', 'delivered', 'delayed'].includes(item.status)).length,
+                        delivered: recipients.filter((item) => item.status === 'delivered').length,
+                        bounced: recipients.filter((item) => item.status === 'bounced').length,
+                        complained: recipients.filter((item) => item.status === 'complained').length,
+                        failed: recipients.filter((item) => item.status === 'failed').length,
+                        suppressed: recipients.filter((item) => item.status === 'suppressed' || item.status === 'skipped').length,
+                    },
+                };
+            }),
+        );
+    },
+});
+
+export const mailingOverview = query({
+    args: {},
+    handler: async (ctx) => {
+        await requireOwnerIdentity(ctx);
+        const [subscribers, campaigns, recipients, webhookEvents] = await Promise.all([
+            ctx.db.query('subscribers').collect(),
+            ctx.db.query('campaigns').collect(),
+            ctx.db.query('campaignRecipients').collect(),
+            ctx.db.query('resendWebhookEvents').collect(),
+        ]);
+        const now = Date.now();
+        const recentEvents = webhookEvents.filter((item) => item.createdAt >= now - 30 * 24 * 60 * 60 * 1000);
+        return {
+            subscribers: {
+                active: subscribers.filter((item) => item.status === 'subscribed').length,
+                unsubscribed: subscribers.filter((item) => item.status === 'unsubscribed').length,
+                suppressed: subscribers.filter((item) => item.status === 'suppressed').length,
+            },
+            campaigns: {
+                draft: campaigns.filter((item) => item.status === 'draft').length,
+                sending: campaigns.filter((item) => item.status === 'sending').length,
+                failed: campaigns.filter((item) => item.status === 'failed').length,
+                sent: campaigns.filter((item) => item.status === 'sent').length,
+            },
+            delivery: {
+                delivered: recipients.filter((item) => item.status === 'delivered').length,
+                delayed: recipients.filter((item) => item.status === 'delayed').length,
+                bounced: recipients.filter((item) => item.status === 'bounced').length,
+                complained: recipients.filter((item) => item.status === 'complained').length,
+                failed: recipients.filter((item) => item.status === 'failed').length,
+            },
+            provider: {
+                webhookEventsLast30Days: recentEvents.length,
+                failedWebhookEventsLast30Days: recentEvents.filter((item) => item.status === 'failed').length,
+                lastWebhookAt: webhookEvents.sort((a, b) => b.createdAt - a.createdAt)[0]?.createdAt ?? null,
+            },
+        };
     },
 });
 
@@ -128,6 +190,7 @@ export const saveCampaign = mutation({
         previewText: v.string(),
         contentJson: v.string(),
         renderedHtml: v.string(),
+        renderedText: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const identity = await requireOwnerIdentity(ctx);
@@ -142,6 +205,7 @@ export const saveCampaign = mutation({
                 previewText: args.previewText.trim(),
                 contentJson: args.contentJson,
                 renderedHtml: args.renderedHtml,
+                renderedText: args.renderedText ?? args.subject,
                 updatedAt: now,
             });
             return { campaignId: campaign._id };
@@ -152,6 +216,7 @@ export const saveCampaign = mutation({
             previewText: args.previewText.trim(),
             contentJson: args.contentJson,
             renderedHtml: args.renderedHtml,
+            renderedText: args.renderedText ?? args.subject,
             status: 'draft',
             createdBy: String(identity.subject),
             createdAt: now,
@@ -199,9 +264,18 @@ export const beginCampaignSend = mutation({
         const recipients = [];
         for (const subscriber of subscribers) {
             const existing = existingBySubscriber.get(subscriber._id);
-            if (existing?.status === 'sent' || existing?.status === 'delivered') continue;
+            if (existing && ['sent', 'delivered', 'delayed', 'bounced', 'complained', 'suppressed', 'skipped'].includes(existing.status)) {
+                continue;
+            }
             if (existing) {
-                await ctx.db.patch(existing._id, { status: 'queued', providerMessageId: null, updatedAt: now });
+                await ctx.db.patch(existing._id, {
+                    status: 'queued',
+                    providerMessageId: null,
+                    attempts: 0,
+                    lastError: null,
+                    nextAttemptAt: now,
+                    updatedAt: now,
+                });
                 recipients.push({ recipientId: existing._id, email: subscriber.email, name: subscriber.name });
             } else {
                 const recipientId = await ctx.db.insert('campaignRecipients', {
@@ -209,17 +283,29 @@ export const beginCampaignSend = mutation({
                     subscriberId: subscriber._id,
                     providerMessageId: null,
                     status: 'queued',
+                    attempts: 0,
+                    lastError: null,
+                    nextAttemptAt: now,
+                    lastProviderEventAt: null,
+                    sentAt: null,
                     updatedAt: now,
                 });
                 recipients.push({ recipientId, email: subscriber.email, name: subscriber.name });
             }
         }
         if (recipients.length === 0) throw new Error('Every subscribed recipient has already received this campaign.');
-        await ctx.db.patch(campaign._id, { status: 'sending', updatedAt: now });
+        await ctx.db.patch(campaign._id, { status: 'sending', audienceSnapshotCount: recipients.length, updatedAt: now });
+        for (const recipient of recipients) {
+            await ctx.scheduler.runAfter(0, internal.mailingWorkers.sendCampaignRecipient, {
+                recipientId: recipient.recipientId,
+            });
+        }
         return {
             campaignId: campaign._id,
+            queued: recipients.length,
             subject: campaign.subject,
             renderedHtml: campaign.renderedHtml,
+            renderedText: campaign.renderedText ?? campaign.subject,
             recipients,
         };
     },
@@ -254,7 +340,7 @@ export const completeCampaignSend = mutation({
             .query('campaignRecipients')
             .withIndex('by_campaign_id', (q) => q.eq('campaignId', campaign._id))
             .collect();
-        const queued = recipients.filter((recipient) => recipient.status === 'queued').length;
+        const queued = recipients.filter((recipient) => recipient.status === 'queued' || recipient.status === 'sending').length;
         if (queued > 0) throw new Error('Campaign still has queued recipients.');
         const failed = recipients.filter((recipient) => recipient.status === 'failed').length;
         const sent = recipients.filter((recipient) => recipient.status === 'sent' || recipient.status === 'delivered').length;
@@ -265,6 +351,41 @@ export const completeCampaignSend = mutation({
             updatedAt: now,
         });
         return { status: failed > 0 ? ('failed' as const) : ('sent' as const), sent, failed };
+    },
+});
+
+export const updateSubscriberStatus = mutation({
+    args: {
+        subscriberId: v.id('subscribers'),
+        status: v.union(v.literal('subscribed'), v.literal('unsubscribed'), v.literal('suppressed')),
+        reason: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const identity = await requireOwnerIdentity(ctx);
+        const subscriber = await ctx.db.get(args.subscriberId);
+        if (!subscriber) throw new Error('Subscriber not found.');
+        const now = Date.now();
+        await ctx.db.patch(subscriber._id, {
+            status: args.status,
+            suppressionReason: args.status === 'suppressed' ? args.reason.trim() || 'Suppressed by studio manager.' : null,
+            unsubscribedAt: args.status === 'unsubscribed' ? now : args.status === 'subscribed' ? null : subscriber.unsubscribedAt,
+            updatedAt: now,
+        });
+        await ctx.db.insert('subscriptionEvents', {
+            subscriberId: subscriber._id,
+            type: args.status === 'subscribed' ? 'resubscribed' : args.status === 'suppressed' ? 'suppressed' : 'unsubscribed',
+            source: `owner:${identity.subject}:${args.reason.trim() || 'manual update'}`,
+            createdAt: now,
+        });
+        await ctx.db.insert('ownerAuditEvents', {
+            actorId: String(identity.subject),
+            action: `mailing.subscriber_${args.status}`,
+            entityType: 'subscribers',
+            entityId: String(subscriber._id),
+            detailsJson: JSON.stringify({ reason: args.reason.trim() }),
+            createdAt: now,
+        });
+        return { success: true };
     },
 });
 

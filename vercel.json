@@ -1,3 +1,9 @@
 {
-    "headers": []
+    "headers": [],
+    "crons": [
+        {
+            "path": "/api/cron/reconcile-stripe",
+            "schedule": "17 13 * * *"
+        }
+    ]
 }

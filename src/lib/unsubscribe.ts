@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
 function signingSecret(): string {
-    const secret = process.env.UNSUBSCRIBE_SIGNING_SECRET;
+    const secret = process.env.UNSUBSCRIBE_SIGNING_SECRET || process.env.CONVEX_SERVER_WRITE_SECRET;
     if (!secret || secret.length < 32) throw new Error('Unsubscribe signing is not configured.');
     return secret;
 }
@@ -30,8 +30,7 @@ export function readUnsubscribeToken(token: string): string | null {
 }
 
 export function publicSiteOrigin(): string {
-    const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '');
-    if (!configured) throw new Error('NEXT_PUBLIC_SITE_URL is required for outbound email links.');
+    const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://www.jwsfineart.com';
     return configured.startsWith('http') ? configured : `https://${configured}`;
 }
 

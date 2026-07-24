@@ -450,7 +450,7 @@ describe('Convex commerce', () => {
             events: await ctx.db.query('orderEvents').collect(),
         }));
         expect(state.artwork).toMatchObject({ sold: true, available: false });
-        expect(state.orders[0]).toMatchObject({ status: 'refunded', fulfillmentStatus: 'needs_attention' });
+        expect(state.orders[0]).toMatchObject({ status: 'refunded', refundedCents: 102500, fulfillmentStatus: 'needs_attention' });
         expect(state.events.map((event) => event.type)).toEqual(expect.arrayContaining(['payment.partially_refunded', 'payment.refunded']));
     });
 
@@ -483,8 +483,12 @@ describe('Convex commerce', () => {
             currency: 'usd',
         });
         expect(result.outcome).toBe('processed');
-        const events = await t.run((ctx) => ctx.db.query('orderEvents').collect());
-        expect(events.map((event) => event.type)).toContain('payment.dispute.created');
+        const state = await t.run(async (ctx) => ({
+            events: await ctx.db.query('orderEvents').collect(),
+            orders: await ctx.db.query('orders').collect(),
+        }));
+        expect(state.events.map((event) => event.type)).toContain('payment.dispute.created');
+        expect(state.orders[0].disputeStatus).toBe('open');
     });
 
     it('returns a server-authorized checkout confirmation status', async () => {
@@ -641,7 +645,10 @@ describe('Convex commerce', () => {
             quarantine: await ctx.db.query('webhookQuarantine').collect(),
         }));
         expect(state.artwork).toMatchObject({ sold: false, available: true });
-        expect(state.intents.find((intent) => intent._id === canceledIntent.intentId)?.status).toBe('canceled');
+        expect(state.intents.find((intent) => intent._id === canceledIntent.intentId)).toMatchObject({
+            status: 'canceled',
+            cancelReason: 'buyer_cancel',
+        });
         expect(state.orders).toHaveLength(0);
         expect(state.quarantine).toHaveLength(1);
     });
@@ -1129,6 +1136,186 @@ describe('public and owner workspace writes', () => {
         expect(state.subscribers).toHaveLength(1);
         expect(state.subscribers[0].status).toBe('subscribed');
         expect(state.events.map((event) => event.type)).toEqual(['consented', 'unsubscribed', 'resubscribed']);
+    });
+
+    it('deduplicates Resend webhooks and suppresses a subscriber after a campaign bounce', async () => {
+        const t = createHarness();
+        await t.mutation(api.publicWrites.subscribe, {
+            serverSecret,
+            email: 'collector@example.com',
+            name: 'Collector Name',
+            consentSource: 'footer',
+            rateLimitKey: 'subscribe:test:resend-webhook',
+        });
+        const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
+        const campaign = await owner.mutation(api.ownerWorkspace.saveCampaign, {
+            campaignId: null,
+            name: 'Studio note',
+            subject: 'A new painting',
+            previewText: 'From the studio',
+            contentJson: JSON.stringify({ headline: 'A new painting', body: 'Hello' }),
+            renderedHtml: '<p>Hello</p>',
+            renderedText: 'A new painting\n\nHello',
+        });
+        const send = await owner.mutation(api.ownerWorkspace.beginCampaignSend, { campaignId: campaign.campaignId });
+        await owner.mutation(api.ownerWorkspace.recordCampaignRecipientOutcome, {
+            recipientId: send.recipients[0].recipientId,
+            outcome: 'sent',
+            providerMessageId: 'email_bounce_test',
+        });
+
+        const first = await t.mutation(api.mailing.processResendWebhook, {
+            serverSecret,
+            svixId: 'msg_attempt_1',
+            eventType: 'email.bounced',
+            providerMessageId: 'email_bounce_test',
+            eventAt: Date.now(),
+            summaryJson: JSON.stringify({ bounceType: 'Permanent', message: 'Mailbox does not exist.' }),
+        });
+        const duplicate = await t.mutation(api.mailing.processResendWebhook, {
+            serverSecret,
+            svixId: 'msg_attempt_1',
+            eventType: 'email.bounced',
+            providerMessageId: 'email_bounce_test',
+            eventAt: Date.now(),
+            summaryJson: JSON.stringify({ bounceType: 'Permanent', message: 'Mailbox does not exist.' }),
+        });
+        expect(first.outcome).toBe('processed');
+        expect(duplicate.outcome).toBe('duplicate');
+
+        const state = await t.run(async (ctx) => ({
+            subscribers: await ctx.db.query('subscribers').collect(),
+            recipients: await ctx.db.query('campaignRecipients').collect(),
+            webhookEvents: await ctx.db.query('resendWebhookEvents').collect(),
+            subscriptionEvents: await ctx.db.query('subscriptionEvents').collect(),
+        }));
+        expect(state.subscribers[0]).toMatchObject({ status: 'suppressed' });
+        expect(state.subscribers[0].suppressionReason).toContain('email.bounced');
+        expect(state.recipients[0].status).toBe('bounced');
+        expect(state.webhookEvents).toHaveLength(1);
+        expect(state.subscriptionEvents.map((event) => event.type)).toEqual(['consented', 'suppressed']);
+    });
+
+    it('reconciles canonical orders against Stripe payment snapshots and records fees without buyer data', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_reconcile',
+            paymentIntentId: 'pi_reconcile',
+        });
+        await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_reconcile',
+            eventType: 'payment_intent.succeeded',
+            paymentIntentId: 'pi_reconcile',
+            checkoutSessionId: 'cs_reconcile',
+            amountReceivedCents: 102500,
+            currency: 'usd',
+        });
+        const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
+        const now = Date.now();
+        const runId = await owner.mutation(api.ownerBusiness.beginReconciliation, {
+            livemode: false,
+            stripeWindowStart: now - 60_000,
+            stripeWindowEnd: now + 60_000,
+        });
+        const result = await owner.mutation(api.ownerBusiness.completeReconciliation, {
+            runId,
+            payments: [
+                {
+                    paymentIntentId: 'pi_reconcile',
+                    amountCents: 102500,
+                    refundedCents: 0,
+                    currency: 'usd',
+                    paid: true,
+                    feeCents: 3273,
+                    netCents: 99227,
+                },
+            ],
+        });
+        expect(result.findings).toBe(0);
+        const state = await t.run(async (ctx) => ({
+            runs: await ctx.db.query('commerceReconciliationRuns').collect(),
+            findings: await ctx.db.query('commerceReconciliationFindings').collect(),
+        }));
+        expect(state.runs[0]).toMatchObject({
+            status: 'completed',
+            stripePaymentCount: 1,
+            canonicalOrderCount: 1,
+            feeCents: 3273,
+            netCents: 99227,
+        });
+        expect(state.findings).toHaveLength(0);
+    });
+
+    it('supersedes prior open reconciliation findings after Stripe and studio records agree', async () => {
+        const t = createHarness();
+        await seedArtwork(t);
+        const intent = await t.mutation(api.commerce.createCheckoutIntent, {
+            serverSecret,
+            artworkLegacyId: 101,
+            ...buyer,
+        });
+        await t.mutation(api.commerce.attachCheckoutSession, {
+            serverSecret,
+            checkoutIntentId: intent.intentId,
+            sessionId: 'cs_reconcile_recovered',
+            paymentIntentId: 'pi_reconcile_recovered',
+        });
+        await t.mutation(api.commerce.processStripeEvent, {
+            serverSecret,
+            eventId: 'evt_reconcile_recovered',
+            eventType: 'payment_intent.succeeded',
+            paymentIntentId: 'pi_reconcile_recovered',
+            checkoutSessionId: 'cs_reconcile_recovered',
+            amountReceivedCents: 102500,
+            currency: 'usd',
+        });
+        const owner = t.withIdentity({ subject: 'owner-test', owner_role: 'ADMIN' });
+        const now = Date.now();
+        const window = { livemode: false, stripeWindowStart: now - 60_000, stripeWindowEnd: now + 60_000 };
+        const badRun = await owner.mutation(api.ownerBusiness.beginReconciliation, window);
+        await owner.mutation(api.ownerBusiness.completeReconciliation, {
+            runId: badRun,
+            payments: [
+                {
+                    paymentIntentId: 'pi_reconcile_recovered',
+                    amountCents: 100,
+                    refundedCents: 0,
+                    currency: 'usd',
+                    paid: true,
+                    feeCents: 10,
+                    netCents: 90,
+                },
+            ],
+        });
+        const recoveredRun = await owner.mutation(api.ownerBusiness.beginReconciliation, window);
+        const recovered = await owner.mutation(api.ownerBusiness.completeReconciliation, {
+            runId: recoveredRun,
+            payments: [
+                {
+                    paymentIntentId: 'pi_reconcile_recovered',
+                    amountCents: 102500,
+                    refundedCents: 0,
+                    currency: 'usd',
+                    paid: true,
+                    feeCents: 3273,
+                    netCents: 99227,
+                },
+            ],
+        });
+        expect(recovered.findings).toBe(0);
+        const findings = await t.run(async (ctx) => ctx.db.query('commerceReconciliationFindings').collect());
+        expect(findings).toHaveLength(1);
+        expect(findings[0]).toMatchObject({ kind: 'amount_mismatch', status: 'resolved' });
+        expect(findings[0].resolvedAt).not.toBeNull();
     });
 
     it('persists campaign, inquiry, content, and fulfillment state only for owners', async () => {

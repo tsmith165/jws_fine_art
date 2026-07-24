@@ -38,3 +38,11 @@ export async function readOwnerSubscribers() {
 export async function readOwnerCampaigns() {
     return (await ownerClient('read mailing campaigns')).query(api.ownerWorkspace.listCampaigns, {});
 }
+
+export async function readOwnerMailingOverview() {
+    return (await ownerClient('read mailing health')).query(api.ownerWorkspace.mailingOverview, {});
+}
+
+export async function readOwnerBusiness(rangeDays: number) {
+    return (await ownerClient('read business operations')).query(api.ownerBusiness.overview, { rangeDays });
+}
