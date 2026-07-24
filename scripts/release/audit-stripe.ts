@@ -30,11 +30,15 @@ try {
 const stripe = new Stripe(stripeSecretKey, { apiVersion: '2026-06-24.dahlia' });
 const taxConfiguration = stripeTaxConfiguration(providerEnvironment);
 
-const convexResult = spawnSync('corepack', ['pnpm', 'exec', 'convex', ...convexArgs(['run', 'release:audit'], target)], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-    env: process.env,
-});
+const convexResult = spawnSync(
+    process.execPath,
+    ['node_modules/convex/bin/main.js', ...convexArgs(['run', 'release:audit'], target)],
+    {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+        env: process.env,
+    },
+);
 if (convexResult.status !== 0) throw new Error(`Unable to run Convex release audit: ${convexResult.stderr || convexResult.stdout}`);
 const convexAudit = JSON.parse(convexResult.stdout) as { openCheckoutIntents: number; openWebhookQuarantines: number };
 

@@ -27,18 +27,26 @@
 - The existing Resend application key is send-only by design. Resend dashboard
   login is waiting in Chrome so the production webhook can be created after
   the new route is deployed; then store its signing secret in Vercel.
-- Source commits `521ffd6` and `6e1cf53` are pushed to
+- Source commits `521ffd6`, `6e1cf53`, and `4df72ef` are pushed to
   `origin/feat/full-site-overhaul`. Production Vercel deployment
-  `dpl_GuvmL4TZgqQsDTxar69nMn1U3GnH` is ready and aliased to
+  `dpl_35Z2roXMv7LxMxTFc3GrWWrvCWXK` is ready and aliased to
   `https://www.jwsfineart.com`.
 - Production desktop and mobile QA found no horizontal overflow on Business or
   Mailing. Mailing correctly reports `Awaiting verification` until a signed
   Resend event is received.
+- The first live Stripe reconciliation completed successfully. Production
+  Convex reports no failed durable work, unresolved findings, open checkout
+  intents, or webhook quarantines. Stripe reports no open Checkout sessions or
+  pending webhook deliveries.
+- QA artifact aliases `business-operations-production-desktop`,
+  `business-operations-production-mobile`, `mailing-production-ready-desktop`,
+  and `mailing-production-ready-mobile` validate successfully.
 - Verification: lint, TypeScript, 17 test files / 114 tests, and the Node 24
   production build pass.
-- Next action: deploy the final attention-heading grammar fix, run a live
-  read-only Stripe reconciliation, finish Resend webhook setup after dashboard
-  login, capture console diagnostics, and validate the four QA artifacts.
+- Remaining provider work: finish Resend webhook setup after dashboard login
+  and add its signing secret to Vercel; create a Stripe Tax registration only
+  after Jill confirms the legal jurisdiction. Production console diagnostics
+  also expose the existing Clerk development-key warning.
 
 ## July 23 Release-Date Baseline, Studio, And Tax-Ready Checkout
 
