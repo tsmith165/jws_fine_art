@@ -19,6 +19,13 @@
   collector guide, and the purchase confirmation email.
 - Verification: lint, typecheck, 17 test files / 114 tests, and the production
   build pass.
+- Source commit `c8edfc9` is pushed to `origin/feat/full-site-overhaul`.
+- Vercel production deployment `dpl_VhCwrWqAYtsci8aFaMoRUoLEdQQu` is ready and
+  aliased to `https://www.jwsfineart.com`; it also activates the flipped
+  `STRIPE_AUTOMATIC_TAX_ENABLED=false`, so live checkout sessions no longer
+  request Stripe automatic tax.
+- Live copy verified on `/shipping`, `/contact`, and `/work/dawn-96`
+  (`lw-price-note` renders under the price).
 
 ## July 23 Business, Stripe Tax, And Mailing Production Release
 
