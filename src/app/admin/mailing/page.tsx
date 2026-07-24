@@ -41,9 +41,14 @@ export default async function OwnerMailingPage({
         ? undefined
         : campaigns.find((campaign) => campaign._id === params.campaign) || campaigns.find((campaign) => campaign.status === 'draft');
     const copy = selected ? campaignCopy(selected.contentJson) : { headline: '', body: '' };
-    const attentionCount =
-        health.campaigns.failed + health.delivery.failed + health.delivery.delayed + health.provider.failedWebhookEventsLast30Days;
     const lastWebhook = health.provider.lastWebhookAt ? new Date(health.provider.lastWebhookAt) : null;
+    const attentionCount =
+        health.campaigns.failed +
+        health.delivery.failed +
+        health.delivery.delayed +
+        health.provider.failedWebhookEventsLast30Days +
+        (lastWebhook ? 0 : 1);
+    const providerNeedsReview = health.provider.failedWebhookEventsLast30Days > 0 || !lastWebhook;
 
     return (
         <OwnerShell active="/admin/mailing" title="Mailing">
@@ -80,14 +85,16 @@ export default async function OwnerMailingPage({
                             {health.delivery.bounced} bounced · {health.delivery.complained} complaints
                         </small>
                     </article>
-                    <article className={health.provider.failedWebhookEventsLast30Days ? 'has-warning' : undefined}>
-                        {health.provider.failedWebhookEventsLast30Days ? (
+                    <article className={providerNeedsReview ? 'has-warning' : undefined}>
+                        {providerNeedsReview ? (
                             <AlertTriangle size={18} aria-hidden="true" />
                         ) : (
                             <ShieldCheck size={18} aria-hidden="true" />
                         )}
                         <span>Provider connection</span>
-                        <strong>{health.provider.failedWebhookEventsLast30Days ? 'Review' : 'Healthy'}</strong>
+                        <strong>
+                            {health.provider.failedWebhookEventsLast30Days ? 'Review' : lastWebhook ? 'Healthy' : 'Awaiting verification'}
+                        </strong>
                         <small>
                             {lastWebhook
                                 ? `Last verified event ${lastWebhook.toLocaleDateString()}`
