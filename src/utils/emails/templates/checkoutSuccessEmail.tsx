@@ -66,7 +66,7 @@ const CheckoutSuccessEmail: React.FC<CheckoutSuccessEmailProps> = ({ piece_title
                         <p style={textStyle}>Dear {full_name},</p>
                         <p style={textStyle}>
                             Thank you for your purchase of &quot;{piece_title}&quot;. Your transaction of ${price_paid.toFixed(2)} has been
-                            successfully processed.
+                            successfully processed. Sales tax is included in this amount.
                         </p>
                         <p style={textStyle}>We appreciate your support and hope you enjoy your new artwork!</p>
                         <p style={textStyle}>

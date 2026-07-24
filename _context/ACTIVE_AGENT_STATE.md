@@ -1,5 +1,25 @@
 # Active Agent State
 
+## July 23 Tax-Inclusive Pricing And Clerk Decision
+
+- Owner decisions: listed prices are tax-inclusive and Jill remits sales tax
+  herself, so Stripe Tax stays implemented but disabled
+  (`STRIPE_AUTOMATIC_TAX_ENABLED=false` in production Vercel, disabled default
+  everywhere). Do not create Stripe Tax registrations.
+- The Clerk development-instance warning is an accepted risk: only 4-5 admin
+  users ever sign in, so the dev→production Clerk migration is intentionally
+  deferred. Do not treat the console warning as a release blocker.
+- `scripts/release/check-environment.ts` and `scripts/release/audit-stripe.ts`
+  no longer fail when Stripe Tax is disabled; tax provider checks gate a
+  release only when the flag is enabled. Environment check reports
+  `taxMode: inclusive-listed-price`.
+- Tax-included copy is standardized to `Sales tax is included in the listed
+  price.` across the work detail page (new `lw-price-note`), checkout page,
+  checkout summary/small print, shipping estimator, `/shipping`, the contact
+  collector guide, and the purchase confirmation email.
+- Verification: lint, typecheck, 17 test files / 114 tests, and the production
+  build pass.
+
 ## July 23 Business, Stripe Tax, And Mailing Production Release
 
 - Objective: enable fail-closed Stripe Tax, add a production operations

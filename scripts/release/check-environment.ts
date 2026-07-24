@@ -14,8 +14,6 @@ const required = [
     'CLERK_SECRET_KEY',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
-    'STRIPE_AUTOMATIC_TAX_ENABLED',
-    'STRIPE_ARTWORK_TAX_CODE',
     'UPLOADTHING_TOKEN',
     'RESEND_API_KEY',
     'RESEND_WEBHOOK_SECRET',
@@ -29,10 +27,12 @@ const required = [
 
 const missing = required.filter((name) => !process.env[name]);
 const failures: string[] = [];
+// Listed prices are tax-inclusive; Stripe Tax stays available behind
+// STRIPE_AUTOMATIC_TAX_ENABLED but disabled is the supported default.
+let taxEnabled = false;
 try {
     assertStripeEnvironment(process.env);
-    const tax = stripeTaxConfiguration(process.env);
-    if (!tax.enabled) failures.push('Stripe Tax must be enabled for production checkout.');
+    taxEnabled = stripeTaxConfiguration(process.env).enabled;
 } catch (error) {
     failures.push(error instanceof Error ? error.message : 'Stripe environment validation failed.');
 }
@@ -42,7 +42,8 @@ console.log(
     JSON.stringify({
         environment: process.env.VERCEL_ENV || 'local',
         stripeMode: process.env.STRIPE_SECRET_KEY ? stripeMode(process.env.STRIPE_SECRET_KEY) : null,
-        stripeAutomaticTax: process.env.STRIPE_AUTOMATIC_TAX_ENABLED === 'true',
+        stripeAutomaticTax: taxEnabled,
+        taxMode: taxEnabled ? 'stripe-automatic' : 'inclusive-listed-price',
         writeFreeze: (process.env.JWS_WRITE_FREEZE || '').split(',').filter(Boolean),
         requiredVariablesPresent: Object.fromEntries(required.map((name) => [name, Boolean(process.env[name])])),
         ready: failures.length === 0,

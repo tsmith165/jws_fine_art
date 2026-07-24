@@ -61,8 +61,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                     <details open>
                         <summary>Buying an available painting</summary>
                         <p>
-                            Available priced works can be purchased securely through Stripe. The studio confirms packing and shipping after
-                            payment.
+                            Available priced works can be purchased securely through Stripe, and sales tax is included in every listed
+                            price. The studio confirms packing and shipping after payment.
                         </p>
                     </details>
                     <details id="shipping">

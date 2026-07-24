@@ -219,7 +219,7 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                         Jill will confirm an insured international delivery option and price before payment.
                     </p>
                 )}
-                <small>Sales tax is included where applicable. International duties and brokerage are quoted or paid separately.</small>
+                <small>Sales tax is included in the listed price. International duties and brokerage are quoted or paid separately.</small>
             </section>
 
             <div className="lw-checkout-total" aria-label="Order total">
@@ -228,7 +228,7 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                 <span>{pickup ? 'Local studio pickup' : 'Insured packing & shipping'}</span>
                 <strong>{shipping.checkoutChargeCents === null ? 'Quoted separately' : money(shippingDollars)}</strong>
                 <span>Sales tax</span>
-                <strong>Included where applicable</strong>
+                <strong>Included in listed price</strong>
                 <b>Total due</b>
                 <b>{canCheckout ? money(total) : money(current_piece.price)}</b>
             </div>

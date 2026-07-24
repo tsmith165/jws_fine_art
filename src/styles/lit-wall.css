@@ -1276,6 +1276,11 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
+.lw-price-note {
+    margin: -12px 0 18px;
+    color: var(--lw-muted);
+    font-size: 13px;
+}
 .lw-artwork-panel > .lw-button {
     margin-top: 9px;
 }

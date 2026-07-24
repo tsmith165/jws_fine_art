@@ -100,6 +100,7 @@ export default async function ArtworkPage({ params }: Props) {
                         <strong>{hasPrice ? money(piece.price) : status}</strong>
                         <span>{status}</span>
                     </div>
+                    {hasPrice && <p className="lw-price-note">Sales tax is included in the listed price.</p>}
                     <ArtworkActions piece={piece} />
                     <ul className="lw-reassurance">
                         <li>

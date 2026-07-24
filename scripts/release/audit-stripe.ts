@@ -30,15 +30,11 @@ try {
 const stripe = new Stripe(stripeSecretKey, { apiVersion: '2026-06-24.dahlia' });
 const taxConfiguration = stripeTaxConfiguration(providerEnvironment);
 
-const convexResult = spawnSync(
-    process.execPath,
-    ['node_modules/convex/bin/main.js', ...convexArgs(['run', 'release:audit'], target)],
-    {
-        cwd: process.cwd(),
-        encoding: 'utf8',
-        env: process.env,
-    },
-);
+const convexResult = spawnSync(process.execPath, ['node_modules/convex/bin/main.js', ...convexArgs(['run', 'release:audit'], target)], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    env: process.env,
+});
 if (convexResult.status !== 0) throw new Error(`Unable to run Convex release audit: ${convexResult.stderr || convexResult.stdout}`);
 const convexAudit = JSON.parse(convexResult.stdout) as { openCheckoutIntents: number; openWebhookQuarantines: number };
 
@@ -49,14 +45,15 @@ const [openSessions, recentEvents, taxSettings, taxRegistrations] = await Promis
     stripe.tax.registrations.list({ status: 'active', limit: 100 }),
 ]);
 const pendingWebhookEvents = recentEvents.data.filter((event) => event.pending_webhooks > 0).length;
+// Stripe Tax provider checks only gate a release when automatic tax is
+// enabled; the default posture is tax-inclusive listed prices.
 const failures = [
-    !taxConfiguration.enabled ? 'Stripe Tax is disabled in the application environment.' : null,
-    taxSettings.status !== 'active'
+    taxConfiguration.enabled && taxSettings.status !== 'active'
         ? `Stripe Tax settings are ${taxSettings.status}; missing fields: ${
               taxSettings.status_details.pending?.missing_fields?.join(', ') || 'unknown'
           }.`
         : null,
-    taxRegistrations.data.length === 0 ? 'Stripe Tax has no active registrations.' : null,
+    taxConfiguration.enabled && taxRegistrations.data.length === 0 ? 'Stripe Tax has no active registrations.' : null,
     openSessions.data.length > 0 ? `${openSessions.data.length} Stripe Checkout session(s) remain open.` : null,
     openSessions.has_more ? 'More than 100 Stripe Checkout sessions remain open.' : null,
     pendingWebhookEvents > 0 ? `${pendingWebhookEvents} recent Stripe event(s) still have pending webhook deliveries.` : null,

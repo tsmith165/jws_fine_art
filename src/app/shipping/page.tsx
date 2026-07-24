@@ -61,7 +61,7 @@ export default function ShippingPage() {
                         Checkout adds the fixed insured-delivery price for the artwork’s size and framing. Local pickup is free. Work larger
                         than 24 × 30 inches and all international deliveries require a studio quote before payment.
                     </p>
-                    <p>Sales tax is included in the displayed price where applicable.</p>
+                    <p>Sales tax is included in the listed price.</p>
                     <Link className="lw-button lw-button-brass" href="/contact?kind=general">
                         Ask about shipping <ArrowRight size={16} />
                     </Link>

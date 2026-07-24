@@ -59,7 +59,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
                     <h2>Choose how the artwork gets to you.</h2>
                     <p>
                         Select fixed insured U.S. shipping or free local pickup. Stripe collects any delivery address securely, and sales
-                        tax is included where applicable.
+                        tax is included in the listed price.
                     </p>
                     <CheckoutForm current_piece={piece} />
                 </div>

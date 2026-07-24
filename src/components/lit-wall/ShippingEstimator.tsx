@@ -206,7 +206,7 @@ export function ShippingEstimator() {
                     </small>
                 </div>
                 <p className="lw-shipping-disclaimer">
-                    Sales tax is included where applicable. International shipping is arranged directly with the studio.
+                    Sales tax is included in the listed price. International shipping is arranged directly with the studio.
                 </p>
             </div>
         </div>
