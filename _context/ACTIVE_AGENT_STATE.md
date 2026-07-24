@@ -4,6 +4,17 @@
 
 - Objective: enable fail-closed Stripe Tax, add a production operations
   dashboard, and make studio campaigns durable and provider-aware.
+- Production Resend webhook
+  `ba0f5b24-e1cb-4e86-81ed-7cb5484a1d32` is enabled at
+  `https://www.jwsfineart.com/api/resend/webhook` for the seven delivery,
+  delay, bounce, complaint, failure, and suppression events used by the app.
+- `RESEND_WEBHOOK_SECRET` is stored as a sensitive Production-only Vercel
+  environment variable. Redeploy `CxYb241ZZcsSNNg7uPZbpa9nQ7a6` is Ready and
+  assigned to `https://www.jwsfineart.com`.
+- A production campaign test to the studio inbox produced signed
+  `email.sent` and `email.delivered` events. Resend received `200 OK` on the
+  first attempt, and the app's Mailing dashboard now reports the provider as
+  Healthy. The Business dashboard reports no unresolved provider issues.
 - Implemented:
   - `/admin/business` reporting, reconciliation, CSV export, operational
     alerts, owner retry/resolution actions, and daily reconciliation cron.
@@ -24,9 +35,8 @@
 - Live Stripe Tax settings are active with the general tangible-goods default
   code, but there are zero active tax registrations. Do not create a legal tax
   registration without Jill confirming the registered jurisdiction.
-- The existing Resend application key is send-only by design. Resend dashboard
-  login is waiting in Chrome so the production webhook can be created after
-  the new route is deployed; then store its signing secret in Vercel.
+- The existing Resend application key remains send-only by design. Dashboard
+  inspection verified the `jwsfineart.com` sending domain and DKIM/SPF setup.
 - Source commits `521ffd6`, `6e1cf53`, and `4df72ef` are pushed to
   `origin/feat/full-site-overhaul`. Production Vercel deployment
   `dpl_35Z2roXMv7LxMxTFc3GrWWrvCWXK` is ready and aliased to
@@ -43,10 +53,11 @@
   and `mailing-production-ready-mobile` validate successfully.
 - Verification: lint, TypeScript, 17 test files / 114 tests, and the Node 24
   production build pass.
-- Remaining provider work: finish Resend webhook setup after dashboard login
-  and add its signing secret to Vercel; create a Stripe Tax registration only
-  after Jill confirms the legal jurisdiction. Production console diagnostics
-  also expose the existing Clerk development-key warning.
+- Remaining release gates: create a Stripe Tax registration only after Jill
+  confirms the legal jurisdiction. Production console diagnostics also expose
+  the existing Clerk development-instance warning; Clerk sign-in is paused at
+  GitHub's account authorization screen before granting persistent OAuth
+  access.
 
 ## July 23 Release-Date Baseline, Studio, And Tax-Ready Checkout
 
