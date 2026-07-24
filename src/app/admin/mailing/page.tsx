@@ -57,7 +57,7 @@ export default async function OwnerMailingPage({
                     eyebrow="Audience & campaigns"
                     title={
                         attentionCount
-                            ? `${attentionCount} mailing item${attentionCount === 1 ? '' : 's'} need review`
+                            ? `${attentionCount} mailing ${attentionCount === 1 ? 'item needs' : 'items need'} review`
                             : 'Studio mail is ready'
                     }
                     description="Compose studio letters, test them first, and let durable delivery continue safely in the background."

@@ -49,7 +49,7 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
             <section className="owner-content owner-business">
                 <OwnerHeading
                     eyebrow="Business operations"
-                    title={urgentCount ? `${urgentCount} item${urgentCount === 1 ? '' : 's'} need review` : 'The business is in order'}
+                    title={urgentCount ? `${urgentCount} ${urgentCount === 1 ? 'item needs' : 'items need'} review` : 'The business is in order'}
                     description={
                         urgentCount
                             ? 'Payments are still protected. Review the operational queue below so every Stripe event, order, and email is accounted for.'
