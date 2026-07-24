@@ -1,5 +1,35 @@
 # Active Agent State
 
+## July 24 Performance, Dashboard Redesign, And Ops Alerts
+
+- `main` is fast-forwarded to the overhaul branch (`fcfbb2e..e1a5f78`);
+  production continues to deploy via `vercel deploy --prod`.
+- Clerk is scoped to `/signin` and `/signout` only (`StudioAuthProvider` in
+  route layouts; root layout no longer mounts ClerkProvider). Server `auth()`
+  still works everywhere via `src/proxy.ts`. Public pages ship zero Clerk JS.
+- Lighthouse mobile home page: performance 74 → 90, best-practices 77 → 100,
+  SEO 100, accessibility 100. LCP 6.5s → 3.3s, TTI 6.7s → 3.3s, unused JS
+  266 KiB → 54 KiB. Both prior best-practices failures (third-party cookies,
+  inspector issues) were Clerk dev-instance artifacts and are gone, so the
+  Clerk production migration is NOT needed for scores; it would only remove
+  the dev-instance warning inside authenticated admin pages.
+- `/admin/business` redesign: primary Net collected hero + Tax to set aside +
+  Orders; single-column gross→refunds→net waterfall ledger with context rows
+  (shipping, tax set-aside, fee window explicitly labeled); trailing-12-month
+  CSS revenue trend from `purchasedOn`; Started→Paid funnel with a separate
+  did-not-complete row; latest-orders table with exact tax amounts.
+- Operational email alerts: `convex/opsAlerts.ts` internal action (3 retries,
+  Resend idempotency key `ops-alert-<kind>-<sourceId>`, recipient
+  jwsfineart@gmail.com) fired on quarantine open, webhook retry exhaustion,
+  dispute open, and confirmation-email exhaustion.
+- Verification: lint, typecheck, 18 files / 121 tests, production build.
+  Commits `b58b1e4` and `395e511` pushed; both Convex deployments updated;
+  Vercel production deployed and aliased; post-deploy Lighthouse confirmed
+  the scores above; home page HTML contains no Clerk references while
+  `/signin` still loads it.
+- Not yet verified: authenticated visual QA of the redesigned Business page
+  (server-rendered from typed data; build passed).
+
 ## July 24 Tax Set-Aside Tracking
 
 - Implemented per-order CA tax set-aside tracking per
