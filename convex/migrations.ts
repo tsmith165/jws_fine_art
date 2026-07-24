@@ -4,6 +4,7 @@ import { internalMutation, internalQuery } from './_generated/server';
 import { planImportedFieldMerge } from './lib/importMerge';
 import { legacyArtworkSlug, normalizeLegacyBoolean, SERIALIZER_VERSION } from './lib/legacy';
 import { deriveArtworkCategories } from '../shared/artworkCategories';
+import { extractUsStateFromAddress, orderTaxProfile } from '../shared/tax';
 
 type ImportedArtworkField =
     | 'title'
@@ -133,6 +134,56 @@ export const backfillArtworkCompletionDates = internalMutation({
             changed: changes.length,
             seededFromExistingRelease: changes.filter(({ artwork }) => !artwork.completedAt && Boolean(artwork.releasedAt)).length,
             seededFromImportTimestamp: changes.filter(({ artwork }) => !artwork.completedAt && !artwork.releasedAt).length,
+        };
+    },
+});
+
+export const backfillOrderTaxSetAside = internalMutation({
+    args: { dryRun: v.boolean() },
+    handler: async (ctx, args) => {
+        const orders = await ctx.db.query('orders').collect();
+        const changes = orders.flatMap((order) => {
+            const totalCents = order.amountPaidCents ?? order.legacyRecordedPriceCents ?? 0;
+            const profile = orderTaxProfile({
+                deliveryMethod: order.deliveryMethod ?? null,
+                international: order.international,
+                shippingAddress: order.shippingAddress,
+                totalCents,
+            });
+            if (
+                order.taxJurisdiction === profile.taxJurisdiction &&
+                order.taxRateBps === profile.taxRateBps &&
+                order.taxSetAsideCents === profile.taxSetAsideCents
+            ) {
+                return [];
+            }
+            return [{ order, profile }];
+        });
+
+        if (!args.dryRun) {
+            for (const { order, profile } of changes) {
+                await ctx.db.patch(order._id, {
+                    taxJurisdiction: profile.taxJurisdiction,
+                    taxRateBps: profile.taxRateBps,
+                    taxSetAsideCents: profile.taxSetAsideCents,
+                    updatedAt: Date.now(),
+                });
+            }
+        }
+
+        return {
+            dryRun: args.dryRun,
+            scanned: orders.length,
+            changed: changes.length,
+            california: changes.filter(({ profile }) => profile.taxJurisdiction === 'CA').length,
+            interstate: changes.filter(({ profile }) => profile.taxJurisdiction === 'interstate').length,
+            international: changes.filter(({ profile }) => profile.taxJurisdiction === 'international').length,
+            assumedCaliforniaWithoutState: changes.filter(
+                ({ order, profile }) =>
+                    profile.taxJurisdiction === 'CA' &&
+                    order.deliveryMethod !== 'local_pickup' &&
+                    extractUsStateFromAddress(order.shippingAddress) === null,
+            ).length,
         };
     },
 });

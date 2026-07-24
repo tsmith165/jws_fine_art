@@ -18,15 +18,21 @@ const number = new Intl.NumberFormat('en-US');
 const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 const ranges = [
-    { value: 30, label: '30 days' },
-    { value: 90, label: '90 days' },
-    { value: 365, label: '1 year' },
-    { value: 3650, label: 'All time' },
+    { key: '30', label: '30 days' },
+    { key: '90', label: '90 days' },
+    { key: 'year', label: 'This year' },
+    { key: '365', label: '1 year' },
+    { key: '3650', label: 'All time' },
 ] as const;
 
+function daysSinceYearStart() {
+    const now = new Date();
+    return Math.max(1, Math.ceil((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / (24 * 60 * 60 * 1000)));
+}
+
 function parseRange(value: string | undefined) {
-    const parsed = Number(value);
-    return ranges.some((item) => item.value === parsed) ? parsed : 90;
+    const key = ranges.some((item) => item.key === value) ? (value as (typeof ranges)[number]['key']) : '90';
+    return { key, days: key === 'year' ? daysSinceYearStart() : Number(key) };
 }
 
 function dollars(cents: number | null | undefined) {
@@ -34,7 +40,8 @@ function dollars(cents: number | null | undefined) {
 }
 
 export default async function OwnerBusinessPage({ searchParams }: { searchParams: Promise<{ range?: string }> }) {
-    const rangeDays = parseRange((await searchParams).range);
+    const range = parseRange((await searchParams).range);
+    const rangeDays = range.days;
     const business = await readOwnerBusiness(rangeDays);
     const urgentCount =
         business.operations.failedStripeEvents +
@@ -42,14 +49,18 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
         business.operations.failedConfirmations +
         business.operations.openDisputes +
         business.operations.openReconciliationFindings;
-    const activeRange = ranges.find((item) => item.value === rangeDays)?.label ?? '90 days';
+    const activeRange = ranges.find((item) => item.key === range.key)?.label ?? '90 days';
 
     return (
         <OwnerShell active="/admin/business" title="Business">
             <section className="owner-content owner-business">
                 <OwnerHeading
                     eyebrow="Business operations"
-                    title={urgentCount ? `${urgentCount} ${urgentCount === 1 ? 'item needs' : 'items need'} review` : 'The business is in order'}
+                    title={
+                        urgentCount
+                            ? `${urgentCount} ${urgentCount === 1 ? 'item needs' : 'items need'} review`
+                            : 'The business is in order'
+                    }
                     description={
                         urgentCount
                             ? 'Payments are still protected. Review the operational queue below so every Stripe event, order, and email is accounted for.'
@@ -66,18 +77,18 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
 
                 <nav className="owner-business-toolbar" aria-label="Business reporting period">
                     <div className="owner-analytics-ranges">
-                        {ranges.map((range) => (
+                        {ranges.map((item) => (
                             <Link
-                                key={range.value}
-                                className={range.value === rangeDays ? 'is-active' : undefined}
-                                href={`/admin/business?range=${range.value}`}
+                                key={item.key}
+                                className={item.key === range.key ? 'is-active' : undefined}
+                                href={`/admin/business?range=${item.key}`}
                             >
-                                {range.label}
+                                {item.label}
                             </Link>
                         ))}
                     </div>
-                    <Link className="owner-button" href={`/admin/business/export?range=${rangeDays}`}>
-                        <Download size={15} aria-hidden="true" /> Export summary
+                    <Link className="owner-button" href={`/admin/business/export?range=${range.key}`}>
+                        <Download size={15} aria-hidden="true" /> Export report
                     </Link>
                 </nav>
 
@@ -93,10 +104,13 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                     </article>
                     <article className="owner-business-hero">
                         <span>
-                            <ShieldCheck size={17} aria-hidden="true" /> Tax recorded
+                            <ShieldCheck size={17} aria-hidden="true" /> Tax to set aside
                         </span>
-                        <strong>{dollars(business.commerce.taxCents)}</strong>
-                        <p>Stripe Tax amounts captured on completed orders.</p>
+                        <strong>{dollars(business.commerce.taxSetAsideCents)}</strong>
+                        <p>
+                            Included in listed prices · {number.format(business.commerce.taxJurisdictions.ca)} CA-taxable{' '}
+                            {business.commerce.taxJurisdictions.ca === 1 ? 'order' : 'orders'}
+                        </p>
                     </article>
                     <article className="owner-business-hero">
                         <span>
@@ -128,8 +142,8 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                                 <dd>{dollars(business.commerce.shippingCents)}</dd>
                             </div>
                             <div>
-                                <dt>Sales tax</dt>
-                                <dd>{dollars(business.commerce.taxCents)}</dd>
+                                <dt>Tax to set aside</dt>
+                                <dd>{dollars(business.commerce.taxSetAsideCents)}</dd>
                             </div>
                             <div>
                                 <dt>Refunds</dt>
@@ -145,8 +159,8 @@ export default async function OwnerBusinessPage({ searchParams }: { searchParams
                             </div>
                         </dl>
                         <p className="owner-business-note">
-                            This is an operational view, not an accounting ledger. Stripe remains the source of truth for payouts and tax
-                            filings.
+                            This is an operational view, not an accounting ledger. Stripe remains the source of truth for payouts. Tax to
+                            set aside is backed out of tax-inclusive listed prices for CA-taxable orders — see docs/PAYMENTS_AND_TAXES.md.
                         </p>
                     </section>
 

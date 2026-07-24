@@ -91,20 +91,24 @@ disabled), `taxIncluded`, `international`, `deliveryMethod`, and the full
 `shippingAddress`. Reconciliation runs store Stripe `feeCents` and
 `netCents`.
 
-Planned tracking (approved direction, not yet implemented):
+Tax set-aside tracking (implemented July 24, 2026):
 
 - `taxJurisdiction`: `'CA' | 'interstate' | 'international'`, derived from
-  delivery method and shipping address state at payment time.
+  delivery method and shipping address state at payment time. An address
+  whose state cannot be determined is conservatively treated as CA.
 - `taxRateBps`: the rate applied (775 today), so historical orders stay
   correct when the rate changes.
 - `taxSetAsideCents`: the backed-out tax portion for CA-taxable orders; 0 for
   exempt orders.
-- A backfill migration classifying existing paid orders from their stored
-  addresses.
-- `/admin/business`: replace the dead "Tax recorded" (Stripe Tax) figure with
-  "Tax to set aside", add a calendar-year view, and include per-order
-  jurisdiction, rate, and set-aside columns in the CSV export so the CDTFA
-  return and the annual nexus check are read-offs.
+- The policy lives in `shared/tax.ts` (`CA_SALES_TAX_RATE_BPS`,
+  `orderTaxProfile`); new paid orders are stamped in
+  `convex/commerce.ts` at payment time.
+- `migrations:backfillOrderTaxSetAside` (dry-run flag supported) classifies
+  existing orders from their stored addresses and is idempotent.
+- `/admin/business` shows "Tax to set aside" with the CA-taxable order count,
+  and the range picker includes "This year" for filing. The CSV export
+  includes the set-aside summary, a sales-by-destination table for the annual
+  nexus check, and per-order rows with jurisdiction, rate, and set-aside.
 
 ## Filing checklist for the studio
 

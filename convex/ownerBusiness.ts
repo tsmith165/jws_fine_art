@@ -4,6 +4,7 @@ import type { Id } from './_generated/dataModel';
 import { mutation, query, type MutationCtx } from './_generated/server';
 import { requireOwnerIdentity } from './lib/ownerAuth';
 import { requireServerSecret } from './lib/serverSecret';
+import { extractUsStateFromAddress } from '../shared/tax';
 
 const DAY = 24 * 60 * 60 * 1000;
 function rangeStart(rangeDays: number) {
@@ -55,6 +56,44 @@ export const overview = query({
                 grossCents: sum(paidOrders.map((item) => item.amountPaidCents ?? item.legacyRecordedPriceCents)),
                 shippingCents: sum(stripeOrders.map((item) => item.shippingPaidCents)),
                 taxCents: sum(stripeOrders.map((item) => item.taxPaidCents)),
+                taxSetAsideCents: sum(paidOrders.map((item) => item.taxSetAsideCents)),
+                taxJurisdictions: {
+                    ca: paidOrders.filter((item) => item.taxJurisdiction === 'CA').length,
+                    interstate: paidOrders.filter((item) => item.taxJurisdiction === 'interstate').length,
+                    international: paidOrders.filter((item) => item.taxJurisdiction === 'international').length,
+                    unclassified: paidOrders.filter((item) => !item.taxJurisdiction).length,
+                },
+                salesByState: Object.entries(
+                    paidOrders.reduce<Record<string, { orders: number; grossCents: number }>>((byState, item) => {
+                        const state =
+                            item.taxJurisdiction === 'international'
+                                ? 'International'
+                                : item.deliveryMethod === 'local_pickup'
+                                  ? 'CA'
+                                  : (extractUsStateFromAddress(item.shippingAddress) ?? 'Unknown');
+                        const entry = (byState[state] ??= { orders: 0, grossCents: 0 });
+                        entry.orders += 1;
+                        entry.grossCents += item.amountPaidCents ?? item.legacyRecordedPriceCents ?? 0;
+                        return byState;
+                    }, {}),
+                )
+                    .map(([state, totals]) => ({ state, ...totals }))
+                    .sort((a, b) => b.grossCents - a.grossCents),
+                orderRows: [...paidOrders]
+                    .sort((a, b) => b.createdAt - a.createdAt)
+                    .map((item) => ({
+                        purchasedOn: item.purchasedOn,
+                        artworkTitle: item.artworkTitle,
+                        source: item.source,
+                        deliveryMethod: item.deliveryMethod ?? (item.international ? 'international_quote' : 'domestic_shipping'),
+                        destinationState:
+                            item.deliveryMethod === 'local_pickup' ? 'CA' : (extractUsStateFromAddress(item.shippingAddress) ?? ''),
+                        taxJurisdiction: item.taxJurisdiction ?? null,
+                        taxRateBps: item.taxRateBps ?? null,
+                        amountPaidCents: item.amountPaidCents ?? item.legacyRecordedPriceCents ?? 0,
+                        shippingPaidCents: item.shippingPaidCents ?? 0,
+                        taxSetAsideCents: item.taxSetAsideCents ?? 0,
+                    })),
                 refundedCents: sum(orders.map((item) => item.refundedCents)),
                 netCollectedCents:
                     sum(paidOrders.map((item) => item.amountPaidCents ?? item.legacyRecordedPriceCents)) -

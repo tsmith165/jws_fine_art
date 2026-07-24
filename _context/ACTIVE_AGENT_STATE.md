@@ -1,5 +1,21 @@
 # Active Agent State
 
+## July 24 Tax Set-Aside Tracking
+
+- Implemented per-order CA tax set-aside tracking per
+  `docs/PAYMENTS_AND_TAXES.md`: `shared/tax.ts` policy module (775 bps San
+  Diego studio rate, jurisdiction classification, tax-inclusive back-out),
+  `orders.taxJurisdiction/taxRateBps/taxSetAsideCents` schema fields, stamping
+  in `commerce.recordPaidCheckout`, idempotent
+  `migrations:backfillOrderTaxSetAside`, business dashboard "Tax to set
+  aside" + "This year" range, and a three-section CSV export (summary,
+  sales-by-destination for nexus checks, per-order tax rows).
+- Verification: lint, typecheck, 18 test files / 120 tests, production build.
+- Development Convex deployed and backfilled: 10 orders → 7 CA, 1 interstate,
+  2 international, 0 address-unknown.
+- Pending: production Convex deploy + backfill and Vercel production deploy
+  (blocked on permission approval in the session that implemented this).
+
 ## July 23 Tax-Inclusive Pricing And Clerk Decision
 
 - Owner decisions: listed prices are tax-inclusive and Jill remits sales tax

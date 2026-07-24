@@ -3,6 +3,7 @@ import { mutation, query, type MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
 import { assertWritesEnabled } from './lib/writeFreeze';
 import { estimateArtworkShipping, SHIPPING_POLICY_VERSION, shippingCareForMedium } from '../shared/shipping';
+import { orderTaxProfile } from '../shared/tax';
 
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
@@ -459,6 +460,12 @@ export const processStripeEvent = mutation({
         if (deliveryMethod === 'domestic_shipping' && !shippingAddress.trim()) {
             return quarantine(ctx, eventIdentity, 'Paid shipped order is missing the Stripe-collected shipping address.');
         }
+        const taxProfile = orderTaxProfile({
+            deliveryMethod,
+            international: intent.international,
+            shippingAddress,
+            totalCents: amountReceivedCents,
+        });
         const orderId = await ctx.db.insert('orders', {
             source: 'stripe',
             legacySourceIds: [],
@@ -473,6 +480,9 @@ export const processStripeEvent = mutation({
             amountPaidCents: amountReceivedCents,
             shippingPaidCents: intent.shippingCents,
             taxPaidCents: args.taxCents ?? null,
+            taxJurisdiction: taxProfile.taxJurisdiction,
+            taxRateBps: taxProfile.taxRateBps,
+            taxSetAsideCents: taxProfile.taxSetAsideCents,
             refundedCents: 0,
             disputeStatus: 'none',
             currency: intent.currency,
