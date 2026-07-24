@@ -26,8 +26,10 @@
   $495 Indio CA sale now carries a $35.60 set-aside. After exclusions, the
   real book is 2 orders: one CA ($35.60 set aside), one interstate (exempt).
 - Verification: lint, typecheck, 18 files / 121 tests, production build.
-- Pending: final Vercel production deploy of commit `ea2ae20` (permission
-  blocked in-session; command handed to Torrey).
+- Final Vercel production deployment (`jwsfineart-lffa1hybk`, commit
+  `ea2ae20`) is ready and aliased to `https://www.jwsfineart.com`. The
+  test-order tooling and corrected tax reporting are fully live; no pending
+  release work remains for this effort.
 
 ## July 23 Tax-Inclusive Pricing And Clerk Decision
 
