@@ -1,16 +1,13 @@
 'use client';
 
-import { Bookmark, Ruler } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { isPurchasable } from '@/lib/artwork';
 import { captureAnalytics } from '@/lib/analytics';
 import { useShortlist } from '@/stores/shortlist';
-import { RoomVisualizer } from './RoomVisualizer';
 
 export function ArtworkActions({ piece }: { piece: PiecesWithImages }) {
-    const [roomOpen, setRoomOpen] = useState(false);
     const ids = useShortlist((state) => state.ids);
     const toggle = useShortlist((state) => state.toggle);
     const saved = ids.includes(piece.id);
@@ -40,32 +37,21 @@ export function ArtworkActions({ piece }: { piece: PiecesWithImages }) {
             >
                 Ask Jill about this work
             </Link>
-            <div className="lw-action-pair">
-                <button
-                    className="lw-button lw-button-ghost"
-                    onClick={() => {
-                        captureAnalytics('room_visualizer_opened', { artwork_id: piece.id, artwork_slug: piece.slug });
-                        setRoomOpen(true);
-                    }}
-                >
-                    <Ruler size={16} /> View at scale
-                </button>
-                <button
-                    className={`lw-button lw-button-ghost ${saved ? 'is-active' : ''}`}
-                    aria-pressed={saved}
-                    onClick={() => {
-                        captureAnalytics('shortlist_changed', {
-                            artwork_id: piece.id,
-                            artwork_slug: piece.slug,
-                            action: saved ? 'removed' : 'saved',
-                        });
-                        toggle(piece.id);
-                    }}
-                >
-                    <Bookmark size={16} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save'}
-                </button>
-            </div>
-            <RoomVisualizer piece={piece} open={roomOpen} onClose={() => setRoomOpen(false)} />
+            {/* The View at scale room visualizer is paused; see RoomVisualizer.tsx when it returns. */}
+            <button
+                className={`lw-button lw-button-ghost lw-wide-button ${saved ? 'is-active' : ''}`}
+                aria-pressed={saved}
+                onClick={() => {
+                    captureAnalytics('shortlist_changed', {
+                        artwork_id: piece.id,
+                        artwork_slug: piece.slug,
+                        action: saved ? 'removed' : 'saved',
+                    });
+                    toggle(piece.id);
+                }}
+            >
+                <Bookmark size={16} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save'}
+            </button>
         </>
     );
 }
