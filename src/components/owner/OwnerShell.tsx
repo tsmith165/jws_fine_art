@@ -11,7 +11,7 @@ import {
     PanelsTopLeft,
     Wrench,
 } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { readOwnerArtworksWithMedia } from '@/data/ownerReads';

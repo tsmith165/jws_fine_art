@@ -15,7 +15,7 @@ import {
     Trash2,
     X,
 } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
@@ -229,7 +229,7 @@ export function OwnerArtworkEditor({
         {
             key: 'story',
             label: 'Artwork story',
-            ready: !fieldIssue('description'),
+            ready: fieldIssue('description')?.tone !== 'error',
             detail: fieldIssue('description')?.message ?? 'The collector-facing story is ready.',
             actionLabel: 'Review story',
             href: '#artwork-story',

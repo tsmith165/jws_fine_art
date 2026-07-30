@@ -1,5 +1,5 @@
 import { Archive, Edit3, Plus } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerShell';
 import { OwnerCatalogFilters } from '@/components/owner/OwnerCatalogFilters';

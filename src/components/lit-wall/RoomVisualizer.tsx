@@ -1,7 +1,7 @@
 'use client';
 
 import { Ruler, X } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import { useEffect, useRef, useState } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { dimensions } from '@/lib/artwork';

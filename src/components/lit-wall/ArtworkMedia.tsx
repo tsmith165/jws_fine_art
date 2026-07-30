@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import { useEffect, useRef } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { useImageTransition } from '@/hooks/useImageTransition';

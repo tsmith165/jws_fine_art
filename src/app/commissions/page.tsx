@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
 import { SiteShell } from '@/components/lit-wall/SiteShell';

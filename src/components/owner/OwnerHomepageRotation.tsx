@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowDown, ArrowUp, Check, Plus, Search, Trash2 } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import { useMemo, useState, useTransition } from 'react';
 import type { Pieces } from '@/types/artwork';
 import { saveHomepageRotation } from '@/app/admin/homepage/actions';

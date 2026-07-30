@@ -90,8 +90,14 @@ export function validateOwnerArtwork(input: OwnerArtworkValidationInput) {
     }
 
     const story = input.description.trim();
+    // The story is optional by the artist's decision — it can be added or
+    // finished after publishing, so a missing story never blocks a save.
     if (!story) {
-        issues.push({ field: 'description', tone: missingTone, message: publishMessage('Add the artwork story.') });
+        issues.push({
+            field: 'description',
+            tone: 'warning',
+            message: 'Optional: a short story makes a stronger public listing. You can add it anytime.',
+        });
     } else if (story.length < 20) {
         issues.push({ field: 'description', tone: 'warning', message: 'A little more detail will create a stronger public listing.' });
     } else if (story.length > 5000) {

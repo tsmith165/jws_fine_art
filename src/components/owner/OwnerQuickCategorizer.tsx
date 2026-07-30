@@ -14,7 +14,7 @@ import {
     SkipForward,
     Tags,
 } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { saveArtworkCategories } from '@/app/admin/categories/actions';

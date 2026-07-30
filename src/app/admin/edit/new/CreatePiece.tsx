@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, ImagePlus } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createNewPiece } from '@/app/admin/edit/actions';

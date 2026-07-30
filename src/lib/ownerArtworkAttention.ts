@@ -91,6 +91,8 @@ export function ownerArtworkAttention(piece: PiecesWithImages): OwnerArtworkAtte
 
     const metadataIssues = validation.issues
         .filter((issue) => issue.field !== 'categories')
+        // A missing or brief story is optional guidance, not a catalog issue.
+        .filter((issue) => issue.field !== 'description' || issue.tone === 'error')
         .map((issue) => ({
             id: `metadata-${issue.field}`,
             kind: 'metadata' as const,

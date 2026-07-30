@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, ImagePlus, Images, Paintbrush, Replace } from 'lucide-react';
-import Image from 'next/image';
+import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { storeUploadedImageDetails } from '@/app/admin/edit/actions';

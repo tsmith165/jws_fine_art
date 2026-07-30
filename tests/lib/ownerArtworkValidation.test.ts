@@ -36,7 +36,15 @@ describe('validateOwnerArtwork', () => {
             description: '',
         });
         expect(result.canSave).toBe(false);
-        expect(result.errors.map((issue) => issue.field)).toEqual(['piece_type', 'released_at', 'price', 'real_width', 'description']);
+        expect(result.errors.map((issue) => issue.field)).toEqual(['piece_type', 'released_at', 'price', 'real_width']);
+        expect(result.warnings.map((issue) => issue.field)).toContain('description');
+    });
+
+    it('publishes without an artwork story because the story is optional', () => {
+        const result = validateOwnerArtwork({ ...completeArtwork, description: '' });
+        expect(result.canSave).toBe(true);
+        expect(result.errors).toEqual([]);
+        expect(result.byField.get('description')?.tone).toBe('warning');
     });
 
     it('allows an incomplete private record while marking publish requirements as warnings', () => {
