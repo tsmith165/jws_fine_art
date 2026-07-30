@@ -26,10 +26,16 @@
   artifact, not a site bug. Homepage shows zero hard image failures.
 - Invisible edge cases without fallback (accepted): `ImageWarmup` preloaders
   and progressive placeholders may 402 silently; both are aria-hidden.
-- OPEN DECISION for Torrey: the optimizer stays dead until the Vercel plan is
-  upgraded (Pro) or usage drops; quota resets monthly but the q95/multi-width
-  policy will likely re-exhaust a Hobby quota. Until then the site serves
-  original-size images via the fallback (correct but heavier).
+- RESOLVED July 30: the project was transferred via the Vercel API from the
+  Hobby team (`tsmith-hobby`) to the Pro team (`tsmith`,
+  `team_J0FKSVEdvLiGWO4vFAvzEOyQ`); domains and env vars moved with it, the
+  local `.vercel/project.json` orgId was updated, and a fresh production
+  deploy from the new team is aliased. The optimizer returns 200 again for
+  both legacy and new-upload images (5 MB source → 23 KB thumbnail).
+- Transformation churn was also cut ~90% (commit `45323cd`): exactly two
+  quality tiers (75 placeholder / 95 artwork), width buckets reduced to
+  [640, 828, 1080, 1920, 2560] + [64, 128, 256], and a 31-day image cache.
+  `ResilientImage` remains as permanent insurance against optimizer outages.
 - Commits `b3f65a5` and `0fcd115` pushed and deployed
   (`www.jwsfineart.com`); no Convex changes.
 
