@@ -1,5 +1,38 @@
 # Active Agent State
 
+## July 30 Optional Story And Image Optimizer Outage
+
+- Artist feedback (Jill, July 29): publishing must not require the artwork
+  story, and her new uploads (piece #104, Sunset Session) showed broken
+  thumbnails in the editor and the public filmstrip.
+- Story is now optional everywhere: missing story is a warning (never blocks
+  save/publish), the Publish Check story item reads ready with optional
+  guidance, and a bare missing story no longer counts toward Needs Attention
+  (length errors still do). Tests updated (122 pass).
+- Root cause of broken images: the Vercel Hobby plan image-optimization quota
+  is exhausted — every `/_next/image` request returns
+  `402 OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED` account-wide. Piece #104's
+  files are valid JPEGs on the new `ufyypy3g6v.ufs.sh` UploadThing domain
+  (`smallUrl` null on owner uploads, which is expected).
+- Mitigation shipped: `ResilientImage` wraps next/image and falls back to the
+  unoptimized source on error; swapped into all 19 non-progressive usages.
+  `ProgressiveArtworkImage` and `ResilientImage` both check DOM state on
+  mount because images that settle before hydration never fire onLoad or
+  onError.
+- Live verification on `/work/sunset-session-104`: optimizer 402 confirmed;
+  fallback flips thumbs to direct ufs.sh URLs; the direct file fetches (200,
+  4.97 MB) and decodes (2687 × 3439). The browser-pane test environment has a
+  zero-height viewport, so lazy images never load there — that is a test
+  artifact, not a site bug. Homepage shows zero hard image failures.
+- Invisible edge cases without fallback (accepted): `ImageWarmup` preloaders
+  and progressive placeholders may 402 silently; both are aria-hidden.
+- OPEN DECISION for Torrey: the optimizer stays dead until the Vercel plan is
+  upgraded (Pro) or usage drops; quota resets monthly but the q95/multi-width
+  policy will likely re-exhaust a Hobby quota. Until then the site serves
+  original-size images via the fallback (correct but heavier).
+- Commits `b3f65a5` and `0fcd115` pushed and deployed
+  (`www.jwsfineart.com`); no Convex changes.
+
 ## July 24 Performance, Dashboard Redesign, And Ops Alerts
 
 - `main` is fast-forwarded to the overhaul branch (`fcfbb2e..e1a5f78`);
