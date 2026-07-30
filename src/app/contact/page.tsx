@@ -52,7 +52,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                         alt="Jill Weeks Smith"
                         fill
                         sizes="(max-width: 760px) 92vw, 40vw"
-                        quality={92}
+                        quality={95}
                     />
                 </div>
                 <div>

@@ -30,8 +30,14 @@ const nextConfig = {
                 pathname: '/pieces/**',
             },
         ],
-        qualities: [75, 82, 85, 88, 90, 92, 95, 100],
-        minimumCacheTTL: 60 * 60 * 24 * 7, //In seconds
+        // Every unique (image, width, quality) combination bills as one Vercel
+        // image transformation, so the site uses exactly two quality tiers
+        // (75 placeholder, 95 artwork), a reduced set of width buckets, and a
+        // month-long cache so re-transformations stop recounting weekly.
+        qualities: [75, 95],
+        deviceSizes: [640, 828, 1080, 1920, 2560],
+        imageSizes: [64, 128, 256],
+        minimumCacheTTL: 60 * 60 * 24 * 31, //In seconds
     },
     async redirects() {
         return [

@@ -91,7 +91,7 @@ export default async function StudioPage() {
                                         alt={piece.title}
                                         fill
                                         sizes="(max-width: 760px) 92vw, 24vw"
-                                        quality={92}
+                                        quality={95}
                                     />
                                 </figure>
                             ))}

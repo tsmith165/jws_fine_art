@@ -56,7 +56,7 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                         placeholderSrc={current.small_image_path}
                         alt=""
                         sizes="100vw"
-                        quality={88}
+                        quality={95}
                         priority={activeIndex === 0}
                         fetchPriority={activeIndex === 0 ? 'high' : 'auto'}
                         onReady={() => setHasRevealedInitialSlide(true)}
@@ -73,13 +73,13 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                             placeholderSrc={incoming.small_image_path}
                             alt=""
                             sizes="100vw"
-                            quality={88}
+                            quality={95}
                             onReady={() => ready(incomingIndex)}
                         />
                     </div>
                 ) : null}
             </div>
-            <ImageWarmup sources={warmupSources} sizes="100vw" quality={88} />
+            <ImageWarmup sources={warmupSources} sizes="100vw" quality={95} />
             <div className="lw-hero-scrim" aria-hidden="true" />
             <div className="lw-hero-copy">
                 <span className="lw-eyebrow">California coast · Selected works</span>

@@ -27,7 +27,7 @@ export default async function CommissionsPage() {
                 </div>
                 {hero && (
                     <div>
-                        <Image src={hero.image_path} alt={hero.title} fill sizes="(max-width: 760px) 100vw, 55vw" priority quality={90} />
+                        <Image src={hero.image_path} alt={hero.title} fill sizes="(max-width: 760px) 100vw, 55vw" priority quality={95} />
                     </div>
                 )}
             </section>

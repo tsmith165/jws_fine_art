@@ -81,7 +81,7 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
                             placeholderSrc={active.smallUrl}
                             alt={displayIndex === activeIndex ? active.alt : ''}
                             sizes="(max-width: 900px) 92vw, 58vw"
-                            quality={92}
+                            quality={95}
                             priority={activeIndex === 0}
                         />
                     </div>
@@ -96,7 +96,7 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
                                 placeholderSrc={incoming.smallUrl}
                                 alt={displayIndex === incomingIndex ? incoming.alt : ''}
                                 sizes="(max-width: 900px) 92vw, 58vw"
-                                quality={92}
+                                quality={95}
                                 onReady={() => ready(incomingIndex)}
                             />
                         </div>
@@ -116,7 +116,7 @@ export function ArtworkMedia({ piece }: { piece: PiecesWithImages }) {
                     </>
                 )}
             </div>
-            <ImageWarmup sources={warmupSources} sizes="(max-width: 900px) 92vw, 58vw" quality={92} />
+            <ImageWarmup sources={warmupSources} sizes="(max-width: 900px) 92vw, 58vw" quality={95} />
             {media.length > 1 && (
                 <div className="lw-media-rail" role="tablist" aria-label="Artwork images">
                     {media.map((item, index) => (

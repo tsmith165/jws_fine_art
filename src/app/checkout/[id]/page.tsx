@@ -32,7 +32,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
                             height={piece.height || 1}
                             sizes="(max-width: 800px) 92vw, 42vw"
                             priority
-                            quality={90}
+                            quality={95}
                         />
                     </div>
                     <span className="lw-eyebrow">Original artwork</span>

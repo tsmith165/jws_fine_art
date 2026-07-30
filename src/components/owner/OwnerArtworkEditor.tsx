@@ -454,13 +454,7 @@ export function OwnerArtworkEditor({
                 <div className="owner-editor-media">
                     <div className="owner-editor-stage">
                         <div className="owner-editor-stage-content">
-                            <Image
-                                src={selected.url}
-                                alt={form.piece_title}
-                                width={selected.width}
-                                height={selected.height}
-                                quality={100}
-                            />
+                            <Image src={selected.url} alt={form.piece_title} width={selected.width} height={selected.height} quality={95} />
                             {selected.kind !== 'primary' ? (
                                 <button
                                     className="owner-button is-danger owner-editor-remove-media"
