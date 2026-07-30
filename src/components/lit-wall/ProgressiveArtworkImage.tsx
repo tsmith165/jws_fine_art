@@ -33,6 +33,7 @@ export function ProgressiveArtworkImage({
     const [loaded, setLoaded] = useState(false);
     const [useDirectSource, setUseDirectSource] = useState(false);
     const settled = useRef(false);
+    const mainImageRef = useRef<HTMLImageElement>(null);
     const showPlaceholder = Boolean(placeholderSrc && placeholderSrc !== src);
 
     useEffect(() => {
@@ -40,6 +41,21 @@ export function ProgressiveArtworkImage({
         setLoaded(false);
         setUseDirectSource(false);
     }, [src]);
+
+    // Images that settle before hydration never fire onLoad/onError, so the
+    // DOM state on mount is the only signal for both outcomes.
+    useEffect(() => {
+        const image = mainImageRef.current;
+        if (!image || !image.complete || settled.current) return;
+        if (image.naturalWidth > 0) {
+            settled.current = true;
+            setLoaded(true);
+            onReady?.();
+        } else if (!useDirectSource) {
+            setUseDirectSource(true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [useDirectSource]);
 
     const finish = () => {
         if (settled.current) return;
@@ -77,6 +93,7 @@ export function ProgressiveArtworkImage({
             ) : null}
             <Image
                 key={useDirectSource ? `${src}:direct` : `${src}:optimized`}
+                ref={mainImageRef}
                 className="lw-progressive-image-main"
                 src={src}
                 alt={alt}
