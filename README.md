@@ -33,7 +33,8 @@ Required application variables are checked by `pnpm release:check-env` without p
 - `CONVEX_SERVER_WRITE_SECRET`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`
 - `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_AUTOMATIC_TAX_ENABLED=true` and `STRIPE_ARTWORK_TAX_CODE` when Stripe Tax is activated
+- `STRIPE_AUTOMATIC_TAX_ENABLED=false` under the current tax-inclusive policy
+- `STRIPE_ARTWORK_TAX_CODE` only for a future, explicitly approved Stripe Tax activation
 - `UPLOADTHING_TOKEN`
 - `RESEND_API_KEY`
 - `RESEND_WEBHOOK_SECRET`
@@ -51,6 +52,12 @@ These variables are intentionally separate from the public browser capture key. 
 Browser capture runs only on `jwsfineart.com` and `www.jwsfineart.com`, excludes owner/auth routes, strips query strings, disables autocapture and session recording, and records only explicit privacy-safe events. Preview capture remains off unless `NEXT_PUBLIC_POSTHOG_CAPTURE_PREVIEWS=true` is deliberately configured.
 
 The Convex deployment also requires Clerk's JWT issuer configuration. Never share live Stripe credentials with Development or Preview scopes.
+
+Clerk authenticates only the owner/admin workspace. Public routes and checkout
+do not depend on the Clerk browser runtime. The current production-instance
+migration is intentionally deferred; changing Clerk keys or issuer requires a
+coordinated migration of the Convex JWT template, ADMIN owner claims, and
+deployment environment scopes.
 
 Listed prices are tax-inclusive, and Stripe Tax is disabled in production with
 `STRIPE_AUTOMATIC_TAX_ENABLED=false`. Checkout charges exactly the artwork

@@ -2,6 +2,18 @@
 
 Read and follow `AGENTS.md`; it is the canonical project guide.
 
+Before any commerce or authentication work, preserve these owner decisions:
+
+- Stripe Tax is explicitly disabled. Listed prices include applicable sales
+  tax, checkout charges only artwork plus delivery, and no Stripe Tax
+  registration should be created. Read `docs/PAYMENTS_AND_TAXES.md`.
+- The dormant automatic-tax path is not authorization to turn it on. Changing
+  `STRIPE_AUTOMATIC_TAX_ENABLED` requires an explicit new owner decision.
+- Clerk is admin-only. Do not mount it on public routes or treat the deferred
+  production-instance migration as a checkout/public-site blocker.
+- Do not migrate Clerk keys, issuer, JWT template, or owner claims without an
+  explicit owner-approved, coordinated authentication migration.
+
 For artwork imagery, these rules are non-negotiable:
 
 - The visible public image comes from the original source, never a legacy small derivative.

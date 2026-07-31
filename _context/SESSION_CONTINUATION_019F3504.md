@@ -1,6 +1,13 @@
 # Session Continuation: 019f3504-d23b-7733-8e30-681f2c981fae
 
-Last updated: 2026-07-23
+Last updated: 2026-07-31
+
+> **July 31, 2026 policy addendum:** Stripe Tax is explicitly disabled, listed
+> prices include applicable sales tax, and checkout charges artwork plus
+> delivery only. Clerk is owner/admin authentication only; its
+> production-instance migration is intentionally deferred and is not a public
+> site or checkout blocker. Current policy lives in `AGENTS.md` and
+> `docs/PAYMENTS_AND_TAXES.md` and supersedes older follow-up items below.
 
 This file is the compact continuation record for the original JWS Fine Art
 session. Read `_context/PROJECT_HANDOFF.md` for the full project handoff and

@@ -1,6 +1,11 @@
 # JWS Fine Art: Checkout & Sales Tax Plan
 
-**Prepared for Jill Weeks Smith Studio | July 2026**
+**Prepared for Jill Weeks Smith Studio | Updated July 31, 2026**
+
+> **Active policy:** Stripe Tax is explicitly disabled. Tax is included in the
+> listed artwork price, and checkout adds only the selected delivery charge.
+> Older implementation plans recommending Stripe Tax setup are superseded by
+> this document and `PAYMENTS_AND_TAXES.md`.
 
 ---
 
@@ -11,7 +16,7 @@ Collectors buy paintings on jwsfineart.com through a secure Stripe checkout. Eve
 Three decisions drive everything in this document:
 
 1. **Prices are tax-inclusive.** No tax line is added at checkout. The tax portion is backed out of the listed price after the sale, and the studio remits it to California.
-2. **We are not using Stripe's automated tax product.** It would add a 0.5% fee to every taxed sale and requires a formal tax registration inside Stripe. At the studio's sales volume, our own tracking does the same job for free. The integration is built and can be switched on later if volume ever justifies it.
+2. **We are not using Stripe's automated tax product.** It would add a 0.5% fee to every taxed sale and requires a formal tax registration inside Stripe. At the studio's sales volume, our own tracking does the same job for free. A dormant integration exists, but it must remain off unless the owner explicitly adopts a different tax policy later.
 3. **Only California sales are taxed.** Sales shipped to other states and other countries are exempt from California sales tax, and the studio owes nothing to the destination state either — the legal reasons are explained below.
 
 The dashboard at `/admin/business` shows the running "Tax to set aside" total, and a downloadable report gives your accountant every sale with its tax classification.
@@ -59,7 +64,7 @@ The practical consequence: **the tax comes out of the listed price, not on top o
 
 At the studio's volume — a handful of sales per year, taxable only in California — Stripe Tax would be paying for multi-state automation the business doesn't need. Our own tracking (described below) produces the same end result: an accurate number for the CDTFA return.
 
-**The door stays open.** The Stripe Tax integration is fully built into the checkout code behind a switch that is currently off. If sales volume ever grows to the point where multi-state obligations appear, it can be turned on with a configuration change and a Stripe registration — no rebuild needed.
+**The dormant path is not authorization to enable it.** The Stripe Tax integration remains in the checkout code behind a fail-closed switch, but it must stay off under the current policy. If sales volume ever creates multi-state obligations, the owner may reconsider it; activation would still require an explicit new decision, accountant/legal confirmation, the correct provider registration and tax code, and end-to-end checkout verification.
 
 ---
 

@@ -1,6 +1,13 @@
 # JWS Fine Art Project Handoff
 
-Last updated: 2026-07-23
+Last updated: 2026-07-31
+
+> **July 31, 2026 policy addendum:** Stripe Tax must remain disabled. Tax is
+> included in listed prices, and checkout adds only delivery. Clerk remains
+> scoped to owner/admin authentication; its production-instance migration is
+> deferred and should not be treated as a checkout or public-site release
+> blocker. See `AGENTS.md` and `docs/PAYMENTS_AND_TAXES.md` for current guidance;
+> those sources supersede older recommendations in this handoff.
 
 This is the primary starting point for the next agent working on JWS Fine Art. It summarizes the current repository, production architecture, completed overhaul, migration history, deployment procedures, known risks, and immediate follow-up work.
 
@@ -510,6 +517,6 @@ Use `rg` and `rg --files` to locate domain code. Do not assume path names from o
 At the continuation baseline, the application source was already in production.
 The homepage-rotation Convex backend repair and authenticated browser
 verification are complete. The exact original rotation was restored after
-testing. The next operational risk is the production Clerk development-key
-warning; changing it requires coordinated Clerk, Convex, and Vercel
-configuration.
+testing. The production Clerk development-key warning is an accepted deferred
+admin-only risk; changing it requires explicit approval and coordinated Clerk,
+Convex, and Vercel configuration.

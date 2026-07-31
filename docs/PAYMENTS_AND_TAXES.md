@@ -5,7 +5,13 @@ operational reference for the studio and for agents working in this repo. It
 is not tax or legal advice; Jill's accountant has the final word on rates,
 filings, and deductions.
 
-Last reviewed: July 24, 2026.
+Last reviewed: July 31, 2026.
+
+> **Current owner decision:** Stripe Tax must remain off. This document
+> supersedes older readiness plans that recommended configuring Stripe Tax
+> before launch. The existence of dormant automatic-tax code is not permission
+> to enable it; doing so requires an explicit new owner decision and coordinated
+> accounting, legal, and provider setup.
 
 ## Payment flow
 

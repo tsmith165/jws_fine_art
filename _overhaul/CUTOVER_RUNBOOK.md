@@ -2,6 +2,18 @@
 
 This runbook is intentionally fail-closed. Production deployment, DNS changes, provider secret changes, webhook changes, and write enablement require explicit approval. Neon remains read-only and intact.
 
+## Current Owner Decisions
+
+- Stripe Tax is disabled. Prices include applicable sales tax, and checkout
+  charges artwork plus delivery only. Do not create a Stripe Tax registration
+  or set `STRIPE_AUTOMATIC_TAX_ENABLED=true` during cutover. See
+  `docs/PAYMENTS_AND_TAXES.md`.
+- Clerk protects only the owner/admin workspace. Its production-instance
+  migration is deferred and is not a public-site or checkout release gate.
+  Verify the currently configured JWT boundary, but do not change Clerk keys,
+  issuer, template, or owner claims without a separately approved coordinated
+  authentication migration.
+
 ## Before Approval
 
 1. Put test-only Stripe, Clerk, UploadThing, Resend, and Convex credentials in the branch preview. Never share live Stripe secrets with preview or development scopes.
@@ -41,7 +53,9 @@ For a named deployment, replace `--prod` with `--deployment=<name>` and pass `--
 
 1. Verify production uses live Stripe credentials and every non-production scope uses test credentials.
 2. Point the live Stripe webhook at the new handler, set its new live signing secret, and subscribe to payment intent success/failure/cancellation, `charge.refunded`, and dispute created/updated/closed events.
-3. Verify the production Clerk JWT template and ADMIN owner claim against Convex.
+3. Verify the currently configured Clerk JWT template and ADMIN owner claim
+   against Convex. This is a consistency check, not approval to migrate Clerk
+   instances or credentials.
 4. Verify UploadThing and Resend production tokens, the public site origin, unsubscribe signing, and one-click unsubscribe.
 5. Deploy production. Keep all writes frozen while public reads and owner authentication are checked.
 6. With explicit approval, remove `owner,checkout,public` from `JWS_WRITE_FREEZE`. Perform one controlled purchase and one controlled owner mutation, then re-run all release audits.

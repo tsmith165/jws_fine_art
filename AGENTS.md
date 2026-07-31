@@ -21,3 +21,44 @@ Before shipping a change to artwork image selection, sizing, optimization, or an
 4. Keep fidelity and transfer size in balance. Prefer a bounded shared size policy over `100vw` everywhere or `unoptimized` by default.
 
 Document intentional exceptions beside the component and in `_context/`.
+
+## Checkout and tax policy
+
+The owner has explicitly chosen tax-inclusive pricing without Stripe Tax. Treat
+this as a product and operations decision, not an open implementation choice.
+
+- Keep `STRIPE_AUTOMATIC_TAX_ENABLED=false` in production and disabled by
+  default everywhere else. Do not create Stripe Tax registrations or enable
+  automatic tax unless the owner explicitly reverses this policy and the
+  provider, accounting, and legal setup has been completed together.
+- Checkout charges exactly the artwork price plus the selected delivery charge.
+  Never add a separate tax line or increase the buyer's total for sales tax.
+- Preserve the public statement "Sales tax is included in the listed price."
+  The studio backs the California tax portion out of eligible paid orders and
+  reports the set-aside in `/admin/business`.
+- The dormant Stripe Tax code path is a fail-closed future option, not permission
+  to activate the feature. A configured tax code alone is insufficient.
+- Read `docs/PAYMENTS_AND_TAXES.md` before changing checkout, totals, receipts,
+  order accounting, public tax copy, or provider configuration.
+- When commerce or tax behavior changes, run the provider-safety and tax tests,
+  verify the environment without printing secrets, and confirm a created Stripe
+  Checkout Session does not enable `automatic_tax` under the current policy.
+
+## Clerk and owner authentication
+
+Clerk exists only to authenticate and authorize Jill's owner/admin workspace.
+It is not part of public browsing, checkout, payment confirmation, tax, or
+mailing subscription flows.
+
+- Keep Clerk providers and browser scripts off public routes. Public pages must
+  continue to work without an authenticated Clerk session.
+- The current Clerk development-instance warning inside authenticated admin is
+  an accepted, deferred owner-tool risk and is not a public-site or checkout
+  release blocker.
+- Do not authorize, create, or migrate a Clerk production instance merely to
+  remove that warning. A production migration requires a new explicit owner
+  decision.
+- If a migration is approved later, handle Clerk keys, the Convex JWT template,
+  `CLERK_JWT_ISSUER_DOMAIN`, ADMIN owner identities/claims, Vercel environment
+  scopes, and end-to-end admin sign-in as one coordinated migration. Never
+  switch only one of those boundaries.
