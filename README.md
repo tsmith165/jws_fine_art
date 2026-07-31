@@ -52,12 +52,14 @@ Browser capture runs only on `jwsfineart.com` and `www.jwsfineart.com`, excludes
 
 The Convex deployment also requires Clerk's JWT issuer configuration. Never share live Stripe credentials with Development or Preview scopes.
 
-Stripe Tax is fail-closed behind `STRIPE_AUTOMATIC_TAX_ENABLED`. Production requires it to be enabled, requires active Stripe Tax settings
-and at least one active registration, and uses `txcd_99999999` (General - Tangible Goods) for original physical artwork unless tax counsel
-selects a more specific code. Configure the Stripe account origin and registrations in the Stripe Dashboard before production checkout.
-Checkout uses tax-inclusive pricing so the displayed artwork and delivery total does not increase; Stripe records the jurisdiction-specific
-tax portion within that total. Local pickup collects a billing address for the tax calculation, while shipped orders use Stripe's collected
-shipping address.
+Listed prices are tax-inclusive, and Stripe Tax is disabled in production with
+`STRIPE_AUTOMATIC_TAX_ENABLED=false`. Checkout charges exactly the artwork
+price plus the selected delivery charge; it does not add a separate tax amount.
+The studio's Business dashboard backs the California tax portion out of paid
+orders for filing. Do not create Stripe Tax registrations while this policy is
+in effect. The unused Stripe Tax path remains fail-closed behind the flag and
+requires a reviewed tax code and provider registration before it can be enabled
+in the future. See `docs/PAYMENTS_AND_TAXES.md` for the operational policy.
 
 Mailing delivery runs in Convex with per-recipient idempotency, leases, retries, plain-text alternatives, and signed unsubscribe links.
 Configure a Resend webhook at `https://www.jwsfineart.com/api/resend/webhook` for sent, delivered, delayed, bounced, complained, suppressed,

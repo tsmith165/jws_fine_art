@@ -153,10 +153,12 @@
 - Live copy verified on `/shipping`, `/contact`, and `/work/dawn-96`
   (`lw-price-note` renders under the price).
 
-## July 23 Business, Stripe Tax, And Mailing Production Release
+## July 23 Business, Optional Stripe Tax Path, And Mailing Production Release
 
-- Objective: enable fail-closed Stripe Tax, add a production operations
-  dashboard, and make studio campaigns durable and provider-aware.
+- Objective: add a fail-closed optional Stripe Tax path, a production
+  operations dashboard, and durable provider-aware studio campaigns. The
+  later owner decision keeps Stripe Tax disabled and uses tax-inclusive listed
+  prices; see `July 23 Tax-Inclusive Pricing And Clerk Decision` above.
 - Production Resend webhook
   `ba0f5b24-e1cb-4e86-81ed-7cb5484a1d32` is enabled at
   `https://www.jwsfineart.com/api/resend/webhook` for the seven delivery,
@@ -182,12 +184,9 @@
 - Production and development Convex deployments received the additive schema
   and functions. One final production redeploy is still needed after the
   reconciliation supersession refinement.
-- Production Vercel now contains encrypted
-  `STRIPE_AUTOMATIC_TAX_ENABLED=true`, reviewed tax code
-  `txcd_99999999`, and a generated `CRON_SECRET`.
-- Live Stripe Tax settings are active with the general tangible-goods default
-  code, but there are zero active tax registrations. Do not create a legal tax
-  registration without Jill confirming the registered jurisdiction.
+- Production Vercel contains encrypted configuration for the dormant Tax path,
+  but `STRIPE_AUTOMATIC_TAX_ENABLED=false`. Do not create Stripe Tax
+  registrations while the tax-inclusive manual-remittance policy is active.
 - The existing Resend application key remains send-only by design. Dashboard
   inspection verified the `jwsfineart.com` sending domain and DKIM/SPF setup.
 - Source commits `521ffd6`, `6e1cf53`, and `4df72ef` are pushed to
@@ -206,11 +205,8 @@
   and `mailing-production-ready-mobile` validate successfully.
 - Verification: lint, TypeScript, 17 test files / 114 tests, and the Node 24
   production build pass.
-- Remaining release gates: create a Stripe Tax registration only after Jill
-  confirms the legal jurisdiction. Production console diagnostics also expose
-  the existing Clerk development-instance warning; Clerk sign-in is paused at
-  GitHub's account authorization screen before granting persistent OAuth
-  access.
+- The Clerk development-instance warning is an accepted admin-only risk. Clerk
+  is not loaded on public pages, and production-instance migration is deferred.
 
 ## July 23 Release-Date Baseline, Studio, And Tax-Ready Checkout
 
