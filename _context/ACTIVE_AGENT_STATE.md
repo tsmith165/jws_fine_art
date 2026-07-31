@@ -1,5 +1,31 @@
 # Active Agent State
 
+## July 30 Stripe Audit And Historical Sale Import
+
+- Production Stripe is confirmed fully LIVE: enabled live-mode webhook
+  `we_1PLliwD8CTpNeM29eSvhmUXB` at `/api/checkout/webhook` (11 events),
+  charges/payouts enabled on `acct_1If4C9D8CTpNeM29`, zero open sessions and
+  zero pending webhook deliveries. Newer production env vars are
+  sensitive-typed (never readable back) — expected, not a gap.
+- Audit found 5 real sales (~$2,965) plus 2 owner test charges that existed
+  only in Stripe: in-person Stripe iPhone-app charges from 2024-2025 the old
+  site never recorded. All matching artworks were already marked sold, so
+  there was no double-sale risk — only understated books.
+- `migrations:importHistoricalStripeOrders` (idempotent via
+  `by_payment_intent_id`, dry-run flag, audit `orderEvents`) imported all 7
+  into development and production as CA local-pickup orders: Coastal Cacti
+  $195, Morning Glint $495, Balboa Park Sunrise Walkers $625, two
+  unidentified in-person sales ($1,155 Eric Vizcaino and $495), and two
+  flagged test charges. Re-run returns 7 × "already recorded".
+- Production book after import: 7 real sales totaling $3,955, all-time tax
+  set-aside $248.85 (informational for pre-2026 rows; "This year" remains
+  the filing number), 10 test orders hidden.
+- The 2022-2023 orders reference charges on a different, older Stripe
+  account (`...AuEqsFZjnt`); historical only.
+- Hygiene note: the live Stripe secret key is present in this workspace's
+  `.env.local` (fail-safed by environment assertions; rotate if the
+  workspace is ever compromised).
+
 ## July 30 Optional Story And Image Optimizer Outage
 
 - Artist feedback (Jill, July 29): publishing must not require the artwork
