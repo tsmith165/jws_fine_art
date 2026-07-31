@@ -219,6 +219,110 @@ export const backfillTestOrders = internalMutation({
     },
 });
 
+export const importHistoricalStripeOrders = internalMutation({
+    args: {
+        dryRun: v.boolean(),
+        records: v.array(
+            v.object({
+                chargeId: v.string(),
+                paymentIntentId: v.string(),
+                amountCents: v.number(),
+                purchasedOn: v.string(),
+                createdAt: v.number(),
+                artworkLegacyId: v.union(v.number(), v.null()),
+                artworkTitle: v.string(),
+                buyerName: v.string(),
+                buyerEmail: v.string(),
+                buyerPhone: v.string(),
+                knownAddress: v.string(),
+                isTest: v.boolean(),
+            }),
+        ),
+    },
+    handler: async (ctx, args) => {
+        const results: Array<{ chargeId: string; outcome: string }> = [];
+        for (const record of args.records) {
+            const existingByIntent = await ctx.db
+                .query('orders')
+                .withIndex('by_payment_intent_id', (q) => q.eq('paymentIntentId', record.paymentIntentId))
+                .unique();
+            if (existingByIntent) {
+                results.push({ chargeId: record.chargeId, outcome: 'skipped: already recorded' });
+                continue;
+            }
+            const artwork = record.artworkLegacyId
+                ? await ctx.db
+                      .query('artworks')
+                      .withIndex('by_legacy_id', (q) => q.eq('legacyId', record.artworkLegacyId!))
+                      .unique()
+                : null;
+            const media = artwork
+                ? await ctx.db
+                      .query('artworkMedia')
+                      .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', artwork.legacyId))
+                      .collect()
+                : [];
+            const primaryImage = media.find((item) => item.role === 'primary' && !item.absentFromSource)?.sourceUrl ?? null;
+            // These were in-person Stripe iPhone-app charges at the San Diego
+            // studio, so they classify as CA-taxable pickups.
+            const taxProfile = orderTaxProfile({
+                deliveryMethod: 'local_pickup',
+                international: false,
+                shippingAddress: record.knownAddress,
+                totalCents: record.amountCents,
+            });
+            if (!args.dryRun) {
+                const orderId = await ctx.db.insert('orders', {
+                    source: 'stripe',
+                    legacySourceIds: [],
+                    legacyStripeId: record.chargeId,
+                    paymentIntentId: record.paymentIntentId,
+                    checkoutIntentId: null,
+                    artworkId: artwork?._id ?? null,
+                    artworkLegacyId: artwork?.legacyId ?? null,
+                    artworkTitle: record.artworkTitle,
+                    artworkImageUrl: primaryImage,
+                    legacyRecordedPriceCents: null,
+                    amountPaidCents: record.amountCents,
+                    shippingPaidCents: null,
+                    taxPaidCents: null,
+                    taxJurisdiction: taxProfile.taxJurisdiction,
+                    taxRateBps: taxProfile.taxRateBps,
+                    taxSetAsideCents: taxProfile.taxSetAsideCents,
+                    refundedCents: 0,
+                    disputeStatus: 'none',
+                    currency: 'usd',
+                    buyerName: record.buyerName,
+                    buyerPhone: record.buyerPhone,
+                    buyerEmail: record.buyerEmail,
+                    shippingAddress: record.knownAddress,
+                    international: false,
+                    deliveryMethod: 'local_pickup',
+                    taxIncluded: true,
+                    isTest: record.isTest || undefined,
+                    purchasedOn: record.purchasedOn,
+                    status: 'paid',
+                    fulfillmentStatus: record.isTest ? 'untracked' : 'picked_up',
+                    createdAt: record.createdAt,
+                    updatedAt: Date.now(),
+                });
+                await ctx.db.insert('orderEvents', {
+                    orderId,
+                    type: 'order.imported_from_stripe',
+                    stripeEventId: null,
+                    detailsJson: JSON.stringify({ chargeId: record.chargeId, importedAt: Date.now(), reason: 'historical-backfill' }),
+                    createdAt: Date.now(),
+                });
+            }
+            results.push({
+                chargeId: record.chargeId,
+                outcome: `${args.dryRun ? 'would import' : 'imported'}: ${record.artworkTitle} $${(record.amountCents / 100).toFixed(2)}${record.isTest ? ' (test)' : ''} tax=${taxProfile.taxSetAsideCents}`,
+            });
+        }
+        return { dryRun: args.dryRun, results };
+    },
+});
+
 export const deriveCanonical = internalMutation({
     args: {
         runId: v.string(),
