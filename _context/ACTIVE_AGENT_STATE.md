@@ -1,5 +1,25 @@
 # Active Agent State
 
+## July 31 Tax Policy Confirmation
+
+- Owner reconfirmed that Stripe Tax must remain disabled. Artwork prices are
+  tax-inclusive; checkout charges the listed artwork price plus delivery and
+  never adds a separate tax amount.
+- Production Vercel `STRIPE_AUTOMATIC_TAX_ENABLED` was explicitly set to
+  `false` and redeployed. Deployment
+  `dpl_8F6yCNsAe7UVcf4KPrXugXkE75Fd` is Ready and aliased to
+  `https://www.jwsfineart.com`.
+- The production environment audit reports `stripeAutomaticTax: false` and
+  `taxMode: inclusive-listed-price`. Sensitive Production-only variables are
+  intentionally unreadable through `vercel env run`, so its unrelated missing
+  variable warnings are not deployment gaps.
+- Clerk production migration remains deferred. Clerk protects only the owner
+  `/admin` surface and is not loaded on public pages; authorizing its Dashboard
+  would only be needed if the studio chooses to eliminate the accepted
+  development-instance warning and migrate admin identities.
+- Commit `9cb7e86` corrects the stale README tax instructions and is pushed to
+  `origin/feat/full-site-overhaul`.
+
 ## July 30 Stripe Audit And Historical Sale Import
 
 - Production Stripe is confirmed fully LIVE: enabled live-mode webhook
