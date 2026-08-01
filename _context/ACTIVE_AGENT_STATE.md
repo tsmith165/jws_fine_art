@@ -1,5 +1,28 @@
 # Active Agent State
 
+## July 31 View At Scale Room Visualizer
+
+- Objective: re-enable the artwork-detail "View at scale" feature using the
+  artist-provided cleaned living-room photograph at
+  `/Users/tsmith/Downloads/view_at_scale_image.png`.
+- The source is staged as the `view-at-scale-room-plate` design artifact. A
+  1538 × 1023, 100 KB WebP is stored at
+  `public/editorial/rooms/view-at-scale-living-room.webp`.
+- Calibration uses the original IMG_0593 photograph and its recorded 30 × 24
+  in finished "Swell" reference at 21.2 px/in. The clear sofa/light wall area
+  is approximately 96 × 36 in.
+- UI decision: one authentic fixed-position room, no synthetic presets or drag
+  controls; true relative scale remains visible when a piece is too large.
+- Implemented in `src/components/lit-wall/RoomVisualizer.tsx`,
+  `ArtworkActions.tsx`, `src/lib/roomScale.ts`, `src/styles/lit-wall.css`, and
+  `tests/lib/roomScale.test.ts`.
+- Local verification passed: 125 tests, TypeScript, lint (one pre-existing
+  ResilientImage warning), production build, and desktop/mobile browser QA.
+- Final local preview artifacts: `view-at-scale-final-desktop` and
+  `view-at-scale-final-mobile`.
+- Remaining: artifact validation, commit/push, production deployment, and
+  production smoke/visual QA.
+
 ## July 31 Tax Policy Confirmation
 
 - Owner reconfirmed that Stripe Tax must remain disabled. Artwork prices are
