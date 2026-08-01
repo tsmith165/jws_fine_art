@@ -22,7 +22,6 @@ export type AnalyticsEvent =
     | 'room_visualizer_opened'
     | 'room_visualizer_room_changed'
     | 'room_visualization_tile_viewed'
-    | 'shortlist_changed'
     | 'viewing_room_artwork_opened'
     | 'viewing_room_artwork_page_clicked'
     | 'viewing_room_opened'

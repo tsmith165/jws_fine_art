@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Bookmark, Info, MessageCircle, Ruler, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Info, MessageCircle, Ruler, X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FunctionReturnType } from 'convex/server';
@@ -8,7 +8,6 @@ import type { api } from '../../../convex/_generated/api';
 import { ResilientImage as Image } from './ResilientImage';
 import { ArtworkPresentationImage } from './ArtworkPresentationImage';
 import { captureAnalytics } from '@/lib/analytics';
-import { useShortlist } from '@/stores/shortlist';
 
 type Walls = FunctionReturnType<typeof api.galleryWalls.listPublished>;
 type Wall = Walls[number];
@@ -28,8 +27,6 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
     const panelRef = useRef<HTMLElement>(null);
     const triggerRef = useRef<HTMLButtonElement | null>(null);
     const touchStart = useRef<number | null>(null);
-    const ids = useShortlist((state) => state.ids);
-    const toggleSaved = useShortlist((state) => state.toggle);
     const wall = walls[index] ?? walls[0];
     const selected = useMemo(() => wall?.placements.find((item) => item.id === selectedId) ?? null, [selectedId, wall]);
 
@@ -234,15 +231,6 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                             >
                                 View artwork <ArrowRight size={16} />
                             </Link>
-                            <button
-                                className="lw-button lw-button-ghost"
-                                type="button"
-                                aria-pressed={ids.includes(selected.artwork.legacyId)}
-                                onClick={() => toggleSaved(selected.artwork.legacyId)}
-                            >
-                                <Bookmark size={15} fill={ids.includes(selected.artwork.legacyId) ? 'currentColor' : 'none'} />{' '}
-                                {ids.includes(selected.artwork.legacyId) ? 'Saved' : 'Save'}
-                            </button>
                             <Link className="lw-button lw-button-ghost" href={`/contact?artwork=${selected.artwork.legacyId}`}>
                                 <MessageCircle size={15} /> Ask Jill
                             </Link>
