@@ -20,8 +20,14 @@
   ResilientImage warning), production build, and desktop/mobile browser QA.
 - Final local preview artifacts: `view-at-scale-final-desktop` and
   `view-at-scale-final-mobile`.
-- Remaining: artifact validation, commit/push, production deployment, and
-  production smoke/visual QA.
+- Artifact validation passed. Commit `d2acc0d` is pushed to
+  `feat/full-site-overhaul`.
+- Vercel production deployment `dpl_FzdfBosneVCywPnbUrjuDMNKsy1a` is ready
+  and aliased to `https://www.jwsfineart.com`.
+- Production desktop (1440 × 1000) and mobile (390 × 844) QA passed: the room
+  plate loads at its native 1538 × 1023 resolution, scale and aspect ratio are
+  correct, the modal does not overflow or shift, focus/scroll locking restores
+  correctly, and the browser console has no warnings or errors.
 
 ## July 31 Tax Policy Confirmation
 
