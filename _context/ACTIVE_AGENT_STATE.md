@@ -870,3 +870,7 @@
 - Local visual QA passed for Endless Summer (12 × 9 in) and Torrey Pines (10 × 8 in) at 1440 × 1000, plus Torrey Pines at 390 × 844. The overlay and image bounds match exactly, page overflow is zero, and the browser reported no warnings or errors.
 - Evidence aliases: `view-at-scale-white-edge-fixed-landscape-desktop`, `view-at-scale-white-edge-fixed-portrait-desktop`, and `view-at-scale-white-edge-fixed-portrait-mobile`.
 - Verification passed: 19 test files / 125 tests, TypeScript, ESLint with the existing `ResilientImage` alt warning, production build, `git diff --check`, and artifact-store validation.
+- Source commit `f436100` is pushed to `feat/full-site-overhaul`.
+- Vercel production deployment `dpl_D6rnSd2MrurT28Mn8fDeXcRdA67L` is ready and aliased to `https://www.jwsfineart.com`.
+- Production QA passed for Endless Summer at 1440 × 1000 and Torrey Pines at 390 × 844. The white strips are absent, artwork/image bounds match exactly, horizontal overflow is zero, and the browser reported no warnings or errors.
+- Production evidence aliases: `view-at-scale-white-edge-production-landscape-desktop` and `view-at-scale-white-edge-production-portrait-mobile`.
