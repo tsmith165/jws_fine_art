@@ -3,7 +3,7 @@ import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
-import { readPublicArtworks } from '@/data/artworkReads';
+import { EDITORIAL_IMAGES } from '@/lib/editorialImages';
 
 export const metadata: Metadata = {
     title: 'Studio & Story',
@@ -11,19 +11,20 @@ export const metadata: Metadata = {
     alternates: { canonical: '/studio' },
 };
 
-export default async function StudioPage() {
-    const pieces = await readPublicArtworks();
-    const studioImages = pieces.filter((piece) => piece.image_path).slice(0, 3);
+const studioProcess = [EDITORIAL_IMAGES.easelClose, EDITORIAL_IMAGES.easelSide, EDITORIAL_IMAGES.easelWide];
+
+export default function StudioPage() {
     return (
         <SiteShell newsletter>
             <section className="lw-studio-hero lw-band">
                 <div className="lw-studio-portrait">
                     <Image
-                        src="/bio/jill-weeks-smith-portrait.jpg"
-                        alt="Jill Weeks Smith"
+                        src={EDITORIAL_IMAGES.primaryPortrait.src}
+                        alt={EDITORIAL_IMAGES.primaryPortrait.alt}
                         fill
-                        sizes="(max-width: 760px) 86vw, 420px"
+                        sizes="(max-width: 760px) 86vw, 390px"
                         priority
+                        quality={95}
                     />
                 </div>
                 <div>
@@ -48,6 +49,26 @@ export default async function StudioPage() {
                         Oil is where color and atmosphere live. Printmaking trades softness for pressure, hard edges, and the moment the
                         image is revealed.
                     </p>
+                </div>
+                <div className="lw-practice-media" aria-label="Tools from Jill's studio">
+                    <figure>
+                        <Image
+                            src={EDITORIAL_IMAGES.brushes.src}
+                            alt={EDITORIAL_IMAGES.brushes.alt}
+                            fill
+                            sizes="(max-width: 760px) 88vw, 24vw"
+                            quality={95}
+                        />
+                    </figure>
+                    <figure>
+                        <Image
+                            src={EDITORIAL_IMAGES.palette.src}
+                            alt={EDITORIAL_IMAGES.palette.alt}
+                            fill
+                            sizes="(max-width: 760px) 88vw, 24vw"
+                            quality={95}
+                        />
+                    </figure>
                 </div>
             </section>
             <section className="lw-timeline lw-band">
@@ -82,21 +103,43 @@ export default async function StudioPage() {
                             </li>
                         </ol>
                     </div>
-                    {studioImages.length > 0 && (
-                        <div className="lw-timeline-media" aria-label="Selected work from Jill's studio">
-                            {studioImages.map((piece, index) => (
-                                <figure key={piece.id} className={index === 0 ? 'is-featured' : ''}>
-                                    <Image
-                                        src={piece.image_path}
-                                        alt={piece.title}
-                                        fill
-                                        sizes="(max-width: 760px) 92vw, 24vw"
-                                        quality={95}
-                                    />
-                                </figure>
-                            ))}
-                        </div>
-                    )}
+                    <div className="lw-timeline-media" aria-label="Jill painting in her studio">
+                        {studioProcess.map((image, index) => (
+                            <figure key={image.src} className={index === 0 ? 'is-featured' : ''}>
+                                <Image src={image.src} alt={image.alt} fill sizes="(max-width: 760px) 88vw, 24vw" quality={95} />
+                            </figure>
+                        ))}
+                    </div>
+                </div>
+            </section>
+            <section className="lw-studio-present lw-band lw-band-raised">
+                <div className="lw-studio-present-copy">
+                    <span className="lw-eyebrow">In the studio today</span>
+                    <h2>Looking closely, then letting paint remember.</h2>
+                    <p>
+                        Jill works from photographs, observation, and the details that linger after leaving a place. Each painting begins
+                        with something specific, then finds its own atmosphere through color, texture, and revision.
+                    </p>
+                </div>
+                <div className="lw-studio-present-media">
+                    <figure>
+                        <Image
+                            src={EDITORIAL_IMAGES.coastalArchInProgress.src}
+                            alt={EDITORIAL_IMAGES.coastalArchInProgress.alt}
+                            fill
+                            sizes="(max-width: 760px) 88vw, 32vw"
+                            quality={95}
+                        />
+                    </figure>
+                    <figure>
+                        <Image
+                            src={EDITORIAL_IMAGES.studioPortrait.src}
+                            alt={EDITORIAL_IMAGES.studioPortrait.alt}
+                            fill
+                            sizes="(max-width: 760px) 70vw, 22vw"
+                            quality={95}
+                        />
+                    </figure>
                 </div>
             </section>
             <section className="lw-studio-shows lw-band lw-band-raised">

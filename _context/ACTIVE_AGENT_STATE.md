@@ -846,3 +846,15 @@
   `owner-search-preview-logo-production-desktop`.
 - Final artifact validation passed with 65 design artifacts, 115 preview QA
   artifacts, and 54 analysis records.
+## July 31 Editorial Photo Refresh
+
+- Objective: integrate the artist's supplied editorial photos across the public site, verify responsively, and deploy.
+- Workspace: `/Users/tsmith/dev/_codex/jws-fine-art`
+- Branch: `feat/full-site-overhaul`
+- Assets: 13 originals staged under `_context/design-artifacts`; 12 curated WebP derivatives created under `public/editorial/artist` and `public/editorial/studio`.
+- Decisions: IMG_0658 is the Studio lead portrait; process images form a purposeful timeline; near-duplicate portraits remain alternates; IMG_0593 original is not shown because its cleaned derivative already powers View at Scale.
+- Implementation: the preferred IMG_0658 portrait leads `/studio`; 11 distinct supplied photos now support the homepage, Studio story and process sections, Commissions, and the Contact collector guide. The closely related IMG_0653 portrait remains a production-ready alternate. The cleaned IMG_0593 derivative continues to power View at Scale.
+- Local checks passed: 125 tests, TypeScript, lint with one pre-existing `ResilientImage` warning, and the Node 24 production build.
+- Desktop and 390 px mobile browser QA passed across `/`, `/studio`, `/commissions`, and `/contact`: no horizontal overflow, all editorial images decoded at appropriate responsive resolutions, and no runtime errors.
+- Artifact links and UI-intention analysis were recorded; `agent-artifacts validate` passed with 93 design artifacts, 143 preview artifacts, and 59 analysis records.
+- Next: commit/push, deploy to Vercel, and verify production.

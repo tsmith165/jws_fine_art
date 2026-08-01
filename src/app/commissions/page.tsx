@@ -3,7 +3,7 @@ import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
-import { readPublicArtworks } from '@/data/artworkReads';
+import { EDITORIAL_IMAGES } from '@/lib/editorialImages';
 
 export const metadata: Metadata = {
     title: 'Commissions',
@@ -11,9 +11,7 @@ export const metadata: Metadata = {
     alternates: { canonical: '/commissions' },
 };
 
-export default async function CommissionsPage() {
-    const pieces = await readPublicArtworks();
-    const hero = pieces.find((piece) => /house|home|building/i.test(`${piece.theme} ${piece.title}`)) || pieces[0];
+export default function CommissionsPage() {
     return (
         <SiteShell newsletter>
             <section className="lw-commission-hero">
@@ -25,11 +23,16 @@ export default async function CommissionsPage() {
                         Start a conversation <ArrowRight size={16} />
                     </Link>
                 </div>
-                {hero && (
-                    <div>
-                        <Image src={hero.image_path} alt={hero.title} fill sizes="(max-width: 760px) 100vw, 55vw" priority quality={95} />
-                    </div>
-                )}
+                <div>
+                    <Image
+                        src={EDITORIAL_IMAGES.studioPortraitAlternate.src}
+                        alt={EDITORIAL_IMAGES.studioPortraitAlternate.alt}
+                        fill
+                        sizes="(max-width: 760px) 100vw, 55vw"
+                        priority
+                        quality={95}
+                    />
+                </div>
             </section>
             <section className="lw-commission-process lw-band">
                 <header>

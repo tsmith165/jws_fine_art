@@ -5,6 +5,7 @@ import { Instagram, Mail, MapPin } from 'lucide-react';
 import { InquiryForm } from '@/components/lit-wall/InquiryForm';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readPublicArtwork } from '@/data/artworkReads';
+import { EDITORIAL_IMAGES } from '@/lib/editorialImages';
 
 export const metadata: Metadata = {
     title: 'Contact & Collector Guide',
@@ -48,8 +49,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
             <section id="collector-guide" className="lw-collector-guide lw-band lw-band-raised">
                 <div className="lw-guide-image">
                     <Image
-                        src="/bio/jill-weeks-smith-portrait.jpg"
-                        alt="Jill Weeks Smith"
+                        src={EDITORIAL_IMAGES.coastalPortrait.src}
+                        alt={EDITORIAL_IMAGES.coastalPortrait.alt}
                         fill
                         sizes="(max-width: 760px) 92vw, 40vw"
                         quality={95}

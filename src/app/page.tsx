@@ -8,6 +8,7 @@ import { HeroCarousel } from '@/components/lit-wall/HeroCarousel';
 import { SectionHeading } from '@/components/lit-wall/SectionHeading';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readHomepageArtworks, readPublicArtworks } from '@/data/artworkReads';
+import { EDITORIAL_IMAGES } from '@/lib/editorialImages';
 import { compareArtworkReleasedNewest } from '@shared/artworkRelease';
 
 export const metadata: Metadata = {
@@ -46,10 +47,11 @@ export default async function HomePage() {
             <section className="lw-artist-intro lw-band">
                 <div className="lw-artist-photo">
                     <Image
-                        src="/bio/jill-weeks-smith-portrait.jpg"
-                        alt="Jill Weeks Smith by the coast"
+                        src={EDITORIAL_IMAGES.coastalPortraitCamera.src}
+                        alt={EDITORIAL_IMAGES.coastalPortraitCamera.alt}
                         fill
                         sizes="(max-width: 760px) 92vw, 38vw"
+                        quality={95}
                     />
                 </div>
                 <div>
