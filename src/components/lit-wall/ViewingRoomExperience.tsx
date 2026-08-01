@@ -19,7 +19,10 @@ function money(cents: number) {
 }
 
 export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; initialSlug: string }) {
-    const initialIndex = Math.max(0, walls.findIndex((wall) => wall.slug === initialSlug));
+    const initialIndex = Math.max(
+        0,
+        walls.findIndex((wall) => wall.slug === initialSlug),
+    );
     const [index, setIndex] = useState(initialIndex);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const panelRef = useRef<HTMLElement>(null);
@@ -53,7 +56,11 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
         if (!wall) return;
         triggerRef.current = document.activeElement instanceof HTMLButtonElement ? document.activeElement : null;
         setSelectedId(placement.id);
-        captureAnalytics('viewing_room_artwork_opened', { wall_slug: wall.slug, artwork_id: placement.artwork.legacyId, artwork_slug: placement.artwork.slug });
+        captureAnalytics('viewing_room_artwork_opened', {
+            wall_slug: wall.slug,
+            artwork_id: placement.artwork.legacyId,
+            artwork_slug: placement.artwork.slug,
+        });
     };
 
     useEffect(() => {
@@ -97,17 +104,24 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
 
     return (
         <div className="lw-viewing-room">
-            <p className="lw-sr-only" aria-live="polite">Wall {index + 1} of {walls.length}: {wall.title}</p>
+            <p className="lw-sr-only" aria-live="polite">
+                Wall {index + 1} of {walls.length}: {wall.title}
+            </p>
             <header className="lw-viewing-room-header">
                 <div>
-                    <span className="lw-eyebrow">Curated viewing room</span>
                     <h1>{wall.title}</h1>
                     {wall.narrative ? <p>{wall.narrative}</p> : <p>Explore Jill’s work together, arranged at true relative scale.</p>}
                 </div>
                 <div className="lw-viewing-room-navigation">
-                    <span>{index + 1} / {walls.length}</span>
-                    <button type="button" onClick={() => changeWall(index - 1)} aria-label="Previous gallery wall"><ArrowLeft size={18} /></button>
-                    <button type="button" onClick={() => changeWall(index + 1)} aria-label="Next gallery wall"><ArrowRight size={18} /></button>
+                    <span>
+                        {index + 1} / {walls.length}
+                    </span>
+                    <button type="button" onClick={() => changeWall(index - 1)} aria-label="Previous gallery wall">
+                        <ArrowLeft size={18} />
+                    </button>
+                    <button type="button" onClick={() => changeWall(index + 1)} aria-label="Next gallery wall">
+                        <ArrowRight size={18} />
+                    </button>
                 </div>
             </header>
 
@@ -117,7 +131,9 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                     style={{ aspectRatio: `${wall.widthInches} / ${wall.heightInches}` }}
                     aria-label={`${wall.title}, a gallery wall containing ${wall.placements.length} artworks`}
                     aria-roledescription="gallery wall"
-                    onTouchStart={(event) => { touchStart.current = event.changedTouches[0]?.clientX ?? null; }}
+                    onTouchStart={(event) => {
+                        touchStart.current = event.changedTouches[0]?.clientX ?? null;
+                    }}
                     onTouchEnd={(event) => {
                         if (touchStart.current === null) return;
                         const distance = (event.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current;
@@ -141,7 +157,14 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                                 onClick={() => select(placement)}
                                 aria-label={`Open details for ${artwork.title}${artwork.sold ? ', sold' : ''}`}
                             >
-                                <ArtworkPresentationImage src={artwork.imageUrl} crop={artwork.presentationCrop} alt="" fill quality={95} sizes="30vw" />
+                                <ArtworkPresentationImage
+                                    src={artwork.imageUrl}
+                                    crop={artwork.presentationCrop}
+                                    alt=""
+                                    fill
+                                    quality={95}
+                                    sizes="30vw"
+                                />
                                 <span>{placementIndex + 1}</span>
                                 {artwork.sold ? <em>Sold</em> : null}
                             </button>
@@ -149,8 +172,13 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                     })}
                 </div>
                 <footer>
-                    <span><Info size={14} /> Select an artwork for details</span>
-                    <span><Ruler size={14} /> Relative scale is calibrated{wall.placements.some((item) => item.artwork.dimensionsEstimated) ? '; some framed sizes are estimated' : ''}</span>
+                    <span>
+                        <Info size={14} /> Select an artwork for details
+                    </span>
+                    <span>
+                        <Ruler size={14} /> Relative scale is calibrated
+                        {wall.placements.some((item) => item.artwork.dimensionsEstimated) ? '; some framed sizes are estimated' : ''}
+                    </span>
                 </footer>
             </div>
 
@@ -164,32 +192,107 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
             >
                 {selected ? (
                     <>
-                        <button type="button" className="lw-viewing-panel-close" onClick={closePanel} aria-label="Close artwork details"><X size={18} /></button>
-                        <div className="lw-viewing-panel-image"><ArtworkPresentationImage src={selected.artwork.imageUrl} crop={selected.artwork.presentationCrop} alt={selected.artwork.title} fill quality={95} sizes="(max-width: 760px) 88vw, 340px" /></div>
+                        <button type="button" className="lw-viewing-panel-close" onClick={closePanel} aria-label="Close artwork details">
+                            <X size={18} />
+                        </button>
+                        <div className="lw-viewing-panel-image">
+                            <ArtworkPresentationImage
+                                src={selected.artwork.imageUrl}
+                                crop={selected.artwork.presentationCrop}
+                                alt={selected.artwork.title}
+                                fill
+                                quality={95}
+                                sizes="(max-width: 760px) 88vw, 340px"
+                            />
+                        </div>
                         <span className="lw-eyebrow">Artwork {wall.placements.findIndex((item) => item.id === selected.id) + 1}</span>
                         <h2>{selected.artwork.title}</h2>
-                        <p>{selected.artwork.medium || 'Original artwork'} · {selected.artwork.widthInches} × {selected.artwork.heightInches} in{selected.artwork.dimensionsEstimated ? ' · Estimated framed size' : ''}</p>
-                        <div><strong>{selected.artwork.sold ? 'Sold' : selected.artwork.available ? money(selected.artwork.priceCents) : 'Private collection'}</strong></div>
+                        <p>
+                            {selected.artwork.medium || 'Original artwork'} · {selected.artwork.widthInches} ×{' '}
+                            {selected.artwork.heightInches} in{selected.artwork.dimensionsEstimated ? ' · Estimated framed size' : ''}
+                        </p>
+                        <div>
+                            <strong>
+                                {selected.artwork.sold
+                                    ? 'Sold'
+                                    : selected.artwork.available
+                                      ? money(selected.artwork.priceCents)
+                                      : 'Private collection'}
+                            </strong>
+                        </div>
                         <div className="lw-viewing-panel-actions">
-                            <Link className="lw-button lw-button-brass" href={`/work/${selected.artwork.slug}`} onClick={() => captureAnalytics('viewing_room_artwork_page_clicked', { wall_slug: wall.slug, artwork_id: selected.artwork.legacyId, artwork_slug: selected.artwork.slug })}>View artwork <ArrowRight size={16} /></Link>
-                            <button className="lw-button lw-button-ghost" type="button" aria-pressed={ids.includes(selected.artwork.legacyId)} onClick={() => toggleSaved(selected.artwork.legacyId)}><Bookmark size={15} fill={ids.includes(selected.artwork.legacyId) ? 'currentColor' : 'none'} /> {ids.includes(selected.artwork.legacyId) ? 'Saved' : 'Save'}</button>
-                            <Link className="lw-button lw-button-ghost" href={`/contact?artwork=${selected.artwork.legacyId}`}><MessageCircle size={15} /> Ask Jill</Link>
-                            <Link className="lw-button lw-button-ghost" href={`/work/${selected.artwork.slug}#view-at-scale`}><Ruler size={15} /> View at scale</Link>
+                            <Link
+                                className="lw-button lw-button-brass"
+                                href={`/work/${selected.artwork.slug}`}
+                                onClick={() =>
+                                    captureAnalytics('viewing_room_artwork_page_clicked', {
+                                        wall_slug: wall.slug,
+                                        artwork_id: selected.artwork.legacyId,
+                                        artwork_slug: selected.artwork.slug,
+                                    })
+                                }
+                            >
+                                View artwork <ArrowRight size={16} />
+                            </Link>
+                            <button
+                                className="lw-button lw-button-ghost"
+                                type="button"
+                                aria-pressed={ids.includes(selected.artwork.legacyId)}
+                                onClick={() => toggleSaved(selected.artwork.legacyId)}
+                            >
+                                <Bookmark size={15} fill={ids.includes(selected.artwork.legacyId) ? 'currentColor' : 'none'} />{' '}
+                                {ids.includes(selected.artwork.legacyId) ? 'Saved' : 'Save'}
+                            </button>
+                            <Link className="lw-button lw-button-ghost" href={`/contact?artwork=${selected.artwork.legacyId}`}>
+                                <MessageCircle size={15} /> Ask Jill
+                            </Link>
+                            <Link className="lw-button lw-button-ghost" href={`/work/${selected.artwork.slug}#view-at-scale`}>
+                                <Ruler size={15} /> View at scale
+                            </Link>
                         </div>
                     </>
                 ) : null}
             </aside>
 
             <section className="lw-viewing-room-list" aria-label="Artwork on this wall">
-                <header><span className="lw-eyebrow">On this wall</span><h2>Explore every work.</h2></header>
+                <header>
+                    <span className="lw-eyebrow">On this wall</span>
+                    <h2>Explore every work.</h2>
+                </header>
                 <ol>
                     {wall.placements.map((placement, placementIndex) => (
                         <li key={placement.id}>
-                            <button type="button" onClick={() => select(placement)}>
-                                <span>{String(placementIndex + 1).padStart(2, '0')}</span>
-                                <strong>{placement.artwork.title}</strong>
-                                <small>{placement.artwork.sold ? 'Sold' : placement.artwork.available ? money(placement.artwork.priceCents) : 'Private collection'}</small>
-                                <ArrowRight size={15} />
+                            <button type="button" className="lw-viewing-card" onClick={() => select(placement)}>
+                                <span className="lw-viewing-card-image">
+                                    <ArtworkPresentationImage
+                                        src={placement.artwork.imageUrl}
+                                        crop={placement.artwork.presentationCrop}
+                                        alt={placement.artwork.title}
+                                        fill
+                                        quality={95}
+                                        sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                                    />
+                                    <span className="lw-viewing-card-number">{String(placementIndex + 1).padStart(2, '0')}</span>
+                                    <span className="lw-viewing-card-open">
+                                        View details <ArrowRight size={15} />
+                                    </span>
+                                </span>
+                                <span className="lw-viewing-card-meta">
+                                    <span>
+                                        <strong>{placement.artwork.title}</strong>
+                                        <em>
+                                            {placement.artwork.sold
+                                                ? 'Sold'
+                                                : placement.artwork.available
+                                                  ? money(placement.artwork.priceCents)
+                                                  : 'Private collection'}
+                                        </em>
+                                    </span>
+                                    <small>
+                                        {placement.artwork.medium || 'Original artwork'} · {placement.artwork.widthInches} ×{' '}
+                                        {placement.artwork.heightInches} in
+                                    </small>
+                                </span>
                             </button>
                         </li>
                     ))}
