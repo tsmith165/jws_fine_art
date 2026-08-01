@@ -857,4 +857,7 @@
 - Local checks passed: 125 tests, TypeScript, lint with one pre-existing `ResilientImage` warning, and the Node 24 production build.
 - Desktop and 390 px mobile browser QA passed across `/`, `/studio`, `/commissions`, and `/contact`: no horizontal overflow, all editorial images decoded at appropriate responsive resolutions, and no runtime errors.
 - Artifact links and UI-intention analysis were recorded; `agent-artifacts validate` passed with 93 design artifacts, 143 preview artifacts, and 59 analysis records.
-- Next: commit/push, deploy to Vercel, and verify production.
+- Source commit `af3c67f` is pushed to `feat/full-site-overhaul`.
+- Vercel production deployment `dpl_BFeKpCaCawyhLazCCVBoZ6SvNRLV` is ready and aliased to `https://www.jwsfineart.com`.
+- Production browser QA passed on `/`, `/studio`, `/commissions`, and `/contact`: the new responsive images decode at appropriate natural resolutions, page-level overflow is zero, and the browser reported no warnings or errors.
+- No Convex deployment was required because this refresh only changes static assets, page composition, and presentation styles.
