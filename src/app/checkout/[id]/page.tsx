@@ -7,6 +7,7 @@ import CheckoutForm from './CheckoutForm';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readPublicArtwork } from '@/data/artworkReads';
 import { artworkHref, dimensions, isPurchasable, money } from '@/lib/artwork';
+import { artworkShippingDimensions } from '@shared/artworkDimensions';
 
 export const metadata: Metadata = { title: 'Checkout', robots: { index: false, follow: false } };
 
@@ -15,6 +16,15 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
     const piece = Number.isSafeInteger(id) ? await readPublicArtwork(id) : null;
     if (!piece) notFound();
     if (!isPurchasable(piece)) redirect(artworkHref(piece));
+    const shippingDimensions = artworkShippingDimensions({
+        framed: Boolean(piece.framed),
+        widthInches: piece.real_width,
+        heightInches: piece.real_height,
+        framedWidthInches: piece.framed_width,
+        framedHeightInches: piece.framed_height,
+        framedDimensionsVerified: piece.framed_dimensions_verified,
+    }, process.env.JWS_USE_FINISHED_SHIPPING_DIMENSIONS === 'true');
+    if (!shippingDimensions) redirect(artworkHref(piece));
     return (
         <SiteShell>
             <nav className="lw-checkout-back">
@@ -61,7 +71,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
                         Select fixed insured U.S. shipping or free local pickup. Stripe collects any delivery address securely, and sales
                         tax is included in the listed price.
                     </p>
-                    <CheckoutForm current_piece={piece} />
+                    <CheckoutForm current_piece={piece} shippingDimensions={shippingDimensions} />
                 </div>
             </section>
         </SiteShell>

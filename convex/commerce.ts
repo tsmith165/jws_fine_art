@@ -3,7 +3,8 @@ import { internal } from './_generated/api';
 import { mutation, query, type MutationCtx } from './_generated/server';
 import { requireServerSecret } from './lib/serverSecret';
 import { assertWritesEnabled } from './lib/writeFreeze';
-import { estimateArtworkShipping, SHIPPING_POLICY_VERSION, shippingCareForMedium } from '../shared/shipping';
+import { estimateArtworkShipping, FINISHED_FRAME_SHIPPING_POLICY_VERSION, SHIPPING_POLICY_VERSION, shippingCareForMedium } from '../shared/shipping';
+import { artworkShippingDimensions } from '../shared/artworkDimensions';
 import { orderTaxProfile } from '../shared/tax';
 
 const nullableString = v.union(v.string(), v.null());
@@ -116,9 +117,20 @@ export const createCheckoutIntent = mutation({
             .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', artwork.legacyId))
             .collect();
         const primaryImage = media.find((item) => item.role === 'primary' && !item.absentFromSource)?.sourceUrl ?? null;
+        const useFinishedShippingDimensions = process.env.JWS_USE_FINISHED_SHIPPING_DIMENSIONS === 'true';
+        const shippingDimensions = artworkShippingDimensions({
+            framed: artwork.framed,
+            widthInches: artwork.widthInches,
+            heightInches: artwork.heightInches,
+            framedWidthInches: artwork.framedWidthInches,
+            framedHeightInches: artwork.framedHeightInches,
+            framedDimensionsVerified: artwork.framedDimensionsVerified,
+        }, useFinishedShippingDimensions);
+        if (!shippingDimensions) throw new Error('This artwork needs finished dimensions before online checkout.');
+        const shippingPolicyVersion = useFinishedShippingDimensions ? FINISHED_FRAME_SHIPPING_POLICY_VERSION : SHIPPING_POLICY_VERSION;
         const shipping = estimateArtworkShipping({
-            width: artwork.widthInches ?? 0,
-            height: artwork.heightInches ?? 0,
+            width: shippingDimensions.widthInches,
+            height: shippingDimensions.heightInches,
             framed: artwork.framed,
             care: shippingCareForMedium(artwork.medium),
             destination: args.destination,
@@ -151,7 +163,7 @@ export const createCheckoutIntent = mutation({
             international,
             deliveryMethod,
             shippingTier: shipping.classification,
-            shippingPolicyVersion: SHIPPING_POLICY_VERSION,
+            shippingPolicyVersion,
             taxIncluded: true,
             automaticTaxEnabled: args.automaticTaxEnabled ?? false,
             cancelToken: args.cancelToken,
@@ -173,7 +185,7 @@ export const createCheckoutIntent = mutation({
             international,
             deliveryMethod,
             shippingTier: shipping.classification,
-            shippingPolicyVersion: SHIPPING_POLICY_VERSION,
+            shippingPolicyVersion,
             shippingDescription,
         };
     },

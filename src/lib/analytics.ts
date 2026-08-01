@@ -21,7 +21,12 @@ export type AnalyticsEvent =
     | 'newsletter_signup_submitted'
     | 'room_visualizer_opened'
     | 'room_visualizer_room_changed'
-    | 'shortlist_changed';
+    | 'room_visualization_tile_viewed'
+    | 'shortlist_changed'
+    | 'viewing_room_artwork_opened'
+    | 'viewing_room_artwork_page_clicked'
+    | 'viewing_room_opened'
+    | 'viewing_room_wall_changed';
 
 export type AnalyticsProperties = Record<string, boolean | number | string | null | undefined>;
 

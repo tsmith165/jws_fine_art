@@ -6,20 +6,24 @@ import {
     Check,
     CircleAlert,
     CircleCheck,
+    Crop,
     ExternalLink,
     GripVertical,
     Images,
     Replace,
+    RotateCcw,
     Save,
+    ScanLine,
     Search,
     Trash2,
     X,
 } from 'lucide-react';
 import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
+import { ArtworkPresentationImage } from '@/components/lit-wall/ArtworkPresentationImage';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import type { PiecesWithImages } from '@/types/artwork';
-import { handleImageDelete, handleMediaOrderUpdate, onSubmitEditForm, repairStoredInstagramShareReference } from '@/app/admin/edit/actions';
+import type { ArtworkPresentationCrop, PiecesWithImages } from '@/types/artwork';
+import { handleImageDelete, handleMediaOrderUpdate, onSubmitEditForm, repairStoredInstagramShareReference, saveMediaPresentationCrop } from '@/app/admin/edit/actions';
 import ImageEditor from '@/app/admin/edit/images/[id]/ImageEditor';
 import { normalizeInstagramShareReference, validateOwnerArtwork, type OwnerArtworkField } from '@/lib/ownerArtworkValidation';
 import { artworkReleaseDateNeedsReview } from '@/lib/ownerArtworkAttention';
@@ -27,6 +31,7 @@ import { reorderArtworkMedia } from '@/lib/ownerMediaOrdering';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 import { artworkAvailabilityForStatus, type ArtworkListingStatus } from '@shared/artworkListingState';
 import { releaseDateValue } from '@shared/artworkRelease';
+import { estimateFramedDimensions } from '@shared/artworkDimensions';
 import { OwnerDatePicker } from './OwnerDatePicker';
 import { OwnerFieldFooter, OwnerFormRow } from './OwnerForm';
 
@@ -43,6 +48,9 @@ type EditorForm = {
     height: string;
     real_width: string;
     real_height: string;
+    framed_width: string;
+    framed_height: string;
+    framed_dimensions_verified: boolean;
     theme: string;
     categories: ArtworkCategoryId[];
     available: boolean;
@@ -65,6 +73,9 @@ function initialForm(piece: PiecesWithImages): EditorForm {
         height: String(piece.height),
         real_width: piece.real_width ? String(piece.real_width) : '',
         real_height: piece.real_height ? String(piece.real_height) : '',
+        framed_width: piece.framed_width ? String(piece.framed_width) : '',
+        framed_height: piece.framed_height ? String(piece.framed_height) : '',
+        framed_dimensions_verified: Boolean(piece.framed_dimensions_verified),
         theme: piece.theme || '',
         categories: piece.categories,
         available: Boolean(piece.available),
@@ -116,6 +127,10 @@ export function OwnerArtworkEditor({
     const [mediaOpen, setMediaOpen] = useState(initialMediaOpen);
     const [mediaUploadRole, setMediaUploadRole] = useState<'main' | 'extra' | 'progress'>('extra');
     const [mediaUploadVersion, setMediaUploadVersion] = useState(0);
+    const [cropOpen, setCropOpen] = useState(false);
+    const [crop, setCrop] = useState<ArtworkPresentationCrop>(() => piece.presentation_crop ?? { top: 0, right: 0, bottom: 0, left: 0 });
+    const [savedCrop, setSavedCrop] = useState<ArtworkPresentationCrop | null>(() => piece.presentation_crop ?? null);
+    const [cropBusy, setCropBusy] = useState<'detect' | 'save' | null>(null);
     const [saving, setSaving] = useState(false);
     const [attemptedSave, setAttemptedSave] = useState(false);
     const [message, setMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
@@ -147,6 +162,7 @@ export function OwnerArtworkEditor({
                 height: piece.height,
                 role: 'Primary',
                 kind: 'primary' as const,
+                presentation_crop: crop,
             },
             ...supporting.map((image, index) => ({
                 ...image,
@@ -161,7 +177,7 @@ export function OwnerArtworkEditor({
                 kind: 'progress' as const,
             })),
         ];
-    }, [mediaOrderIds, piece, removedImageUrls]);
+    }, [crop, mediaOrderIds, piece, removedImageUrls]);
     const selected = media.find((image) => image.url === selectedImage) || media[0];
     const validation = useMemo(() => validateOwnerArtwork(form), [form]);
     const listingStatus = validation.listingStatus;
@@ -203,6 +219,25 @@ export function OwnerArtworkEditor({
             actionLabel: 'Review dimensions',
             href: '#artwork-width',
         },
+        ...(form.framed
+            ? [
+                  {
+                      key: 'framed-dimensions',
+                      label: 'Outside-frame dimensions',
+                      ready:
+                          !fieldIssue('framed_width') &&
+                          !fieldIssue('framed_height') &&
+                          !fieldIssue('framed_dimensions_verified'),
+                      detail:
+                          fieldIssue('framed_width')?.message ??
+                          fieldIssue('framed_height')?.message ??
+                          fieldIssue('framed_dimensions_verified')?.message ??
+                          'The measured outside-frame size is verified.',
+                      actionLabel: 'Review frame measurements',
+                      href: '#artwork-framed-width',
+                  },
+              ]
+            : []),
         {
             key: 'release-date',
             label: 'Release date',
@@ -289,7 +324,21 @@ export function OwnerArtworkEditor({
     }, [media, piece.image_path, selectedImage]);
 
     function update<K extends keyof EditorForm>(key: K, value: EditorForm[K]) {
-        setForm((current) => ({ ...current, [key]: value }));
+        setForm((current) => {
+            const next = { ...current, [key]: value };
+            if ((key === 'framed_width' || key === 'framed_height') && value !== current[key]) {
+                next.framed_dimensions_verified = false;
+            }
+            if (key === 'framed' && value === true && (!current.framed_width || !current.framed_height)) {
+                const estimate = estimateFramedDimensions(Number(current.real_width), Number(current.real_height));
+                if (estimate) {
+                    next.framed_width = String(estimate.widthInches);
+                    next.framed_height = String(estimate.heightInches);
+                    next.framed_dimensions_verified = false;
+                }
+            }
+            return next;
+        });
         setMessage(null);
     }
 
@@ -319,6 +368,56 @@ export function OwnerArtworkEditor({
                 block: 'start',
             });
         });
+    }
+
+    function updateCrop(edge: keyof ArtworkPresentationCrop, percent: number) {
+        setCrop((current) => ({ ...current, [edge]: Math.min(20, Math.max(0, percent)) / 100 }));
+        setMediaMessage(null);
+    }
+
+    async function detectPrimaryCrop() {
+        setCropBusy('detect');
+        setMediaMessage(null);
+        try {
+            const response = await fetch('/api/admin/media/crop-analysis', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ imageUrl: piece.image_path }),
+            });
+            const result = (await response.json()) as {
+                success: boolean;
+                detected?: boolean;
+                crop?: ArtworkPresentationCrop;
+                message?: string;
+                error?: string;
+            };
+            if (!response.ok || !result.success || !result.crop) throw new Error(result.error || 'The image could not be analyzed.');
+            setCrop(result.crop);
+            setMediaMessage({ tone: result.detected ? 'warning' : 'good', text: result.message || 'Analysis complete.' });
+        } catch (error) {
+            setMediaMessage({ tone: 'warning', text: error instanceof Error ? error.message : 'The image could not be analyzed.' });
+        } finally {
+            setCropBusy(null);
+        }
+    }
+
+    async function persistPrimaryCrop(nextCrop: ArtworkPresentationCrop | null = crop) {
+        if (!piece.primary_media_id) {
+            setMediaMessage({ tone: 'warning', text: 'The primary image record could not be found. Refresh and try again.' });
+            return;
+        }
+        setCropBusy('save');
+        setMediaMessage(null);
+        const normalized = nextCrop && Object.values(nextCrop).some((value) => value > 0) ? nextCrop : null;
+        const result = await saveMediaPresentationCrop(piece.id, piece.primary_media_id, normalized);
+        if (result.success) {
+            setCrop(normalized ?? { top: 0, right: 0, bottom: 0, left: 0 });
+            setSavedCrop(normalized);
+            setMediaMessage({ tone: 'good', text: normalized ? 'Visible crop saved across public artwork views.' : 'Original image presentation restored.' });
+        } else {
+            setMediaMessage({ tone: 'warning', text: result.error || 'The visible crop could not be saved.' });
+        }
+        setCropBusy(null);
     }
 
     async function reorderMedia(currentImage: (typeof media)[number], targetImage: (typeof media)[number]) {
@@ -734,10 +833,83 @@ export function OwnerArtworkEditor({
                                 <FieldFeedback field="real_height" issue={fieldIssue('real_height')} />
                             </label>
                         </OwnerFormRow>
+                        {form.framed ? (
+                            <fieldset className="owner-frame-dimensions is-wide">
+                                <legend>
+                                    <span>
+                                        <strong>Outside-frame size</strong>
+                                        <small>
+                                            {form.framed_dimensions_verified ? 'Measured and verified' : 'Estimated until Jill measures it'}
+                                        </small>
+                                    </span>
+                                    <small className={form.framed_dimensions_verified ? 'is-verified' : 'is-estimated'}>
+                                        {form.framed_dimensions_verified ? 'Verified' : 'Estimate'}
+                                    </small>
+                                </legend>
+                                <OwnerFormRow className="is-wide">
+                                    <label className={fieldClass('framed_width')} data-owner-field="framed_width">
+                                        <span className="owner-field-label">
+                                            <span>Framed width (in)</span>
+                                            <small className="is-optional">Outside edge</small>
+                                        </span>
+                                        <input
+                                            id="artwork-framed-width"
+                                            type="number"
+                                            min="0"
+                                            step="0.25"
+                                            value={form.framed_width}
+                                            onChange={(event) => update('framed_width', event.target.value)}
+                                            aria-invalid={fieldIssue('framed_width')?.tone === 'error'}
+                                            aria-describedby={describedBy('framed_width')}
+                                        />
+                                        <FieldFeedback field="framed_width" issue={fieldIssue('framed_width')} />
+                                    </label>
+                                    <label className={fieldClass('framed_height')} data-owner-field="framed_height">
+                                        <span className="owner-field-label">
+                                            <span>Framed height (in)</span>
+                                            <small className="is-optional">Outside edge</small>
+                                        </span>
+                                        <input
+                                            id="artwork-framed-height"
+                                            type="number"
+                                            min="0"
+                                            step="0.25"
+                                            value={form.framed_height}
+                                            onChange={(event) => update('framed_height', event.target.value)}
+                                            aria-invalid={fieldIssue('framed_height')?.tone === 'error'}
+                                            aria-describedby={describedBy('framed_height')}
+                                        />
+                                        <FieldFeedback field="framed_height" issue={fieldIssue('framed_height')} />
+                                    </label>
+                                </OwnerFormRow>
+                                <label
+                                    id="artwork-framed-verification"
+                                    className={`owner-frame-verification ${form.framed_dimensions_verified ? 'is-verified' : ''}`}
+                                    data-owner-field="framed_dimensions_verified"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={form.framed_dimensions_verified}
+                                        disabled={!form.framed_width || !form.framed_height}
+                                        onChange={(event) => update('framed_dimensions_verified', event.target.checked)}
+                                    />
+                                    <span>
+                                        <strong>I measured the outside frame and verified these dimensions.</strong>
+                                        <small>
+                                            Until checked, the estimate can still be shown at scale but remains clearly labeled.
+                                        </small>
+                                    </span>
+                                </label>
+                                <FieldFeedback
+                                    field="framed_dimensions_verified"
+                                    issue={fieldIssue('framed_dimensions_verified')}
+                                />
+                            </fieldset>
+                        ) : null}
                         <label className={`${fieldClass('description')} is-wide`} data-owner-field="description">
                             <span className="owner-field-label">
                                 <span>Artwork story</span>
-                                <small className="is-publish">Publish required</small>
+                                <small className="is-optional">Optional</small>
                             </span>
                             <textarea
                                 id="artwork-story"
@@ -746,7 +918,6 @@ export function OwnerArtworkEditor({
                                 aria-invalid={fieldIssue('description')?.tone === 'error'}
                                 aria-describedby={describedBy('description')}
                                 maxLength={5000}
-                                required={listingStatus === 'available'}
                             />
                             <div className="owner-field-meta">
                                 <FieldFeedback field="description" issue={fieldIssue('description')} />
@@ -1022,12 +1193,61 @@ export function OwnerArtworkEditor({
                                                         <small id="owner-media-primary-guidance">
                                                             Used on the homepage, catalog, and artwork page.
                                                         </small>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setCropOpen((current) => !current)}
+                                                            aria-expanded={cropOpen}
+                                                            aria-controls="owner-primary-crop-editor"
+                                                            title="Hide uniform padding in public presentations without changing the original file"
+                                                        >
+                                                            <Crop size={14} aria-hidden="true" />
+                                                            Adjust visible crop
+                                                        </button>
                                                     </div>
                                                 )}
                                             </article>
                                         );
                                     })}
                                 </div>
+                                {cropOpen ? (
+                                    <section className="owner-crop-editor" id="owner-primary-crop-editor" aria-labelledby="owner-primary-crop-title">
+                                        <header>
+                                            <div>
+                                                <span className="owner-panel-eyebrow">Non-destructive presentation</span>
+                                                <h3 id="owner-primary-crop-title">Remove visible edge padding</h3>
+                                                <p>The original upload stays untouched. This only changes how the primary image is framed in public artwork views.</p>
+                                            </div>
+                                            <button type="button" onClick={detectPrimaryCrop} disabled={cropBusy !== null}>
+                                                <ScanLine size={15} /> {cropBusy === 'detect' ? 'Analyzing…' : 'Suggest crop'}
+                                            </button>
+                                        </header>
+                                        <div className="owner-crop-previews">
+                                            <figure>
+                                                <figcaption>Original</figcaption>
+                                                <div><Image src={piece.image_path} alt={`${piece.title} original presentation`} fill quality={95} sizes="360px" /></div>
+                                            </figure>
+                                            <figure>
+                                                <figcaption>Rendered preview</figcaption>
+                                                <div><ArtworkPresentationImage src={piece.image_path} crop={crop} alt={`${piece.title} cropped presentation preview`} fill quality={95} sizes="360px" /></div>
+                                            </figure>
+                                        </div>
+                                        <div className="owner-crop-controls">
+                                            {(['top', 'right', 'bottom', 'left'] as const).map((edge) => (
+                                                <label key={edge}>
+                                                    <span>{edge}</span>
+                                                    <span><input type="number" min="0" max="20" step="0.1" value={Math.round(crop[edge] * 1000) / 10} onChange={(event) => updateCrop(edge, Number(event.target.value))} />%</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                        <footer>
+                                            <small>Use the smallest inset that removes padding. Maximum 20% per edge.</small>
+                                            <div>
+                                                <button type="button" onClick={() => void persistPrimaryCrop(null)} disabled={cropBusy !== null || savedCrop === null}><RotateCcw size={14} /> Reset original</button>
+                                                <button className="is-primary" type="button" onClick={() => void persistPrimaryCrop()} disabled={cropBusy !== null || JSON.stringify(crop) === JSON.stringify(savedCrop ?? { top: 0, right: 0, bottom: 0, left: 0 })}><Save size={14} /> {cropBusy === 'save' ? 'Saving…' : 'Save visible crop'}</button>
+                                            </div>
+                                        </footer>
+                                    </section>
+                                ) : null}
                             </section>
                             <section className="owner-media-upload-panel" id="owner-media-upload-panel">
                                 <div>

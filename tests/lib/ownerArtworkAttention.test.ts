@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ownerArtworkAttention } from '../../src/lib/ownerArtworkAttention';
+import { ownerArtworkAttention, summarizeOwnerArtworkAttention } from '../../src/lib/ownerArtworkAttention';
 import type { PiecesWithImages } from '../../src/types/artwork';
 
 const completeArtwork: PiecesWithImages = {
@@ -103,5 +103,17 @@ describe('ownerArtworkAttention', () => {
                 editorAnchor: 'artwork-release-date',
             }),
         ]);
+    });
+
+    it('uses one stable ID set and count for every owner attention surface', () => {
+        const incomplete = { ...completeArtwork, id: 2, piece_type: null };
+        const secondIncomplete = { ...completeArtwork, id: 3, categories: [] };
+        const summary = summarizeOwnerArtworkAttention([completeArtwork, incomplete, secondIncomplete]);
+
+        expect(summary.ids).toEqual([2, 3]);
+        expect(summary.count).toBe(2);
+        expect(summary.items.map(({ artwork }) => artwork.id)).toEqual(summary.ids);
+        expect(summary.byKind.metadata).toBe(1);
+        expect(summary.byKind.category).toBe(1);
     });
 });

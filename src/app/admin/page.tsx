@@ -6,7 +6,7 @@ import { OwnerPostHogSummary } from '@/components/owner/OwnerPostHogSummary';
 import { readOwnerArtworksWithMedia } from '@/data/ownerReads';
 import { readPostHogAnalytics } from '@/data/posthogAnalytics';
 import { readOwnerDashboard } from '@/data/ownerWorkspaceReads';
-import { ownerArtworkAttention } from '@/lib/ownerArtworkAttention';
+import { summarizeOwnerArtworkAttention } from '@/lib/ownerArtworkAttention';
 import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
 
 export const dynamic = 'force-dynamic';
@@ -31,9 +31,7 @@ export default async function OwnerDashboardPage() {
         readPostHogAnalytics(),
         readOwnerArtworksWithMedia(),
     ]);
-    const catalogAttentionCount = filterCategorizerArtworks(ownerArtworks).filter(
-        (artwork) => ownerArtworkAttention(artwork).length > 0,
-    ).length;
+    const catalogAttentionCount = summarizeOwnerArtworkAttention(filterCategorizerArtworks(ownerArtworks)).count;
     const attention = Number(dashboard.ordersToFulfill > 0) + Number(catalogAttentionCount > 0) + Number(dashboard.newInquiries > 0);
     return (
         <OwnerShell active="/admin" title="Today">

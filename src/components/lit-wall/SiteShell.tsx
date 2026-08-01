@@ -4,11 +4,13 @@ import type { ReactNode } from 'react';
 import { Brand } from './Brand';
 import { Newsletter } from './Newsletter';
 import { SiteHeader } from './SiteHeader';
+import { readPublishedGalleryWalls } from '@/data/galleryWallReads';
 
-export function SiteShell({ children, newsletter = false }: { children: ReactNode; newsletter?: boolean }) {
+export async function SiteShell({ children, newsletter = false }: { children: ReactNode; newsletter?: boolean }) {
+    const hasViewingRoom = (await readPublishedGalleryWalls()).length > 0;
     return (
         <div className="lw-site">
-            <SiteHeader />
+            <SiteHeader viewingRoom={hasViewingRoom} />
             <main>{children}</main>
             {newsletter && <Newsletter />}
             <footer className="lw-footer">

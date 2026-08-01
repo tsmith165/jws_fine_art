@@ -2,10 +2,10 @@
 
 import { Check, Ruler, TriangleAlert, X } from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
-import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import type { PiecesWithImages } from '@/types/artwork';
-import { dimensions } from '@/lib/artwork';
+import { artworkScaleDimensions, scaleDimensionsLabel } from '@/lib/artwork';
 import { getLivingRoomPlacement, LIVING_ROOM_SCALE } from '@/lib/roomScale';
+import { LivingRoomArtworkScene } from './LivingRoomArtworkScene';
 
 interface RoomVisualizerProps {
     piece: PiecesWithImages;
@@ -16,14 +16,10 @@ interface RoomVisualizerProps {
 export function RoomVisualizer({ piece, open, onClose }: RoomVisualizerProps) {
     const dialogRef = useRef<HTMLElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
-    const width = piece.real_width || 0;
-    const height = piece.real_height || 0;
+    const scaleDimensions = artworkScaleDimensions(piece);
+    const width = scaleDimensions?.widthInches || 0;
+    const height = scaleDimensions?.heightInches || 0;
     const placement = useMemo(() => getLivingRoomPlacement(width, height), [height, width]);
-    const artworkSizes = useMemo(() => {
-        const mobileWidth = Math.min(100, Math.max(12, Math.ceil(placement.widthPercent)));
-        const desktopWidth = Math.min(70, Math.max(8, Math.ceil(placement.widthPercent * 0.7)));
-        return `(max-width: 760px) ${mobileWidth}vw, ${desktopWidth}vw`;
-    }, [placement.widthPercent]);
 
     useEffect(() => {
         if (!open) return;
@@ -87,7 +83,9 @@ export function RoomVisualizer({ piece, open, onClose }: RoomVisualizerProps) {
                     <div>
                         <span className="lw-eyebrow">View at scale</span>
                         <h2 id="room-title">See {piece.title} at home.</h2>
-                        <p id="room-description">Shown in a real living room using the recorded finished dimensions.</p>
+                        <p id="room-description">
+                            Shown in a real living room using {scaleDimensions?.estimated ? 'estimated outside-frame' : 'recorded finished'} dimensions.
+                        </p>
                     </div>
                     <button ref={closeButtonRef} type="button" aria-label="Close scale view" onClick={onClose}>
                         <X size={21} />
@@ -95,31 +93,11 @@ export function RoomVisualizer({ piece, open, onClose }: RoomVisualizerProps) {
                 </header>
 
                 <div className="lw-room-stage">
-                    <figure
-                        className="lw-room-scene"
-                        aria-label={`${piece.title}, ${dimensions(piece)}, shown above a sofa in a living room`}
-                    >
-                        <Image
-                            className="lw-room-background"
-                            src={LIVING_ROOM_SCALE.image.src}
-                            alt="Living room wall above a navy sofa and beneath a brass picture light"
-                            fill
-                            priority
-                            unoptimized
-                            sizes="(max-width: 760px) 100vw, 980px"
-                        />
-                        <div
-                            className={`lw-room-artwork ${piece.framed ? 'is-framed' : 'is-unframed'}`}
-                            style={{
-                                left: `${placement.centerXPercent}%`,
-                                top: `${placement.centerYPercent}%`,
-                                width: `${placement.widthPercent}%`,
-                                height: `${placement.heightPercent}%`,
-                            }}
-                        >
-                            <Image src={piece.image_path} alt={piece.title} fill quality={95} sizes={artworkSizes} />
-                        </div>
-                    </figure>
+                    <LivingRoomArtworkScene
+                        piece={piece}
+                        priority
+                        artworkSizes={`(max-width: 760px) ${Math.min(100, Math.max(12, Math.ceil(placement.widthPercent)))}vw, ${Math.min(70, Math.max(8, Math.ceil(placement.widthPercent * 0.7)))}vw`}
+                    />
                 </div>
 
                 <footer>
@@ -137,7 +115,7 @@ export function RoomVisualizer({ piece, open, onClose }: RoomVisualizerProps) {
                     <dl>
                         <div>
                             <dt>Artwork</dt>
-                            <dd>{dimensions(piece)}</dd>
+                            <dd>{scaleDimensionsLabel(piece)}</dd>
                         </div>
                         <div>
                             <dt>Placement</dt>
@@ -145,7 +123,7 @@ export function RoomVisualizer({ piece, open, onClose }: RoomVisualizerProps) {
                         </div>
                     </dl>
                     <small>
-                        <Ruler size={14} /> Relative size is calibrated. Screen dimensions vary.
+                        <Ruler size={14} /> {scaleDimensions?.estimated ? 'Estimated scale is calibrated from the recorded artwork size.' : 'Relative size is calibrated.'} Screen dimensions vary.
                     </small>
                 </footer>
             </section>

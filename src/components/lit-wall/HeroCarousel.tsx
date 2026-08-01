@@ -60,6 +60,7 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                         priority={activeIndex === 0}
                         fetchPriority={activeIndex === 0 ? 'high' : 'auto'}
                         onReady={() => setHasRevealedInitialSlide(true)}
+                        crop={current.presentation_crop}
                     />
                 </div>
                 {incoming && incomingIndex !== null ? (
@@ -75,6 +76,7 @@ export function HeroCarousel({ pieces }: { pieces: PiecesWithImages[] }) {
                             sizes="100vw"
                             quality={95}
                             onReady={() => ready(incomingIndex)}
+                            crop={incoming.presentation_crop}
                         />
                     </div>
                 ) : null}

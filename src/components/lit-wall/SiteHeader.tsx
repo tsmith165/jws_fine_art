@@ -8,12 +8,13 @@ import { Brand } from './Brand';
 
 const links = [
     ['/work', 'Work'],
+    ['/viewing-room', 'Viewing room'],
     ['/studio', 'Studio'],
     ['/commissions', 'Commissions'],
     ['/contact', 'Contact'],
 ] as const;
 
-export function SiteHeader() {
+export function SiteHeader({ viewingRoom = false }: { viewingRoom?: boolean }) {
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
     useEffect(() => setOpen(false), [pathname]);
@@ -21,7 +22,7 @@ export function SiteHeader() {
         <header className="lw-header">
             <Brand />
             <nav className="lw-nav" aria-label="Primary navigation">
-                {links.map(([href, label]) => (
+                {links.filter(([href]) => href !== '/viewing-room' || viewingRoom).map(([href, label]) => (
                     <Link key={href} href={href} aria-current={pathname.startsWith(href) ? 'page' : undefined}>
                         {label}
                     </Link>
@@ -39,7 +40,7 @@ export function SiteHeader() {
                 {open ? <X size={22} /> : <Menu size={22} />}
             </button>
             <nav className={`lw-mobile-nav ${open ? 'is-open' : ''}`} aria-label="Mobile navigation">
-                {links.map(([href, label]) => (
+                {links.filter(([href]) => href !== '/viewing-room' || viewingRoom).map(([href, label]) => (
                     <Link key={href} href={href}>
                         {label} <ArrowRight size={16} />
                     </Link>

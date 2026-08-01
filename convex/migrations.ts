@@ -5,6 +5,7 @@ import { planImportedFieldMerge } from './lib/importMerge';
 import { legacyArtworkSlug, normalizeLegacyBoolean, SERIALIZER_VERSION } from './lib/legacy';
 import { deriveArtworkCategories } from '../shared/artworkCategories';
 import { extractUsStateFromAddress, orderTaxProfile } from '../shared/tax';
+import { estimateFramedDimensions, FRAMED_DIMENSIONS_ESTIMATE_VERSION } from '../shared/artworkDimensions';
 
 type ImportedArtworkField =
     | 'title'
@@ -101,6 +102,76 @@ export const backfillArtworkCategories = internalMutation({
                 ]),
             ),
         };
+    },
+});
+
+/**
+ * Seed a conservative outside-frame estimate for framed works that have base
+ * artwork dimensions. These values are intentionally usable but unverified;
+ * the owner-facing verification queue remains open until Jill measures them.
+ */
+export const backfillEstimatedFramedDimensions = internalMutation({
+    args: { dryRun: v.boolean() },
+    handler: async (ctx, args) => {
+        const artworks = (await ctx.db.query('artworks').collect()).filter((artwork) => !artwork.absentFromSource);
+        const candidates = artworks.flatMap((artwork) => {
+            if (!artwork.framed) return [];
+            if (artwork.framedWidthInches && artwork.framedHeightInches) return [];
+            const estimate = estimateFramedDimensions(artwork.widthInches, artwork.heightInches);
+            return estimate ? [{ artwork, estimate }] : [];
+        });
+
+        if (!args.dryRun) {
+            for (const { artwork, estimate } of candidates) {
+                await ctx.db.patch(artwork._id, {
+                    framedWidthInches: estimate.widthInches,
+                    framedHeightInches: estimate.heightInches,
+                    framedDimensionsVerified: false,
+                    framedDimensionsVerifiedAt: undefined,
+                    framedDimensionsEstimateVersion: FRAMED_DIMENSIONS_ESTIMATE_VERSION,
+                    updatedAt: Date.now(),
+                });
+            }
+        }
+
+        return {
+            dryRun: args.dryRun,
+            scanned: artworks.length,
+            framed: artworks.filter((artwork) => artwork.framed).length,
+            changed: candidates.length,
+            skippedMissingBaseDimensions: artworks.filter(
+                (artwork) => artwork.framed && (!artwork.widthInches || !artwork.heightInches),
+            ).length,
+            estimateVersion: FRAMED_DIMENSIONS_ESTIMATE_VERSION,
+        };
+    },
+});
+
+export const correctPfeifferBeachIdentity = internalMutation({
+    args: { dryRun: v.boolean() },
+    handler: async (ctx, args) => {
+        const artworks = await ctx.db.query('artworks').collect();
+        const artwork = artworks.find((item) => item.title.trim().toLowerCase() === 'pfieffer beach' && !item.absentFromSource);
+        if (!artwork) return { found: false, changed: false };
+        const oldSlug = artwork.slug;
+        const canonicalSlug = oldSlug.replace('pfieffer', 'pfeiffer');
+        if (args.dryRun) return { found: true, changed: artwork.title !== 'Pfeiffer Beach' || oldSlug !== canonicalSlug, legacyId: artwork.legacyId, oldSlug, canonicalSlug };
+        const alias = await ctx.db
+            .query('artworkSlugAliases')
+            .withIndex('by_alias', (q) => q.eq('alias', oldSlug))
+            .unique();
+        if (!alias && oldSlug !== canonicalSlug) {
+            await ctx.db.insert('artworkSlugAliases', { alias: oldSlug, artworkLegacyId: artwork.legacyId, createdAt: Date.now() });
+        }
+        await ctx.db.patch(artwork._id, {
+            title: 'Pfeiffer Beach',
+            slug: canonicalSlug,
+            className: artwork.className.replace('pfieffer', 'pfeiffer'),
+            ownerMutatedFields: [...new Set([...artwork.ownerMutatedFields, 'title', 'slug', 'className'])],
+            ownerRevision: artwork.ownerRevision + 1,
+            updatedAt: Date.now(),
+        });
+        return { found: true, changed: true, legacyId: artwork.legacyId, oldSlug, canonicalSlug };
     },
 });
 

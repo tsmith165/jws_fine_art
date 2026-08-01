@@ -3,7 +3,18 @@ import { isFutureReleaseDate, releaseDateTimestamp } from '../../shared/artworkR
 import { isInstagramShareToken, normalizeInstagramShareToken } from '../../shared/instagramShare';
 
 export type OwnerArtworkField =
-    'piece_title' | 'piece_type' | 'released_at' | 'price' | 'real_width' | 'real_height' | 'description' | 'categories' | 'instagram';
+    | 'piece_title'
+    | 'piece_type'
+    | 'released_at'
+    | 'price'
+    | 'real_width'
+    | 'real_height'
+    | 'framed_width'
+    | 'framed_height'
+    | 'framed_dimensions_verified'
+    | 'description'
+    | 'categories'
+    | 'instagram';
 
 export type OwnerArtworkValidationInput = {
     piece_title: string;
@@ -12,6 +23,10 @@ export type OwnerArtworkValidationInput = {
     price: string;
     real_width: string;
     real_height: string;
+    framed_width: string;
+    framed_height: string;
+    framed_dimensions_verified: boolean;
+    framed: boolean;
     description: string;
     categories: string[];
     instagram: string;
@@ -87,6 +102,32 @@ export function validateOwnerArtwork(input: OwnerArtworkValidationInput) {
         issues.push({ field: 'real_height', tone: 'error', message: 'Enter a valid height greater than 0.' });
     } else if (height > 120) {
         issues.push({ field: 'real_height', tone: 'error', message: 'Height must be 120 inches or less.' });
+    }
+
+    if (input.framed) {
+        const framedWidth = positiveNumber(input.framed_width);
+        const framedHeight = positiveNumber(input.framed_height);
+        if (framedWidth === null) {
+            issues.push({ field: 'framed_width', tone: 'warning', message: 'Add the outside-frame width.' });
+        } else if (Number.isNaN(framedWidth) || framedWidth > 132) {
+            issues.push({ field: 'framed_width', tone: 'error', message: 'Enter a valid framed width of 132 inches or less.' });
+        } else if (width && !Number.isNaN(width) && framedWidth < width) {
+            issues.push({ field: 'framed_width', tone: 'error', message: 'Framed width cannot be smaller than the artwork width.' });
+        }
+        if (framedHeight === null) {
+            issues.push({ field: 'framed_height', tone: 'warning', message: 'Add the outside-frame height.' });
+        } else if (Number.isNaN(framedHeight) || framedHeight > 132) {
+            issues.push({ field: 'framed_height', tone: 'error', message: 'Enter a valid framed height of 132 inches or less.' });
+        } else if (height && !Number.isNaN(height) && framedHeight < height) {
+            issues.push({ field: 'framed_height', tone: 'error', message: 'Framed height cannot be smaller than the artwork height.' });
+        }
+        if (framedWidth && framedHeight && !input.framed_dimensions_verified) {
+            issues.push({
+                field: 'framed_dimensions_verified',
+                tone: 'warning',
+                message: 'The outside-frame measurements are estimated. Verify them when the artwork is measured.',
+            });
+        }
     }
 
     const story = input.description.trim();

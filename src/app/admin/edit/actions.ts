@@ -41,6 +41,9 @@ interface SubmitFormData {
     height: string;
     real_width: string;
     real_height: string;
+    framed_width: string;
+    framed_height: string;
+    framed_dimensions_verified: boolean;
     theme: string;
     categories: ArtworkCategoryId[];
     available: boolean;
@@ -93,6 +96,9 @@ export async function onSubmitEditForm(data: SubmitFormData): Promise<{ success:
             framed: data.framed,
             widthInches: nullableNumber(data.real_width),
             heightInches: nullableNumber(data.real_height),
+            framedWidthInches: nullableNumber(data.framed_width),
+            framedHeightInches: nullableNumber(data.framed_height),
+            framedDimensionsVerified: data.framed_dimensions_verified,
         });
         revalidateArtworkSurfaces(legacyId);
         return { success: true };
@@ -208,6 +214,22 @@ export async function handleMediaOrderUpdate(
     }
 }
 
+export async function saveMediaPresentationCrop(
+    pieceId: number,
+    mediaId: number,
+    crop: { top: number; right: number; bottom: number; left: number } | null,
+) {
+    try {
+        const client = await getAuthenticatedOwnerConvexClient('adjust artwork presentation crop');
+        await client.mutation(api.ownerMutations.updateMediaPresentationCrop, { mediaId, crop });
+        revalidateArtworkSurfaces(pieceId);
+        revalidatePath('/viewing-room');
+        return { success: true as const };
+    } catch (error) {
+        return { success: false as const, error: error instanceof Error ? error.message : 'The visible crop could not be saved.' };
+    }
+}
+
 export async function handleImageTitleEdit(
     imageId: number,
     newTitle: string,
@@ -270,6 +292,9 @@ export async function handleTitleUpdate(formData: FormData): Promise<{ success: 
             framed: artwork.framed,
             widthInches: artwork.widthInches,
             heightInches: artwork.heightInches,
+            framedWidthInches: artwork.framedWidthInches,
+            framedHeightInches: artwork.framedHeightInches,
+            framedDimensionsVerified: artwork.framedDimensionsVerified,
         });
         revalidateArtworkSurfaces(pieceId);
         return { success: true };
@@ -321,6 +346,9 @@ export async function createPiece(newPieceData: NewPieceData): Promise<{ success
             framed: false,
             widthInches: null,
             heightInches: null,
+            framedWidthInches: null,
+            framedHeightInches: null,
+            framedDimensionsVerified: false,
             primaryImage: {
                 sourceUrl: source.url,
                 sourceWidth: source.width,

@@ -1,6 +1,6 @@
 import 'server-only';
 import { api } from '../../convex/_generated/api';
-import { ownerArtworkAttention } from '@/lib/ownerArtworkAttention';
+import { summarizeOwnerArtworkAttention } from '@/lib/ownerArtworkAttention';
 import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
 import { readOwnerArtworksWithMedia } from './ownerReads';
 import { getAuthenticatedOwnerConvexClient } from './ownerConvex';
@@ -18,7 +18,7 @@ export async function readOwnerDashboard() {
         ...dashboard,
         artwork: {
             ...dashboard.artwork,
-            needsDetails: filterCategorizerArtworks(artworks).filter((artwork) => ownerArtworkAttention(artwork).length > 0).length,
+            needsDetails: summarizeOwnerArtworkAttention(filterCategorizerArtworks(artworks)).count,
         },
     };
 }

@@ -17,6 +17,7 @@ export function ArtworkCard({ piece, priority = false }: { piece: PiecesWithImag
                     sizes={CATALOG_ARTWORK_IMAGE_POLICY.sizes}
                     quality={CATALOG_ARTWORK_IMAGE_POLICY.quality}
                     priority={priority}
+                    crop={piece.presentation_crop}
                 />
                 <span className="lw-art-card-open">
                     <ArrowUpRight size={16} /> View work

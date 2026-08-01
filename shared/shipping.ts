@@ -3,6 +3,7 @@ export type ShippingDestination = 'domestic' | 'pickup' | 'international';
 export type ShippingTier = 'Small' | 'Medium' | 'Large' | 'Studio quote' | 'Local pickup';
 
 export const SHIPPING_POLICY_VERSION = '2026-07-23';
+export const FINISHED_FRAME_SHIPPING_POLICY_VERSION = '2026-08-01-framed-v1';
 
 export const SHIPPING_TIER_PRICES = {
     Small: { unframed: 2500, framed: 4500, example: 'Up to 10 × 10 in' },

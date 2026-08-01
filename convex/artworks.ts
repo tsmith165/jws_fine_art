@@ -24,6 +24,11 @@ function publicArtwork(artwork: Doc<'artworks'>, media: Doc<'artworkMedia'>[]) {
         framed: artwork.framed,
         widthInches: artwork.widthInches,
         heightInches: artwork.heightInches,
+        framedWidthInches: artwork.framedWidthInches ?? null,
+        framedHeightInches: artwork.framedHeightInches ?? null,
+        framedDimensionsVerified: artwork.framedDimensionsVerified ?? false,
+        framedDimensionsVerifiedAt: artwork.framedDimensionsVerifiedAt ?? null,
+        framedDimensionsEstimateVersion: artwork.framedDimensionsEstimateVersion ?? null,
         galleryOrder: artwork.galleryOrder,
         homepageOrder: artwork.homepageOrder,
         media: media.map((item) => ({
@@ -37,6 +42,7 @@ function publicArtwork(artwork: Doc<'artworks'>, media: Doc<'artworkMedia'>[]) {
             smallUrl: item.smallUrl,
             smallWidth: item.smallWidth,
             smallHeight: item.smallHeight,
+            presentationCrop: item.presentationCrop ?? null,
             displayOrder: item.displayOrder,
         })),
     };
@@ -131,5 +137,42 @@ export const getPublicBySlug = query({
             artwork,
             media.filter((item) => !item.absentFromSource).sort((a, b) => a.displayOrder - b.displayOrder),
         );
+    },
+});
+
+export const resolvePublicSlug = query({
+    args: { slug: v.string() },
+    handler: async (ctx, args) => {
+        let artwork = await ctx.db
+            .query('artworks')
+            .withIndex('by_slug', (q) => q.eq('slug', args.slug))
+            .unique();
+        let matchedAlias = false;
+        if (!artwork) {
+            const alias = await ctx.db
+                .query('artworkSlugAliases')
+                .withIndex('by_alias', (q) => q.eq('alias', args.slug))
+                .unique();
+            if (alias) {
+                artwork = await ctx.db
+                    .query('artworks')
+                    .withIndex('by_legacy_id', (q) => q.eq('legacyId', alias.artworkLegacyId))
+                    .unique();
+                matchedAlias = Boolean(artwork);
+            }
+        }
+        if (!artwork || !artwork.active || artwork.absentFromSource) return null;
+        const media = await ctx.db
+            .query('artworkMedia')
+            .withIndex('by_artwork_and_order', (q) => q.eq('artworkLegacyId', artwork.legacyId))
+            .collect();
+        return {
+            artwork: publicArtwork(
+                artwork,
+                media.filter((item) => !item.absentFromSource).sort((a, b) => a.displayOrder - b.displayOrder),
+            ),
+            canonicalSlug: artwork.slug,
+            matchedAlias,
+        };
     },
 });

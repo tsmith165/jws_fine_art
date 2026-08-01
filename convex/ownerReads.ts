@@ -42,6 +42,11 @@ async function ownerArtworks(ctx: QueryCtx) {
             framed: artwork.framed,
             widthInches: artwork.widthInches,
             heightInches: artwork.heightInches,
+            framedWidthInches: artwork.framedWidthInches ?? null,
+            framedHeightInches: artwork.framedHeightInches ?? null,
+            framedDimensionsVerified: artwork.framedDimensionsVerified ?? false,
+            framedDimensionsVerifiedAt: artwork.framedDimensionsVerifiedAt ?? null,
+            framedDimensionsEstimateVersion: artwork.framedDimensionsEstimateVersion ?? null,
             media: (mediaByArtwork.get(artwork.legacyId) ?? [])
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .map((item) => ({
@@ -55,6 +60,7 @@ async function ownerArtworks(ctx: QueryCtx) {
                     smallUrl: item.smallUrl,
                     smallWidth: item.smallWidth,
                     smallHeight: item.smallHeight,
+                    presentationCrop: item.presentationCrop ?? null,
                     displayOrder: item.displayOrder,
                 })),
         }));

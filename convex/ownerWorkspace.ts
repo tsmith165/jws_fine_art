@@ -19,12 +19,6 @@ export const dashboard = query({
                 total: artworks.filter((item) => !item.absentFromSource).length,
                 active: artworks.filter((item) => item.active && !item.absentFromSource).length,
                 available: artworks.filter((item) => item.active && item.available && !item.sold && item.priceCents > 0).length,
-                needsDetails: artworks.filter(
-                    (item) =>
-                        item.active &&
-                        !item.absentFromSource &&
-                        (!item.medium || !item.widthInches || !item.heightInches || (!item.sold && item.priceCents <= 0)),
-                ).length,
             },
             newInquiries: inquiries.filter((item) => item.status === 'new').length,
             ordersToFulfill: orders.filter(

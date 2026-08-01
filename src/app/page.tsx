@@ -10,6 +10,7 @@ import { SiteShell } from '@/components/lit-wall/SiteShell';
 import { readHomepageArtworks, readPublicArtworks } from '@/data/artworkReads';
 import { EDITORIAL_IMAGES } from '@/lib/editorialImages';
 import { compareArtworkReleasedNewest } from '@shared/artworkRelease';
+import { readPublishedGalleryWalls } from '@/data/galleryWallReads';
 
 export const metadata: Metadata = {
     title: 'Original paintings by Jill Weeks Smith',
@@ -19,7 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-    const [heroPieces, allPieces] = await Promise.all([readHomepageArtworks(), readPublicArtworks()]);
+    const [heroPieces, allPieces, viewingRoomWalls] = await Promise.all([
+        readHomepageArtworks(),
+        readPublicArtworks(),
+        readPublishedGalleryWalls(),
+    ]);
     const available = allPieces
         .filter((piece) => piece.available && !piece.sold)
         .sort(compareArtworkReleasedNewest)
@@ -44,6 +49,27 @@ export default async function HomePage() {
                 </Link>
             </section>
             <CollectionBrowse pieces={allPieces} />
+            {viewingRoomWalls[0] ? (
+                <section className={`lw-viewing-room-teaser is-${viewingRoomWalls[0].background.preset} lw-band`}>
+                    <div>
+                        <span className="lw-eyebrow">Curated viewing room</span>
+                        <h2>See the work in conversation.</h2>
+                        <p>
+                            Step into {viewingRoomWalls[0].title}, where Jill’s paintings are arranged together at true relative scale.
+                        </p>
+                        <Link className="lw-button lw-button-brass" href={`/viewing-room/${viewingRoomWalls[0].slug}`}>
+                            Enter the viewing room <ArrowRight size={16} />
+                        </Link>
+                    </div>
+                    <div className="lw-viewing-room-teaser-wall" style={{ aspectRatio: `${viewingRoomWalls[0].widthInches} / ${viewingRoomWalls[0].heightInches}` }}>
+                        {viewingRoomWalls[0].placements.slice(0, 6).map((placement) => (
+                            <span key={placement.id} style={{ left: `${(placement.centerXInches / viewingRoomWalls[0].widthInches) * 100}%`, top: `${(placement.centerYInches / viewingRoomWalls[0].heightInches) * 100}%`, width: `${(placement.artwork.widthInches / viewingRoomWalls[0].widthInches) * 100}%`, aspectRatio: `${placement.artwork.widthInches} / ${placement.artwork.heightInches}` }}>
+                                <Image src={placement.artwork.imageUrl} alt="" fill quality={95} sizes="20vw" />
+                            </span>
+                        ))}
+                    </div>
+                </section>
+            ) : null}
             <section className="lw-artist-intro lw-band">
                 <div className="lw-artist-photo">
                     <Image

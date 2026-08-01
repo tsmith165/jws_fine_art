@@ -18,6 +18,7 @@ function legacyMedia(media: ConvexMedia): ExtraImages | ProgressImages {
         small_image_path: media.smallUrl,
         small_width: media.smallWidth,
         small_height: media.smallHeight,
+        presentation_crop: media.presentationCrop,
     };
 }
 
@@ -41,11 +42,13 @@ export function toLegacyArtwork(artwork: ConvexArtwork): PiecesWithImages {
         class_name: artwork.className,
         title: artwork.title,
         image_path: primary.sourceUrl,
+        primary_media_id: primary.legacyId,
         width: primary.sourceWidth,
         height: primary.sourceHeight,
         small_image_path: primary.smallUrl,
         small_width: primary.smallWidth,
         small_height: primary.smallHeight,
+        presentation_crop: primary.presentationCrop,
         price: artwork.priceCents / 100,
         released_at: artwork.releasedAt,
         sold: artwork.sold,
@@ -55,6 +58,11 @@ export function toLegacyArtwork(artwork: ConvexArtwork): PiecesWithImages {
         instagram: artwork.instagramUrl,
         real_width: artwork.widthInches,
         real_height: artwork.heightInches,
+        framed_width: artwork.framedWidthInches ?? null,
+        framed_height: artwork.framedHeightInches ?? null,
+        framed_dimensions_verified: artwork.framedDimensionsVerified ?? false,
+        framed_dimensions_verified_at: artwork.framedDimensionsVerifiedAt ?? null,
+        framed_dimensions_estimate_version: artwork.framedDimensionsEstimateVersion ?? null,
         active: artwork.active,
         theme: artwork.theme,
         categories: categories.length ? categories : deriveArtworkCategories({ theme: artwork.theme, medium: artwork.medium }),

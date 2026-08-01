@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, PackageCheck, ShieldCheck } from 'lucide-react';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { ArtworkActions } from '@/components/lit-wall/ArtworkActions';
 import { AnalyticsEventOnMount } from '@/components/lit-wall/AnalyticsEvent';
 import { ArtworkCard } from '@/components/lit-wall/ArtworkCard';
 import { ArtworkMedia } from '@/components/lit-wall/ArtworkMedia';
 import { SiteShell } from '@/components/lit-wall/SiteShell';
-import { readPublicArtworkBySlug, readPublicArtworks } from '@/data/artworkReads';
+import { readPublicArtworkBySlug, readPublicArtworks, resolvePublicArtworkSlug } from '@/data/artworkReads';
 import { artworkHref, artworkStatus, dimensions, money, placeLabel } from '@/lib/artwork';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -31,22 +31,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ArtworkPage({ params }: Props) {
-    const piece = await readPublicArtworkBySlug((await params).slug);
-    if (!piece) notFound();
+    const requestedSlug = (await params).slug;
+    const resolved = await resolvePublicArtworkSlug(requestedSlug);
+    if (!resolved) notFound();
+    if (resolved.matchedAlias && resolved.canonicalSlug !== requestedSlug) permanentRedirect(`/work/${resolved.canonicalSlug}`);
+    const piece = resolved.artwork;
     const all = await readPublicArtworks();
     const related = all
         .filter((item) => item.id !== piece.id && (item.theme === piece.theme || item.piece_type === piece.piece_type))
         .slice(0, 3);
     const status = artworkStatus(piece);
     const hasPrice = piece.price > 0 && !piece.sold;
+    const structuredWidth = piece.framed && piece.framed_dimensions_verified && piece.framed_width
+        ? piece.framed_width
+        : piece.real_width;
+    const structuredHeight = piece.framed && piece.framed_dimensions_verified && piece.framed_height
+        ? piece.framed_height
+        : piece.real_height;
     const structuredData = {
         '@context': 'https://schema.org',
         '@type': 'VisualArtwork',
         name: piece.title,
         image: [piece.image_path, ...piece.extraImages.map((image) => image.image_path)],
         artMedium: piece.piece_type || undefined,
-        width: piece.real_width ? { '@type': 'QuantitativeValue', value: piece.real_width, unitCode: 'INH' } : undefined,
-        height: piece.real_height ? { '@type': 'QuantitativeValue', value: piece.real_height, unitCode: 'INH' } : undefined,
+        width: structuredWidth ? { '@type': 'QuantitativeValue', value: structuredWidth, unitCode: 'INH' } : undefined,
+        height: structuredHeight ? { '@type': 'QuantitativeValue', value: structuredHeight, unitCode: 'INH' } : undefined,
         creator: { '@type': 'Person', name: 'Jill Weeks Smith' },
         ...(piece.available && !piece.sold && piece.price > 0
             ? {

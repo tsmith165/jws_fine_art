@@ -15,8 +15,13 @@ export async function readPublicArtwork(id: number): Promise<PiecesWithImages | 
 }
 
 export async function readPublicArtworkBySlug(slug: string): Promise<PiecesWithImages | null> {
-    const artwork = await getConvexClient().query(api.artworks.getPublicBySlug, { slug });
-    return artwork ? toLegacyArtwork(artwork) : null;
+    const result = await getConvexClient().query(api.artworks.resolvePublicSlug, { slug });
+    return result ? toLegacyArtwork(result.artwork) : null;
+}
+
+export async function resolvePublicArtworkSlug(slug: string): Promise<{ artwork: PiecesWithImages; canonicalSlug: string; matchedAlias: boolean } | null> {
+    const result = await getConvexClient().query(api.artworks.resolvePublicSlug, { slug });
+    return result ? { artwork: toLegacyArtwork(result.artwork), canonicalSlug: result.canonicalSlug, matchedAlias: result.matchedAlias } : null;
 }
 
 export async function readHomepageArtworks(): Promise<PiecesWithImages[]> {

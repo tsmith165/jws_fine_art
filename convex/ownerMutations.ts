@@ -66,6 +66,9 @@ const artworkFields = {
     framed: v.boolean(),
     widthInches: nullableNumber,
     heightInches: nullableNumber,
+    framedWidthInches: v.optional(nullableNumber),
+    framedHeightInches: v.optional(nullableNumber),
+    framedDimensionsVerified: v.optional(v.boolean()),
 };
 
 export const updateArtwork = mutation({
@@ -73,10 +76,45 @@ export const updateArtwork = mutation({
     handler: async (ctx, args) => {
         const actorId = await owner(ctx);
         const artwork = await artworkByLegacyId(ctx, args.legacyId);
-        const { legacyId: _legacyId, categories, releasedAt, sold, available, instagramUrl, ...remainingFields } = args;
+        const {
+            legacyId: _legacyId,
+            categories,
+            releasedAt,
+            sold,
+            available,
+            instagramUrl,
+            framedDimensionsVerified,
+            ...remainingFields
+        } = args;
         const normalizedInstagramUrl = instagramUrl ? normalizeInstagramShareToken(instagramUrl) : null;
+        const framedWidthInches =
+            remainingFields.framedWidthInches === undefined ? artwork.framedWidthInches ?? null : remainingFields.framedWidthInches;
+        const framedHeightInches =
+            remainingFields.framedHeightInches === undefined ? artwork.framedHeightInches ?? null : remainingFields.framedHeightInches;
+        const requestedVerification = framedDimensionsVerified ?? artwork.framedDimensionsVerified ?? false;
+        const framedDimensionsComplete =
+            remainingFields.framed && Boolean(framedWidthInches && framedWidthInches > 0) && Boolean(framedHeightInches && framedHeightInches > 0);
+        if (requestedVerification && !framedDimensionsComplete) {
+            throw new Error('Enter both outside-frame measurements before verifying them.');
+        }
+        const dimensionsChanged =
+            artwork.framedWidthInches !== framedWidthInches || artwork.framedHeightInches !== framedHeightInches;
+        const verified = framedDimensionsComplete && requestedVerification;
         const fields = {
             ...remainingFields,
+            framedWidthInches,
+            framedHeightInches,
+            framedDimensionsVerified: verified,
+            framedDimensionsVerifiedAt: verified
+                ? artwork.framedDimensionsVerified && !dimensionsChanged
+                    ? artwork.framedDimensionsVerifiedAt ?? Date.now()
+                    : Date.now()
+                : undefined,
+            framedDimensionsEstimateVersion: verified
+                ? undefined
+                : framedDimensionsComplete
+                  ? artwork.framedDimensionsEstimateVersion
+                  : undefined,
             instagramUrl: normalizedInstagramUrl && isInstagramShareToken(normalizedInstagramUrl) ? normalizedInstagramUrl : instagramUrl,
             releasedAt: releasedAt ?? undefined,
             ...normalizeArtworkAvailability({ sold, available }),
@@ -147,6 +185,49 @@ export const setArtworkCategories = mutation({
     },
 });
 
+export const setArtworkFramedDimensions = mutation({
+    args: {
+        legacyId: v.number(),
+        framedWidthInches: v.number(),
+        framedHeightInches: v.number(),
+        verified: v.boolean(),
+    },
+    handler: async (ctx, args) => {
+        const actorId = await owner(ctx);
+        const artwork = await artworkByLegacyId(ctx, args.legacyId);
+        if (!artwork.framed) throw new Error('This artwork is not marked as framed.');
+        if (!Number.isFinite(args.framedWidthInches) || args.framedWidthInches <= 0) throw new Error('Enter a valid outside-frame width.');
+        if (!Number.isFinite(args.framedHeightInches) || args.framedHeightInches <= 0) throw new Error('Enter a valid outside-frame height.');
+        if (args.framedWidthInches < (artwork.widthInches ?? 0)) throw new Error('Outside-frame width cannot be smaller than the artwork.');
+        if (args.framedHeightInches < (artwork.heightInches ?? 0)) throw new Error('Outside-frame height cannot be smaller than the artwork.');
+        const now = Date.now();
+        const changed = artwork.framedWidthInches !== args.framedWidthInches || artwork.framedHeightInches !== args.framedHeightInches;
+        await ctx.db.patch(artwork._id, {
+            framedWidthInches: args.framedWidthInches,
+            framedHeightInches: args.framedHeightInches,
+            framedDimensionsVerified: args.verified,
+            framedDimensionsVerifiedAt: args.verified ? now : undefined,
+            framedDimensionsEstimateVersion: args.verified ? undefined : changed ? undefined : artwork.framedDimensionsEstimateVersion,
+            ownerMutatedFields: [
+                ...new Set([
+                    ...artwork.ownerMutatedFields,
+                    'framedWidthInches',
+                    'framedHeightInches',
+                    'framedDimensionsVerified',
+                ]),
+            ],
+            ownerRevision: artwork.ownerRevision + 1,
+            updatedAt: now,
+        });
+        await audit(ctx, actorId, args.verified ? 'artwork.frame_dimensions_verified' : 'artwork.frame_dimensions_updated', 'artwork', String(artwork._id), {
+            legacyId: artwork.legacyId,
+            framedWidthInches: args.framedWidthInches,
+            framedHeightInches: args.framedHeightInches,
+        });
+        return { changed: changed || Boolean(artwork.framedDimensionsVerified) !== args.verified };
+    },
+});
+
 export const createArtwork = mutation({
     args: {
         ...artworkFields,
@@ -166,9 +247,22 @@ export const createArtwork = mutation({
         const legacyId = Math.max(0, ...artworks.map((item) => item.legacyId)) + 1;
         const galleryOrder = Math.max(0, ...artworks.map((item) => item.galleryOrder)) + 1000;
         const homepageOrder = Math.max(0, ...artworks.map((item) => item.homepageOrder)) + 1000;
-        const { primaryImage, categories, releasedAt, sold, available, ...remainingFields } = args;
+        const {
+            primaryImage,
+            categories,
+            releasedAt,
+            sold,
+            available,
+            framedDimensionsVerified: _verified,
+            framedWidthInches = null,
+            framedHeightInches = null,
+            ...remainingFields
+        } = args;
         const fields = {
             ...remainingFields,
+            framedWidthInches,
+            framedHeightInches,
+            framedDimensionsVerified: false,
             releasedAt: releasedAt ?? undefined,
             ...normalizeArtworkAvailability({ sold, available }),
             categories: categories ?? deriveArtworkCategories({ theme: remainingFields.theme, medium: remainingFields.medium }),
@@ -544,6 +638,40 @@ export const updateMediaDimensions = mutation({
             updatedAt: Date.now(),
         });
         await audit(ctx, actorId, 'media.dimensions_verified', 'media', String(media._id));
+        return { success: true };
+    },
+});
+
+export const updateMediaPresentationCrop = mutation({
+    args: {
+        mediaId: v.number(),
+        crop: v.union(
+            v.object({ top: v.number(), right: v.number(), bottom: v.number(), left: v.number() }),
+            v.null(),
+        ),
+    },
+    handler: async (ctx, args) => {
+        const actorId = await owner(ctx);
+        const media = (await ctx.db.query('artworkMedia').collect()).find(
+            (candidate) => candidate.legacyId === args.mediaId && !candidate.absentFromSource,
+        );
+        if (!media) throw new Error('Artwork image not found.');
+        if (args.crop) {
+            const values = Object.values(args.crop);
+            if (values.some((value) => !Number.isFinite(value) || value < 0 || value > 0.2)) {
+                throw new Error('Visible crop insets must be between 0% and 20%.');
+            }
+            if (args.crop.left + args.crop.right >= 0.4 || args.crop.top + args.crop.bottom >= 0.4) {
+                throw new Error('The crop removes too much of the original image.');
+            }
+        }
+        await ctx.db.patch(media._id, {
+            presentationCrop: args.crop ?? undefined,
+            ownerMutatedFields: [...new Set([...media.ownerMutatedFields, 'presentationCrop'])],
+            ownerRevision: media.ownerRevision + 1,
+            updatedAt: Date.now(),
+        });
+        await audit(ctx, actorId, args.crop ? 'media.presentation_crop_updated' : 'media.presentation_crop_reset', 'media', String(media._id), args.crop ?? {});
         return { success: true };
     },
 });

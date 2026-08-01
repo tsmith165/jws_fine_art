@@ -11,24 +11,26 @@ import {
     ImageOff,
     ListChecks,
     Save,
+    Ruler,
     SkipForward,
     Tags,
 } from 'lucide-react';
 import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
-import { saveArtworkCategories } from '@/app/admin/categories/actions';
+import { saveArtworkCategories, saveArtworkFramedDimensions } from '@/app/admin/categories/actions';
 import { ownerArtworkAttention, type OwnerArtworkAttentionKind } from '@/lib/ownerArtworkAttention';
 import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
 import type { PiecesWithImages } from '@/types/artwork';
 import { ARTWORK_CATEGORIES, type ArtworkCategoryId } from '@shared/artworkCategories';
 
-type QueueMode = 'attention' | 'image' | 'metadata' | 'category' | 'all';
+type QueueMode = 'attention' | 'image' | 'metadata' | 'frame' | 'category' | 'all';
 
 const queueModes: { id: QueueMode; label: string; kind?: OwnerArtworkAttentionKind }[] = [
     { id: 'attention', label: 'Needs attention' },
     { id: 'image', label: 'Image quality', kind: 'image' },
     { id: 'metadata', label: 'Listing details', kind: 'metadata' },
+    { id: 'frame', label: 'Frame measurements', kind: 'frame' },
     { id: 'category', label: 'Uncategorized', kind: 'category' },
     { id: 'all', label: 'All artwork' },
 ];
@@ -40,6 +42,7 @@ function queueLabel(mode: QueueMode) {
 function issueIcon(kind: OwnerArtworkAttentionKind) {
     if (kind === 'image') return <ImageOff size={16} aria-hidden="true" />;
     if (kind === 'category') return <Tags size={16} aria-hidden="true" />;
+    if (kind === 'frame') return <Ruler size={16} aria-hidden="true" />;
     return <FileText size={16} aria-hidden="true" />;
 }
 
@@ -81,16 +84,19 @@ export function OwnerQuickCategorizer({ initialArtworks }: { initialArtworks: Pi
     const [currentId, setCurrentId] = useState<number | null>(initialArtwork?.id ?? null);
     const [draftCategories, setDraftCategories] = useState<ArtworkCategoryId[]>(initialArtwork?.categories ?? []);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [frameWidth, setFrameWidth] = useState(initialArtwork?.framed_width ? String(initialArtwork.framed_width) : '');
+    const [frameHeight, setFrameHeight] = useState(initialArtwork?.framed_height ? String(initialArtwork.framed_height) : '');
+    const [frameVerified, setFrameVerified] = useState(Boolean(initialArtwork?.framed_dimensions_verified));
     const [message, setMessage] = useState('');
     const [isPending, startTransition] = useTransition();
 
     const attentionById = useMemo(() => new Map(artworks.map((artwork) => [artwork.id, ownerArtworkAttention(artwork)])), [artworks]);
     const modeCounts = useMemo(() => {
-        const counts: Record<QueueMode, number> = { attention: 0, image: 0, metadata: 0, category: 0, all: artworks.length };
+        const counts: Record<QueueMode, number> = { attention: 0, image: 0, metadata: 0, frame: 0, category: 0, all: artworks.length };
         for (const artwork of artworks) {
             const issues = attentionById.get(artwork.id) ?? [];
             if (issues.length) counts.attention += 1;
-            for (const kind of ['image', 'metadata', 'category'] as const) {
+            for (const kind of ['image', 'metadata', 'frame', 'category'] as const) {
                 if (issues.some((issue) => issue.kind === kind)) counts[kind] += 1;
             }
         }
@@ -117,6 +123,9 @@ export function OwnerQuickCategorizer({ initialArtworks }: { initialArtworks: Pi
             if (!next) return;
             setCurrentId(id);
             setDraftCategories(next.categories);
+            setFrameWidth(next.framed_width ? String(next.framed_width) : '');
+            setFrameHeight(next.framed_height ? String(next.framed_height) : '');
+            setFrameVerified(Boolean(next.framed_dimensions_verified));
             setSelectedImageIndex(0);
             setMessage('');
         },
@@ -167,6 +176,46 @@ export function OwnerQuickCategorizer({ initialArtworks }: { initialArtworks: Pi
             if (nextCandidate && nextCandidate.id !== artwork.id) selectArtwork(nextCandidate.id);
         });
     }, [artwork, draftCategories, isPending, queue, selectArtwork]);
+
+    const saveFrameAndContinue = useCallback(() => {
+        if (!artwork || isPending) return;
+        const width = Number(frameWidth);
+        const height = Number(frameHeight);
+        if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
+            setMessage('Enter both outside-frame measurements before saving.');
+            return;
+        }
+        const currentIndex = Math.max(0, queue.findIndex((item) => item.id === artwork.id));
+        const nextCandidate = queue[currentIndex + 1] ?? queue[currentIndex - 1] ?? null;
+        setMessage('');
+        startTransition(async () => {
+            const result = await saveArtworkFramedDimensions({
+                legacyId: artwork.id,
+                framedWidthInches: width,
+                framedHeightInches: height,
+                verified: frameVerified,
+            });
+            if (!result.success) {
+                setMessage(result.error);
+                return;
+            }
+            setArtworks((current) =>
+                current.map((item) =>
+                    item.id === artwork.id
+                        ? {
+                              ...item,
+                              framed_width: width,
+                              framed_height: height,
+                              framed_dimensions_verified: frameVerified,
+                              framed_dimensions_estimate_version: frameVerified ? null : item.framed_dimensions_estimate_version,
+                          }
+                        : item,
+                ),
+            );
+            setMessage(frameVerified ? 'Measurements verified' : 'Provisional measurements saved');
+            if (nextCandidate && nextCandidate.id !== artwork.id) selectArtwork(nextCandidate.id);
+        });
+    }, [artwork, frameHeight, frameVerified, frameWidth, isPending, queue, selectArtwork]);
 
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
@@ -362,6 +411,72 @@ export function OwnerQuickCategorizer({ initialArtworks }: { initialArtworks: Pi
                                 </ul>
                             ) : null}
                         </section>
+                        {artwork.framed && mode === 'frame' ? (
+                            <form
+                                className="owner-frame-quick-form"
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    saveFrameAndContinue();
+                                }}
+                            >
+                                <header>
+                                    <div>
+                                        <strong>Outside-frame measurements</strong>
+                                        <small>Measure the complete frame from outside edge to outside edge.</small>
+                                    </div>
+                                    <Link href="/admin/measuring-guide" target="_blank">Measuring guide</Link>
+                                </header>
+                                <div className="owner-frame-quick-fields">
+                                    <label>
+                                        <span>Framed width (in)</span>
+                                        <input
+                                            type="number"
+                                            min={artwork.real_width || 0.25}
+                                            max="132"
+                                            step="0.25"
+                                            value={frameWidth}
+                                            onChange={(event) => {
+                                                setFrameWidth(event.target.value);
+                                                setFrameVerified(false);
+                                                setMessage('');
+                                            }}
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        <span>Framed height (in)</span>
+                                        <input
+                                            type="number"
+                                            min={artwork.real_height || 0.25}
+                                            max="132"
+                                            step="0.25"
+                                            value={frameHeight}
+                                            onChange={(event) => {
+                                                setFrameHeight(event.target.value);
+                                                setFrameVerified(false);
+                                                setMessage('');
+                                            }}
+                                            required
+                                        />
+                                    </label>
+                                </div>
+                                <label className="owner-frame-quick-verify">
+                                    <input
+                                        type="checkbox"
+                                        checked={frameVerified}
+                                        onChange={(event) => setFrameVerified(event.target.checked)}
+                                    />
+                                    <span><Check size={14} /></span>
+                                    <strong>I measured and verified these outside dimensions.</strong>
+                                </label>
+                                <footer>
+                                    <span>{frameVerified ? 'Verified measurement' : 'Estimated or provisional measurement'}</span>
+                                    <button className="owner-button is-primary" type="submit" disabled={isPending}>
+                                        <Save size={16} /> {isPending ? 'Saving…' : 'Save & next'}
+                                    </button>
+                                </footer>
+                            </form>
+                        ) : null}
                         <fieldset id="owner-attention-categories" className="owner-categorizer-categories">
                             <legend>Collection categories</legend>
                             {ARTWORK_CATEGORIES.map((category, index) => {

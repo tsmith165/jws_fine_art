@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { RoomVisualizer } from '@/components/lit-wall/RoomVisualizer';
 import type { PiecesWithImages } from '@/types/artwork';
-import { isPurchasable } from '@/lib/artwork';
+import { artworkScaleDimensions, isPurchasable } from '@/lib/artwork';
 import { captureAnalytics } from '@/lib/analytics';
 import { useShortlist } from '@/stores/shortlist';
 
@@ -33,14 +33,16 @@ export function ArtworkActions({ piece }: { piece: PiecesWithImages }) {
                     Ask about this work
                 </Link>
             )}
-            {piece.real_width && piece.real_height ? (
+            {artworkScaleDimensions(piece) ? (
                 <button
+                    id="view-at-scale"
                     type="button"
                     className="lw-button lw-button-ghost lw-wide-button"
                     onClick={() => {
                         captureAnalytics('room_visualizer_opened', {
                             artwork_id: piece.id,
                             artwork_slug: piece.slug,
+                            source: 'actions_button',
                         });
                         setRoomOpen(true);
                     }}

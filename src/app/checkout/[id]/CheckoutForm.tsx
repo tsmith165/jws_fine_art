@@ -9,21 +9,21 @@ import { captureAnalytics } from '@/lib/analytics';
 import { estimateArtworkShipping, shippingCareForMedium, type ShippingDestination } from '@/lib/shipping';
 import { runStripePurchase } from '../actions';
 
-function checkoutShipping(piece: PiecesWithImages, destination: ShippingDestination) {
+function checkoutShipping(piece: PiecesWithImages, destination: ShippingDestination, shippingDimensions: { widthInches: number; heightInches: number; estimated: boolean }) {
     return estimateArtworkShipping({
-        width: piece.real_width ?? 0,
-        height: piece.real_height ?? 0,
+        width: shippingDimensions.widthInches,
+        height: shippingDimensions.heightInches,
         framed: Boolean(piece.framed),
         care: shippingCareForMedium(piece.piece_type),
         destination,
     });
 }
 
-export default function CheckoutForm({ current_piece }: { current_piece: PiecesWithImages }) {
+export default function CheckoutForm({ current_piece, shippingDimensions }: { current_piece: PiecesWithImages; shippingDimensions: { widthInches: number; heightInches: number; estimated: boolean } }) {
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');
     const [destination, setDestination] = useState<ShippingDestination>('domestic');
-    const [shipping, setShipping] = useState(() => checkoutShipping(current_piece, 'domestic'));
+    const [shipping, setShipping] = useState(() => checkoutShipping(current_piece, 'domestic', shippingDimensions));
     const [isCalculating, setIsCalculating] = useState(false);
     const calculationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,7 +40,7 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
         setIsCalculating(true);
         if (calculationTimer.current) clearTimeout(calculationTimer.current);
         calculationTimer.current = setTimeout(() => {
-            setShipping(checkoutShipping(current_piece, nextDestination));
+            setShipping(checkoutShipping(current_piece, nextDestination, shippingDimensions));
             setIsCalculating(false);
         }, 220);
     }
@@ -188,7 +188,7 @@ export default function CheckoutForm({ current_piece }: { current_piece: PiecesW
                                 <small>
                                     {pickup
                                         ? 'Pickup coordinated directly with the studio'
-                                        : `${shipping.classification} · based on the artwork’s exact dimensions`}
+                                        : `${shipping.classification} · based on ${current_piece.framed ? 'the finished outside-frame size' : 'the artwork size'}${shippingDimensions.estimated ? ' (provisional)' : ''}`}
                                 </small>
                             </dt>
                             <dd>{pickup ? 'Pickup' : shipping.classification}</dd>

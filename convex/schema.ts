@@ -5,6 +5,21 @@ const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
 const nullableBoolean = v.union(v.boolean(), v.null());
 const artworkCategory = v.union(v.literal('coastal'), v.literal('mountain'), v.literal('urban'), v.literal('intaglio-lino-cut'));
+const galleryWallPreset = v.union(v.literal('white-oak'), v.literal('warm-plaster'), v.literal('museum-green'), v.literal('charcoal'));
+const galleryWallBackground = v.union(
+    v.object({ kind: v.literal('preset'), preset: galleryWallPreset }),
+    v.object({
+        kind: v.literal('photo'),
+        mediaId: v.string(),
+        calibration: v.object({ referenceInches: v.number(), referencePixels: v.number(), horizonY: v.number() }),
+    }),
+);
+const galleryWallPlacement = v.object({
+    id: v.string(),
+    artworkLegacyId: v.number(),
+    centerXInches: v.number(),
+    centerYInches: v.number(),
+});
 
 const legacySourceFields = {
     legacyId: v.number(),
@@ -132,6 +147,11 @@ export default defineSchema({
         framed: v.boolean(),
         widthInches: nullableNumber,
         heightInches: nullableNumber,
+        framedWidthInches: v.optional(nullableNumber),
+        framedHeightInches: v.optional(nullableNumber),
+        framedDimensionsVerified: v.optional(v.boolean()),
+        framedDimensionsVerifiedAt: v.optional(v.number()),
+        framedDimensionsEstimateVersion: v.optional(v.number()),
         galleryOrder: v.number(),
         homepageOrder: v.number(),
         ownerMutatedFields: v.array(v.string()),
@@ -146,6 +166,14 @@ export default defineSchema({
         .index('by_homepage_order', ['homepageOrder'])
         .index('by_absent_from_source', ['absentFromSource']),
 
+    artworkSlugAliases: defineTable({
+        alias: v.string(),
+        artworkLegacyId: v.number(),
+        createdAt: v.number(),
+    })
+        .index('by_alias', ['alias'])
+        .index('by_artwork_legacy_id', ['artworkLegacyId']),
+
     artworkMedia: defineTable({
         legacyTable: v.union(v.literal('Pieces'), v.literal('ExtraImages'), v.literal('ProgressImages'), v.literal('Owner')),
         legacyId: v.number(),
@@ -159,6 +187,9 @@ export default defineSchema({
         smallUrl: nullableString,
         smallWidth: nullableNumber,
         smallHeight: nullableNumber,
+        presentationCrop: v.optional(
+            v.object({ top: v.number(), right: v.number(), bottom: v.number(), left: v.number() }),
+        ),
         displayOrder: v.number(),
         ownerMutatedFields: v.array(v.string()),
         ownerRevision: v.number(),
@@ -175,6 +206,39 @@ export default defineSchema({
         artworkLegacyIds: v.array(v.number()),
         updatedAt: v.number(),
     }).index('by_key', ['key']),
+
+    galleryWalls: defineTable({
+        slug: v.string(),
+        title: v.string(),
+        narrative: nullableString,
+        status: v.union(v.literal('draft'), v.literal('published'), v.literal('archived')),
+        publishOrder: v.number(),
+        widthInches: v.number(),
+        heightInches: v.number(),
+        background: galleryWallBackground,
+        floorStyle: v.union(v.literal('oak'), v.literal('concrete'), v.literal('none')),
+        lighting: v.union(v.literal('gallery'), v.literal('daylight'), v.literal('soft')),
+        draftRevision: v.number(),
+        placements: v.array(galleryWallPlacement),
+        publishedSnapshot: v.optional(
+            v.object({
+                revision: v.number(),
+                title: v.string(),
+                narrative: nullableString,
+                widthInches: v.number(),
+                heightInches: v.number(),
+                background: galleryWallBackground,
+                floorStyle: v.union(v.literal('oak'), v.literal('concrete'), v.literal('none')),
+                lighting: v.union(v.literal('gallery'), v.literal('daylight'), v.literal('soft')),
+                placements: v.array(galleryWallPlacement),
+                publishedAt: v.number(),
+            }),
+        ),
+        createdAt: v.number(),
+        updatedAt: v.number(),
+    })
+        .index('by_slug', ['slug'])
+        .index('by_status_order', ['status', 'publishOrder']),
 
     checkoutIntents: defineTable({
         artworkId: v.id('artworks'),

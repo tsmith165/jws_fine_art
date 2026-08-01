@@ -30,3 +30,28 @@ export async function saveArtworkCategories(
         };
     }
 }
+
+export async function saveArtworkFramedDimensions(input: {
+    legacyId: number;
+    framedWidthInches: number;
+    framedHeightInches: number;
+    verified: boolean;
+}) {
+    try {
+        const client = await getAuthenticatedOwnerConvexClient('verify framed artwork dimensions');
+        await client.mutation(api.ownerMutations.setArtworkFramedDimensions, input);
+        revalidatePath('/');
+        revalidatePath('/work');
+        revalidatePath('/admin');
+        revalidatePath('/admin/artwork');
+        revalidatePath('/admin/categories');
+        revalidatePath('/admin/edit');
+        revalidatePath('/viewing-room');
+        return { success: true as const };
+    } catch (error) {
+        return {
+            success: false as const,
+            error: error instanceof Error ? error.message : 'Unable to save framed dimensions.',
+        };
+    }
+}

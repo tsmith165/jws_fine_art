@@ -9,13 +9,14 @@ import {
     Mail,
     PackageCheck,
     PanelsTopLeft,
+    GalleryHorizontalEnd,
     Wrench,
 } from 'lucide-react';
 import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { readOwnerArtworksWithMedia } from '@/data/ownerReads';
-import { ownerArtworkAttention } from '@/lib/ownerArtworkAttention';
+import { summarizeOwnerArtworkAttention } from '@/lib/ownerArtworkAttention';
 import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
 export { OwnerStatus } from './OwnerStatus';
 
@@ -23,6 +24,7 @@ const navigation = [
     { href: '/admin', label: 'Today', detail: 'Tasks and studio health', icon: LayoutDashboard },
     { href: '/admin/artwork', label: 'Artwork', detail: 'Catalog, order, and archive', icon: Images },
     { href: '/admin/homepage', label: 'Homepage', detail: 'Featured artwork rotation', icon: PanelsTopLeft },
+    { href: '/admin/walls', label: 'Viewing room', detail: 'Curate gallery walls', icon: GalleryHorizontalEnd },
     { href: '/admin/categories', label: 'Needs attention', detail: 'Repair catalog issues', icon: CircleAlert },
     { href: '/admin/orders', label: 'Orders', detail: 'Sales and fulfillment', icon: PackageCheck },
     { href: '/admin/inbox', label: 'Inbox', detail: 'Collector inquiries', icon: Inbox },
@@ -33,9 +35,7 @@ const navigation = [
 ] as const;
 
 export async function OwnerShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
-    const attentionCount = filterCategorizerArtworks(await readOwnerArtworksWithMedia()).filter(
-        (artwork) => ownerArtworkAttention(artwork).length > 0,
-    ).length;
+    const attentionCount = summarizeOwnerArtworkAttention(filterCategorizerArtworks(await readOwnerArtworksWithMedia())).count;
 
     return (
         <div className="owner-shell">

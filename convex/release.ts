@@ -1,4 +1,6 @@
 import { internalQuery } from './_generated/server';
+import { finishedArtworkDimensions } from '../shared/artworkDimensions';
+import { estimateArtworkShipping, shippingCareForMedium } from '../shared/shipping';
 
 export const audit = internalQuery({
     args: {},
@@ -88,5 +90,73 @@ export const mediaInventory = internalQuery({
             .filter((item) => !item.absentFromSource)
             .flatMap((item) => [item.sourceUrl, item.smallUrl])
             .filter((url): url is string => Boolean(url));
+    },
+});
+
+export const framedDimensionAudit = internalQuery({
+    args: {},
+    handler: async (ctx) => {
+        const artworks = (await ctx.db.query('artworks').collect()).filter(
+            (item) => item.active && !item.absentFromSource && item.framed,
+        );
+        const rows = artworks.map((artwork) => {
+            const finished = finishedArtworkDimensions({
+                framed: artwork.framed,
+                widthInches: artwork.widthInches,
+                heightInches: artwork.heightInches,
+                framedWidthInches: artwork.framedWidthInches,
+                framedHeightInches: artwork.framedHeightInches,
+                framedDimensionsVerified: artwork.framedDimensionsVerified,
+            });
+            const status = artwork.sold ? 'sold' : artwork.available ? 'available' : 'private';
+            const oldShipping = estimateArtworkShipping({
+                width: artwork.widthInches ?? 0,
+                height: artwork.heightInches ?? 0,
+                framed: true,
+                care: shippingCareForMedium(artwork.medium),
+            });
+            const newShipping = finished
+                ? estimateArtworkShipping({
+                      width: finished.widthInches,
+                      height: finished.heightInches,
+                      framed: true,
+                      care: shippingCareForMedium(artwork.medium),
+                  })
+                : null;
+            return {
+                legacyId: artwork.legacyId,
+                title: artwork.title,
+                status,
+                confidence: !finished ? 'missing' : finished.estimated ? 'estimated' : 'verified',
+                artworkDimensions: artwork.widthInches && artwork.heightInches ? `${artwork.widthInches} × ${artwork.heightInches}` : null,
+                finishedDimensions: finished ? `${finished.widthInches} × ${finished.heightInches}` : null,
+                currentTier: oldShipping.classification,
+                currentChargeCents: oldShipping.checkoutChargeCents,
+                proposedTier: newShipping?.classification ?? null,
+                proposedChargeCents: newShipping?.checkoutChargeCents ?? null,
+                deltaCents:
+                    oldShipping.checkoutChargeCents !== null && newShipping?.checkoutChargeCents !== null && newShipping?.checkoutChargeCents !== undefined
+                        ? newShipping.checkoutChargeCents - oldShipping.checkoutChargeCents
+                        : null,
+            };
+        });
+        const count = (status: string, confidence: string) => rows.filter((row) => row.status === status && row.confidence === confidence).length;
+        return {
+            total: rows.length,
+            byStatus: Object.fromEntries(
+                ['available', 'sold', 'private'].map((status) => [
+                    status,
+                    {
+                        total: rows.filter((row) => row.status === status).length,
+                        missing: count(status, 'missing'),
+                        estimated: count(status, 'estimated'),
+                        verified: count(status, 'verified'),
+                    },
+                ]),
+            ),
+            availableMissing: rows.filter((row) => row.status === 'available' && row.confidence === 'missing').length,
+            shippingChanges: rows.filter((row) => row.deltaCents !== null && row.deltaCents !== 0),
+            rows,
+        };
     },
 });

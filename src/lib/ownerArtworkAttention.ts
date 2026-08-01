@@ -3,7 +3,7 @@ import type { PiecesWithImages } from '../types/artwork';
 import { artworkSourceQuality } from './imageLoading';
 import { validateOwnerArtwork, type OwnerArtworkField } from './ownerArtworkValidation';
 
-export type OwnerArtworkAttentionKind = 'image' | 'metadata' | 'category';
+export type OwnerArtworkAttentionKind = 'image' | 'metadata' | 'frame' | 'category';
 
 export type OwnerArtworkAttentionIssue = {
     id: string;
@@ -21,6 +21,9 @@ const fieldLabels: Record<OwnerArtworkField, string> = {
     price: 'Price',
     real_width: 'Artwork width',
     real_height: 'Artwork height',
+    framed_width: 'Outside-frame width',
+    framed_height: 'Outside-frame height',
+    framed_dimensions_verified: 'Frame measurements need verification',
     description: 'Artwork story',
     categories: 'Collection categories',
     instagram: 'Instagram share reference',
@@ -33,6 +36,9 @@ const editorAnchors: Partial<Record<OwnerArtworkField, string>> = {
     price: 'artwork-price',
     real_width: 'artwork-width',
     real_height: 'artwork-height',
+    framed_width: 'artwork-framed-width',
+    framed_height: 'artwork-framed-height',
+    framed_dimensions_verified: 'artwork-framed-verification',
     description: 'artwork-story',
     instagram: 'artwork-instagram',
 };
@@ -82,6 +88,10 @@ export function ownerArtworkAttention(piece: PiecesWithImages): OwnerArtworkAtte
         price: piece.price > 0 ? String(piece.price) : '',
         real_width: piece.real_width ? String(piece.real_width) : '',
         real_height: piece.real_height ? String(piece.real_height) : '',
+        framed_width: piece.framed_width ? String(piece.framed_width) : '',
+        framed_height: piece.framed_height ? String(piece.framed_height) : '',
+        framed_dimensions_verified: Boolean(piece.framed_dimensions_verified),
+        framed: Boolean(piece.framed),
         description: piece.description ?? '',
         categories: piece.categories,
         instagram: piece.instagram ?? '',
@@ -95,7 +105,7 @@ export function ownerArtworkAttention(piece: PiecesWithImages): OwnerArtworkAtte
         .filter((issue) => issue.field !== 'description' || issue.tone === 'error')
         .map((issue) => ({
             id: `metadata-${issue.field}`,
-            kind: 'metadata' as const,
+            kind: (issue.field.startsWith('framed_') ? 'frame' : 'metadata') as OwnerArtworkAttentionKind,
             tone: issue.tone,
             label: fieldLabels[issue.field],
             detail: issue.message,
@@ -125,4 +135,22 @@ export function ownerArtworkAttention(piece: PiecesWithImages): OwnerArtworkAtte
           ];
 
     return [...mediaAttentionIssues(piece), ...metadataIssues, ...categoryIssues];
+}
+
+export function summarizeOwnerArtworkAttention(artworks: PiecesWithImages[]) {
+    const items = artworks.flatMap((artwork) => {
+        const issues = ownerArtworkAttention(artwork);
+        return issues.length ? [{ artwork, issues }] : [];
+    });
+    return {
+        items,
+        ids: items.map(({ artwork }) => artwork.id),
+        count: items.length,
+        byKind: {
+            image: items.filter(({ issues }) => issues.some((issue) => issue.kind === 'image')).length,
+            metadata: items.filter(({ issues }) => issues.some((issue) => issue.kind === 'metadata')).length,
+            frame: items.filter(({ issues }) => issues.some((issue) => issue.kind === 'frame')).length,
+            category: items.filter(({ issues }) => issues.some((issue) => issue.kind === 'category')).length,
+        },
+    };
 }

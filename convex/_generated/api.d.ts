@@ -11,6 +11,7 @@
 import type * as artworks from "../artworks.js";
 import type * as commerce from "../commerce.js";
 import type * as commerceWorkers from "../commerceWorkers.js";
+import type * as galleryWalls from "../galleryWalls.js";
 import type * as lib_importMerge from "../lib/importMerge.js";
 import type * as lib_legacy from "../lib/legacy.js";
 import type * as lib_ownerAuth from "../lib/ownerAuth.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   artworks: typeof artworks;
   commerce: typeof commerce;
   commerceWorkers: typeof commerceWorkers;
+  galleryWalls: typeof galleryWalls;
   "lib/importMerge": typeof lib_importMerge;
   "lib/legacy": typeof lib_legacy;
   "lib/ownerAuth": typeof lib_ownerAuth;

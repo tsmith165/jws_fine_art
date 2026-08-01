@@ -8,7 +8,10 @@ export interface ArtworkImage {
     small_image_path: string | null;
     small_width: number | null;
     small_height: number | null;
+    presentation_crop?: ArtworkPresentationCrop | null;
 }
+
+export type ArtworkPresentationCrop = { top: number; right: number; bottom: number; left: number };
 
 export type ExtraImages = ArtworkImage;
 export type ProgressImages = ArtworkImage;
@@ -20,11 +23,13 @@ export interface Pieces {
     class_name: string;
     title: string;
     image_path: string;
+    primary_media_id?: number;
     width: number;
     height: number;
     small_image_path: string | null;
     small_width: number | null;
     small_height: number | null;
+    presentation_crop?: ArtworkPresentationCrop | null;
     price: number;
     completed_at?: number | null;
     released_at: number | null;
@@ -35,6 +40,11 @@ export interface Pieces {
     instagram: string | null;
     real_width: number | null;
     real_height: number | null;
+    framed_width?: number | null;
+    framed_height?: number | null;
+    framed_dimensions_verified?: boolean;
+    framed_dimensions_verified_at?: number | null;
+    framed_dimensions_estimate_version?: number | null;
     active: boolean | null;
     theme: string | null;
     categories: ArtworkCategoryId[];

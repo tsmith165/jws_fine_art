@@ -5,7 +5,7 @@ import { OwnerHeading, OwnerShell, OwnerStatus } from '@/components/owner/OwnerS
 import { OwnerCatalogFilters } from '@/components/owner/OwnerCatalogFilters';
 import { readOwnerArtworksWithMedia } from '@/data/ownerReads';
 import { setActive, setInactive } from '@/app/admin/manage/actions';
-import { ownerArtworkAttention } from '@/lib/ownerArtworkAttention';
+import { ownerArtworkAttention, summarizeOwnerArtworkAttention } from '@/lib/ownerArtworkAttention';
 import { filterCategorizerArtworks } from '@/lib/ownerArtworkFilters';
 
 export const dynamic = 'force-dynamic';
@@ -14,7 +14,7 @@ export default async function OwnerArtworkPage({ searchParams }: { searchParams:
     const params = await searchParams;
     const all = (await readOwnerArtworksWithMedia()).sort((a, b) => a.o_id - b.o_id || a.id - b.id);
     const attentionById = new Map(all.map((piece) => [piece.id, ownerArtworkAttention(piece)]));
-    const attentionCount = filterCategorizerArtworks(all).filter((piece) => (attentionById.get(piece.id)?.length ?? 0) > 0).length;
+    const attentionCount = summarizeOwnerArtworkAttention(filterCategorizerArtworks(all)).count;
     const query = (params.q || '').trim().toLowerCase();
     const filter = params.filter || 'active';
     const pieces = all.filter((piece) => {

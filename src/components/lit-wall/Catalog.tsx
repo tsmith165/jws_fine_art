@@ -18,6 +18,22 @@ import { compareArtworkReleasedNewest } from '@shared/artworkRelease';
 
 type Availability = 'available' | 'all' | 'sold';
 type Sort = 'newest' | 'price-asc' | 'price-desc' | 'title';
+type Format = 'originals' | 'pastels' | 'prints';
+type PriceBand = 'under-500' | '500-1000' | '1000-plus';
+
+function artworkFormat(piece: PiecesWithImages): Format {
+    const medium = piece.piece_type ?? '';
+    if (/(linocut|lino cut|intaglio|print)/i.test(medium)) return 'prints';
+    if (/pastel/i.test(medium)) return 'pastels';
+    return 'originals';
+}
+
+function priceMatches(piece: PiecesWithImages, band: PriceBand | '') {
+    if (!band) return true;
+    if (band === 'under-500') return piece.price > 0 && piece.price < 500;
+    if (band === '500-1000') return piece.price >= 500 && piece.price <= 1000;
+    return piece.price > 1000;
+}
 
 function boolParam(params: URLSearchParams, key: string) {
     return params.get(key) === '1';
@@ -33,6 +49,13 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
     const requestedCategory = params.get('category') || params.get('theme') || '';
     const category: ArtworkCategoryId | '' = resolveArtworkCategory(requestedCategory);
     const framed = boolParam(new URLSearchParams(params.toString()), 'framed');
+    const format = (['originals', 'pastels', 'prints'].includes(params.get('format') ?? '') ? params.get('format') : '') as Format | '';
+    const medium = params.get('medium') || '';
+    const priceBand = (['under-500', '500-1000', '1000-plus'].includes(params.get('price') ?? '') ? params.get('price') : '') as PriceBand | '';
+    const mediumOptions = useMemo(
+        () => [...new Set(pieces.map((piece) => piece.piece_type?.trim()).filter((value): value is string => Boolean(value)))].sort(),
+        [pieces],
+    );
     const [searchOpen, setSearchOpen] = useState(Boolean(query));
     const [filterOpen, setFilterOpen] = useState(false);
     const [sortOpen, setSortOpen] = useState(false);
@@ -49,6 +72,9 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
         next.delete('category');
         next.delete('theme');
         next.delete('framed');
+        next.delete('format');
+        next.delete('medium');
+        next.delete('price');
         router.replace(next.size ? `${pathname}?${next.toString()}` : pathname, { scroll: false });
     };
     const setCategory = (value?: ArtworkCategoryId) => {
@@ -65,6 +91,9 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                 if (availability === 'available' && (!piece.available || piece.sold)) return false;
                 if (availability === 'sold' && !piece.sold) return false;
                 if (framed && !piece.framed) return false;
+                if (format && artworkFormat(piece) !== format) return false;
+                if (medium && piece.piece_type !== medium) return false;
+                if (!priceMatches(piece, priceBand)) return false;
                 const categories = piece.categories?.length
                     ? piece.categories
                     : deriveArtworkCategories({ theme: piece.theme, medium: piece.piece_type });
@@ -85,7 +114,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                 if (sort === 'title') return a.title.localeCompare(b.title);
                 return compareArtworkReleasedNewest(a, b);
             });
-    }, [availability, category, framed, pieces, query, sort]);
+    }, [availability, category, format, framed, medium, pieces, priceBand, query, sort]);
     const counts = {
         available: pieces.filter((piece) => piece.available && !piece.sold).length,
         all: pieces.length,
@@ -97,7 +126,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
         'price-desc': 'Price: high to low',
         title: 'Title: A–Z',
     };
-    const filterCount = Number(framed) + Number(Boolean(category));
+    const filterCount = Number(framed) + Number(Boolean(category)) + Number(Boolean(format)) + Number(Boolean(medium)) + Number(Boolean(priceBand));
     useEffect(() => {
         if (!query.trim()) return;
         const timer = window.setTimeout(
@@ -165,6 +194,15 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                                 </header>
                                 <div className="lw-filter-fields">
                                     <label className="lw-filter-field">
+                                        <span>Format</span>
+                                        <select value={format} onChange={(event) => { captureAnalytics('catalog_filter_changed', { filter: 'format', value: event.target.value || 'all' }); setParam('format', event.target.value || undefined); }}>
+                                            <option value="">All formats</option>
+                                            <option value="originals">Originals</option>
+                                            <option value="pastels">Pastels</option>
+                                            <option value="prints">Prints</option>
+                                        </select>
+                                    </label>
+                                    <label className="lw-filter-field">
                                         <span>Subject</span>
                                         <select
                                             value={category}
@@ -183,6 +221,22 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                                                     {option.label}
                                                 </option>
                                             ))}
+                                        </select>
+                                    </label>
+                                    <label className="lw-filter-field">
+                                        <span>Medium</span>
+                                        <select value={medium} onChange={(event) => { captureAnalytics('catalog_filter_changed', { filter: 'medium', value: event.target.value || 'all' }); setParam('medium', event.target.value || undefined); }}>
+                                            <option value="">All media</option>
+                                            {mediumOptions.map((value) => <option key={value} value={value}>{value}</option>)}
+                                        </select>
+                                    </label>
+                                    <label className="lw-filter-field">
+                                        <span>Price</span>
+                                        <select value={priceBand} onChange={(event) => { captureAnalytics('catalog_filter_changed', { filter: 'price', value: event.target.value || 'all' }); setParam('price', event.target.value || undefined); }}>
+                                            <option value="">All prices</option>
+                                            <option value="under-500">Under $500</option>
+                                            <option value="500-1000">$500–$1,000</option>
+                                            <option value="1000-plus">Over $1,000</option>
                                         </select>
                                     </label>
                                     <label className="lw-filter-check">
@@ -275,7 +329,7 @@ export function Catalog({ pieces }: { pieces: PiecesWithImages[] }) {
                 <span aria-live="polite">
                     {list.length} {list.length === 1 ? 'work' : 'works'}
                 </span>
-                {(category || framed || query) && (
+                {(category || framed || format || medium || priceBand || query) && (
                     <button
                         onClick={() => {
                             captureAnalytics('catalog_filters_cleared');

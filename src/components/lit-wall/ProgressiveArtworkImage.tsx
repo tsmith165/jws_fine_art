@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import type { ArtworkPresentationCrop } from '@/types/artwork';
 
 type ProgressiveArtworkImageProps = {
     src: string;
@@ -12,6 +13,7 @@ type ProgressiveArtworkImageProps = {
     priority?: boolean;
     fetchPriority?: 'high' | 'low' | 'auto';
     onReady?: () => void;
+    crop?: ArtworkPresentationCrop | null;
 };
 
 type ImageWarmupProps = {
@@ -29,12 +31,21 @@ export function ProgressiveArtworkImage({
     priority = false,
     fetchPriority = 'auto',
     onReady,
+    crop,
 }: ProgressiveArtworkImageProps) {
     const [loaded, setLoaded] = useState(false);
     const [useDirectSource, setUseDirectSource] = useState(false);
     const settled = useRef(false);
     const mainImageRef = useRef<HTMLImageElement>(null);
     const showPlaceholder = Boolean(placeholderSrc && placeholderSrc !== src);
+    const cropStyle = crop && Object.values(crop).some((value) => value > 0)
+        ? {
+              left: `${(-crop.left / (1 - crop.left - crop.right)) * 100}%`,
+              top: `${(-crop.top / (1 - crop.top - crop.bottom)) * 100}%`,
+              width: `${100 / (1 - crop.left - crop.right)}%`,
+              height: `${100 / (1 - crop.top - crop.bottom)}%`,
+          }
+        : undefined;
 
     useEffect(() => {
         settled.current = false;
@@ -89,6 +100,7 @@ export function ProgressiveArtworkImage({
                     quality={75}
                     loading={priority ? 'eager' : 'lazy'}
                     fetchPriority="low"
+                    style={cropStyle}
                 />
             ) : null}
             <Image
@@ -111,6 +123,7 @@ export function ProgressiveArtworkImage({
                         .finally(finish);
                 }}
                 onError={fail}
+                style={cropStyle}
             />
         </span>
     );
