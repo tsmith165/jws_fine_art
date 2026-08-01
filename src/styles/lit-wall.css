@@ -3047,6 +3047,7 @@
 .lw-room-artwork {
     position: absolute;
     z-index: 2;
+    overflow: hidden;
     min-width: 2px;
     min-height: 2px;
     box-shadow:
@@ -3055,7 +3056,8 @@
     transform: translate(-50%, -50%);
 }
 .lw-room-artwork img {
-    object-fit: contain;
+    display: block;
+    object-fit: cover;
 }
 .lw-room-dialog > footer {
     display: grid;

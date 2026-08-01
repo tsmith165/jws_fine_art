@@ -861,3 +861,12 @@
 - Vercel production deployment `dpl_BFeKpCaCawyhLazCCVBoZ6SvNRLV` is ready and aliased to `https://www.jwsfineart.com`.
 - Production browser QA passed on `/`, `/studio`, `/commissions`, and `/contact`: the new responsive images decode at appropriate natural resolutions, page-level overflow is zero, and the browser reported no warnings or errors.
 - No Convex deployment was required because this refresh only changes static assets, page composition, and presentation styles.
+
+## August 1 View At Scale Artwork Edge Fix
+
+- Objective: remove dimension-dependent light strips around artwork inside the View at Scale room compositor.
+- Root cause: the physically calibrated overlay box and the source photograph can have slightly different aspect ratios. `object-fit: contain` left transparent space inside the shadowed box, making the room wall appear as a light edge.
+- Fix: the overlay now clips to its calibrated bounds and the artwork image fills those bounds with `object-fit: cover`; no wrapper area remains visible around the piece.
+- Local visual QA passed for Endless Summer (12 × 9 in) and Torrey Pines (10 × 8 in) at 1440 × 1000, plus Torrey Pines at 390 × 844. The overlay and image bounds match exactly, page overflow is zero, and the browser reported no warnings or errors.
+- Evidence aliases: `view-at-scale-white-edge-fixed-landscape-desktop`, `view-at-scale-white-edge-fixed-portrait-desktop`, and `view-at-scale-white-edge-fixed-portrait-mobile`.
+- Verification passed: 19 test files / 125 tests, TypeScript, ESLint with the existing `ResilientImage` alt warning, production build, `git diff --check`, and artifact-store validation.
