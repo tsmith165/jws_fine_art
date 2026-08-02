@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Info, MessageCircle, Ruler, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Info, MessageCircle, Minus, Plus, Ruler, X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FunctionReturnType } from 'convex/server';
@@ -25,6 +25,7 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
     );
     const [index, setIndex] = useState(initialIndex);
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [zoom, setZoom] = useState(1);
     const panelRef = useRef<HTMLElement>(null);
     const triggerRef = useRef<HTMLButtonElement | null>(null);
     const touchStart = useRef<number | null>(null);
@@ -40,6 +41,7 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
         const target = (next + walls.length) % walls.length;
         setIndex(target);
         setSelectedId(null);
+        setZoom(1);
         window.history.replaceState(null, '', `/viewing-room/${walls[target].slug}`);
         captureAnalytics('viewing_room_wall_changed', { wall_slug: walls[target].slug, wall_index: target + 1, wall_total: walls.length });
     };
@@ -124,70 +126,98 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
             </header>
 
             <div className="lw-viewing-wall-shell">
-                <div
-                    className={`lw-viewing-wall is-${wall.background.preset} has-${wall.lighting}-light floor-${wall.floorStyle}`}
-                    style={{
-                        ...galleryWallSurfaceStyle(wall.background.preset as GalleryWallPresetKey),
-                        aspectRatio: `${wall.widthInches} / ${wall.heightInches}`,
-                    }}
-                    aria-label={`${wall.title}, a gallery wall containing ${wall.placements.length} artworks`}
-                    aria-roledescription="gallery wall"
-                    onTouchStart={(event) => {
-                        touchStart.current = event.changedTouches[0]?.clientX ?? null;
-                    }}
-                    onTouchEnd={(event) => {
-                        if (touchStart.current === null) return;
-                        const distance = (event.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current;
-                        touchStart.current = null;
-                        if (Math.abs(distance) >= 55) changeWall(index + (distance < 0 ? 1 : -1));
-                    }}
-                >
-                    {wall.placements.map((placement, placementIndex) => {
-                        const artwork = placement.artwork;
-                        return (
-                            <button
-                                key={placement.id}
-                                type="button"
-                                className={`lw-viewing-piece ${selectedId === placement.id ? 'is-selected' : ''}`}
-                                style={{
-                                    left: `${(placement.centerXInches / wall.widthInches) * 100}%`,
-                                    top: `${(placement.centerYInches / wall.heightInches) * 100}%`,
-                                    width: `${(artwork.widthInches / wall.widthInches) * 100}%`,
-                                    aspectRatio: `${artwork.widthInches} / ${artwork.heightInches}`,
-                                }}
-                                onClick={() => select(placement)}
-                                aria-label={`Open details for ${artwork.title}${artwork.sold ? ', sold' : ''}`}
-                            >
-                                <ArtworkPresentationImage
-                                    src={artwork.imageUrl}
-                                    crop={artwork.presentationCrop}
-                                    alt=""
-                                    fill
-                                    quality={95}
-                                    sizes="30vw"
-                                />
-                                <span className="lw-viewing-piece-number">{placementIndex + 1}</span>
-                                {wall.artworkLabelMode !== 'hidden' ? (
-                                    <span className={`lw-viewing-piece-label is-${wall.artworkLabelMode}`} aria-hidden="true">
-                                        <strong>{artwork.title}</strong>
-                                        <small>
-                                            {artwork.sold ? 'Sold' : artwork.available ? money(artwork.priceCents) : 'Private collection'}
-                                        </small>
-                                    </span>
-                                ) : null}
-                                {artwork.sold && wall.artworkLabelMode === 'hidden' ? <em>Sold</em> : null}
-                            </button>
-                        );
-                    })}
+                <div className="lw-viewing-wall-viewport">
+                    <div
+                        className={`lw-viewing-wall is-${wall.background.preset} has-${wall.lighting}-light floor-${wall.floorStyle}`}
+                        style={{
+                            ...galleryWallSurfaceStyle(wall.background.preset as GalleryWallPresetKey),
+                            aspectRatio: `${wall.widthInches} / ${wall.heightInches}`,
+                            transform: `scale(${zoom})`,
+                        }}
+                        aria-label={`${wall.title}, a gallery wall containing ${wall.placements.length} artworks`}
+                        aria-roledescription="gallery wall"
+                        onTouchStart={(event) => {
+                            touchStart.current = event.changedTouches[0]?.clientX ?? null;
+                        }}
+                        onTouchEnd={(event) => {
+                            if (touchStart.current === null) return;
+                            const distance = (event.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current;
+                            touchStart.current = null;
+                            if (Math.abs(distance) >= 55) changeWall(index + (distance < 0 ? 1 : -1));
+                        }}
+                    >
+                        {wall.placements.map((placement, placementIndex) => {
+                            const artwork = placement.artwork;
+                            return (
+                                <button
+                                    key={placement.id}
+                                    type="button"
+                                    className={`lw-viewing-piece ${selectedId === placement.id ? 'is-selected' : ''}`}
+                                    style={{
+                                        left: `${(placement.centerXInches / wall.widthInches) * 100}%`,
+                                        top: `${(placement.centerYInches / wall.heightInches) * 100}%`,
+                                        width: `${(artwork.widthInches / wall.widthInches) * 100}%`,
+                                        aspectRatio: `${artwork.widthInches} / ${artwork.heightInches}`,
+                                    }}
+                                    onClick={() => select(placement)}
+                                    aria-label={`Open details for ${artwork.title}${artwork.sold ? ', sold' : ''}`}
+                                >
+                                    <ArtworkPresentationImage
+                                        src={artwork.imageUrl}
+                                        crop={artwork.presentationCrop}
+                                        alt=""
+                                        fill
+                                        quality={95}
+                                        sizes="30vw"
+                                    />
+                                    {wall.artworkLabelMode === 'hidden' ? (
+                                        <span className="lw-viewing-piece-number">{placementIndex + 1}</span>
+                                    ) : null}
+                                    {wall.artworkLabelMode !== 'hidden' ? (
+                                        <span className={`lw-viewing-piece-label is-${wall.artworkLabelMode}`} aria-hidden="true">
+                                            <strong>{artwork.title}</strong>
+                                            <small>
+                                                {artwork.sold ? 'Sold' : artwork.available ? money(artwork.priceCents) : 'Private collection'}
+                                            </small>
+                                        </span>
+                                    ) : null}
+                                    {artwork.sold && wall.artworkLabelMode === 'hidden' ? <em>Sold</em> : null}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
                 <footer>
                     <span>
                         <Info size={14} /> Select an artwork for details
                     </span>
-                    <span>
-                        <Ruler size={14} /> Artwork sizes are shown at consistent relative scale; the gallery environment is illustrative
-                        {wall.placements.some((item) => item.artwork.dimensionsEstimated) ? '; some framed sizes are estimated' : ''}
-                    </span>
+                    <div className="lw-viewing-wall-footer-tools">
+                        <span>
+                            <Ruler size={14} /> Artwork sizes are shown at consistent relative scale; the gallery environment is illustrative
+                            {wall.placements.some((item) => item.artwork.dimensionsEstimated) ? '; some framed sizes are estimated' : ''}
+                        </span>
+                        <div className="lw-viewing-zoom" aria-label="Gallery wall zoom controls">
+                            <button
+                                type="button"
+                                onClick={() => setZoom((value) => Math.max(0.85, Number((value - 0.15).toFixed(2))))}
+                                disabled={zoom <= 0.85}
+                                aria-label="Zoom out"
+                            >
+                                <Minus size={13} />
+                            </button>
+                            <button type="button" onClick={() => setZoom(1)} disabled={zoom === 1} aria-label="Reset zoom to 100 percent">
+                                {Math.round(zoom * 100)}%
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setZoom((value) => Math.min(1.3, Number((value + 0.15).toFixed(2))))}
+                                disabled={zoom >= 1.3}
+                                aria-label="Zoom in"
+                            >
+                                <Plus size={13} />
+                            </button>
+                        </div>
+                    </div>
                 </footer>
             </div>
 

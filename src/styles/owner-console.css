@@ -2119,12 +2119,12 @@
     position: absolute;
     z-index: 3;
     display: grid;
-    width: 74px;
+    width: 58px;
     gap: 2px;
-    border: 1px solid rgba(45, 39, 31, 0.2);
-    padding: 5px;
-    background: #f5f1e8;
-    box-shadow: 0 4px 12px rgba(20, 16, 11, 0.16);
+    border: 1px solid rgba(45, 39, 31, 0.14);
+    padding: 4px;
+    background: rgba(247, 244, 237, 0.94);
+    box-shadow: 0 3px 9px rgba(20, 16, 11, 0.11);
     color: #24201a;
     pointer-events: none;
     text-align: left;
@@ -2132,31 +2132,31 @@
 .owner-wall-piece-card strong {
     overflow: hidden;
     font-family: var(--font-lit-display), Georgia, serif;
-    font-size: 8px;
+    font-size: 7px;
     line-height: 1.05;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 .owner-wall-piece-card small {
     color: #695f51;
-    font-size: 6px;
+    font-size: 5px;
     font-weight: 800;
     letter-spacing: 0.03em;
     text-transform: uppercase;
 }
 .owner-wall-piece-card.is-left {
     top: 50%;
-    right: calc(100% + 7px);
+    right: calc(100% + 5px);
     transform: translateY(-50%);
 }
 .owner-wall-piece-card.is-right {
     top: 50%;
-    left: calc(100% + 7px);
+    left: calc(100% + 5px);
     transform: translateY(-50%);
 }
 .owner-wall-piece-card.is-bottom-left,
 .owner-wall-piece-card.is-bottom-right {
-    top: calc(100% + 7px);
+    top: calc(100% + 5px);
 }
 .owner-wall-piece-card.is-bottom-left {
     left: 0;

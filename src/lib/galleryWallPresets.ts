@@ -5,6 +5,7 @@ export const GALLERY_WALL_PRESETS = [
         description: 'Bright white walls, pale oak floors, and a quiet central bench.',
         image: '/images/gallery-walls/white-bench-gallery.webp',
         backgroundPosition: 'center 52%',
+        usableArea: { left: 0.07, right: 0.93, top: 0.1, bottom: 0.62 },
         floorStyle: 'oak',
         lighting: 'daylight',
     },
@@ -14,6 +15,7 @@ export const GALLERY_WALL_PRESETS = [
         description: 'Warm ochre walls with three focused gallery lights.',
         image: '/images/gallery-walls/ochre-spotlight-gallery.webp',
         backgroundPosition: 'center center',
+        usableArea: { left: 0.07, right: 0.93, top: 0.12, bottom: 0.78 },
         floorStyle: 'oak',
         lighting: 'gallery',
     },
@@ -23,6 +25,7 @@ export const GALLERY_WALL_PRESETS = [
         description: 'Muted sage paneling above a dark concrete floor.',
         image: '/images/gallery-walls/sage-concrete-gallery.webp',
         backgroundPosition: 'center center',
+        usableArea: { left: 0.07, right: 0.93, top: 0.12, bottom: 0.72 },
         floorStyle: 'concrete',
         lighting: 'soft',
     },
@@ -32,6 +35,7 @@ export const GALLERY_WALL_PRESETS = [
         description: 'A charcoal alcove grounded by warm parquet flooring.',
         image: '/images/gallery-walls/charcoal-oak-gallery.webp',
         backgroundPosition: 'center center',
+        usableArea: { left: 0.07, right: 0.88, top: 0.12, bottom: 0.77 },
         floorStyle: 'oak',
         lighting: 'soft',
     },
@@ -41,6 +45,7 @@ export const GALLERY_WALL_PRESETS = [
         description: 'Deep navy walls, a cool center light, and warm oak below.',
         image: '/images/gallery-walls/midnight-oak-gallery.webp',
         backgroundPosition: 'center center',
+        usableArea: { left: 0.07, right: 0.93, top: 0.12, bottom: 0.76 },
         floorStyle: 'oak',
         lighting: 'gallery',
     },
@@ -57,5 +62,15 @@ export function galleryWallSurfaceStyle(key: GalleryWallPresetKey) {
     return {
         backgroundImage: `url("${preset.image}")`,
         backgroundPosition: preset.backgroundPosition,
+    };
+}
+
+export function galleryWallPlacementBounds(key: GalleryWallPresetKey, widthInches: number, heightInches: number) {
+    const area = galleryWallPreset(key).usableArea;
+    return {
+        left: widthInches * area.left,
+        right: widthInches * area.right,
+        top: heightInches * area.top,
+        bottom: heightInches * area.bottom,
     };
 }

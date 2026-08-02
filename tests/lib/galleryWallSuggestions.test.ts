@@ -23,7 +23,19 @@ describe('gallery wall layout suggestions', () => {
     });
 
     it('centers a single work and produces different multi-work suggestions', () => {
-        expect(suggestGalleryWallLayout(wall, [placements[0]], 1)[0]).toMatchObject({ centerXInches: 72, centerYInches: 46.08 });
+        expect(suggestGalleryWallLayout(wall, [placements[0]], 1)[0]).toMatchObject({ centerXInches: 72, centerYInches: 48 });
         expect(suggestGalleryWallLayout(wall, placements, 2)).not.toEqual(suggestGalleryWallLayout(wall, placements, 3));
+    });
+
+    it('keeps every suggested artwork inside a photographic environment safe area', () => {
+        const bounds = { left: 10, right: 134, top: 10, bottom: 59 };
+        const arranged = suggestGalleryWallLayout(wall, placements, 7, { bounds });
+        expect(galleryWallLayoutIssues(wall, arranged).valid).toBe(true);
+        for (const placement of arranged) {
+            expect(placement.centerXInches - placement.widthInches / 2).toBeGreaterThanOrEqual(bounds.left);
+            expect(placement.centerXInches + placement.widthInches / 2).toBeLessThanOrEqual(bounds.right);
+            expect(placement.centerYInches - placement.heightInches / 2).toBeGreaterThanOrEqual(bounds.top);
+            expect(placement.centerYInches + placement.heightInches / 2).toBeLessThanOrEqual(bounds.bottom);
+        }
     });
 });

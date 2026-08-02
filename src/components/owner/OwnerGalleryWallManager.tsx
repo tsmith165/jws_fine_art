@@ -37,7 +37,12 @@ import {
 } from '@/app/admin/walls/actions';
 import { galleryWallLayoutIssues } from '@shared/galleryWallLayout';
 import { suggestGalleryWallLayout } from '@shared/galleryWallSuggestions';
-import { GALLERY_WALL_PRESETS, galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
+import {
+    GALLERY_WALL_PRESETS,
+    galleryWallPlacementBounds,
+    galleryWallSurfaceStyle,
+    type GalleryWallPresetKey,
+} from '@/lib/galleryWallPresets';
 
 type OwnerWalls = FunctionReturnType<typeof api.galleryWalls.listOwner>;
 type Placement = GalleryWallInput['placements'][number];
@@ -170,6 +175,13 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
             { widthInches: draft.widthInches, heightInches: draft.heightInches },
             placementGeometry,
             suggestionSeed,
+            {
+                bounds: galleryWallPlacementBounds(
+                    draft.background.preset as GalleryWallPresetKey,
+                    draft.widthInches,
+                    draft.heightInches,
+                ),
+            },
         );
         const byId = new Map(suggested.map((placement) => [placement.id, placement]));
         change((current) => ({
