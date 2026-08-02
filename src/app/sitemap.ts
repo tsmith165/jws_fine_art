@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             ? [
                   { url: `${origin}/viewing-room`, changeFrequency: 'weekly' as const, priority: 0.8 },
                   ...viewingRoomWalls.map((wall) => ({
-                      url: `${origin}/viewing-room/${wall.slug}`,
+                      url: `${origin}/viewing-room?wall=${encodeURIComponent(wall.slug)}`,
                       lastModified: new Date(wall.publishedAt),
                       changeFrequency: 'weekly' as const,
                       priority: 0.75,

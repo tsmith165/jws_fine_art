@@ -15,7 +15,7 @@ export type GalleryWallInput = {
     background: { kind: 'preset'; preset: 'white-oak' | 'warm-plaster' | 'museum-green' | 'charcoal' | 'midnight' };
     floorStyle: 'oak' | 'concrete' | 'none';
     lighting: 'gallery' | 'daylight' | 'soft';
-    artworkLabelMode: 'hidden' | 'left' | 'right' | 'bottom-left' | 'bottom-right';
+    artworkLabelMode: 'hidden' | 'bottom-left' | 'bottom-right';
     placements: Array<{ id: string; artworkLegacyId: number; centerXInches: number; centerYInches: number }>;
 };
 

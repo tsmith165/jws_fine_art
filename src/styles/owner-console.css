@@ -2042,20 +2042,12 @@
     background: #f5f1e8;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
 }
-.owner-wall-label-diagram.is-left b {
-    top: 50%;
-    right: calc(50% + 17px);
-    transform: translateY(-50%);
-}
-.owner-wall-label-diagram.is-right b {
-    top: 50%;
-    left: calc(50% + 17px);
-    transform: translateY(-50%);
-}
+.owner-wall-label-diagram.is-left b,
 .owner-wall-label-diagram.is-bottom-left b {
     top: calc(50% + 12px);
     left: calc(50% - 13px);
 }
+.owner-wall-label-diagram.is-right b,
 .owner-wall-label-diagram.is-bottom-right b {
     top: calc(50% + 12px);
     right: calc(50% - 13px);
@@ -2144,23 +2136,17 @@
     letter-spacing: 0.03em;
     text-transform: uppercase;
 }
-.owner-wall-piece-card.is-left {
-    top: 50%;
-    right: calc(100% + 5px);
-    transform: translateY(-50%);
-}
-.owner-wall-piece-card.is-right {
-    top: 50%;
-    left: calc(100% + 5px);
-    transform: translateY(-50%);
-}
+.owner-wall-piece-card.is-left,
+.owner-wall-piece-card.is-right,
 .owner-wall-piece-card.is-bottom-left,
 .owner-wall-piece-card.is-bottom-right {
     top: calc(100% + 5px);
 }
+.owner-wall-piece-card.is-left,
 .owner-wall-piece-card.is-bottom-left {
     left: 0;
 }
+.owner-wall-piece-card.is-right,
 .owner-wall-piece-card.is-bottom-right {
     right: 0;
 }

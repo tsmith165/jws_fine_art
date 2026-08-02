@@ -9,6 +9,7 @@ import { ResilientImage as Image } from './ResilientImage';
 import { ArtworkPresentationImage } from './ArtworkPresentationImage';
 import { captureAnalytics } from '@/lib/analytics';
 import { galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
+import { normalizeGalleryWallLabelMode } from '@shared/galleryWallLabels';
 
 type Walls = FunctionReturnType<typeof api.galleryWalls.listPublished>;
 type Wall = Walls[number];
@@ -29,7 +30,9 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
     const panelRef = useRef<HTMLElement>(null);
     const triggerRef = useRef<HTMLButtonElement | null>(null);
     const touchStart = useRef<number | null>(null);
+    const serverSlugRef = useRef(initialSlug);
     const wall = walls[index] ?? walls[0];
+    const artworkLabelMode = normalizeGalleryWallLabelMode(wall?.artworkLabelMode);
     const selected = useMemo(() => wall?.placements.find((item) => item.id === selectedId) ?? null, [selectedId, wall]);
 
     const closePanel = () => {
@@ -42,16 +45,36 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
         setIndex(target);
         setSelectedId(null);
         setZoom(1);
-        window.history.replaceState(null, '', `/viewing-room/${walls[target].slug}`);
+        const url = new URL(window.location.href);
+        url.pathname = '/viewing-room';
+        url.searchParams.set('wall', walls[target].slug);
+        window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
         captureAnalytics('viewing_room_wall_changed', { wall_slug: walls[target].slug, wall_index: target + 1, wall_total: walls.length });
     };
 
     useEffect(() => {
         if (!wall) return;
+        const url = new URL(window.location.href);
+        if (url.pathname !== '/viewing-room' || url.searchParams.get('wall') !== wall.slug) {
+            url.pathname = '/viewing-room';
+            url.searchParams.set('wall', wall.slug);
+            window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+        }
         captureAnalytics('viewing_room_opened', { wall_slug: wall.slug, wall_index: index + 1, wall_total: walls.length });
         // Capture once for the initially rendered wall. Deliberate navigation has its own event.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (serverSlugRef.current === initialSlug) return;
+        serverSlugRef.current = initialSlug;
+        const target = walls.findIndex((candidate) => candidate.slug === initialSlug);
+        if (target < 0) return;
+        setIndex(target);
+        setSelectedId(null);
+        setZoom(1);
+    }, [initialSlug, walls]);
+
     const select = (placement: Placement) => {
         if (!wall) return;
         triggerRef.current = document.activeElement instanceof HTMLButtonElement ? document.activeElement : null;
@@ -170,18 +193,22 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                                         quality={95}
                                         sizes="30vw"
                                     />
-                                    {wall.artworkLabelMode === 'hidden' ? (
+                                    {artworkLabelMode === 'hidden' ? (
                                         <span className="lw-viewing-piece-number">{placementIndex + 1}</span>
                                     ) : null}
-                                    {wall.artworkLabelMode !== 'hidden' ? (
-                                        <span className={`lw-viewing-piece-label is-${wall.artworkLabelMode}`} aria-hidden="true">
+                                    {artworkLabelMode !== 'hidden' ? (
+                                        <span className={`lw-viewing-piece-label is-${artworkLabelMode}`} aria-hidden="true">
                                             <strong>{artwork.title}</strong>
                                             <small>
-                                                {artwork.sold ? 'Sold' : artwork.available ? money(artwork.priceCents) : 'Private collection'}
+                                                {artwork.sold
+                                                    ? 'Sold'
+                                                    : artwork.available
+                                                      ? money(artwork.priceCents)
+                                                      : 'Private collection'}
                                             </small>
                                         </span>
                                     ) : null}
-                                    {artwork.sold && wall.artworkLabelMode === 'hidden' ? <em>Sold</em> : null}
+                                    {artwork.sold && artworkLabelMode === 'hidden' ? <em>Sold</em> : null}
                                 </button>
                             );
                         })}
@@ -193,7 +220,8 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                     </span>
                     <div className="lw-viewing-wall-footer-tools">
                         <span>
-                            <Ruler size={14} /> Artwork sizes are shown at consistent relative scale; the gallery environment is illustrative
+                            <Ruler size={14} /> Artwork sizes are shown at consistent relative scale; the gallery environment is
+                            illustrative
                             {wall.placements.some((item) => item.artwork.dimensionsEstimated) ? '; some framed sizes are estimated' : ''}
                         </span>
                         <div className="lw-viewing-zoom" aria-label="Gallery wall zoom controls">

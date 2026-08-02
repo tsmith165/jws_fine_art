@@ -37,6 +37,7 @@ import {
 } from '@/app/admin/walls/actions';
 import { galleryWallLayoutIssues } from '@shared/galleryWallLayout';
 import { suggestGalleryWallLayout } from '@shared/galleryWallSuggestions';
+import { normalizeGalleryWallLabelMode } from '@shared/galleryWallLabels';
 import {
     GALLERY_WALL_PRESETS,
     galleryWallPlacementBounds,
@@ -49,10 +50,8 @@ type Placement = GalleryWallInput['placements'][number];
 
 const ARTWORK_LABEL_OPTIONS = [
     { value: 'hidden', label: 'Hidden', description: 'Artwork only' },
-    { value: 'left', label: 'Left', description: 'Beside the artwork' },
-    { value: 'right', label: 'Right', description: 'Beside the artwork' },
-    { value: 'bottom-left', label: 'Bottom left', description: 'Below the artwork' },
-    { value: 'bottom-right', label: 'Bottom right', description: 'Below the artwork' },
+    { value: 'bottom-left', label: 'Below left', description: 'Aligned to the artwork’s left edge' },
+    { value: 'bottom-right', label: 'Below right', description: 'Aligned to the artwork’s right edge' },
 ] as const;
 
 const EMPTY_WALL: GalleryWallInput = {
@@ -78,7 +77,7 @@ function wallInput(wall: OwnerWalls[number]): GalleryWallInput {
         background: wall.background.kind === 'preset' ? wall.background : { kind: 'preset', preset: 'white-oak' },
         floorStyle: wall.floorStyle,
         lighting: wall.lighting,
-        artworkLabelMode: wall.artworkLabelMode ?? 'hidden',
+        artworkLabelMode: normalizeGalleryWallLabelMode(wall.artworkLabelMode),
         placements: wall.placements,
     };
 }
@@ -176,11 +175,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
             placementGeometry,
             suggestionSeed,
             {
-                bounds: galleryWallPlacementBounds(
-                    draft.background.preset as GalleryWallPresetKey,
-                    draft.widthInches,
-                    draft.heightInches,
-                ),
+                bounds: galleryWallPlacementBounds(draft.background.preset as GalleryWallPresetKey, draft.widthInches, draft.heightInches),
             },
         );
         const byId = new Map(suggested.map((placement) => [placement.id, placement]));
@@ -365,7 +360,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                             <WandSparkles size={15} /> Suggest layout
                         </button>
                         {selectedWall?.status === 'published' ? (
-                            <Link href={`/viewing-room/${selectedWall.slug}`} target="_blank">
+                            <Link href={`/viewing-room?wall=${encodeURIComponent(selectedWall.slug)}`} target="_blank">
                                 <Eye size={15} /> Preview
                             </Link>
                         ) : null}
@@ -494,7 +489,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                     </fieldset>
                     <fieldset className="owner-wall-labels">
                         <legend>Artwork labels</legend>
-                        <p>Optionally show a museum-style title and price card beside every work on this wall.</p>
+                        <p>Optionally show a museum-style title and price card below every work on this wall.</p>
                         <div>
                             {ARTWORK_LABEL_OPTIONS.map((option) => {
                                 const selected = draft.artworkLabelMode === option.value;

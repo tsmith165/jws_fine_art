@@ -11,12 +11,15 @@ export const metadata: Metadata = {
 };
 export const dynamic = 'force-dynamic';
 
-export default async function ViewingRoomPage() {
+export default async function ViewingRoomPage({ searchParams }: { searchParams: Promise<{ wall?: string | string[] }> }) {
     const walls = await readPublishedGalleryWalls();
     if (!walls.length) notFound();
+    const requestedWall = (await searchParams).wall;
+    const requestedSlug = typeof requestedWall === 'string' ? requestedWall : requestedWall?.[0];
+    const initialSlug = walls.some((wall) => wall.slug === requestedSlug) ? requestedSlug! : walls[0].slug;
     return (
         <SiteShell newsletter>
-            <ViewingRoomExperience walls={walls} initialSlug={walls[0].slug} />
+            <ViewingRoomExperience walls={walls} initialSlug={initialSlug} />
         </SiteShell>
     );
 }

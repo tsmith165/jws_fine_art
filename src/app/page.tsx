@@ -56,7 +56,10 @@ export default async function HomePage() {
                         <span className="lw-eyebrow">Curated gallery</span>
                         <h2>See the work in conversation.</h2>
                         <p>Step into {viewingRoomWalls[0].title}, where Jill’s paintings are arranged together at true relative scale.</p>
-                        <Link className="lw-button lw-button-brass" href={`/viewing-room/${viewingRoomWalls[0].slug}`}>
+                        <Link
+                            className="lw-button lw-button-brass"
+                            href={`/viewing-room?wall=${encodeURIComponent(viewingRoomWalls[0].slug)}`}
+                        >
                             Enter the gallery <ArrowRight size={16} />
                         </Link>
                     </div>

@@ -3193,7 +3193,6 @@
 }
 .lw-viewing-room-header > div:first-child {
     min-width: 0;
-    max-width: 1200px;
     flex: 1;
 }
 .lw-viewing-room-header h1 {
@@ -3202,7 +3201,7 @@
     white-space: nowrap;
 }
 .lw-viewing-room-header p {
-    max-width: 650px;
+    max-width: none;
     margin-top: 15px;
     color: var(--lw-muted);
     font-size: 15px;
@@ -3327,23 +3326,17 @@
     line-height: 1;
     text-transform: uppercase;
 }
-.lw-viewing-piece-label.is-left {
-    top: 50%;
-    right: calc(100% + clamp(4px, 0.42vw, 7px));
-    transform: translateY(-50%);
-}
-.lw-viewing-piece-label.is-right {
-    top: 50%;
-    left: calc(100% + clamp(4px, 0.42vw, 7px));
-    transform: translateY(-50%);
-}
+.lw-viewing-piece-label.is-left,
+.lw-viewing-piece-label.is-right,
 .lw-viewing-piece-label.is-bottom-left,
 .lw-viewing-piece-label.is-bottom-right {
     top: calc(100% + clamp(4px, 0.42vw, 7px));
 }
+.lw-viewing-piece-label.is-left,
 .lw-viewing-piece-label.is-bottom-left {
     left: 0;
 }
+.lw-viewing-piece-label.is-right,
 .lw-viewing-piece-label.is-bottom-right {
     right: 0;
 }
