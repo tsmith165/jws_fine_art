@@ -3655,8 +3655,16 @@
         min-height: 52vw;
     }
     .lw-viewing-piece-label {
-        width: 48px;
-        padding: 3px;
+        width: 42px;
+        gap: 1px;
+        padding: 2px;
+    }
+    .lw-viewing-piece-label strong {
+        font-size: 5.5px;
+        line-height: 1.05;
+    }
+    .lw-viewing-piece-label small {
+        font-size: 4px;
     }
     .lw-viewing-wall-shell > footer {
         align-items: flex-start;
