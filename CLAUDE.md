@@ -2,6 +2,13 @@
 
 Read and follow `AGENTS.md`; it is the canonical project guide.
 
+Do not run a local production build. Use local typecheck, lint, and tests for
+fast validation, then use a Vercel preview or production deployment as the
+actual build gate. Inspect failed deployments, fix and push the cause, and
+redeploy until healthy. Deploy matching Convex schema/function changes before
+or alongside Vercel so the deployed app never builds against a stale Convex
+API.
+
 Before any commerce or authentication work, preserve these owner decisions:
 
 - Stripe Tax is explicitly disabled. Listed prices include applicable sales

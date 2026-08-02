@@ -3241,41 +3241,9 @@
     width: 100%;
     max-height: 76vh;
     overflow: hidden;
-    background: #d9cfbc;
-    box-shadow: inset 0 -28px 60px rgba(44, 35, 25, 0.13);
-}
-.lw-viewing-wall.is-white-oak {
-    background: #efede6;
-}
-.lw-viewing-wall.is-warm-plaster {
-    background: #d9cfbc;
-}
-.lw-viewing-wall.is-museum-green {
-    background: #526657;
-}
-.lw-viewing-wall.is-charcoal {
-    background: #373a37;
-}
-.lw-viewing-wall.has-gallery-light::before {
-    position: absolute;
-    z-index: 0;
-    inset: 0;
-    content: '';
-    background: radial-gradient(ellipse at 50% 12%, rgba(255, 255, 242, 0.34), transparent 58%);
-}
-.lw-viewing-wall.floor-oak::after,
-.lw-viewing-wall.floor-concrete::after {
-    position: absolute;
-    z-index: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 12%;
-    content: '';
-    background: linear-gradient(176deg, transparent 0 8%, #8d6c4d 9% 100%);
-}
-.lw-viewing-wall.floor-concrete::after {
-    background: linear-gradient(176deg, transparent 0 8%, #9d9d97 9% 100%);
+    background-color: #d9cfbc;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 .lw-viewing-piece {
     position: absolute;
@@ -3561,17 +3529,9 @@
 .lw-viewing-room-teaser-wall {
     position: relative;
     overflow: hidden;
-    background: #d9cfbc;
-    box-shadow: inset 0 -20px 45px rgba(44, 35, 25, 0.13);
-}
-.lw-viewing-room-teaser.is-white-oak .lw-viewing-room-teaser-wall {
-    background: #efede6;
-}
-.lw-viewing-room-teaser.is-museum-green .lw-viewing-room-teaser-wall {
-    background: #526657;
-}
-.lw-viewing-room-teaser.is-charcoal .lw-viewing-room-teaser-wall {
-    background: #373a37;
+    background-color: #d9cfbc;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 .lw-viewing-room-teaser-wall > span {
     position: absolute;

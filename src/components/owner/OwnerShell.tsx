@@ -24,7 +24,7 @@ const navigation = [
     { href: '/admin', label: 'Today', detail: 'Tasks and studio health', icon: LayoutDashboard },
     { href: '/admin/artwork', label: 'Artwork', detail: 'Catalog, order, and archive', icon: Images },
     { href: '/admin/homepage', label: 'Homepage', detail: 'Featured artwork rotation', icon: PanelsTopLeft },
-    { href: '/admin/walls', label: 'Viewing room', detail: 'Curate gallery walls', icon: GalleryHorizontalEnd },
+    { href: '/admin/walls', label: 'Gallery', detail: 'Curate gallery walls', icon: GalleryHorizontalEnd },
     { href: '/admin/categories', label: 'Needs attention', detail: 'Repair catalog issues', icon: CircleAlert },
     { href: '/admin/orders', label: 'Orders', detail: 'Sales and fulfillment', icon: PackageCheck },
     { href: '/admin/inbox', label: 'Inbox', detail: 'Collector inquiries', icon: Inbox },

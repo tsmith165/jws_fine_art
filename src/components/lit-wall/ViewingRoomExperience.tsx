@@ -8,6 +8,7 @@ import type { api } from '../../../convex/_generated/api';
 import { ResilientImage as Image } from './ResilientImage';
 import { ArtworkPresentationImage } from './ArtworkPresentationImage';
 import { captureAnalytics } from '@/lib/analytics';
+import { galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
 
 type Walls = FunctionReturnType<typeof api.galleryWalls.listPublished>;
 type Wall = Walls[number];
@@ -125,7 +126,10 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
             <div className="lw-viewing-wall-shell">
                 <div
                     className={`lw-viewing-wall is-${wall.background.preset} has-${wall.lighting}-light floor-${wall.floorStyle}`}
-                    style={{ aspectRatio: `${wall.widthInches} / ${wall.heightInches}` }}
+                    style={{
+                        ...galleryWallSurfaceStyle(wall.background.preset as GalleryWallPresetKey),
+                        aspectRatio: `${wall.widthInches} / ${wall.heightInches}`,
+                    }}
                     aria-label={`${wall.title}, a gallery wall containing ${wall.placements.length} artworks`}
                     aria-roledescription="gallery wall"
                     onTouchStart={(event) => {
@@ -173,7 +177,7 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                         <Info size={14} /> Select an artwork for details
                     </span>
                     <span>
-                        <Ruler size={14} /> Relative scale is calibrated
+                        <Ruler size={14} /> Artwork sizes are shown at consistent relative scale; the gallery environment is illustrative
                         {wall.placements.some((item) => item.artwork.dimensionsEstimated) ? '; some framed sizes are estimated' : ''}
                     </span>
                 </footer>

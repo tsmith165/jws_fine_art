@@ -1,5 +1,25 @@
 # JWS Fine Art Project Guide
 
+## Build and deployment workflow
+
+Do not run `next build`, `npm run build`, or another local production build for
+this project. Vercel is the production-build authority and the deployment is the
+build gate.
+
+- Run the relevant local fast checks, normally `npm run typecheck`, `npm run
+lint`, and targeted or full `npm test`.
+- Push the branch to a Vercel preview when a preview review is useful. Push to
+  the production branch or run the established production deployment workflow
+  when the user requests production deployment.
+- Inspect the Vercel deployment result and logs. If it fails, fix the cause,
+  commit and push the correction, and redeploy until the requested environment
+  is healthy.
+- Do not use a successful local build as a substitute for a Vercel deployment,
+  and do not spend time making local production builds work.
+- Convex schema or function changes must be deployed to the matching Convex
+  environment before or alongside the Vercel deployment so server rendering
+  does not target an outdated Convex API.
+
 ## Artwork image fidelity
 
 Artwork is the product. Treat visible softness, grain introduced by delivery, incorrect color, and a placeholder that remains blurred as release-blocking defects.

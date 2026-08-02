@@ -1,6 +1,22 @@
 'use client';
 
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CircleAlert, Copy, Eye, Grip, Plus, Save, Send, Trash2, Undo2, Redo2 } from 'lucide-react';
+import {
+    ArrowDown,
+    ArrowLeft,
+    ArrowRight,
+    ArrowUp,
+    Check,
+    CircleAlert,
+    Copy,
+    Eye,
+    Grip,
+    Plus,
+    Save,
+    Send,
+    Trash2,
+    Undo2,
+    Redo2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,8 +25,17 @@ import type { api } from '../../../convex/_generated/api';
 import type { PiecesWithImages } from '@/types/artwork';
 import { artworkScaleDimensions } from '@/lib/artwork';
 import { ArtworkPresentationImage } from '@/components/lit-wall/ArtworkPresentationImage';
-import { archiveGalleryWall, duplicateGalleryWall, moveGalleryWall, publishGalleryWall, saveGalleryWall, unpublishGalleryWall, type GalleryWallInput } from '@/app/admin/walls/actions';
+import {
+    archiveGalleryWall,
+    duplicateGalleryWall,
+    moveGalleryWall,
+    publishGalleryWall,
+    saveGalleryWall,
+    unpublishGalleryWall,
+    type GalleryWallInput,
+} from '@/app/admin/walls/actions';
 import { galleryWallLayoutIssues } from '@shared/galleryWallLayout';
+import { GALLERY_WALL_PRESETS, galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
 
 type OwnerWalls = FunctionReturnType<typeof api.galleryWalls.listOwner>;
 type Placement = GalleryWallInput['placements'][number];
@@ -20,7 +45,7 @@ const EMPTY_WALL: GalleryWallInput = {
     narrative: '',
     widthInches: 144,
     heightInches: 96,
-    background: { kind: 'preset', preset: 'warm-plaster' },
+    background: { kind: 'preset', preset: 'white-oak' },
     floorStyle: 'oak',
     lighting: 'gallery',
     placements: [],
@@ -34,7 +59,7 @@ function wallInput(wall: OwnerWalls[number]): GalleryWallInput {
         narrative: wall.narrative ?? '',
         widthInches: wall.widthInches,
         heightInches: wall.heightInches,
-        background: wall.background.kind === 'preset' ? wall.background : { kind: 'preset', preset: 'warm-plaster' },
+        background: wall.background.kind === 'preset' ? wall.background : { kind: 'preset', preset: 'white-oak' },
         floorStyle: wall.floorStyle,
         lighting: wall.lighting,
         placements: wall.placements,
@@ -79,10 +104,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
         const size = artwork ? artworkScaleDimensions(artwork) : null;
         return size ? [{ ...item, widthInches: size.widthInches, heightInches: size.heightInches }] : [];
     });
-    const layoutIssues = galleryWallLayoutIssues(
-        { widthInches: draft.widthInches, heightInches: draft.heightInches },
-        placementGeometry,
-    );
+    const layoutIssues = galleryWallLayoutIssues({ widthInches: draft.widthInches, heightInches: draft.heightInches }, placementGeometry);
     const draftChangedAfterPublish = Boolean(
         selectedWall?.publishedSnapshot && selectedWall.publishedSnapshot.revision !== draft.expectedRevision,
     );
@@ -142,9 +164,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
         change(
             (current) => ({
                 ...current,
-                placements: current.placements.map((item) =>
-                    item.id === id ? { ...item, centerXInches, centerYInches } : item,
-                ),
+                placements: current.placements.map((item) => (item.id === id ? { ...item, centerXInches, centerYInches } : item)),
             }),
             record,
         );
@@ -173,7 +193,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
         if (selectedPlacements.length < 3) return;
         const selected = draft.placements
             .filter((item) => selectedPlacements.includes(item.id))
-            .sort((a, b) => axis === 'horizontal' ? a.centerXInches - b.centerXInches : a.centerYInches - b.centerYInches);
+            .sort((a, b) => (axis === 'horizontal' ? a.centerXInches - b.centerXInches : a.centerYInches - b.centerYInches));
         const start = axis === 'horizontal' ? selected[0].centerXInches : selected[0].centerYInches;
         const end = axis === 'horizontal' ? selected.at(-1)!.centerXInches : selected.at(-1)!.centerYInches;
         const step = (end - start) / (selected.length - 1);
@@ -209,11 +229,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
             const wallId = await persist();
             if (!wallId) return;
             const result = await publishGalleryWall(wallId);
-            setMessage(
-                result.success
-                    ? { tone: 'good', text: 'Viewing-room wall published.' }
-                    : { tone: 'warning', text: result.error },
-            );
+            setMessage(result.success ? { tone: 'good', text: 'Gallery wall published.' } : { tone: 'warning', text: result.error });
             router.refresh();
         });
 
@@ -221,23 +237,55 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
         <div className="owner-wall-manager">
             <aside className="owner-wall-list">
                 <header>
-                    <div><strong>Walls</strong><small>{initialWalls.length} saved</small></div>
-                    <button type="button" onClick={() => selectWall('new')}><Plus size={15} /> New wall</button>
+                    <div>
+                        <strong>Walls</strong>
+                        <small>{initialWalls.length} saved</small>
+                    </div>
+                    <button type="button" onClick={() => selectWall('new')}>
+                        <Plus size={15} /> New wall
+                    </button>
                 </header>
                 <div>
                     {initialWalls.map((wall) => (
-                        <div
-                            key={wall._id}
-                            className={selectedId === String(wall._id) ? 'is-active' : undefined}
-                        >
+                        <div key={wall._id} className={selectedId === String(wall._id) ? 'is-active' : undefined}>
                             <button type="button" className="owner-wall-list-select" onClick={() => selectWall(String(wall._id))}>
-                                <span><strong>{wall.title}</strong><small>{wall.placements.length} artwork{wall.placements.length === 1 ? '' : 's'} · updated {new Date(wall.updatedAt).toLocaleDateString()}</small></span>
+                                <span>
+                                    <strong>{wall.title}</strong>
+                                    <small>
+                                        {wall.placements.length} artwork{wall.placements.length === 1 ? '' : 's'} · updated{' '}
+                                        {new Date(wall.updatedAt).toLocaleDateString()}
+                                    </small>
+                                </span>
                                 <em className={`is-${wall.status}`}>{wall.status}</em>
                             </button>
                             <span className="owner-wall-list-state">
                                 <span>
-                                    <button type="button" title="Move wall earlier" aria-label={`Move ${wall.title} earlier`} onClick={() => { startTransition(async () => { await moveGalleryWall(String(wall._id), 'up'); router.refresh(); }); }}><ArrowUp size={12} /></button>
-                                    <button type="button" title="Move wall later" aria-label={`Move ${wall.title} later`} onClick={() => { startTransition(async () => { await moveGalleryWall(String(wall._id), 'down'); router.refresh(); }); }}><ArrowDown size={12} /></button>
+                                    <button
+                                        type="button"
+                                        title="Move wall earlier"
+                                        aria-label={`Move ${wall.title} earlier`}
+                                        onClick={() => {
+                                            startTransition(async () => {
+                                                await moveGalleryWall(String(wall._id), 'up');
+                                                router.refresh();
+                                            });
+                                        }}
+                                    >
+                                        <ArrowUp size={12} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        title="Move wall later"
+                                        aria-label={`Move ${wall.title} later`}
+                                        onClick={() => {
+                                            startTransition(async () => {
+                                                await moveGalleryWall(String(wall._id), 'down');
+                                                router.refresh();
+                                            });
+                                        }}
+                                    >
+                                        <ArrowDown size={12} />
+                                    </button>
                                 </span>
                             </span>
                         </div>
@@ -252,36 +300,157 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                         <strong>{draft.title}</strong>
                     </div>
                     <div>
-                        <button type="button" onClick={undo} disabled={!history.length} aria-label="Undo"><Undo2 size={16} /></button>
-                        <button type="button" onClick={redo} disabled={!future.length} aria-label="Redo"><Redo2 size={16} /></button>
+                        <button type="button" onClick={undo} disabled={!history.length} aria-label="Undo">
+                            <Undo2 size={16} />
+                        </button>
+                        <button type="button" onClick={redo} disabled={!future.length} aria-label="Redo">
+                            <Redo2 size={16} />
+                        </button>
                         {selectedWall?.status === 'published' ? (
-                            <Link href={`/viewing-room/${selectedWall.slug}`} target="_blank"><Eye size={15} /> Preview</Link>
+                            <Link href={`/viewing-room/${selectedWall.slug}`} target="_blank">
+                                <Eye size={15} /> Preview
+                            </Link>
                         ) : null}
-                        {draft.wallId ? <button type="button" onClick={() => startTransition(async () => { const result = await duplicateGalleryWall(draft.wallId!); if (result.success) { router.refresh(); setMessage({ tone: 'good', text: 'Wall duplicated as a new draft.' }); } else setMessage({ tone: 'warning', text: result.error }); })}><Copy size={15} /> Duplicate</button> : null}
-                        {selectedWall?.status === 'published' ? <button type="button" onClick={() => startTransition(async () => { const result = await unpublishGalleryWall(String(selectedWall._id)); setMessage(result.success ? { tone: 'good', text: 'Wall moved back to draft.' } : { tone: 'warning', text: result.error }); router.refresh(); })}>Unpublish</button> : null}
-                        <button type="button" onClick={save} disabled={pending}><Save size={15} /> Save draft</button>
-                        <button className="is-primary" type="button" onClick={publish} disabled={pending || !draft.placements.length || Boolean(unpublishable.length) || !layoutIssues.valid}>
+                        {draft.wallId ? (
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    startTransition(async () => {
+                                        const result = await duplicateGalleryWall(draft.wallId!);
+                                        if (result.success) {
+                                            router.refresh();
+                                            setMessage({ tone: 'good', text: 'Wall duplicated as a new draft.' });
+                                        } else setMessage({ tone: 'warning', text: result.error });
+                                    })
+                                }
+                            >
+                                <Copy size={15} /> Duplicate
+                            </button>
+                        ) : null}
+                        {selectedWall?.status === 'published' ? (
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    startTransition(async () => {
+                                        const result = await unpublishGalleryWall(String(selectedWall._id));
+                                        setMessage(
+                                            result.success
+                                                ? { tone: 'good', text: 'Wall moved back to draft.' }
+                                                : { tone: 'warning', text: result.error },
+                                        );
+                                        router.refresh();
+                                    })
+                                }
+                            >
+                                Unpublish
+                            </button>
+                        ) : null}
+                        <button type="button" onClick={save} disabled={pending}>
+                            <Save size={15} /> Save draft
+                        </button>
+                        <button
+                            className="is-primary"
+                            type="button"
+                            onClick={publish}
+                            disabled={pending || !draft.placements.length || Boolean(unpublishable.length) || !layoutIssues.valid}
+                        >
                             <Send size={15} /> Publish
                         </button>
                     </div>
                 </header>
                 {message ? <p className={`owner-wall-message is-${message.tone}`}>{message.text}</p> : null}
-                {draftChangedAfterPublish ? <p className="owner-wall-message is-warning">This draft differs from the published wall. Save, preview, and publish again when the revision is ready.</p> : null}
-                {!layoutIssues.valid ? <p className="owner-wall-message is-warning">Resolve {layoutIssues.overlappingPairs.length ? `${layoutIssues.overlappingPairs.length} overlap${layoutIssues.overlappingPairs.length === 1 ? '' : 's'}` : ''}{layoutIssues.overlappingPairs.length && layoutIssues.outOfBoundsIds.length ? ' and ' : ''}{layoutIssues.outOfBoundsIds.length ? `${layoutIssues.outOfBoundsIds.length} out-of-bounds placement${layoutIssues.outOfBoundsIds.length === 1 ? '' : 's'}` : ''} before publishing.</p> : null}
+                {draftChangedAfterPublish ? (
+                    <p className="owner-wall-message is-warning">
+                        This draft differs from the published wall. Save, preview, and publish again when the revision is ready.
+                    </p>
+                ) : null}
+                {!layoutIssues.valid ? (
+                    <p className="owner-wall-message is-warning">
+                        Resolve{' '}
+                        {layoutIssues.overlappingPairs.length
+                            ? `${layoutIssues.overlappingPairs.length} overlap${layoutIssues.overlappingPairs.length === 1 ? '' : 's'}`
+                            : ''}
+                        {layoutIssues.overlappingPairs.length && layoutIssues.outOfBoundsIds.length ? ' and ' : ''}
+                        {layoutIssues.outOfBoundsIds.length
+                            ? `${layoutIssues.outOfBoundsIds.length} out-of-bounds placement${layoutIssues.outOfBoundsIds.length === 1 ? '' : 's'}`
+                            : ''}{' '}
+                        before publishing.
+                    </p>
+                ) : null}
                 <div className="owner-wall-settings">
-                    <label><span>Wall title</span><input value={draft.title} onChange={(event) => change({ ...draft, title: event.target.value })} /></label>
-                    <label><span>Wall width</span><input type="number" min="48" step="1" value={draft.widthInches} onChange={(event) => change({ ...draft, widthInches: Number(event.target.value) })} /></label>
-                    <label><span>Wall height</span><input type="number" min="48" step="1" value={draft.heightInches} onChange={(event) => change({ ...draft, heightInches: Number(event.target.value) })} /></label>
-                    <label><span>Wall finish</span><select value={draft.background.preset} onChange={(event) => change({ ...draft, background: { kind: 'preset', preset: event.target.value as GalleryWallInput['background']['preset'] } })}><option value="warm-plaster">Warm plaster</option><option value="white-oak">Gallery white</option><option value="museum-green">Museum green</option><option value="charcoal">Charcoal</option></select></label>
-                    <label><span>Floor</span><select value={draft.floorStyle} onChange={(event) => change({ ...draft, floorStyle: event.target.value as GalleryWallInput['floorStyle'] })}><option value="oak">Oak</option><option value="concrete">Concrete</option><option value="none">No floor line</option></select></label>
-                    <label><span>Lighting</span><select value={draft.lighting} onChange={(event) => change({ ...draft, lighting: event.target.value as GalleryWallInput['lighting'] })}><option value="gallery">Gallery</option><option value="daylight">Daylight</option><option value="soft">Soft</option></select></label>
-                    <label className="is-wide"><span>Curator note</span><input value={draft.narrative} placeholder="Optional context for this arrangement" onChange={(event) => change({ ...draft, narrative: event.target.value })} /></label>
+                    <label>
+                        <span>Wall title</span>
+                        <input value={draft.title} onChange={(event) => change({ ...draft, title: event.target.value })} />
+                    </label>
+                    <label>
+                        <span>Wall width</span>
+                        <input
+                            type="number"
+                            min="48"
+                            step="1"
+                            value={draft.widthInches}
+                            onChange={(event) => change({ ...draft, widthInches: Number(event.target.value) })}
+                        />
+                    </label>
+                    <label>
+                        <span>Wall height</span>
+                        <input
+                            type="number"
+                            min="48"
+                            step="1"
+                            value={draft.heightInches}
+                            onChange={(event) => change({ ...draft, heightInches: Number(event.target.value) })}
+                        />
+                    </label>
+                    <fieldset className="owner-wall-environments">
+                        <legend>Gallery environment</legend>
+                        <p>Choose the room collectors will see behind this arrangement.</p>
+                        <div>
+                            {GALLERY_WALL_PRESETS.map((preset) => {
+                                const selected = draft.background.preset === preset.key;
+                                return (
+                                    <button
+                                        key={preset.key}
+                                        type="button"
+                                        className={selected ? 'is-selected' : undefined}
+                                        aria-pressed={selected}
+                                        onClick={() =>
+                                            change({
+                                                ...draft,
+                                                background: { kind: 'preset', preset: preset.key },
+                                                floorStyle: preset.floorStyle,
+                                                lighting: preset.lighting,
+                                            })
+                                        }
+                                    >
+                                        <span className="owner-wall-environment-preview" style={galleryWallSurfaceStyle(preset.key)} />
+                                        <span>
+                                            <strong>{preset.label}</strong>
+                                            <small>{preset.description}</small>
+                                        </span>
+                                        {selected ? <Check size={15} aria-hidden="true" /> : null}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </fieldset>
+                    <label className="is-wide">
+                        <span>Curator note</span>
+                        <input
+                            value={draft.narrative}
+                            placeholder="Optional context for this arrangement"
+                            onChange={(event) => change({ ...draft, narrative: event.target.value })}
+                        />
+                    </label>
                 </div>
 
                 <div className="owner-wall-canvas-shell">
                     <div
                         className={`owner-wall-canvas is-${draft.background.preset} has-${draft.lighting}-light floor-${draft.floorStyle}`}
-                        style={{ aspectRatio: `${draft.widthInches} / ${draft.heightInches}` }}
+                        style={{
+                            ...galleryWallSurfaceStyle(draft.background.preset as GalleryWallPresetKey),
+                            aspectRatio: `${draft.widthInches} / ${draft.heightInches}`,
+                        }}
                         aria-label={`Arrangement canvas for ${draft.title}`}
                     >
                         {draft.placements.map((item) => {
@@ -295,12 +464,21 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                     key={item.id}
                                     type="button"
                                     className={`owner-wall-piece ${selectedPlacements.includes(item.id) ? 'is-selected' : ''}`}
-                                    style={{ left: `${left}%`, top: `${top}%`, width: `${(size.widthInches / draft.widthInches) * 100}%`, aspectRatio: `${size.widthInches} / ${size.heightInches}` }}
+                                    style={{
+                                        left: `${left}%`,
+                                        top: `${top}%`,
+                                        width: `${(size.widthInches / draft.widthInches) * 100}%`,
+                                        aspectRatio: `${size.widthInches} / ${size.heightInches}`,
+                                    }}
                                     onPointerDown={(event) => {
                                         event.currentTarget.setPointerCapture(event.pointerId);
-                                        setSelectedPlacements((current) => event.shiftKey
-                                            ? current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id]
-                                            : [item.id]);
+                                        setSelectedPlacements((current) =>
+                                            event.shiftKey
+                                                ? current.includes(item.id)
+                                                    ? current.filter((id) => id !== item.id)
+                                                    : [...current, item.id]
+                                                : [item.id],
+                                        );
                                         setHistory((items) => [...items.slice(-29), draft]);
                                         setFuture([]);
                                     }}
@@ -329,8 +507,12 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                         ];
                                         for (let first = 0; first < otherGeometry.length; first += 1) {
                                             for (let second = first + 1; second < otherGeometry.length; second += 1) {
-                                                xCandidates.push((otherGeometry[first].centerXInches + otherGeometry[second].centerXInches) / 2);
-                                                yCandidates.push((otherGeometry[first].centerYInches + otherGeometry[second].centerYInches) / 2);
+                                                xCandidates.push(
+                                                    (otherGeometry[first].centerXInches + otherGeometry[second].centerXInches) / 2,
+                                                );
+                                                yCandidates.push(
+                                                    (otherGeometry[first].centerYInches + otherGeometry[second].centerYInches) / 2,
+                                                );
                                             }
                                         }
                                         const snappedX = nearestSnap(x, xCandidates);
@@ -343,59 +525,239 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                         );
                                     }}
                                     onPointerUp={(event) => {
-                                        if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+                                        if (event.currentTarget.hasPointerCapture(event.pointerId))
+                                            event.currentTarget.releasePointerCapture(event.pointerId);
                                         setSnapGuides({ x: null, y: null });
                                     }}
                                     onPointerCancel={() => setSnapGuides({ x: null, y: null })}
                                     onKeyDown={(event) => {
                                         const amount = event.shiftKey ? 0.25 : 1;
-                                        const delta = event.key === 'ArrowLeft' ? [-amount, 0] : event.key === 'ArrowRight' ? [amount, 0] : event.key === 'ArrowUp' ? [0, -amount] : event.key === 'ArrowDown' ? [0, amount] : null;
+                                        const delta =
+                                            event.key === 'ArrowLeft'
+                                                ? [-amount, 0]
+                                                : event.key === 'ArrowRight'
+                                                  ? [amount, 0]
+                                                  : event.key === 'ArrowUp'
+                                                    ? [0, -amount]
+                                                    : event.key === 'ArrowDown'
+                                                      ? [0, amount]
+                                                      : null;
                                         if (!delta) return;
                                         event.preventDefault();
-                                        movePlacement(item.id, clamp(item.centerXInches + delta[0], size.widthInches / 2, draft.widthInches - size.widthInches / 2), clamp(item.centerYInches + delta[1], size.heightInches / 2, draft.heightInches - size.heightInches / 2), true);
+                                        movePlacement(
+                                            item.id,
+                                            clamp(
+                                                item.centerXInches + delta[0],
+                                                size.widthInches / 2,
+                                                draft.widthInches - size.widthInches / 2,
+                                            ),
+                                            clamp(
+                                                item.centerYInches + delta[1],
+                                                size.heightInches / 2,
+                                                draft.heightInches - size.heightInches / 2,
+                                            ),
+                                            true,
+                                        );
                                     }}
                                     aria-label={`${artwork.title}. Drag or use arrow keys to position.`}
                                 >
-                                    <ArtworkPresentationImage src={artwork.image_path} crop={artwork.presentation_crop} alt="" fill quality={95} sizes="25vw" />
-                                    <span><Grip size={12} /> {artwork.title}</span>
+                                    <ArtworkPresentationImage
+                                        src={artwork.image_path}
+                                        crop={artwork.presentation_crop}
+                                        alt=""
+                                        fill
+                                        quality={95}
+                                        sizes="25vw"
+                                    />
+                                    <span>
+                                        <Grip size={12} /> {artwork.title}
+                                    </span>
                                 </button>
                             );
                         })}
-                        {snapGuides.x !== null ? <span className="owner-wall-guide is-x" style={{ left: `${(snapGuides.x / draft.widthInches) * 100}%` }} aria-hidden="true" /> : null}
-                        {snapGuides.y !== null ? <span className="owner-wall-guide is-y" style={{ top: `${(snapGuides.y / draft.heightInches) * 100}%` }} aria-hidden="true" /> : null}
-                        {!draft.placements.length ? <div className="owner-wall-empty"><Grip size={22} /><strong>Build the wall</strong><p>Add artwork from the library, then drag it into place.</p></div> : null}
+                        {snapGuides.x !== null ? (
+                            <span
+                                className="owner-wall-guide is-x"
+                                style={{ left: `${(snapGuides.x / draft.widthInches) * 100}%` }}
+                                aria-hidden="true"
+                            />
+                        ) : null}
+                        {snapGuides.y !== null ? (
+                            <span
+                                className="owner-wall-guide is-y"
+                                style={{ top: `${(snapGuides.y / draft.heightInches) * 100}%` }}
+                                aria-hidden="true"
+                            />
+                        ) : null}
+                        {!draft.placements.length ? (
+                            <div className="owner-wall-empty">
+                                <Grip size={22} />
+                                <strong>Build the wall</strong>
+                                <p>Add artwork from the library, then drag it into place.</p>
+                            </div>
+                        ) : null}
                     </div>
                     <footer>
-                        <span>{draft.widthInches} × {draft.heightInches} in wall</span>
+                        <span>
+                            {draft.widthInches} × {draft.heightInches} in wall
+                        </span>
                         <span>Arrow keys move 1 in · Shift + arrow moves ¼ in · Shift-click selects several</span>
                     </footer>
                 </div>
 
                 <section className="owner-wall-selection">
                     <header>
-                        <div><strong>{selectedPlacements.length > 1 ? `${selectedPlacements.length} selected placements` : 'Selected placement'}</strong><small>{selectedPlacement ? 'Align, distribute, or remove the selected artwork.' : 'Choose an artwork on the wall.'}</small></div>
-                        {selectedPlacement ? <button type="button" onClick={() => { change((current) => ({ ...current, placements: current.placements.filter((item) => !selectedPlacements.includes(item.id)) })); setSelectedPlacements([]); }}><Trash2 size={14} /> Remove {selectedPlacements.length > 1 ? 'selected' : ''}</button> : null}
+                        <div>
+                            <strong>
+                                {selectedPlacements.length > 1 ? `${selectedPlacements.length} selected placements` : 'Selected placement'}
+                            </strong>
+                            <small>
+                                {selectedPlacement
+                                    ? 'Align, distribute, or remove the selected artwork.'
+                                    : 'Choose an artwork on the wall.'}
+                            </small>
+                        </div>
+                        {selectedPlacement ? (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    change((current) => ({
+                                        ...current,
+                                        placements: current.placements.filter((item) => !selectedPlacements.includes(item.id)),
+                                    }));
+                                    setSelectedPlacements([]);
+                                }}
+                            >
+                                <Trash2 size={14} /> Remove {selectedPlacements.length > 1 ? 'selected' : ''}
+                            </button>
+                        ) : null}
                     </header>
-                    {selectedPlacement ? (() => {
-                        const placement = draft.placements.find((item) => item.id === selectedPlacement);
-                        const artwork = placement ? artworkById.get(placement.artworkLegacyId) : null;
-                        const size = artwork ? artworkScaleDimensions(artwork) : null;
-                        if (!placement || !artwork || !size) return null;
-                        return <div className="owner-wall-selection-fields"><span><strong>{selectedPlacements.length > 1 ? `${selectedPlacements.length} artworks` : artwork.title}</strong><small>{selectedPlacements.length > 1 ? 'Alignment applies to every selected work.' : `${size.widthInches} × ${size.heightInches} in · ${size.estimated ? 'estimated framed size' : 'verified/recorded size'}`}</small></span><button type="button" onClick={() => alignSelected('left')}>Align left</button><button type="button" onClick={() => alignSelected('center-x')}>Center horizontal</button><button type="button" onClick={() => alignSelected('right')}>Align right</button><button type="button" onClick={() => alignSelected('top')}>Align top</button><button type="button" onClick={() => alignSelected('center-y')}>Center vertical</button><button type="button" onClick={() => alignSelected('bottom')}>Align bottom</button><button type="button" disabled={selectedPlacements.length < 3} onClick={() => distributeSelected('horizontal')}>Distribute across</button><button type="button" disabled={selectedPlacements.length < 3} onClick={() => distributeSelected('vertical')}>Distribute down</button></div>;
-                    })() : null}
+                    {selectedPlacement
+                        ? (() => {
+                              const placement = draft.placements.find((item) => item.id === selectedPlacement);
+                              const artwork = placement ? artworkById.get(placement.artworkLegacyId) : null;
+                              const size = artwork ? artworkScaleDimensions(artwork) : null;
+                              if (!placement || !artwork || !size) return null;
+                              return (
+                                  <div className="owner-wall-selection-fields">
+                                      <span>
+                                          <strong>
+                                              {selectedPlacements.length > 1 ? `${selectedPlacements.length} artworks` : artwork.title}
+                                          </strong>
+                                          <small>
+                                              {selectedPlacements.length > 1
+                                                  ? 'Alignment applies to every selected work.'
+                                                  : `${size.widthInches} × ${size.heightInches} in · ${size.estimated ? 'estimated framed size' : 'verified/recorded size'}`}
+                                          </small>
+                                      </span>
+                                      <button type="button" onClick={() => alignSelected('left')}>
+                                          Align left
+                                      </button>
+                                      <button type="button" onClick={() => alignSelected('center-x')}>
+                                          Center horizontal
+                                      </button>
+                                      <button type="button" onClick={() => alignSelected('right')}>
+                                          Align right
+                                      </button>
+                                      <button type="button" onClick={() => alignSelected('top')}>
+                                          Align top
+                                      </button>
+                                      <button type="button" onClick={() => alignSelected('center-y')}>
+                                          Center vertical
+                                      </button>
+                                      <button type="button" onClick={() => alignSelected('bottom')}>
+                                          Align bottom
+                                      </button>
+                                      <button
+                                          type="button"
+                                          disabled={selectedPlacements.length < 3}
+                                          onClick={() => distributeSelected('horizontal')}
+                                      >
+                                          Distribute across
+                                      </button>
+                                      <button
+                                          type="button"
+                                          disabled={selectedPlacements.length < 3}
+                                          onClick={() => distributeSelected('vertical')}
+                                      >
+                                          Distribute down
+                                      </button>
+                                  </div>
+                              );
+                          })()
+                        : null}
                 </section>
 
                 <section className="owner-wall-library">
-                    <header><div><strong>Artwork library</strong><small>Only active catalog work can be placed. Sold work remains clearly marked.</small></div><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search title or medium" /></header>
+                    <header>
+                        <div>
+                            <strong>Artwork library</strong>
+                            <small>Only active catalog work can be placed. Sold work remains clearly marked.</small>
+                        </div>
+                        <input
+                            type="search"
+                            value={search}
+                            onChange={(event) => setSearch(event.target.value)}
+                            placeholder="Search title or medium"
+                        />
+                    </header>
                     <div>
                         {visibleArtworks.map((artwork) => {
                             const size = artworkScaleDimensions(artwork);
-                            return <article key={artwork.id}><div><ArtworkPresentationImage src={artwork.small_image_path || artwork.image_path} crop={artwork.presentation_crop} alt="" fill sizes="80px" /></div><span><strong>{artwork.title}</strong><small>{size ? `${size.widthInches} × ${size.heightInches} in` : 'Dimensions needed'}{artwork.sold ? ' · Sold' : ''}</small>{size?.estimated ? <em><CircleAlert size={11} /> Estimated frame</em> : null}</span><button type="button" disabled={!size} onClick={() => addArtwork(artwork)}>{size ? <><Plus size={14} /> Add</> : <>Fix dimensions</>}</button></article>;
+                            return (
+                                <article key={artwork.id}>
+                                    <div>
+                                        <ArtworkPresentationImage
+                                            src={artwork.small_image_path || artwork.image_path}
+                                            crop={artwork.presentation_crop}
+                                            alt=""
+                                            fill
+                                            sizes="80px"
+                                        />
+                                    </div>
+                                    <span>
+                                        <strong>{artwork.title}</strong>
+                                        <small>
+                                            {size ? `${size.widthInches} × ${size.heightInches} in` : 'Dimensions needed'}
+                                            {artwork.sold ? ' · Sold' : ''}
+                                        </small>
+                                        {size?.estimated ? (
+                                            <em>
+                                                <CircleAlert size={11} /> Estimated frame
+                                            </em>
+                                        ) : null}
+                                    </span>
+                                    <button type="button" disabled={!size} onClick={() => addArtwork(artwork)}>
+                                        {size ? (
+                                            <>
+                                                <Plus size={14} /> Add
+                                            </>
+                                        ) : (
+                                            <>Fix dimensions</>
+                                        )}
+                                    </button>
+                                </article>
+                            );
                         })}
                     </div>
                 </section>
 
-                {draft.wallId ? <button className="owner-wall-archive" type="button" onClick={() => startTransition(async () => { if (!window.confirm('Archive this wall? It will disappear from the public viewing room.')) return; await archiveGalleryWall(draft.wallId!); router.refresh(); selectWall('new'); })}><Trash2 size={14} /> Archive wall</button> : null}
+                {draft.wallId ? (
+                    <button
+                        className="owner-wall-archive"
+                        type="button"
+                        onClick={() =>
+                            startTransition(async () => {
+                                if (!window.confirm('Archive this wall? It will disappear from the public gallery.')) return;
+                                await archiveGalleryWall(draft.wallId!);
+                                router.refresh();
+                                selectWall('new');
+                            })
+                        }
+                    >
+                        <Trash2 size={14} /> Archive wall
+                    </button>
+                ) : null}
             </section>
         </div>
     );

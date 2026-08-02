@@ -10,12 +10,20 @@ export async function generateMetadata({ params }: { params: Promise<{ wallSlug:
     const { wallSlug } = await params;
     const wall = await readPublishedGalleryWall(wallSlug);
     if (!wall) return {};
-    return { title: `${wall.title} Viewing Room`, description: wall.narrative || `Explore ${wall.title}, curated by Jill Weeks Smith.`, alternates: { canonical: `/viewing-room/${wall.slug}` } };
+    return {
+        title: `${wall.title} | Gallery`,
+        description: wall.narrative || `Explore ${wall.title}, curated by Jill Weeks Smith.`,
+        alternates: { canonical: `/viewing-room/${wall.slug}` },
+    };
 }
 
 export default async function ViewingRoomWallPage({ params }: { params: Promise<{ wallSlug: string }> }) {
     const { wallSlug } = await params;
     const walls = await readPublishedGalleryWalls();
     if (!walls.some((wall) => wall.slug === wallSlug)) notFound();
-    return <SiteShell newsletter><ViewingRoomExperience walls={walls} initialSlug={wallSlug} /></SiteShell>;
+    return (
+        <SiteShell newsletter>
+            <ViewingRoomExperience walls={walls} initialSlug={wallSlug} />
+        </SiteShell>
+    );
 }

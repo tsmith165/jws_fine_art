@@ -13,9 +13,9 @@ export async function readPublishedGalleryWall(slug: string) {
 }
 
 export async function readOwnerGalleryWalls() {
-    const access = await requireAdmin('manage viewing-room walls');
+    const access = await requireAdmin('manage gallery walls');
     if (!access.isAdmin) throw new Error(access.error);
-    const client = await getAuthenticatedOwnerConvexClient('manage viewing-room walls');
+    const client = await getAuthenticatedOwnerConvexClient('manage gallery walls');
     return client.query(api.galleryWalls.listOwner, {});
 }
 

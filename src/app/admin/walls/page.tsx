@@ -8,11 +8,11 @@ export const dynamic = 'force-dynamic';
 export default async function OwnerWallsPage() {
     const [walls, artworks] = await Promise.all([readOwnerGalleryWalls(), readOwnerArtworksWithMedia()]);
     return (
-        <OwnerShell active="/admin/walls" title="Viewing room">
+        <OwnerShell active="/admin/walls" title="Gallery">
             <section className="owner-content owner-walls-content">
                 <OwnerHeading
                     eyebrow="Curated presentation"
-                    title="Viewing room"
+                    title="Gallery"
                     description="Compose true-to-scale gallery walls, preview the collector experience, and publish only when the arrangement is ready."
                 />
                 <OwnerGalleryWallManager initialWalls={walls} artworks={artworks.filter((artwork) => artwork.active)} />

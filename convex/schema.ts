@@ -5,7 +5,13 @@ const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
 const nullableBoolean = v.union(v.boolean(), v.null());
 const artworkCategory = v.union(v.literal('coastal'), v.literal('mountain'), v.literal('urban'), v.literal('intaglio-lino-cut'));
-const galleryWallPreset = v.union(v.literal('white-oak'), v.literal('warm-plaster'), v.literal('museum-green'), v.literal('charcoal'));
+const galleryWallPreset = v.union(
+    v.literal('white-oak'),
+    v.literal('warm-plaster'),
+    v.literal('museum-green'),
+    v.literal('charcoal'),
+    v.literal('midnight'),
+);
 const galleryWallBackground = v.union(
     v.object({ kind: v.literal('preset'), preset: galleryWallPreset }),
     v.object({
@@ -187,9 +193,7 @@ export default defineSchema({
         smallUrl: nullableString,
         smallWidth: nullableNumber,
         smallHeight: nullableNumber,
-        presentationCrop: v.optional(
-            v.object({ top: v.number(), right: v.number(), bottom: v.number(), left: v.number() }),
-        ),
+        presentationCrop: v.optional(v.object({ top: v.number(), right: v.number(), bottom: v.number(), left: v.number() })),
         displayOrder: v.number(),
         ownerMutatedFields: v.array(v.string()),
         ownerRevision: v.number(),

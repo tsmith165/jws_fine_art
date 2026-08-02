@@ -6,7 +6,13 @@ import { finishedArtworkDimensions } from '../shared/artworkDimensions';
 import { galleryWallLayoutIssues, type GalleryWallPlacementGeometry } from '../shared/galleryWallLayout';
 
 const nullableString = v.union(v.string(), v.null());
-const wallPreset = v.union(v.literal('white-oak'), v.literal('warm-plaster'), v.literal('museum-green'), v.literal('charcoal'));
+const wallPreset = v.union(
+    v.literal('white-oak'),
+    v.literal('warm-plaster'),
+    v.literal('museum-green'),
+    v.literal('charcoal'),
+    v.literal('midnight'),
+);
 const wallBackground = v.union(
     v.object({ kind: v.literal('preset'), preset: wallPreset }),
     v.object({
@@ -33,11 +39,13 @@ const wallFields = {
 };
 
 function slugify(value: string) {
-    return value
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '') || 'untitled-wall';
+    return (
+        value
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '') || 'untitled-wall'
+    );
 }
 
 async function uniqueSlug(ctx: MutationCtx, title: string, currentId?: string) {
@@ -60,9 +68,7 @@ async function publicWall(ctx: QueryCtx, wall: Doc<'galleryWalls'>) {
     const [artworks, media] = await Promise.all([ctx.db.query('artworks').collect(), ctx.db.query('artworkMedia').collect()]);
     const artworkByLegacyId = new Map(artworks.map((artwork) => [artwork.legacyId, artwork]));
     const primaryByLegacyId = new Map(
-        media
-            .filter((item) => !item.absentFromSource && item.role === 'primary')
-            .map((item) => [item.artworkLegacyId, item]),
+        media.filter((item) => !item.absentFromSource && item.role === 'primary').map((item) => [item.artworkLegacyId, item]),
     );
     const placements = snapshot.placements.flatMap((item) => {
         const artwork = artworkByLegacyId.get(item.artworkLegacyId);
@@ -210,8 +216,12 @@ export const saveWall = mutation({
             const draftRevision = existing.draftRevision + 1;
             await ctx.db.patch(wallId, { ...fields, title: fields.title.trim(), slug, draftRevision, updatedAt: now });
             await ctx.db.insert('ownerAuditEvents', {
-                actorId, action: 'gallery_wall.updated', entityType: 'galleryWall', entityId: String(wallId),
-                detailsJson: JSON.stringify({ draftRevision }), createdAt: now,
+                actorId,
+                action: 'gallery_wall.updated',
+                entityType: 'galleryWall',
+                entityId: String(wallId),
+                detailsJson: JSON.stringify({ draftRevision }),
+                createdAt: now,
             });
             return { wallId, slug, draftRevision };
         }
@@ -229,8 +239,12 @@ export const saveWall = mutation({
             updatedAt: now,
         });
         await ctx.db.insert('ownerAuditEvents', {
-            actorId, action: 'gallery_wall.created', entityType: 'galleryWall', entityId: String(id),
-            detailsJson: JSON.stringify({ draftRevision: 1 }), createdAt: now,
+            actorId,
+            action: 'gallery_wall.created',
+            entityType: 'galleryWall',
+            entityId: String(id),
+            detailsJson: JSON.stringify({ draftRevision: 1 }),
+            createdAt: now,
         });
         return { wallId: id, slug, draftRevision: 1 };
     },
@@ -246,12 +260,16 @@ export const publishWall = mutation({
         if (wall.background.kind !== 'preset') throw new Error('Only calibrated gallery presets can be published.');
         const [artworks, media] = await Promise.all([ctx.db.query('artworks').collect(), ctx.db.query('artworkMedia').collect()]);
         const byLegacyId = new Map(artworks.map((artwork) => [artwork.legacyId, artwork]));
-        const primaryIds = new Set(media.filter((item) => item.role === 'primary' && !item.absentFromSource).map((item) => item.artworkLegacyId));
+        const primaryIds = new Set(
+            media.filter((item) => item.role === 'primary' && !item.absentFromSource).map((item) => item.artworkLegacyId),
+        );
         const geometry: GalleryWallPlacementGeometry[] = [];
         for (const placement of wall.placements) {
             const artwork = byLegacyId.get(placement.artworkLegacyId);
-            if (!artwork || artwork.absentFromSource || !artwork.active) throw new Error('Remove archived or missing artwork before publishing.');
-            if (!artwork.available && !artwork.sold) throw new Error(`${artwork.title} is private. Make it public or remove it before publishing.`);
+            if (!artwork || artwork.absentFromSource || !artwork.active)
+                throw new Error('Remove archived or missing artwork before publishing.');
+            if (!artwork.available && !artwork.sold)
+                throw new Error(`${artwork.title} is private. Make it public or remove it before publishing.`);
             if (!primaryIds.has(artwork.legacyId)) throw new Error(`${artwork.title} needs a primary image before this wall can publish.`);
             const size = finishedArtworkDimensions({
                 framed: artwork.framed,
@@ -285,8 +303,12 @@ export const publishWall = mutation({
             updatedAt: now,
         });
         await ctx.db.insert('ownerAuditEvents', {
-            actorId: String(identity.subject), action: 'gallery_wall.published', entityType: 'galleryWall', entityId: String(wall._id),
-            detailsJson: JSON.stringify({ revision: wall.draftRevision, placements: wall.placements.length }), createdAt: now,
+            actorId: String(identity.subject),
+            action: 'gallery_wall.published',
+            entityType: 'galleryWall',
+            entityId: String(wall._id),
+            detailsJson: JSON.stringify({ revision: wall.draftRevision, placements: wall.placements.length }),
+            createdAt: now,
         });
         return { published: true, slug: wall.slug };
     },
@@ -300,8 +322,12 @@ export const unpublishWall = mutation({
         if (!wall) throw new Error('Gallery wall not found.');
         await ctx.db.patch(args.wallId, { status: 'draft', updatedAt: Date.now() });
         await ctx.db.insert('ownerAuditEvents', {
-            actorId: String(identity.subject), action: 'gallery_wall.unpublished', entityType: 'galleryWall', entityId: String(wall._id),
-            detailsJson: '{}', createdAt: Date.now(),
+            actorId: String(identity.subject),
+            action: 'gallery_wall.unpublished',
+            entityType: 'galleryWall',
+            entityId: String(wall._id),
+            detailsJson: '{}',
+            createdAt: Date.now(),
         });
         return { unpublished: true, slug: wall.slug };
     },
@@ -319,15 +345,28 @@ export const duplicateWall = mutation({
         const walls = await ctx.db.query('galleryWalls').collect();
         const publishOrder = Math.max(0, ...walls.map((item) => item.publishOrder)) + 1000;
         const wallId = await ctx.db.insert('galleryWalls', {
-            slug, title, narrative: wall.narrative, status: 'draft', publishOrder,
-            widthInches: wall.widthInches, heightInches: wall.heightInches, background: wall.background,
-            floorStyle: wall.floorStyle, lighting: wall.lighting, draftRevision: 1,
+            slug,
+            title,
+            narrative: wall.narrative,
+            status: 'draft',
+            publishOrder,
+            widthInches: wall.widthInches,
+            heightInches: wall.heightInches,
+            background: wall.background,
+            floorStyle: wall.floorStyle,
+            lighting: wall.lighting,
+            draftRevision: 1,
             placements: wall.placements.map((item) => ({ ...item, id: `${item.id}-copy-${now}` })),
-            createdAt: now, updatedAt: now,
+            createdAt: now,
+            updatedAt: now,
         });
         await ctx.db.insert('ownerAuditEvents', {
-            actorId: String(identity.subject), action: 'gallery_wall.duplicated', entityType: 'galleryWall', entityId: String(wallId),
-            detailsJson: JSON.stringify({ sourceWallId: String(wall._id) }), createdAt: now,
+            actorId: String(identity.subject),
+            action: 'gallery_wall.duplicated',
+            entityType: 'galleryWall',
+            entityId: String(wallId),
+            detailsJson: JSON.stringify({ sourceWallId: String(wall._id) }),
+            createdAt: now,
         });
         return { wallId, slug };
     },
@@ -347,8 +386,12 @@ export const moveWall = mutation({
         await ctx.db.patch(current._id, { publishOrder: target.publishOrder, updatedAt: now });
         await ctx.db.patch(target._id, { publishOrder: current.publishOrder, updatedAt: now });
         await ctx.db.insert('ownerAuditEvents', {
-            actorId: String(identity.subject), action: 'gallery_wall.reordered', entityType: 'galleryWall', entityId: String(current._id),
-            detailsJson: JSON.stringify({ direction: args.direction, targetWallId: String(target._id) }), createdAt: now,
+            actorId: String(identity.subject),
+            action: 'gallery_wall.reordered',
+            entityType: 'galleryWall',
+            entityId: String(current._id),
+            detailsJson: JSON.stringify({ direction: args.direction, targetWallId: String(target._id) }),
+            createdAt: now,
         });
         return { changed: true };
     },
@@ -362,8 +405,12 @@ export const archiveWall = mutation({
         if (!wall) throw new Error('Gallery wall not found.');
         await ctx.db.patch(args.wallId, { status: 'archived', updatedAt: Date.now() });
         await ctx.db.insert('ownerAuditEvents', {
-            actorId: String(identity.subject), action: 'gallery_wall.archived', entityType: 'galleryWall', entityId: String(wall._id),
-            detailsJson: '{}', createdAt: Date.now(),
+            actorId: String(identity.subject),
+            action: 'gallery_wall.archived',
+            entityType: 'galleryWall',
+            entityId: String(wall._id),
+            detailsJson: '{}',
+            createdAt: Date.now(),
         });
         return { archived: true };
     },

@@ -8,7 +8,7 @@ import { Brand } from './Brand';
 
 const links = [
     ['/work', 'Work'],
-    ['/viewing-room', 'Viewing room'],
+    ['/viewing-room', 'Gallery'],
     ['/studio', 'Studio'],
     ['/commissions', 'Commissions'],
     ['/contact', 'Contact'],
@@ -22,11 +22,13 @@ export function SiteHeader({ viewingRoom = false }: { viewingRoom?: boolean }) {
         <header className="lw-header">
             <Brand />
             <nav className="lw-nav" aria-label="Primary navigation">
-                {links.filter(([href]) => href !== '/viewing-room' || viewingRoom).map(([href, label]) => (
-                    <Link key={href} href={href} aria-current={pathname.startsWith(href) ? 'page' : undefined}>
-                        {label}
-                    </Link>
-                ))}
+                {links
+                    .filter(([href]) => href !== '/viewing-room' || viewingRoom)
+                    .map(([href, label]) => (
+                        <Link key={href} href={href} aria-current={pathname.startsWith(href) ? 'page' : undefined}>
+                            {label}
+                        </Link>
+                    ))}
             </nav>
             <Link className="lw-button lw-button-brass lw-header-cta" href="/work?availability=available">
                 Available work <ArrowRight size={16} aria-hidden="true" />
@@ -40,11 +42,13 @@ export function SiteHeader({ viewingRoom = false }: { viewingRoom?: boolean }) {
                 {open ? <X size={22} /> : <Menu size={22} />}
             </button>
             <nav className={`lw-mobile-nav ${open ? 'is-open' : ''}`} aria-label="Mobile navigation">
-                {links.filter(([href]) => href !== '/viewing-room' || viewingRoom).map(([href, label]) => (
-                    <Link key={href} href={href}>
-                        {label} <ArrowRight size={16} />
-                    </Link>
-                ))}
+                {links
+                    .filter(([href]) => href !== '/viewing-room' || viewingRoom)
+                    .map(([href, label]) => (
+                        <Link key={href} href={href}>
+                            {label} <ArrowRight size={16} />
+                        </Link>
+                    ))}
                 <Link href="/work?availability=available">
                     Available work <ArrowRight size={16} />
                 </Link>
