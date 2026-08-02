@@ -8,7 +8,7 @@ import type { api } from '../../../convex/_generated/api';
 import { ResilientImage as Image } from './ResilientImage';
 import { ArtworkPresentationImage } from './ArtworkPresentationImage';
 import { captureAnalytics } from '@/lib/analytics';
-import { galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
+import { galleryWallSceneAspectRatio, galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
 import { normalizeGalleryWallLabelMode } from '@shared/galleryWallLabels';
 
 type Walls = FunctionReturnType<typeof api.galleryWalls.listPublished>;
@@ -154,7 +154,7 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                         className={`lw-viewing-wall is-${wall.background.preset} has-${wall.lighting}-light floor-${wall.floorStyle}`}
                         style={{
                             ...galleryWallSurfaceStyle(wall.background.preset as GalleryWallPresetKey),
-                            aspectRatio: `${wall.widthInches} / ${wall.heightInches}`,
+                            aspectRatio: galleryWallSceneAspectRatio(wall.background.preset as GalleryWallPresetKey),
                             transform: `scale(${zoom})`,
                         }}
                         aria-label={`${wall.title}, a gallery wall containing ${wall.placements.length} artworks`}

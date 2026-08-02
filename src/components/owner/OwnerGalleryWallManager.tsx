@@ -12,14 +12,17 @@ import {
     Grip,
     Plus,
     Save,
+    Search,
     Send,
+    Settings2,
     Trash2,
     Undo2,
     Redo2,
     WandSparkles,
+    X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { FunctionReturnType } from 'convex/server';
 import type { api } from '../../../convex/_generated/api';
@@ -38,15 +41,20 @@ import {
 import { galleryWallLayoutIssues } from '@shared/galleryWallLayout';
 import { suggestGalleryWallLayout } from '@shared/galleryWallSuggestions';
 import { normalizeGalleryWallLabelMode } from '@shared/galleryWallLabels';
+import { ARTWORK_CATEGORIES, artworkCategoryLabel, type ArtworkCategoryId } from '@shared/artworkCategories';
 import {
     GALLERY_WALL_PRESETS,
     galleryWallPlacementBounds,
+    galleryWallPreset,
+    galleryWallSceneAspectRatio,
     galleryWallSurfaceStyle,
     type GalleryWallPresetKey,
 } from '@/lib/galleryWallPresets';
 
 type OwnerWalls = FunctionReturnType<typeof api.galleryWalls.listOwner>;
 type Placement = GalleryWallInput['placements'][number];
+type ArtworkAvailabilityFilter = 'all' | 'available' | 'sold' | 'private';
+type ArtworkSort = 'title' | 'size-asc' | 'size-desc' | 'price-asc' | 'price-desc';
 
 const ARTWORK_LABEL_OPTIONS = [
     { value: 'hidden', label: 'Hidden', description: 'Artwork only' },
@@ -100,6 +108,12 @@ function nearestSnap(value: number, candidates: number[], threshold = 1.5) {
     return nearest && nearest.distance <= threshold ? nearest.value : null;
 }
 
+function formattedWallDate(timestamp: number) {
+    return new Intl.DateTimeFormat('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(
+        new Date(timestamp),
+    );
+}
+
 export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWalls: OwnerWalls; artworks: PiecesWithImages[] }) {
     const router = useRouter();
     const [selectedId, setSelectedId] = useState<string | 'new'>(initialWalls[0] ? String(initialWalls[0]._id) : 'new');
@@ -107,7 +121,15 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
     const [draft, setDraft] = useState<GalleryWallInput>(() => (initialWalls[0] ? wallInput(initialWalls[0]) : { ...EMPTY_WALL }));
     const [history, setHistory] = useState<GalleryWallInput[]>([]);
     const [future, setFuture] = useState<GalleryWallInput[]>([]);
+    const [artworkPickerOpen, setArtworkPickerOpen] = useState(false);
+    const artworkPickerRef = useRef<HTMLElement>(null);
+    const artworkPickerTriggerRef = useRef<HTMLButtonElement>(null);
     const [search, setSearch] = useState('');
+    const [availabilityFilter, setAvailabilityFilter] = useState<ArtworkAvailabilityFilter>('all');
+    const [categoryFilter, setCategoryFilter] = useState<'all' | ArtworkCategoryId>('all');
+    const [mediumFilter, setMediumFilter] = useState('all');
+    const [artworkSort, setArtworkSort] = useState<ArtworkSort>('title');
+    const [nudgeStep, setNudgeStep] = useState<0.25 | 1>(1);
     const [selectedPlacements, setSelectedPlacements] = useState<string[]>([]);
     const [snapGuides, setSnapGuides] = useState<{ x: number | null; y: number | null }>({ x: null, y: null });
     const selectedPlacement = selectedPlacements.at(-1) ?? null;
@@ -115,12 +137,37 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
     const [suggestionSeed, setSuggestionSeed] = useState(() => Date.now());
     const [pending, startTransition] = useTransition();
     const artworkById = useMemo(() => new Map(artworks.map((artwork) => [artwork.id, artwork])), [artworks]);
+    const mediums = useMemo(
+        () => Array.from(new Set(artworks.map((artwork) => artwork.piece_type).filter((value): value is string => Boolean(value)))).sort(),
+        [artworks],
+    );
     const visibleArtworks = useMemo(() => {
         const needle = search.trim().toLowerCase();
         return artworks
-            .filter((artwork) => !needle || `${artwork.title} ${artwork.piece_type ?? ''}`.toLowerCase().includes(needle))
-            .sort((a, b) => Number(Boolean(a.sold)) - Number(Boolean(b.sold)) || a.title.localeCompare(b.title));
-    }, [artworks, search]);
+            .filter((artwork) => {
+                const categories = artwork.categories ?? [];
+                const searchable =
+                    `${artwork.title} ${artwork.piece_type ?? ''} ${categories.map(artworkCategoryLabel).join(' ')}`.toLowerCase();
+                if (needle && !searchable.includes(needle)) return false;
+                if (categoryFilter !== 'all' && !categories.includes(categoryFilter)) return false;
+                if (mediumFilter !== 'all' && artwork.piece_type !== mediumFilter) return false;
+                if (availabilityFilter === 'available' && (artwork.sold || !artwork.available)) return false;
+                if (availabilityFilter === 'sold' && !artwork.sold) return false;
+                if (availabilityFilter === 'private' && (artwork.sold || artwork.available)) return false;
+                return true;
+            })
+            .sort((a, b) => {
+                const aSize = artworkScaleDimensions(a);
+                const bSize = artworkScaleDimensions(b);
+                const aArea = aSize ? aSize.widthInches * aSize.heightInches : Number.POSITIVE_INFINITY;
+                const bArea = bSize ? bSize.widthInches * bSize.heightInches : Number.POSITIVE_INFINITY;
+                if (artworkSort === 'size-asc') return aArea - bArea || a.title.localeCompare(b.title);
+                if (artworkSort === 'size-desc') return bArea - aArea || a.title.localeCompare(b.title);
+                if (artworkSort === 'price-asc') return a.price - b.price || a.title.localeCompare(b.title);
+                if (artworkSort === 'price-desc') return b.price - a.price || a.title.localeCompare(b.title);
+                return a.title.localeCompare(b.title);
+            });
+    }, [artworks, search, availabilityFilter, categoryFilter, mediumFilter, artworkSort]);
     const unpublishable = draft.placements.filter((item) => !artworkById.get(item.artworkLegacyId));
     const placementGeometry = draft.placements.flatMap((item) => {
         const artwork = artworkById.get(item.artworkLegacyId);
@@ -131,6 +178,40 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
     const draftChangedAfterPublish = Boolean(
         selectedWall?.publishedSnapshot && selectedWall.publishedSnapshot.revision !== draft.expectedRevision,
     );
+
+    useEffect(() => {
+        if (!artworkPickerOpen) return;
+        const previousOverflow = document.body.style.overflow;
+        const trigger = artworkPickerTriggerRef.current;
+        document.body.style.overflow = 'hidden';
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setArtworkPickerOpen(false);
+                return;
+            }
+            if (event.key !== 'Tab' || !artworkPickerRef.current) return;
+            const focusable = Array.from(
+                artworkPickerRef.current.querySelectorAll<HTMLElement>(
+                    'button:not([disabled]), input:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+                ),
+            );
+            const first = focusable[0];
+            const last = focusable.at(-1);
+            if (event.shiftKey && document.activeElement === first && last) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last && first) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+        window.addEventListener('keydown', closeOnEscape);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            window.removeEventListener('keydown', closeOnEscape);
+            window.requestAnimationFrame(() => trigger?.focus());
+        };
+    }, [artworkPickerOpen]);
 
     const change = (next: GalleryWallInput | ((current: GalleryWallInput) => GalleryWallInput), record = true) => {
         setDraft((current) => {
@@ -217,6 +298,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
 
     const alignSelected = (axis: 'left' | 'center-x' | 'right' | 'top' | 'center-y' | 'bottom') => {
         if (!selectedPlacements.length) return;
+        const bounds = galleryWallPlacementBounds(draft.background.preset as GalleryWallPresetKey, draft.widthInches, draft.heightInches);
         change((current) => ({
             ...current,
             placements: current.placements.map((item) => {
@@ -224,25 +306,60 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                 const artwork = artworkById.get(item.artworkLegacyId);
                 const size = artwork ? artworkScaleDimensions(artwork) : null;
                 if (!size) return item;
-                if (axis === 'left') return { ...item, centerXInches: size.widthInches / 2 };
-                if (axis === 'center-x') return { ...item, centerXInches: draft.widthInches / 2 };
-                if (axis === 'right') return { ...item, centerXInches: draft.widthInches - size.widthInches / 2 };
-                if (axis === 'top') return { ...item, centerYInches: size.heightInches / 2 };
-                if (axis === 'center-y') return { ...item, centerYInches: draft.heightInches / 2 };
-                return { ...item, centerYInches: draft.heightInches - size.heightInches / 2 };
+                if (axis === 'left') return { ...item, centerXInches: bounds.left + size.widthInches / 2 };
+                if (axis === 'center-x') return { ...item, centerXInches: (bounds.left + bounds.right) / 2 };
+                if (axis === 'right') return { ...item, centerXInches: bounds.right - size.widthInches / 2 };
+                if (axis === 'top') return { ...item, centerYInches: bounds.top + size.heightInches / 2 };
+                if (axis === 'center-y') return { ...item, centerYInches: (bounds.top + bounds.bottom) / 2 };
+                return { ...item, centerYInches: bounds.bottom - size.heightInches / 2 };
+            }),
+        }));
+    };
+
+    const nudgeSelected = (deltaX: number, deltaY: number) => {
+        if (!selectedPlacements.length) return;
+        change((current) => ({
+            ...current,
+            placements: current.placements.map((item) => {
+                if (!selectedPlacements.includes(item.id)) return item;
+                const artwork = artworkById.get(item.artworkLegacyId);
+                const size = artwork ? artworkScaleDimensions(artwork) : null;
+                if (!size) return item;
+                return {
+                    ...item,
+                    centerXInches: clamp(item.centerXInches + deltaX, size.widthInches / 2, draft.widthInches - size.widthInches / 2),
+                    centerYInches: clamp(item.centerYInches + deltaY, size.heightInches / 2, draft.heightInches - size.heightInches / 2),
+                };
             }),
         }));
     };
 
     const distributeSelected = (axis: 'horizontal' | 'vertical') => {
         if (selectedPlacements.length < 3) return;
+        const geometryById = new Map(placementGeometry.map((item) => [item.id, item]));
         const selected = draft.placements
-            .filter((item) => selectedPlacements.includes(item.id))
+            .filter((item) => selectedPlacements.includes(item.id) && geometryById.has(item.id))
             .sort((a, b) => (axis === 'horizontal' ? a.centerXInches - b.centerXInches : a.centerYInches - b.centerYInches));
-        const start = axis === 'horizontal' ? selected[0].centerXInches : selected[0].centerYInches;
-        const end = axis === 'horizontal' ? selected.at(-1)!.centerXInches : selected.at(-1)!.centerYInches;
-        const step = (end - start) / (selected.length - 1);
-        const positions = new Map(selected.map((item, index) => [item.id, start + step * index]));
+        if (selected.length < 3) return;
+        const sizeOf = (item: Placement) => {
+            const geometry = geometryById.get(item.id)!;
+            return axis === 'horizontal' ? geometry.widthInches : geometry.heightInches;
+        };
+        const startCenter = axis === 'horizontal' ? selected[0].centerXInches : selected[0].centerYInches;
+        const endCenter = axis === 'horizontal' ? selected.at(-1)!.centerXInches : selected.at(-1)!.centerYInches;
+        const startEdge = startCenter - sizeOf(selected[0]) / 2;
+        const endEdge = endCenter + sizeOf(selected.at(-1)!) / 2;
+        const totalSize = selected.reduce((sum, item) => sum + sizeOf(item), 0);
+        const gap = (endEdge - startEdge - totalSize) / (selected.length - 1);
+        let cursor = startEdge;
+        const positions = new Map(
+            selected.map((item) => {
+                const size = sizeOf(item);
+                const position = cursor + size / 2;
+                cursor += size + gap;
+                return [item.id, position];
+            }),
+        );
         change((current) => ({
             ...current,
             placements: current.placements.map((item) => {
@@ -298,7 +415,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                     <strong>{wall.title}</strong>
                                     <small>
                                         {wall.placements.length} artwork{wall.placements.length === 1 ? '' : 's'} · updated{' '}
-                                        {new Date(wall.updatedAt).toLocaleDateString()}
+                                        {formattedWallDate(wall.updatedAt)}
                                     </small>
                                 </span>
                                 <em className={`is-${wall.status}`}>{wall.status}</em>
@@ -345,20 +462,6 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                         <strong>{draft.title}</strong>
                     </div>
                     <div>
-                        <button type="button" onClick={undo} disabled={!history.length} aria-label="Undo">
-                            <Undo2 size={16} />
-                        </button>
-                        <button type="button" onClick={redo} disabled={!future.length} aria-label="Redo">
-                            <Redo2 size={16} />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={suggestLayout}
-                            disabled={!draft.placements.length || placementGeometry.length !== draft.placements.length}
-                            title="Generate another editable starting arrangement"
-                        >
-                            <WandSparkles size={15} /> Suggest layout
-                        </button>
                         {selectedWall?.status === 'published' ? (
                             <Link href={`/viewing-room?wall=${encodeURIComponent(selectedWall.slug)}`} target="_blank">
                                 <Eye size={15} /> Preview
@@ -435,26 +538,6 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                         <span>Wall title</span>
                         <input value={draft.title} onChange={(event) => change({ ...draft, title: event.target.value })} />
                     </label>
-                    <label>
-                        <span>Wall width</span>
-                        <input
-                            type="number"
-                            min="48"
-                            step="1"
-                            value={draft.widthInches}
-                            onChange={(event) => change({ ...draft, widthInches: Number(event.target.value) })}
-                        />
-                    </label>
-                    <label>
-                        <span>Wall height</span>
-                        <input
-                            type="number"
-                            min="48"
-                            step="1"
-                            value={draft.heightInches}
-                            onChange={(event) => change({ ...draft, heightInches: Number(event.target.value) })}
-                        />
-                    </label>
                     <fieldset className="owner-wall-environments">
                         <legend>Gallery environment</legend>
                         <p>Choose the room collectors will see behind this arrangement.</p>
@@ -476,7 +559,10 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                             })
                                         }
                                     >
-                                        <span className="owner-wall-environment-preview" style={galleryWallSurfaceStyle(preset.key)} />
+                                        <span
+                                            className="owner-wall-environment-preview"
+                                            style={{ ...galleryWallSurfaceStyle(preset.key), aspectRatio: preset.sceneAspectRatio }}
+                                        />
                                         <span>
                                             <strong>{preset.label}</strong>
                                             <small>{preset.description}</small>
@@ -523,14 +609,103 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                             onChange={(event) => change({ ...draft, narrative: event.target.value })}
                         />
                     </label>
+                    <details className="owner-wall-advanced is-wide">
+                        <summary>
+                            <span>
+                                <Settings2 size={15} />
+                                <strong>Advanced wall calibration</strong>
+                            </span>
+                            <small>
+                                {draft.widthInches} × {draft.heightInches} in
+                            </small>
+                        </summary>
+                        <div>
+                            <p>
+                                Physical wall size controls the artwork’s relative scale. It does not crop or zoom the room photograph.
+                                Change this only when the photographed wall has been measured.
+                            </p>
+                            <div>
+                                <label>
+                                    <span>Measured wall width (in)</span>
+                                    <input
+                                        type="number"
+                                        min="48"
+                                        step="1"
+                                        value={draft.widthInches}
+                                        onChange={(event) => change({ ...draft, widthInches: Number(event.target.value) })}
+                                    />
+                                </label>
+                                <label>
+                                    <span>Measured wall height (in)</span>
+                                    <input
+                                        type="number"
+                                        min="48"
+                                        step="1"
+                                        value={draft.heightInches}
+                                        onChange={(event) => change({ ...draft, heightInches: Number(event.target.value) })}
+                                    />
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const recommended = galleryWallPreset(
+                                            draft.background.preset as GalleryWallPresetKey,
+                                        ).recommendedWallSize;
+                                        change({
+                                            ...draft,
+                                            widthInches: recommended.widthInches,
+                                            heightInches: recommended.heightInches,
+                                        });
+                                    }}
+                                >
+                                    Reset to recommended
+                                </button>
+                            </div>
+                        </div>
+                    </details>
                 </div>
 
                 <div className="owner-wall-canvas-shell">
+                    <header className="owner-wall-canvas-tools">
+                        <div>
+                            <strong>Arrange the wall</strong>
+                            <small>Drag pieces into place. Shift-click to select several.</small>
+                        </div>
+                        <div>
+                            <button type="button" onClick={undo} disabled={!history.length} aria-label="Undo" title="Undo">
+                                <Undo2 size={16} />
+                            </button>
+                            <button type="button" onClick={redo} disabled={!future.length} aria-label="Redo" title="Redo">
+                                <Redo2 size={16} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={suggestLayout}
+                                disabled={!draft.placements.length || placementGeometry.length !== draft.placements.length}
+                                title="Generate another editable starting arrangement"
+                            >
+                                <WandSparkles size={15} /> Suggest layout
+                            </button>
+                            {draft.placements.length ? (
+                                <button type="button" onClick={() => setSelectedPlacements(draft.placements.map((item) => item.id))}>
+                                    Select all
+                                </button>
+                            ) : null}
+                            <button
+                                ref={artworkPickerTriggerRef}
+                                className="is-primary"
+                                type="button"
+                                onClick={() => setArtworkPickerOpen(true)}
+                            >
+                                <Plus size={15} /> Add artwork
+                            </button>
+                        </div>
+                    </header>
                     <div
                         className={`owner-wall-canvas is-${draft.background.preset} has-${draft.lighting}-light floor-${draft.floorStyle}`}
                         style={{
                             ...galleryWallSurfaceStyle(draft.background.preset as GalleryWallPresetKey),
-                            aspectRatio: `${draft.widthInches} / ${draft.heightInches}`,
+                            aspectRatio: galleryWallSceneAspectRatio(draft.background.preset as GalleryWallPresetKey),
                         }}
                         aria-label={`Arrangement canvas for ${draft.title}`}
                     >
@@ -695,27 +870,16 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                 <section className="owner-wall-selection">
                     <header>
                         <div>
-                            <strong>
-                                {selectedPlacements.length > 1 ? `${selectedPlacements.length} selected placements` : 'Selected placement'}
-                            </strong>
+                            <strong>Fine tune</strong>
                             <small>
                                 {selectedPlacement
-                                    ? 'Align, distribute, or remove the selected artwork.'
-                                    : 'Choose an artwork on the wall.'}
+                                    ? `${selectedPlacements.length} artwork${selectedPlacements.length === 1 ? '' : 's'} selected`
+                                    : 'Select artwork on the wall to reveal precise arrangement controls.'}
                             </small>
                         </div>
                         {selectedPlacement ? (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    change((current) => ({
-                                        ...current,
-                                        placements: current.placements.filter((item) => !selectedPlacements.includes(item.id)),
-                                    }));
-                                    setSelectedPlacements([]);
-                                }}
-                            >
-                                <Trash2 size={14} /> Remove {selectedPlacements.length > 1 ? 'selected' : ''}
+                            <button type="button" onClick={() => setSelectedPlacements([])}>
+                                Clear selection
                             </button>
                         ) : null}
                     </header>
@@ -726,107 +890,158 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                               const size = artwork ? artworkScaleDimensions(artwork) : null;
                               if (!placement || !artwork || !size) return null;
                               return (
-                                  <div className="owner-wall-selection-fields">
-                                      <span>
+                                  <div className="owner-wall-fine-tune">
+                                      <div className="owner-wall-selection-summary">
                                           <strong>
                                               {selectedPlacements.length > 1 ? `${selectedPlacements.length} artworks` : artwork.title}
                                           </strong>
                                           <small>
                                               {selectedPlacements.length > 1
-                                                  ? 'Alignment applies to every selected work.'
+                                                  ? 'These controls move every selected work as one deliberate arrangement.'
                                                   : `${size.widthInches} × ${size.heightInches} in · ${size.estimated ? 'estimated framed size' : 'verified/recorded size'}`}
                                           </small>
-                                      </span>
-                                      <button type="button" onClick={() => alignSelected('left')}>
-                                          Align left
-                                      </button>
-                                      <button type="button" onClick={() => alignSelected('center-x')}>
-                                          Center horizontal
-                                      </button>
-                                      <button type="button" onClick={() => alignSelected('right')}>
-                                          Align right
-                                      </button>
-                                      <button type="button" onClick={() => alignSelected('top')}>
-                                          Align top
-                                      </button>
-                                      <button type="button" onClick={() => alignSelected('center-y')}>
-                                          Center vertical
-                                      </button>
-                                      <button type="button" onClick={() => alignSelected('bottom')}>
-                                          Align bottom
-                                      </button>
+                                      </div>
+                                      <fieldset>
+                                          <legend>Align within the display area</legend>
+                                          <div className="owner-wall-control-row">
+                                              <button
+                                                  type="button"
+                                                  onClick={() => alignSelected('left')}
+                                                  title="Align selected work to the left edge"
+                                              >
+                                                  Left
+                                              </button>
+                                              <button
+                                                  type="button"
+                                                  onClick={() => alignSelected('center-x')}
+                                                  title="Center selected work horizontally"
+                                              >
+                                                  Center
+                                              </button>
+                                              <button
+                                                  type="button"
+                                                  onClick={() => alignSelected('right')}
+                                                  title="Align selected work to the right edge"
+                                              >
+                                                  Right
+                                              </button>
+                                              <button
+                                                  type="button"
+                                                  onClick={() => alignSelected('top')}
+                                                  title="Align selected work to the top edge"
+                                              >
+                                                  Top
+                                              </button>
+                                              <button
+                                                  type="button"
+                                                  onClick={() => alignSelected('center-y')}
+                                                  title="Center selected work vertically"
+                                              >
+                                                  Middle
+                                              </button>
+                                              <button
+                                                  type="button"
+                                                  onClick={() => alignSelected('bottom')}
+                                                  title="Align selected work to the bottom edge"
+                                              >
+                                                  Bottom
+                                              </button>
+                                          </div>
+                                      </fieldset>
+                                      <fieldset>
+                                          <legend>Nudge precisely</legend>
+                                          <div className="owner-wall-nudge-controls">
+                                              <div className="owner-wall-nudge-pad" aria-label="Nudge selected artwork">
+                                                  <button
+                                                      type="button"
+                                                      onClick={() => nudgeSelected(0, -nudgeStep)}
+                                                      aria-label={`Move up ${nudgeStep} inches`}
+                                                  >
+                                                      <ArrowUp size={15} />
+                                                  </button>
+                                                  <button
+                                                      type="button"
+                                                      onClick={() => nudgeSelected(-nudgeStep, 0)}
+                                                      aria-label={`Move left ${nudgeStep} inches`}
+                                                  >
+                                                      <ArrowLeft size={15} />
+                                                  </button>
+                                                  <span aria-hidden="true" />
+                                                  <button
+                                                      type="button"
+                                                      onClick={() => nudgeSelected(nudgeStep, 0)}
+                                                      aria-label={`Move right ${nudgeStep} inches`}
+                                                  >
+                                                      <ArrowRight size={15} />
+                                                  </button>
+                                                  <button
+                                                      type="button"
+                                                      onClick={() => nudgeSelected(0, nudgeStep)}
+                                                      aria-label={`Move down ${nudgeStep} inches`}
+                                                  >
+                                                      <ArrowDown size={15} />
+                                                  </button>
+                                              </div>
+                                              <div className="owner-wall-step-choice">
+                                                  <span>Move by</span>
+                                                  <button
+                                                      type="button"
+                                                      className={nudgeStep === 0.25 ? 'is-active' : undefined}
+                                                      onClick={() => setNudgeStep(0.25)}
+                                                  >
+                                                      ¼ in
+                                                  </button>
+                                                  <button
+                                                      type="button"
+                                                      className={nudgeStep === 1 ? 'is-active' : undefined}
+                                                      onClick={() => setNudgeStep(1)}
+                                                  >
+                                                      1 in
+                                                  </button>
+                                              </div>
+                                          </div>
+                                      </fieldset>
+                                      <fieldset>
+                                          <legend>Even spacing</legend>
+                                          <div className="owner-wall-control-row">
+                                              <button
+                                                  type="button"
+                                                  disabled={selectedPlacements.length < 3}
+                                                  onClick={() => distributeSelected('horizontal')}
+                                                  title="Space three or more selected works evenly from left to right"
+                                              >
+                                                  Across
+                                              </button>
+                                              <button
+                                                  type="button"
+                                                  disabled={selectedPlacements.length < 3}
+                                                  onClick={() => distributeSelected('vertical')}
+                                                  title="Space three or more selected works evenly from top to bottom"
+                                              >
+                                                  Down
+                                              </button>
+                                          </div>
+                                          {selectedPlacements.length < 3 ? (
+                                              <small>Select at least three works to distribute spacing.</small>
+                                          ) : null}
+                                      </fieldset>
                                       <button
+                                          className="owner-wall-remove-selection"
                                           type="button"
-                                          disabled={selectedPlacements.length < 3}
-                                          onClick={() => distributeSelected('horizontal')}
+                                          onClick={() => {
+                                              change((current) => ({
+                                                  ...current,
+                                                  placements: current.placements.filter((item) => !selectedPlacements.includes(item.id)),
+                                              }));
+                                              setSelectedPlacements([]);
+                                          }}
                                       >
-                                          Distribute across
-                                      </button>
-                                      <button
-                                          type="button"
-                                          disabled={selectedPlacements.length < 3}
-                                          onClick={() => distributeSelected('vertical')}
-                                      >
-                                          Distribute down
+                                          <Trash2 size={14} /> Remove {selectedPlacements.length > 1 ? 'selected artworks' : 'from wall'}
                                       </button>
                                   </div>
                               );
                           })()
                         : null}
-                </section>
-
-                <section className="owner-wall-library">
-                    <header>
-                        <div>
-                            <strong>Artwork library</strong>
-                            <small>Only active catalog work can be placed. Sold work remains clearly marked.</small>
-                        </div>
-                        <input
-                            type="search"
-                            value={search}
-                            onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Search title or medium"
-                        />
-                    </header>
-                    <div>
-                        {visibleArtworks.map((artwork) => {
-                            const size = artworkScaleDimensions(artwork);
-                            return (
-                                <article key={artwork.id}>
-                                    <div>
-                                        <ArtworkPresentationImage
-                                            src={artwork.small_image_path || artwork.image_path}
-                                            crop={artwork.presentation_crop}
-                                            alt=""
-                                            fill
-                                            sizes="80px"
-                                        />
-                                    </div>
-                                    <span>
-                                        <strong>{artwork.title}</strong>
-                                        <small>
-                                            {size ? `${size.widthInches} × ${size.heightInches} in` : 'Dimensions needed'}
-                                            {artwork.sold ? ' · Sold' : ''}
-                                        </small>
-                                        {size?.estimated ? (
-                                            <em>
-                                                <CircleAlert size={11} /> Estimated frame
-                                            </em>
-                                        ) : null}
-                                    </span>
-                                    <button type="button" disabled={!size} onClick={() => addArtwork(artwork)}>
-                                        {size ? (
-                                            <>
-                                                <Plus size={14} /> Add
-                                            </>
-                                        ) : (
-                                            <>Fix dimensions</>
-                                        )}
-                                    </button>
-                                </article>
-                            );
-                        })}
-                    </div>
                 </section>
 
                 {draft.wallId ? (
@@ -846,6 +1061,179 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                     </button>
                 ) : null}
             </section>
+            {artworkPickerOpen ? (
+                <div
+                    className="owner-wall-picker-backdrop"
+                    onMouseDown={(event) => {
+                        if (event.currentTarget === event.target) setArtworkPickerOpen(false);
+                    }}
+                >
+                    <section
+                        ref={artworkPickerRef}
+                        className="owner-wall-picker"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="owner-wall-picker-title"
+                    >
+                        <header>
+                            <div>
+                                <span>Artwork library</span>
+                                <h2 id="owner-wall-picker-title">Choose work for {draft.title}</h2>
+                                <p>
+                                    Browse the active catalog with scale, status, medium, and collection context. You can add several works
+                                    without closing this window.
+                                </p>
+                            </div>
+                            <button type="button" onClick={() => setArtworkPickerOpen(false)} aria-label="Close artwork library">
+                                <X size={22} />
+                            </button>
+                        </header>
+                        <div className="owner-wall-picker-filters">
+                            <label className="owner-wall-picker-search">
+                                <span>Search</span>
+                                <div>
+                                    <Search size={16} aria-hidden="true" />
+                                    <input
+                                        autoFocus
+                                        type="search"
+                                        value={search}
+                                        onChange={(event) => setSearch(event.target.value)}
+                                        placeholder="Title, medium, or collection"
+                                    />
+                                </div>
+                            </label>
+                            <label>
+                                <span>Status</span>
+                                <select
+                                    value={availabilityFilter}
+                                    onChange={(event) => setAvailabilityFilter(event.target.value as ArtworkAvailabilityFilter)}
+                                >
+                                    <option value="all">All statuses</option>
+                                    <option value="available">Available</option>
+                                    <option value="sold">Sold</option>
+                                    <option value="private">Private collection</option>
+                                </select>
+                            </label>
+                            <label>
+                                <span>Collection</span>
+                                <select
+                                    value={categoryFilter}
+                                    onChange={(event) => setCategoryFilter(event.target.value as 'all' | ArtworkCategoryId)}
+                                >
+                                    <option value="all">All collections</option>
+                                    {ARTWORK_CATEGORIES.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label>
+                                <span>Medium</span>
+                                <select value={mediumFilter} onChange={(event) => setMediumFilter(event.target.value)}>
+                                    <option value="all">All media</option>
+                                    {mediums.map((medium) => (
+                                        <option key={medium} value={medium}>
+                                            {medium}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label>
+                                <span>Sort</span>
+                                <select value={artworkSort} onChange={(event) => setArtworkSort(event.target.value as ArtworkSort)}>
+                                    <option value="title">Title A–Z</option>
+                                    <option value="size-asc">Size, small to large</option>
+                                    <option value="size-desc">Size, large to small</option>
+                                    <option value="price-asc">Price, low to high</option>
+                                    <option value="price-desc">Price, high to low</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div className="owner-wall-picker-results-summary">
+                            <span>
+                                <strong>{visibleArtworks.length}</strong> matching work{visibleArtworks.length === 1 ? '' : 's'}
+                            </span>
+                            <span>{draft.placements.length} currently on this wall</span>
+                        </div>
+                        <div className="owner-wall-picker-results">
+                            {visibleArtworks.map((artwork) => {
+                                const size = artworkScaleDimensions(artwork);
+                                const categories = artwork.categories ?? [];
+                                const alreadyPlaced = draft.placements.some((placement) => placement.artworkLegacyId === artwork.id);
+                                return (
+                                    <article key={artwork.id}>
+                                        <div className="owner-wall-picker-image">
+                                            <ArtworkPresentationImage
+                                                src={artwork.small_image_path || artwork.image_path}
+                                                crop={artwork.presentation_crop}
+                                                alt={artwork.title}
+                                                fill
+                                                sizes="(max-width: 720px) 44vw, 220px"
+                                            />
+                                            <span className={`is-${artwork.sold ? 'sold' : artwork.available ? 'available' : 'private'}`}>
+                                                {artwork.sold ? 'Sold' : artwork.available ? 'Available' : 'Private collection'}
+                                            </span>
+                                        </div>
+                                        <div className="owner-wall-picker-card-body">
+                                            <div>
+                                                <h3 title={artwork.title}>{artwork.title}</h3>
+                                                <strong>{artworkLabelPrice(artwork)}</strong>
+                                            </div>
+                                            <p>
+                                                {artwork.piece_type || 'Medium needed'} ·{' '}
+                                                {size ? `${size.widthInches} × ${size.heightInches} in` : 'Dimensions needed'}
+                                            </p>
+                                            <div className="owner-wall-picker-tags">
+                                                {categories.length ? (
+                                                    categories.map((category) => (
+                                                        <span key={category}>{artworkCategoryLabel(category)}</span>
+                                                    ))
+                                                ) : (
+                                                    <span>Uncategorized</span>
+                                                )}
+                                                {size?.estimated ? (
+                                                    <span className="is-warning">
+                                                        <CircleAlert size={10} /> Estimated frame
+                                                    </span>
+                                                ) : null}
+                                            </div>
+                                            <button type="button" disabled={!size} onClick={() => addArtwork(artwork)}>
+                                                {size ? (
+                                                    <>
+                                                        <Plus size={14} /> {alreadyPlaced ? 'Add another' : 'Add to wall'}
+                                                    </>
+                                                ) : (
+                                                    <>Fix dimensions first</>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </article>
+                                );
+                            })}
+                            {!visibleArtworks.length ? (
+                                <div className="owner-wall-picker-empty">
+                                    <Search size={24} />
+                                    <strong>No artwork matches these filters</strong>
+                                    <p>Clear the filters to return to the full active catalog.</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSearch('');
+                                            setAvailabilityFilter('all');
+                                            setCategoryFilter('all');
+                                            setMediumFilter('all');
+                                            setArtworkSort('title');
+                                        }}
+                                    >
+                                        Clear filters
+                                    </button>
+                                </div>
+                            ) : null}
+                        </div>
+                    </section>
+                </div>
+            ) : null}
         </div>
     );
 }

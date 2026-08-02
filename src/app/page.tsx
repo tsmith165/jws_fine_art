@@ -11,7 +11,7 @@ import { readHomepageArtworks, readPublicArtworks } from '@/data/artworkReads';
 import { EDITORIAL_IMAGES } from '@/lib/editorialImages';
 import { compareArtworkReleasedNewest } from '@shared/artworkRelease';
 import { readPublishedGalleryWalls } from '@/data/galleryWallReads';
-import { galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
+import { galleryWallSceneAspectRatio, galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
 
 export const metadata: Metadata = {
     title: 'Original paintings by Jill Weeks Smith',
@@ -67,7 +67,7 @@ export default async function HomePage() {
                         className="lw-viewing-room-teaser-wall"
                         style={{
                             ...galleryWallSurfaceStyle(viewingRoomWalls[0].background.preset as GalleryWallPresetKey),
-                            aspectRatio: `${viewingRoomWalls[0].widthInches} / ${viewingRoomWalls[0].heightInches}`,
+                            aspectRatio: galleryWallSceneAspectRatio(viewingRoomWalls[0].background.preset as GalleryWallPresetKey),
                         }}
                     >
                         {viewingRoomWalls[0].placements.slice(0, 6).map((placement) => (
