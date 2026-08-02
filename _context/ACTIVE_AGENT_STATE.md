@@ -1,5 +1,15 @@
 # Active agent state
 
+## Gallery URL and placard release (2026-08-02)
+
+- Commits `97a039f` and `f5d1cf4` are pushed on `feat/full-site-overhaul`.
+- Vercel production deployment `dpl_BbrnXMxxA27rvKmDFBmVsPkSzFpZ` is Ready and serving through the public site alias chain.
+- Selected walls now use `/viewing-room?wall=<slug>`; legacy `/viewing-room/<slug>` links redirect to the equivalent query URL. Missing/invalid values normalize to the first published wall.
+- Gallery narratives use the full available desktop header width. All legacy side placards render as below-left/below-right; the owner editor only offers hidden, below-left, and below-right.
+- Live desktop QA across all five walls found one-line narratives, zero card/artwork overlaps, zero clipped cards, and zero horizontal overflow. Mobile QA found and fixed one Coastal Light collision; the final 390px pass is clean.
+- Final deployment QA artifacts: `gallery-light-against-shadow-search-param-desktop`, `gallery-coastal-light-below-cards-desktop`, and `gallery-coastal-light-below-cards-mobile`. `agent-artifacts validate` passes.
+- Verification: TypeScript, ESLint, 147 tests, Vercel production build, URL navigation/legacy redirect, live DOM geometry, desktop/mobile screenshots, and browser diagnostics passed. No local production build was run.
+
 ## Gallery refinement release (2026-08-01)
 
 - Public Gallery refinement commits are pushed on `feat/full-site-overhaul`: `276cc9d` adds optional placards and editable layout suggestions; `dc321dc` makes placards subtler, adds 85%-130% zoom, hides number bubbles when placards are visible, and makes layout suggestions respect each photographic environment's usable area.
