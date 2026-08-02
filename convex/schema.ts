@@ -26,6 +26,13 @@ const galleryWallPlacement = v.object({
     centerXInches: v.number(),
     centerYInches: v.number(),
 });
+const galleryWallLabelMode = v.union(
+    v.literal('hidden'),
+    v.literal('left'),
+    v.literal('right'),
+    v.literal('bottom-left'),
+    v.literal('bottom-right'),
+);
 
 const legacySourceFields = {
     legacyId: v.number(),
@@ -222,6 +229,7 @@ export default defineSchema({
         background: galleryWallBackground,
         floorStyle: v.union(v.literal('oak'), v.literal('concrete'), v.literal('none')),
         lighting: v.union(v.literal('gallery'), v.literal('daylight'), v.literal('soft')),
+        artworkLabelMode: v.optional(galleryWallLabelMode),
         draftRevision: v.number(),
         placements: v.array(galleryWallPlacement),
         publishedSnapshot: v.optional(
@@ -234,6 +242,7 @@ export default defineSchema({
                 background: galleryWallBackground,
                 floorStyle: v.union(v.literal('oak'), v.literal('concrete'), v.literal('none')),
                 lighting: v.union(v.literal('gallery'), v.literal('daylight'), v.literal('soft')),
+                artworkLabelMode: v.optional(galleryWallLabelMode),
                 placements: v.array(galleryWallPlacement),
                 publishedAt: v.number(),
             }),

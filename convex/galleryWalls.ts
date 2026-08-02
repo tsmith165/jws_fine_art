@@ -27,6 +27,13 @@ const placement = v.object({
     centerXInches: v.number(),
     centerYInches: v.number(),
 });
+const artworkLabelMode = v.union(
+    v.literal('hidden'),
+    v.literal('left'),
+    v.literal('right'),
+    v.literal('bottom-left'),
+    v.literal('bottom-right'),
+);
 const wallFields = {
     title: v.string(),
     narrative: nullableString,
@@ -35,6 +42,7 @@ const wallFields = {
     background: wallBackground,
     floorStyle: v.union(v.literal('oak'), v.literal('concrete'), v.literal('none')),
     lighting: v.union(v.literal('gallery'), v.literal('daylight'), v.literal('soft')),
+    artworkLabelMode: v.optional(artworkLabelMode),
     placements: v.array(placement),
 };
 
@@ -117,6 +125,7 @@ async function publicWall(ctx: QueryCtx, wall: Doc<'galleryWalls'>) {
         background: snapshot.background,
         floorStyle: snapshot.floorStyle,
         lighting: snapshot.lighting,
+        artworkLabelMode: snapshot.artworkLabelMode ?? 'hidden',
         placements,
         publishedAt: snapshot.publishedAt,
     };
@@ -205,6 +214,7 @@ export const saveWall = mutation({
         if (args.widthInches < 48 || args.heightInches < 48) throw new Error('Gallery walls must be at least 48 inches wide and tall.');
         const now = Date.now();
         const { wallId, expectedRevision, ...fields } = args;
+        const normalizedFields = { ...fields, artworkLabelMode: fields.artworkLabelMode ?? 'hidden' };
         if (fields.background.kind !== 'preset') throw new Error('Photo walls are reserved for a future calibrated workflow.');
         if (wallId) {
             const existing = await ctx.db.get(wallId);
@@ -214,7 +224,13 @@ export const saveWall = mutation({
             }
             const slug = await uniqueSlug(ctx, fields.title, String(wallId));
             const draftRevision = existing.draftRevision + 1;
-            await ctx.db.patch(wallId, { ...fields, title: fields.title.trim(), slug, draftRevision, updatedAt: now });
+            await ctx.db.patch(wallId, {
+                ...normalizedFields,
+                title: fields.title.trim(),
+                slug,
+                draftRevision,
+                updatedAt: now,
+            });
             await ctx.db.insert('ownerAuditEvents', {
                 actorId,
                 action: 'gallery_wall.updated',
@@ -229,7 +245,7 @@ export const saveWall = mutation({
         const publishOrder = Math.max(0, ...walls.map((wall) => wall.publishOrder)) + 1000;
         const slug = await uniqueSlug(ctx, fields.title);
         const id = await ctx.db.insert('galleryWalls', {
-            ...fields,
+            ...normalizedFields,
             title: fields.title.trim(),
             slug,
             status: 'draft',
@@ -297,6 +313,7 @@ export const publishWall = mutation({
                 background: wall.background,
                 floorStyle: wall.floorStyle,
                 lighting: wall.lighting,
+                artworkLabelMode: wall.artworkLabelMode ?? 'hidden',
                 placements: wall.placements,
                 publishedAt: now,
             },
@@ -355,6 +372,7 @@ export const duplicateWall = mutation({
             background: wall.background,
             floorStyle: wall.floorStyle,
             lighting: wall.lighting,
+            artworkLabelMode: wall.artworkLabelMode ?? 'hidden',
             draftRevision: 1,
             placements: wall.placements.map((item) => ({ ...item, id: `${item.id}-copy-${now}` })),
             createdAt: now,

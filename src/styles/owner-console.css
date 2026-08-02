@@ -1921,6 +1921,7 @@
 .owner-wall-settings .is-wide {
     grid-column: 1 / -1;
 }
+.owner-wall-labels,
 .owner-wall-environments {
     min-width: 0;
     grid-column: 1 / -1;
@@ -1928,6 +1929,7 @@
     margin: 2px 0 0;
     padding: 14px;
 }
+.owner-wall-labels > legend,
 .owner-wall-environments > legend {
     padding: 0 7px;
     color: var(--owner-muted);
@@ -1936,16 +1938,19 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
+.owner-wall-labels > p,
 .owner-wall-environments > p {
     margin: 0 0 12px;
     color: var(--owner-muted);
     font-size: 11px;
 }
+.owner-wall-labels > div,
 .owner-wall-environments > div {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 9px;
 }
+.owner-wall-labels button,
 .owner-wall-environments button {
     position: relative;
     display: grid;
@@ -1959,9 +1964,16 @@
     cursor: pointer;
     text-align: left;
 }
+.owner-wall-labels button {
+    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-rows: auto;
+    align-items: center;
+}
+.owner-wall-labels button:hover,
 .owner-wall-environments button:hover {
     border-color: var(--owner-muted);
 }
+.owner-wall-labels button.is-selected,
 .owner-wall-environments button.is-selected {
     border-color: var(--owner-accent);
     background: color-mix(in srgb, var(--owner-accent) 7%, var(--owner-bg));
@@ -1974,19 +1986,23 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+.owner-wall-labels button > span:nth-child(2),
 .owner-wall-environments button > span:nth-child(2) {
     display: grid;
     gap: 4px;
 }
+.owner-wall-labels button strong,
 .owner-wall-environments button strong {
     font-size: 10px;
     line-height: 1.25;
 }
+.owner-wall-labels button small,
 .owner-wall-environments button small {
     color: var(--owner-muted);
     font-size: 8px;
     line-height: 1.4;
 }
+.owner-wall-labels button > svg,
 .owner-wall-environments button > svg {
     position: absolute;
     top: 13px;
@@ -1997,6 +2013,52 @@
     padding: 3px;
     background: var(--owner-accent);
     color: var(--owner-bg);
+}
+.owner-wall-label-diagram {
+    position: relative;
+    display: block;
+    width: 76px;
+    height: 50px;
+    border: 1px solid var(--owner-line-soft);
+    background: color-mix(in srgb, var(--owner-panel) 75%, var(--owner-bg));
+}
+.owner-wall-label-diagram i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 25px;
+    height: 19px;
+    background: linear-gradient(140deg, #63829a, #d0ad6c 56%, #4d6458);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.28);
+    transform: translate(-50%, -50%);
+}
+.owner-wall-label-diagram b {
+    position: absolute;
+    display: block;
+    width: 18px;
+    height: 10px;
+    border: 1px solid rgba(45, 39, 31, 0.18);
+    background: #f5f1e8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
+}
+.owner-wall-label-diagram.is-left b {
+    top: 50%;
+    right: calc(50% + 17px);
+    transform: translateY(-50%);
+}
+.owner-wall-label-diagram.is-right b {
+    top: 50%;
+    left: calc(50% + 17px);
+    transform: translateY(-50%);
+}
+.owner-wall-label-diagram.is-bottom-left b {
+    top: calc(50% + 12px);
+    left: calc(50% - 13px);
+}
+.owner-wall-label-diagram.is-bottom-right b {
+    top: calc(50% + 12px);
+    right: calc(50% - 13px);
 }
 .owner-wall-canvas-shell {
     border: 1px solid var(--owner-line);
@@ -2035,7 +2097,7 @@
 .owner-wall-piece img {
     object-fit: cover;
 }
-.owner-wall-piece > span {
+.owner-wall-piece > .owner-wall-piece-drag-label {
     position: absolute;
     top: calc(100% + 7px);
     left: 50%;
@@ -2050,8 +2112,57 @@
     font-size: 8px;
     transform: translateX(-50%);
 }
-.owner-wall-piece.is-selected > span {
+.owner-wall-piece.is-selected > .owner-wall-piece-drag-label {
     display: flex;
+}
+.owner-wall-piece-card {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    width: 74px;
+    gap: 2px;
+    border: 1px solid rgba(45, 39, 31, 0.2);
+    padding: 5px;
+    background: #f5f1e8;
+    box-shadow: 0 4px 12px rgba(20, 16, 11, 0.16);
+    color: #24201a;
+    pointer-events: none;
+    text-align: left;
+}
+.owner-wall-piece-card strong {
+    overflow: hidden;
+    font-family: var(--font-lit-display), Georgia, serif;
+    font-size: 8px;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.owner-wall-piece-card small {
+    color: #695f51;
+    font-size: 6px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+.owner-wall-piece-card.is-left {
+    top: 50%;
+    right: calc(100% + 7px);
+    transform: translateY(-50%);
+}
+.owner-wall-piece-card.is-right {
+    top: 50%;
+    left: calc(100% + 7px);
+    transform: translateY(-50%);
+}
+.owner-wall-piece-card.is-bottom-left,
+.owner-wall-piece-card.is-bottom-right {
+    top: calc(100% + 7px);
+}
+.owner-wall-piece-card.is-bottom-left {
+    left: 0;
+}
+.owner-wall-piece-card.is-bottom-right {
+    right: 0;
 }
 .owner-wall-guide {
     position: absolute;
@@ -2184,6 +2295,9 @@
     .owner-wall-environments > div {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+    .owner-wall-labels > div {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     .owner-wall-library > div {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -2205,6 +2319,10 @@
     .owner-wall-environments {
         grid-column: auto;
     }
+    .owner-wall-labels {
+        grid-column: auto;
+    }
+    .owner-wall-labels > div,
     .owner-wall-environments > div {
         grid-template-columns: 1fr;
     }

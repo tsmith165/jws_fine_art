@@ -16,6 +16,7 @@ import {
     Trash2,
     Undo2,
     Redo2,
+    WandSparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState, useTransition } from 'react';
@@ -35,10 +36,19 @@ import {
     type GalleryWallInput,
 } from '@/app/admin/walls/actions';
 import { galleryWallLayoutIssues } from '@shared/galleryWallLayout';
+import { suggestGalleryWallLayout } from '@shared/galleryWallSuggestions';
 import { GALLERY_WALL_PRESETS, galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
 
 type OwnerWalls = FunctionReturnType<typeof api.galleryWalls.listOwner>;
 type Placement = GalleryWallInput['placements'][number];
+
+const ARTWORK_LABEL_OPTIONS = [
+    { value: 'hidden', label: 'Hidden', description: 'Artwork only' },
+    { value: 'left', label: 'Left', description: 'Beside the artwork' },
+    { value: 'right', label: 'Right', description: 'Beside the artwork' },
+    { value: 'bottom-left', label: 'Bottom left', description: 'Below the artwork' },
+    { value: 'bottom-right', label: 'Bottom right', description: 'Below the artwork' },
+] as const;
 
 const EMPTY_WALL: GalleryWallInput = {
     title: 'New gallery wall',
@@ -48,6 +58,7 @@ const EMPTY_WALL: GalleryWallInput = {
     background: { kind: 'preset', preset: 'white-oak' },
     floorStyle: 'oak',
     lighting: 'gallery',
+    artworkLabelMode: 'hidden',
     placements: [],
 };
 
@@ -62,8 +73,15 @@ function wallInput(wall: OwnerWalls[number]): GalleryWallInput {
         background: wall.background.kind === 'preset' ? wall.background : { kind: 'preset', preset: 'white-oak' },
         floorStyle: wall.floorStyle,
         lighting: wall.lighting,
+        artworkLabelMode: wall.artworkLabelMode ?? 'hidden',
         placements: wall.placements,
     };
+}
+
+function artworkLabelPrice(artwork: PiecesWithImages) {
+    if (artwork.sold) return 'Sold';
+    if (!artwork.available) return 'Private collection';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(artwork.price);
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -90,6 +108,7 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
     const [snapGuides, setSnapGuides] = useState<{ x: number | null; y: number | null }>({ x: null, y: null });
     const selectedPlacement = selectedPlacements.at(-1) ?? null;
     const [message, setMessage] = useState<{ tone: 'good' | 'warning'; text: string } | null>(null);
+    const [suggestionSeed, setSuggestionSeed] = useState(() => Date.now());
     const [pending, startTransition] = useTransition();
     const artworkById = useMemo(() => new Map(artworks.map((artwork) => [artwork.id, artwork])), [artworks]);
     const visibleArtworks = useMemo(() => {
@@ -144,6 +163,25 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
         setHistory((items) => [...items, draft]);
         setFuture((items) => items.slice(1));
         setDraft(next);
+    };
+
+    const suggestLayout = () => {
+        const suggested = suggestGalleryWallLayout(
+            { widthInches: draft.widthInches, heightInches: draft.heightInches },
+            placementGeometry,
+            suggestionSeed,
+        );
+        const byId = new Map(suggested.map((placement) => [placement.id, placement]));
+        change((current) => ({
+            ...current,
+            placements: current.placements.map((placement) => {
+                const next = byId.get(placement.id);
+                return next ? { ...placement, centerXInches: next.centerXInches, centerYInches: next.centerYInches } : placement;
+            }),
+        }));
+        setSuggestionSeed((current) => current + 1);
+        setSelectedPlacements([]);
+        setMessage({ tone: 'good', text: 'Suggested a starting layout. Every artwork remains draggable and this step can be undone.' });
     };
 
     const addArtwork = (artwork: PiecesWithImages) => {
@@ -306,6 +344,14 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                         <button type="button" onClick={redo} disabled={!future.length} aria-label="Redo">
                             <Redo2 size={16} />
                         </button>
+                        <button
+                            type="button"
+                            onClick={suggestLayout}
+                            disabled={!draft.placements.length || placementGeometry.length !== draft.placements.length}
+                            title="Generate another editable starting arrangement"
+                        >
+                            <WandSparkles size={15} /> Suggest layout
+                        </button>
                         {selectedWall?.status === 'published' ? (
                             <Link href={`/viewing-room/${selectedWall.slug}`} target="_blank">
                                 <Eye size={15} /> Preview
@@ -429,6 +475,34 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                             <small>{preset.description}</small>
                                         </span>
                                         {selected ? <Check size={15} aria-hidden="true" /> : null}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </fieldset>
+                    <fieldset className="owner-wall-labels">
+                        <legend>Artwork labels</legend>
+                        <p>Optionally show a museum-style title and price card beside every work on this wall.</p>
+                        <div>
+                            {ARTWORK_LABEL_OPTIONS.map((option) => {
+                                const selected = draft.artworkLabelMode === option.value;
+                                return (
+                                    <button
+                                        key={option.value}
+                                        type="button"
+                                        className={selected ? 'is-selected' : undefined}
+                                        aria-pressed={selected}
+                                        onClick={() => change({ ...draft, artworkLabelMode: option.value })}
+                                    >
+                                        <span className={`owner-wall-label-diagram is-${option.value}`} aria-hidden="true">
+                                            <i />
+                                            {option.value !== 'hidden' ? <b /> : null}
+                                        </span>
+                                        <span>
+                                            <strong>{option.label}</strong>
+                                            <small>{option.description}</small>
+                                        </span>
+                                        {selected ? <Check size={14} aria-hidden="true" /> : null}
                                     </button>
                                 );
                             })}
@@ -569,9 +643,15 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                         quality={95}
                                         sizes="25vw"
                                     />
-                                    <span>
+                                    <span className="owner-wall-piece-drag-label">
                                         <Grip size={12} /> {artwork.title}
                                     </span>
+                                    {draft.artworkLabelMode !== 'hidden' ? (
+                                        <span className={`owner-wall-piece-card is-${draft.artworkLabelMode}`} aria-hidden="true">
+                                            <strong>{artwork.title}</strong>
+                                            <small>{artworkLabelPrice(artwork)}</small>
+                                        </span>
+                                    ) : null}
                                 </button>
                             );
                         })}

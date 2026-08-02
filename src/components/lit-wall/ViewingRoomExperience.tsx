@@ -166,8 +166,16 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                                     quality={95}
                                     sizes="30vw"
                                 />
-                                <span>{placementIndex + 1}</span>
-                                {artwork.sold ? <em>Sold</em> : null}
+                                <span className="lw-viewing-piece-number">{placementIndex + 1}</span>
+                                {wall.artworkLabelMode !== 'hidden' ? (
+                                    <span className={`lw-viewing-piece-label is-${wall.artworkLabelMode}`} aria-hidden="true">
+                                        <strong>{artwork.title}</strong>
+                                        <small>
+                                            {artwork.sold ? 'Sold' : artwork.available ? money(artwork.priceCents) : 'Private collection'}
+                                        </small>
+                                    </span>
+                                ) : null}
+                                {artwork.sold && wall.artworkLabelMode === 'hidden' ? <em>Sold</em> : null}
                             </button>
                         );
                     })}
