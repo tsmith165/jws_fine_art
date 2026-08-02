@@ -1189,22 +1189,27 @@
     height: 100%;
 }
 .lw-room-media-preview {
+    container: room-media-preview / size;
     position: relative;
-    display: block;
+    display: grid;
     overflow: hidden;
+    place-items: center;
     border: 0;
     padding: 0;
-    background: #d9d3bf;
+    background: #070a08;
     color: var(--lw-ink);
     cursor: zoom-in;
 }
-.lw-room-media-preview > img {
-    object-fit: cover;
-}
 .lw-room-media-scene {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: auto;
+    width: 100cqw;
+    height: auto;
+    flex: none;
+}
+@container room-media-preview (min-aspect-ratio: 1538 / 1023) {
+    .lw-room-media-scene {
+        width: auto;
+        height: 100cqh;
+    }
 }
 .lw-room-media-artwork {
     position: absolute;
