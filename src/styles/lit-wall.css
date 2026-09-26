@@ -3613,10 +3613,12 @@
 }
 .lw-viewing-room-teaser > div:first-child {
     max-width: 570px;
+    container-type: inline-size;
 }
 .lw-viewing-room-teaser h2 {
     margin-top: 10px;
-    font-size: clamp(48px, 6vw, 88px);
+    /* "conversation." cannot wrap, so size it to the text column rather than the viewport or it runs under the wall. */
+    font-size: clamp(48px, min(6vw, 16cqi), 88px);
     line-height: 1.04;
 }
 .lw-viewing-room-teaser p {
