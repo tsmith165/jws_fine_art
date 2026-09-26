@@ -3,6 +3,7 @@ import { ResilientImage as Image } from '@/components/lit-wall/ResilientImage';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { ArtworkCard } from '@/components/lit-wall/ArtworkCard';
+import { ArtworkPresentationImage } from '@/components/lit-wall/ArtworkPresentationImage';
 import { CollectionBrowse } from '@/components/lit-wall/CollectionBrowse';
 import { HeroCarousel } from '@/components/lit-wall/HeroCarousel';
 import { SectionHeading } from '@/components/lit-wall/SectionHeading';
@@ -12,6 +13,7 @@ import { EDITORIAL_IMAGES } from '@/lib/editorialImages';
 import { compareArtworkReleasedNewest } from '@shared/artworkRelease';
 import { readPublishedGalleryWalls } from '@/data/galleryWallReads';
 import { galleryWallSceneAspectRatio, galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
+import { fitArtworkImageToDimensions } from '@shared/artworkDimensions';
 
 export const metadata: Metadata = {
     title: 'Original paintings by Jill Weeks Smith',
@@ -70,19 +72,34 @@ export default async function HomePage() {
                             aspectRatio: galleryWallSceneAspectRatio(viewingRoomWalls[0].background.preset as GalleryWallPresetKey),
                         }}
                     >
-                        {viewingRoomWalls[0].placements.slice(0, 6).map((placement) => (
-                            <span
-                                key={placement.id}
-                                style={{
-                                    left: `${(placement.centerXInches / viewingRoomWalls[0].widthInches) * 100}%`,
-                                    top: `${(placement.centerYInches / viewingRoomWalls[0].heightInches) * 100}%`,
-                                    width: `${(placement.artwork.widthInches / viewingRoomWalls[0].widthInches) * 100}%`,
-                                    aspectRatio: `${placement.artwork.widthInches} / ${placement.artwork.heightInches}`,
-                                }}
-                            >
-                                <Image src={placement.artwork.imageUrl} alt="" fill quality={95} sizes="20vw" />
-                            </span>
-                        ))}
+                        {viewingRoomWalls[0].placements.map((placement) => {
+                            const artwork = placement.artwork;
+                            const display = fitArtworkImageToDimensions(artwork, {
+                                width: artwork.imageWidth,
+                                height: artwork.imageHeight,
+                                crop: artwork.presentationCrop,
+                            });
+                            return (
+                                <span
+                                    key={placement.id}
+                                    style={{
+                                        left: `${(placement.centerXInches / viewingRoomWalls[0].widthInches) * 100}%`,
+                                        top: `${(placement.centerYInches / viewingRoomWalls[0].heightInches) * 100}%`,
+                                        width: `${(display.widthInches / viewingRoomWalls[0].widthInches) * 100}%`,
+                                        aspectRatio: `${display.widthInches} / ${display.heightInches}`,
+                                    }}
+                                >
+                                    <ArtworkPresentationImage
+                                        src={artwork.imageUrl}
+                                        crop={artwork.presentationCrop}
+                                        alt=""
+                                        fill
+                                        quality={95}
+                                        sizes="(max-width: 760px) 30vw, 20vw"
+                                    />
+                                </span>
+                            );
+                        })}
                     </div>
                 </section>
             ) : null}

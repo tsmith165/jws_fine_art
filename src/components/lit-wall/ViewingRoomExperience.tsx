@@ -10,6 +10,7 @@ import { ArtworkPresentationImage } from './ArtworkPresentationImage';
 import { captureAnalytics } from '@/lib/analytics';
 import { galleryWallSceneAspectRatio, galleryWallSurfaceStyle, type GalleryWallPresetKey } from '@/lib/galleryWallPresets';
 import { normalizeGalleryWallLabelMode } from '@shared/galleryWallLabels';
+import { fitArtworkImageToDimensions } from '@shared/artworkDimensions';
 
 type Walls = FunctionReturnType<typeof api.galleryWalls.listPublished>;
 type Wall = Walls[number];
@@ -171,6 +172,11 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                     >
                         {wall.placements.map((placement, placementIndex) => {
                             const artwork = placement.artwork;
+                            const display = fitArtworkImageToDimensions(artwork, {
+                                width: artwork.imageWidth,
+                                height: artwork.imageHeight,
+                                crop: artwork.presentationCrop,
+                            });
                             return (
                                 <button
                                     key={placement.id}
@@ -179,8 +185,8 @@ export function ViewingRoomExperience({ walls, initialSlug }: { walls: Walls; in
                                     style={{
                                         left: `${(placement.centerXInches / wall.widthInches) * 100}%`,
                                         top: `${(placement.centerYInches / wall.heightInches) * 100}%`,
-                                        width: `${(artwork.widthInches / wall.widthInches) * 100}%`,
-                                        aspectRatio: `${artwork.widthInches} / ${artwork.heightInches}`,
+                                        width: `${(display.widthInches / wall.widthInches) * 100}%`,
+                                        aspectRatio: `${display.widthInches} / ${display.heightInches}`,
                                     }}
                                     onClick={() => select(placement)}
                                     aria-label={`Open details for ${artwork.title}${artwork.sold ? ', sold' : ''}`}

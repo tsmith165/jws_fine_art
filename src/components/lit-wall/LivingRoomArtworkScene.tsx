@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { PiecesWithImages } from '@/types/artwork';
 import { artworkScaleDimensions } from '@/lib/artwork';
 import { getLivingRoomPlacement, LIVING_ROOM_SCALE } from '@/lib/roomScale';
+import { fitArtworkImageToDimensions } from '@shared/artworkDimensions';
 import { ResilientImage } from './ResilientImage';
 import { ArtworkPresentationImage } from './ArtworkPresentationImage';
 
@@ -17,9 +18,12 @@ export function LivingRoomArtworkScene({
     artworkSizes?: string;
 }) {
     const scale = artworkScaleDimensions(piece);
+    const display = scale
+        ? fitArtworkImageToDimensions(scale, { width: piece.width, height: piece.height, crop: piece.presentation_crop })
+        : null;
     const placement = useMemo(
-        () => getLivingRoomPlacement(scale?.widthInches ?? 0, scale?.heightInches ?? 0),
-        [scale?.heightInches, scale?.widthInches],
+        () => getLivingRoomPlacement(display?.widthInches ?? 0, display?.heightInches ?? 0),
+        [display?.heightInches, display?.widthInches],
     );
     if (!scale) return null;
     return (

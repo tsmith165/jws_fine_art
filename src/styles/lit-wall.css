@@ -3166,7 +3166,7 @@
 }
 .lw-room-artwork img {
     display: block;
-    object-fit: cover;
+    object-fit: contain;
 }
 .lw-room-dialog > footer {
     display: grid;
@@ -3282,7 +3282,7 @@
     transform: translate(-50%, -50%) scale(1.025);
 }
 .lw-viewing-piece img {
-    object-fit: cover;
+    object-fit: contain;
 }
 .lw-viewing-piece > .lw-viewing-piece-number {
     position: absolute;
@@ -3639,7 +3639,7 @@
     transform: translate(-50%, -50%);
 }
 .lw-viewing-room-teaser-wall img {
-    object-fit: cover;
+    object-fit: contain;
 }
 
 @media (max-width: 760px) {

@@ -42,6 +42,7 @@ import { galleryWallLayoutIssues } from '@shared/galleryWallLayout';
 import { suggestGalleryWallLayout } from '@shared/galleryWallSuggestions';
 import { normalizeGalleryWallLabelMode } from '@shared/galleryWallLabels';
 import { ARTWORK_CATEGORIES, artworkCategoryLabel, type ArtworkCategoryId } from '@shared/artworkCategories';
+import { fitArtworkImageToDimensions } from '@shared/artworkDimensions';
 import {
     GALLERY_WALL_PRESETS,
     galleryWallPlacementBounds,
@@ -713,6 +714,11 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                             const artwork = artworkById.get(item.artworkLegacyId);
                             const size = artwork ? artworkScaleDimensions(artwork) : null;
                             if (!artwork || !size) return null;
+                            const display = fitArtworkImageToDimensions(size, {
+                                width: artwork.width,
+                                height: artwork.height,
+                                crop: artwork.presentation_crop,
+                            });
                             const left = (item.centerXInches / draft.widthInches) * 100;
                             const top = (item.centerYInches / draft.heightInches) * 100;
                             return (
@@ -723,8 +729,8 @@ export function OwnerGalleryWallManager({ initialWalls, artworks }: { initialWal
                                     style={{
                                         left: `${left}%`,
                                         top: `${top}%`,
-                                        width: `${(size.widthInches / draft.widthInches) * 100}%`,
-                                        aspectRatio: `${size.widthInches} / ${size.heightInches}`,
+                                        width: `${(display.widthInches / draft.widthInches) * 100}%`,
+                                        aspectRatio: `${display.widthInches} / ${display.heightInches}`,
                                     }}
                                     onPointerDown={(event) => {
                                         event.currentTarget.setPointerCapture(event.pointerId);
