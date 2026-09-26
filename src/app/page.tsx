@@ -56,7 +56,7 @@ export default async function HomePage() {
                 <section className={`lw-viewing-room-teaser is-${viewingRoomWalls[0].background.preset} lw-band`}>
                     <div>
                         <span className="lw-eyebrow">Curated gallery</span>
-                        <h2>See the work in conversation.</h2>
+                        <h2>See the work&nbsp;in conversation.</h2>
                         <p>Step into {viewingRoomWalls[0].title}, where Jill’s paintings are arranged together at true relative scale.</p>
                         <Link
                             className="lw-button lw-button-brass"
