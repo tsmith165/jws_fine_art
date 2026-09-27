@@ -1,5 +1,12 @@
 # Active agent state
 
+## Gallery wall painting crops (2026-09-26)
+
+- PR #57 (`fix/gallery-wall-painting-crops` into `feat/full-site-overhaul`). Frontend only; no Convex deploy needed.
+- Root cause: wall pieces were boxed at finished (usually estimated framed) proportions while photos used `object-fit: cover`, trimming up to 11.4% of each painting. `fitArtworkImageToDimensions` now fits the visible image inside the footprint (same center, never larger), used by the viewing room, homepage teaser, owner wall editor, and View at scale.
+- Homepage teaser now renders every placement (was `slice(0, 6)`); its heading is sized to its column (`16cqi`) with `work&nbsp;in` so it never runs under the wall.
+- Preview gotcha: Vercel preview env vars for Convex/Stripe are scoped to `feat/full-site-overhaul`, so Git previews of any other branch fail at build (`NEXT_PUBLIC_CONVEX_URL is required`). Dev Convex has no published walls. QA preview was a CLI `vercel deploy` with `-b`/`-e` overrides for the production Convex read URLs and `JWS_READ_BACKEND=convex` (no write secret).
+
 ## Gallery URL and placard release (2026-08-02)
 
 - Commits `97a039f` and `f5d1cf4` are pushed on `feat/full-site-overhaul`.

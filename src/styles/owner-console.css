@@ -2187,7 +2187,7 @@
     outline-offset: 3px;
 }
 .owner-wall-piece img {
-    object-fit: cover;
+    object-fit: contain;
 }
 .owner-wall-piece > .owner-wall-piece-drag-label {
     position: absolute;
